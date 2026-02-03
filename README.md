@@ -213,6 +213,36 @@ ls -la ~/HomeCare/your-repo/reports/priorities-*.md
 - See `CLAUDE.md` for development learnings
 - See target repository documentation for repository-specific details
 
+## Documentation
+
+Comprehensive documentation is available:
+
+- **[CLAUDE.md](CLAUDE.md)** - Complete service learnings and patterns (READ THIS FIRST)
+- **[DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
+- **[COMPOUND_WORKFLOW.md](docs/COMPOUND_WORKFLOW.md)** - Detailed workflow documentation
+- **[COMPOUND_SETUP_GUIDE.md](docs/COMPOUND_SETUP_GUIDE.md)** - Initial setup guide
+- **[PRODUCTIVITY_SYSTEM.md](docs/PRODUCTIVITY_SYSTEM.md)** - Boris productivity patterns
+- **[QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md)** - Command reference
+
+### For New Developers
+
+If you're new to the agent service:
+
+1. Read [CLAUDE.md](CLAUDE.md) - Main learnings file
+2. Follow [DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) - Deploy the service
+3. Review [COMPOUND_WORKFLOW.md](docs/COMPOUND_WORKFLOW.md) - Understand the workflow
+4. Use [QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) - Common commands
+
+### Onboarding
+
+Run the onboarding script when starting a new development session:
+
+```bash
+./scripts/onboard-claude.sh
+```
+
+This will guide you through the codebase and ensure Claude Code understands the project structure.
+
 ## Contributing
 
 This is an internal service. For issues or improvements:
