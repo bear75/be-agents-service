@@ -1,0 +1,32 @@
+# Repository Configuration
+# This file defines all repositories managed by the agent service
+
+repos:
+  beta-appcaire:
+    # Absolute path to repository
+    path: ~/HomeCare/beta-appcaire
+
+    # Schedule for automated runs (24-hour format)
+    schedule:
+      review: "22:30"     # Daily compound review
+      compound: "23:00"   # Auto-compound implementation
+
+    # Directory paths within the repository
+    priorities_dir: reports/
+    logs_dir: logs/
+    tasks_dir: tasks/
+
+    # Enable/disable agent for this repo
+    enabled: true
+
+    # GitHub configuration
+    github:
+      owner: bear75
+      repo: beta-appcaire
+      default_branch: main
+
+    # Environment configuration
+    env:
+      # API keys loaded from ~/.config/caire/env
+      # ANTHROPIC_API_KEY
+      # GITHUB_TOKEN

@@ -1,0 +1,26 @@
+{
+  "name": "be-agents-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Agent automation orchestration system for managing Claude Code agents across repositories",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bear75/be-agents-service.git"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:server": "yarn workspace server dev",
+    "dev:dashboard": "yarn workspace dashboard dev",
+    "build:server": "yarn workspace server build",
+    "build:dashboard": "yarn workspace dashboard build",
+    "type-check": "yarn workspaces run type-check",
+    "lint": "yarn workspaces run lint"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "yarn": ">=1.22.0"
+  },
+  "packageManager": "yarn@1.22.22"
+}
