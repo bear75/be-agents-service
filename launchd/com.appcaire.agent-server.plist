@@ -7,7 +7,7 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/bjornevers_MacPro/.volta/bin/yarn</string>
+        <string>/Users/bjornevers_MacPro/.nvm/versions/node/v22.15.1/bin/yarn</string>
         <string>workspace</string>
         <string>server</string>
         <string>start</string>
@@ -19,7 +19,7 @@
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
-        <string>/Users/bjornevers_MacPro/.volta/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <string>/Users/bjornevers_MacPro/.nvm/versions/node/v22.15.1/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
         <key>PORT</key>
         <string>4010</string>
     </dict>
