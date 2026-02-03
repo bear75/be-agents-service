@@ -633,6 +633,27 @@ vim ~/HomeCare/be-agents-service/config/repos.yaml
 
 ---
 
+## Boris Productivity Workflow
+
+The Boris productivity system (worktrees + subagents) is available when working on target repositories.
+
+**Location:** Target repo's `.claude/prompts/boris-workflow.md`
+
+**Example:** In beta-appcaire:
+- `.claude/prompts/boris-workflow.md` - Full Boris workflow guide
+- `.claude/prompts/subagents.md` - Parallel execution patterns
+- `scripts/worktree-setup.sh` - Create parallel worktrees
+- `scripts/sessions/dashboard-stack.sh` - Pre-configured sessions
+
+**Usage in target repo:**
+```
+Use Boris workflow with worktrees and subagents for [feature]
+```
+
+See target repository's `.claude/prompts/` for full documentation.
+
+---
+
 **Related Documentation:**
 
 - See `docs/COMPOUND_WORKFLOW.md` for detailed workflow documentation
@@ -640,3 +661,4 @@ vim ~/HomeCare/be-agents-service/config/repos.yaml
 - See `docs/PRODUCTIVITY_SYSTEM.md` for Boris productivity patterns
 - See `docs/QUICK_REFERENCE.md` for command reference
 - See target repository's `/CLAUDE.md` for repo-specific learnings
+- See target repository's `.claude/prompts/boris-workflow.md` for Boris patterns
