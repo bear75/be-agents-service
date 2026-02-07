@@ -419,7 +419,6 @@
     <div class="nav-header">
       <h1 style="margin: 0;">🎮 Control Tower</h1>
       <div class="nav-links">
-        <a href="/" class="nav-link">Dashboard</a>
         <a href="/control-tower.html" class="nav-link active">Control Tower</a>
         <a href="/commands.html" class="nav-link">Commands & Docs</a>
       </div>
@@ -521,16 +520,69 @@
         </div>
       </div>
 
-      <!-- Main Content: Kanban Board -->
-      <div class="kanban-board">
-        <div class="kanban-header">
-          <h2>📋 Task Board</h2>
-          <div class="kanban-controls">
-            <button class="control-btn status" onclick="refreshBoard()">
-              🔄 Refresh
+      <!-- Main Content: Data + Kanban Board -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Data Overview Panel -->
+        <div class="kanban-board" style="min-height: auto; padding: 15px;">
+          <div class="kanban-header" style="margin-bottom: 15px;">
+            <h2>📊 Data Overview</h2>
+            <button class="control-btn status" onclick="toggleDataDetails()" id="data-toggle-btn">
+              <span>👁️ Show Details</span>
             </button>
           </div>
+
+          <!-- Data Summary (Always Visible) -->
+          <div id="data-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div class="stat-card" style="background: rgba(72, 187, 120, 0.1); border: 2px solid rgba(72, 187, 120, 0.2); padding: 15px; border-radius: 10px;">
+              <div class="stat-value" id="active-agents-count" style="color: #48bb78; font-size: 28px; font-weight: 800;">0</div>
+              <div class="stat-label" style="color: var(--text-secondary); font-size: 13px; font-weight: 600;">Active Agents</div>
+            </div>
+            <div class="stat-card" style="background: rgba(102, 126, 234, 0.1); border: 2px solid rgba(102, 126, 234, 0.2); padding: 15px; border-radius: 10px;">
+              <div class="stat-value" id="total-tasks-count" style="color: #667eea; font-size: 28px; font-weight: 800;">0</div>
+              <div class="stat-label" style="color: var(--text-secondary); font-size: 13px; font-weight: 600;">Total Tasks</div>
+            </div>
+            <div class="stat-card" style="background: rgba(245, 158, 11, 0.1); border: 2px solid rgba(245, 158, 11, 0.2); padding: 15px; border-radius: 10px;">
+              <div class="stat-value" id="campaigns-count" style="color: #f59e0b; font-size: 28px; font-weight: 800;">0</div>
+              <div class="stat-label" style="color: var(--text-secondary); font-size: 13px; font-weight: 600;">Campaigns</div>
+            </div>
+            <div class="stat-card" style="background: rgba(139, 92, 246, 0.1); border: 2px solid rgba(139, 92, 246, 0.2); padding: 15px; border-radius: 10px;">
+              <div class="stat-value" id="leads-count" style="color: #8b5cf6; font-size: 28px; font-weight: 800;">0</div>
+              <div class="stat-label" style="color: var(--text-secondary); font-size: 13px; font-weight: 600;">Leads</div>
+            </div>
+          </div>
+
+          <!-- Data Details (Collapsible) -->
+          <div id="data-details" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid rgba(102, 126, 234, 0.2);">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+              <!-- Marketing Data -->
+              <div>
+                <h3 style="color: var(--text-primary); font-size: 16px; margin-bottom: 12px; font-weight: 700;">📢 Marketing</h3>
+                <div id="marketing-data-grid" style="display: flex; flex-direction: column; gap: 10px;">
+                  <div class="loading">Loading marketing data...</div>
+                </div>
+              </div>
+
+              <!-- Engineering Data -->
+              <div>
+                <h3 style="color: var(--text-primary); font-size: 16px; margin-bottom: 12px; font-weight: 700;">⚙️ Engineering</h3>
+                <div id="engineering-data-grid" style="display: flex; flex-direction: column; gap: 10px;">
+                  <div class="loading">Loading engineering data...</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- Task Board -->
+        <div class="kanban-board">
+          <div class="kanban-header">
+            <h2>📋 Task Board</h2>
+            <div class="kanban-controls">
+              <button class="control-btn status" onclick="refreshBoard()">
+                🔄 Refresh
+              </button>
+            </div>
+          </div>
 
         <div class="kanban-columns">
           <!-- Inbox -->
@@ -1065,8 +1117,129 @@
       }
     ];
 
+    // Data panel toggle
+    let dataDetailsVisible = false;
+    function toggleDataDetails() {
+      dataDetailsVisible = !dataDetailsVisible;
+      const details = document.getElementById('data-details');
+      const btn = document.getElementById('data-toggle-btn');
+
+      if (dataDetailsVisible) {
+        details.style.display = 'block';
+        btn.innerHTML = '<span>👁️ Hide Details</span>';
+        loadDataDetails();
+      } else {
+        details.style.display = 'none';
+        btn.innerHTML = '<span>👁️ Show Details</span>';
+      }
+    }
+
+    // Load data summary
+    async function loadDataSummary() {
+      try {
+        // Count active agents from current session
+        let activeAgents = 0;
+        let totalTasks = 0;
+        if (currentSessionId) {
+          const response = await fetch(`/api/sessions/${currentSessionId}`);
+          const session = await response.json();
+          activeAgents = Object.values(session.agents || {}).filter(a => a.status === 'in_progress').length;
+          totalTasks = Object.values(session.agents || {}).reduce((sum, a) =>
+            sum + (a.completedTasks?.length || 0) + (a.currentTask ? 1 : 0), 0);
+        }
+
+        // Load marketing counts
+        const [campaigns, leads] = await Promise.all([
+          fetch('/api/data/campaigns').then(r => r.json()).catch(() => []),
+          fetch('/api/data/leads').then(r => r.json()).catch(() => [])
+        ]);
+
+        document.getElementById('active-agents-count').textContent = activeAgents;
+        document.getElementById('total-tasks-count').textContent = totalTasks;
+        document.getElementById('campaigns-count').textContent = campaigns.length;
+        document.getElementById('leads-count').textContent = leads.length;
+      } catch (error) {
+        console.error('Error loading data summary:', error);
+      }
+    }
+
+    // Load detailed data
+    async function loadDataDetails() {
+      try {
+        const [campaigns, leads, sessions] = await Promise.all([
+          fetch('/api/data/campaigns').then(r => r.json()).catch(() => []),
+          fetch('/api/data/leads').then(r => r.json()).catch(() => []),
+          fetch('/api/sessions').then(r => r.json()).catch(() => [])
+        ]);
+
+        // Marketing data
+        const marketingHtml = `
+          <div style="background: rgba(248, 250, 252, 0.8); padding: 12px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.1);">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Active Campaigns (${campaigns.length})</div>
+            ${campaigns.slice(0, 3).map(c => `
+              <div style="padding: 8px; background: white; border-radius: 6px; margin-top: 6px; cursor: pointer;" onclick="showCampaignDetails('${c.id}')">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">${c.name}</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                  Owner: ${c.owner} • Status: <span style="color: ${c.status === 'active' ? '#48bb78' : '#667eea'};">${c.status}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div style="background: rgba(248, 250, 252, 0.8); padding: 12px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.1); margin-top: 10px;">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Hot Leads (${leads.filter(l => l.status === 'hot').length})</div>
+            ${leads.filter(l => l.status === 'hot').slice(0, 3).map(l => `
+              <div style="padding: 8px; background: white; border-radius: 6px; margin-top: 6px;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">${l.contactName}</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                  ${l.company} • Score: <span style="color: #f59e0b; font-weight: 700;">${l.score}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        // Engineering data
+        const engineeringHtml = `
+          <div style="background: rgba(248, 250, 252, 0.8); padding: 12px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.1);">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Recent Sessions (${sessions.length})</div>
+            ${sessions.slice(0, 3).map(s => `
+              <div style="padding: 8px; background: white; border-radius: 6px; margin-top: 6px; cursor: pointer;" onclick="loadSession('${s.sessionId}')">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">${s.sessionId}</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                  Status: <span style="color: ${s.status === 'running' ? '#48bb78' : s.status === 'completed' ? '#667eea' : '#f59e0b'};">${s.status || 'unknown'}</span> •
+                  ${new Date(s.createdAt).toLocaleString()}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div style="background: rgba(248, 250, 252, 0.8); padding: 12px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.1); margin-top: 10px;">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Agent Activity</div>
+            <div style="padding: 8px; background: white; border-radius: 6px;">
+              <div style="font-size: 13px; color: var(--text-secondary);">
+                Active: <span style="color: #48bb78; font-weight: 700;">${document.getElementById('active-agents-count').textContent}</span> agents<br>
+                Tasks: <span style="color: #667eea; font-weight: 700;">${document.getElementById('total-tasks-count').textContent}</span> total
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('marketing-data-grid').innerHTML = marketingHtml;
+        document.getElementById('engineering-data-grid').innerHTML = engineeringHtml;
+      } catch (error) {
+        console.error('Error loading data details:', error);
+      }
+    }
+
+    function showCampaignDetails(id) {
+      alert(`Campaign details for: ${id}\n\nFull modal system coming soon!`);
+    }
+
     // Initialize on load
     init();
+    loadDataSummary();
+
+    // Refresh data summary periodically
+    setInterval(loadDataSummary, 5000);
   </script>
 </body>
 </html>
