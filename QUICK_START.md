@@ -2,12 +2,18 @@
 
 ## TL;DR - How It Works
 
-### Automatic (Nightly)
+### Engineering Team (Automatic Nightly)
 
 **10:30 PM** - Extracts learnings from Claude threads → Updates CLAUDE.md
 **11:00 PM** - Reads priority #1 → Implements → Creates PR
 
 No action required! Just create priority files and review PRs in the morning.
+
+### Marketing Team (Manual On-Demand)
+
+Run Jarvis orchestrator with marketing priority → Specialists execute → PR created
+
+**Agents**: Jarvis (Squad Lead), Vision (SEO), Shuri (Product), Fury (Customer Research), Loki (Content), Quill (Social), Wanda (Design), Pepper (Email), Friday (Dev), Wong (Notion)
 
 ### Manual (Testing/Development)
 
@@ -215,6 +221,60 @@ git commit -m "fix: run codegen"
 ~/HomeCare/be-agent-service/agents/verification-specialist.sh "manual-$(date +%s)"
 ```
 
+## Marketing Agents (Manual)
+
+### Run Marketing Campaign
+
+```bash
+# 1. Create marketing priority
+cat > ~/HomeCare/beta-appcaire/reports/marketing-blog-$(date +%Y-%m-%d).md <<'EOF'
+# Priority: SEO Blog Post
+
+**Description:** Create blog post about employee scheduling
+
+**Expected outcome:**
+- Keyword research (target keywords with volume/difficulty)
+- Product positioning analysis
+- Customer pain points identified
+- Blog post written (1500+ words, SEO-optimized)
+- Header image created
+- Published to website
+- Promoted on social media
+
+**Complexity:** Medium
+EOF
+
+# 2. Run Jarvis marketing orchestrator
+cd ~/HomeCare/be-agent-service
+./agents/marketing/jarvis-orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-blog-$(date +%Y-%m-%d).md \
+  ~/HomeCare/beta-appcaire/tasks/marketing-prd.json \
+  feature/blog-scheduling-$(date +%Y%m%d)
+
+# 3. Monitor in dashboard
+open http://localhost:3030
+
+# 4. Review PR when done
+gh pr list
+gh pr view [NUMBER]
+gh pr merge [NUMBER] --squash
+```
+
+### Run Individual Marketing Agent
+
+```bash
+# SEO analysis only
+cd ~/HomeCare/be-agent-service
+./agents/marketing/vision-seo-analyst.sh \
+  "session-seo-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-priority.md
+
+# View results
+cat .compound-state/session-seo-*/vision.json | jq '.deliverables'
+```
+
 ## Multi-Repo Usage (Future)
 
 Work on other repos besides beta-appcaire:
@@ -229,12 +289,19 @@ cd ~/HomeCare/be-agent-service
   ~/HomeCare/cowork/tasks/prd.json \
   feature/dashboard-update
 
-# Marketing repo
+# Marketing repo (engineering agents)
 ./scripts/orchestrator.sh \
   ~/HomeCare/marketing \
   ~/HomeCare/marketing/reports/priorities.md \
   ~/HomeCare/marketing/tasks/prd.json \
   feature/landing-redesign
+
+# Marketing repo (marketing agents)
+./agents/marketing/jarvis-orchestrator.sh \
+  ~/HomeCare/marketing \
+  ~/HomeCare/marketing/reports/content-priorities.md \
+  ~/HomeCare/marketing/tasks/marketing-prd.json \
+  feature/blog-campaign
 ```
 
 ## Architecture At-a-Glance
@@ -294,12 +361,34 @@ cd ~/HomeCare/beta-appcaire
 ../be-agent-service/scripts/auto-compound.sh 2>&1 | tee debug.log
 ```
 
+## Dashboard Command Center
+
+**All commands and documentation in one place!**
+
+```bash
+# Open dashboard
+open http://localhost:3030
+
+# Navigate to Commands & Docs page
+open http://localhost:3030/commands.html
+```
+
+**Features:**
+- **Product Owner Guide** - How to start projects with your Scrum agent team
+- **Engineering Commands** - All engineering agent commands with copy buttons
+- **Marketing Commands** - All marketing agent commands with copy buttons
+- **All Agents** - Complete list of engineering + marketing agents with roles
+- **Documentation** - Links to all docs (Architecture, Workflow, Agents, etc.)
+
 ## Quick Cheat Sheet
 
 | Task | Command |
 |------|---------|
+| **Dashboard** | `open http://localhost:3030` |
+| **Commands & Docs** | `open http://localhost:3030/commands.html` |
 | Create priority | `vim ~/HomeCare/beta-appcaire/reports/priorities-$(date +%Y-%m-%d).md` |
 | Test orchestrator | `./scripts/orchestrator.sh ~/HomeCare/beta-appcaire ...` |
+| Run marketing | `./agents/marketing/jarvis-orchestrator.sh ...` |
 | Run verification | `./agents/verification-specialist.sh "test-$(date +%s)"` |
 | Check session state | `cat .compound-state/session-*/orchestrator.json \| jq '.'` |
 | View logs | `tail logs/orchestrator-sessions/session-*/orchestrator.log` |

@@ -1,31 +1,62 @@
 # BE Agent Service
 
-Autonomous agent service for beta-appcaire development automation running on Mac Mini.
+Multi-agent autonomous service for software development and marketing automation running on Mac Mini.
 
 ## Overview
 
-This service automates nightly development tasks:
+This service provides **two specialized agent teams**:
+
+### Engineering Team (Automatic Nightly)
 - **10:30 PM**: Reviews Claude Code threads, updates CLAUDE.md files
 - **11:00 PM**: Auto-implements priority #1 from daily reports, creates PR
+- **Agents**: Backend, Frontend, Infrastructure, Verification
+
+### Marketing Team (Manual/On-Demand)
+- **Agents**: Jarvis (Squad Lead), Shuri (Product Analyst), Fury (Customer Research), Vision (SEO), Loki (Content Writer), Quill (Social Media), Wanda (Designer), Pepper (Email), Friday (Developer), Wong (Notion)
+- **Use cases**: Blog posts, SEO campaigns, social media, email marketing, market research
 
 ## Repository Structure
 
 ```
 be-agent-service/
+├── agents/
+│   ├── marketing/                   # Marketing agent team (10 Marvel characters)
+│   │   ├── jarvis-orchestrator.sh   # Squad lead
+│   │   ├── vision-seo-analyst.sh    # SEO specialist
+│   │   └── ... (8 more agents)
+│   ├── backend-specialist.sh        # Engineering: Database, GraphQL, resolvers
+│   ├── frontend-specialist.sh       # Engineering: UI, codegen, operations
+│   ├── infrastructure-specialist.sh # Engineering: Packages, configs, docs
+│   └── verification-specialist.sh   # Engineering: Quality gate
 ├── scripts/
-│   ├── daily-compound-review.sh    # 10:30 PM - Extract learnings
-│   ├── auto-compound.sh            # 11:00 PM - Auto-implement
-│   ├── loop.sh                     # Task execution loop
-│   ├── analyze-report.sh           # Parse priorities report
-│   ├── check-status.sh             # Status monitoring
-│   └── test-safety.sh              # Safety mechanism tests
+│   ├── orchestrator.sh              # Multi-repo coordinator
+│   ├── daily-compound-review.sh     # 10:30 PM - Extract learnings
+│   ├── auto-compound.sh             # 11:00 PM - Auto-implement
+│   ├── loop.sh                      # Task execution loop
+│   ├── analyze-report.sh            # Parse priorities report
+│   ├── check-status.sh              # Status monitoring
+│   └── test-safety.sh               # Safety mechanism tests
+├── lib/
+│   ├── state-manager.sh             # JSON state coordination
+│   ├── feedback-schema.json         # Agent communication schema
+│   └── parallel-executor.sh         # Parallel agent spawning
+├── dashboard/
+│   ├── server.js                    # Real-time dashboard (port 3030)
+│   ├── public/                      # Dashboard UI
+│   └── start.sh                     # Dashboard startup
 ├── launchd/
 │   ├── com.appcaire.auto-compound.plist
 │   ├── com.appcaire.caffeinate.plist
-│   └── com.appcaire.daily-compound-review.plist
-├── README.md                       # This file
-├── SAFETY.md                       # Safety mechanisms
-└── .gitignore
+│   ├── com.appcaire.daily-compound-review.plist
+│   └── com.appcaire.dashboard.plist
+├── .compound-state/                 # Agent session states (JSON)
+├── logs/                            # Agent execution logs
+├── README.md                        # This file
+├── ARCHITECTURE.md                  # Agile/Scrum methodology mapping
+├── AGENTS.md                        # Agent competencies and roles
+├── WORKFLOW.md                      # Tasks, sessions, learnings
+├── COMPARISON.md                    # File-based vs database systems
+└── SAFETY.md                        # Safety mechanisms
 ```
 
 ## Installation
@@ -93,9 +124,29 @@ vim ~/Library/LaunchAgents/com.appcaire.*.plist
 ### 5. Error Handling
 ✅ Stops on errors, logs failures
 
+## Dashboard
+
+**Real-time monitoring at http://localhost:3030**
+
+```bash
+# Start dashboard
+cd ~/HomeCare/be-agent-service
+./dashboard/start.sh
+
+# Auto-starts on boot via LaunchAgent
+```
+
+Features:
+- Live session monitoring (3s refresh)
+- Agent status tracking
+- Session logs viewer
+- System statistics
+- Command center (all commands in one place)
+- Documentation browser
+
 ## Usage
 
-### Manual Execution
+### Engineering Agents (Automatic)
 
 ```bash
 # Run daily review
@@ -106,11 +157,49 @@ cd ~/HomeCare/beta-appcaire
 cd ~/HomeCare/beta-appcaire
 ../be-agent-service/scripts/auto-compound.sh
 
+# Run orchestrator manually
+cd ~/HomeCare/be-agent-service
+./scripts/orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-07.md \
+  ~/HomeCare/beta-appcaire/tasks/prd.json \
+  feature/test-branch
+
 # Check status
 ../be-agent-service/scripts/check-status.sh
 
 # Test safety mechanisms
 ../be-agent-service/scripts/test-safety.sh
+```
+
+### Marketing Agents (Manual)
+
+```bash
+# Create marketing priority
+cat > ~/HomeCare/beta-appcaire/reports/marketing-blog.md <<EOF
+# Priority: SEO Blog Post
+**Description:** Create SEO-optimized blog about employee scheduling
+**Expected outcome:**
+- Keyword research
+- Blog post written (1500+ words)
+- Header image created
+- Published to website
+- Promoted on social media
+EOF
+
+# Run Jarvis marketing orchestrator
+cd ~/HomeCare/be-agent-service
+./agents/marketing/jarvis-orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-blog.md \
+  ~/HomeCare/beta-appcaire/tasks/marketing-prd.json \
+  feature/blog-post-scheduling
+
+# Run individual marketing agent
+./agents/marketing/vision-seo-analyst.sh \
+  "session-test-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-blog.md
 ```
 
 ### Scheduled Execution
