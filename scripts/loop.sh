@@ -48,8 +48,14 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   # Create a recovery snapshot before executing (in case Claude forgets to commit)
   git stash push -u -m "pre-task-$NEXT_TASK_ID-snapshot-$(date +%s)" 2>/dev/null || true
 
+  # Build context hint for agent (when REPORT_PATH/PRD_FILE set, e.g. mobile sprints)
+  CONTEXT_HINT=""
+  if [ -n "${REPORT_PATH:-}" ] && [ -f "${REPORT_PATH:-}" ]; then
+    CONTEXT_HINT="For context, read $REPORT_PATH (required reading, architecture) and ${PRD_FILE:-$TASKS_FILE}. "
+  fi
+
   # Execute task with Claude - emphasize commit requirement
-  claude -p "Execute task #$NEXT_TASK_ID from $TASKS_FILE: '$NEXT_TASK'
+  claude -p "${CONTEXT_HINT}Execute task #$NEXT_TASK_ID from $TASKS_FILE: '$NEXT_TASK'
 
 IMPORTANT: When you complete this task, you MUST:
 1. Update $TASKS_FILE to mark this task as 'completed'

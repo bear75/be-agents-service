@@ -36,6 +36,10 @@ Every night:
 
 See the main setup guide: `../../COMPOUND_SETUP_GUIDE.md`
 
+## Mobile Platform Context
+
+For mobile platform sprints (`reports/mobile-platform/*.md`), the scripts pass the report path to the agent so it reads required docs (MOBILE_PLATFORM_PRD.md, plan file). Ensure scripts are in `beta-appcaire/scripts/compound/` (or symlinked) so the plist can run them. See `beta-appcaire/reports/mobile-platform/README.md`.
+
 ## File Dependencies
 
 The scripts read/write these files:
