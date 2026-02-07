@@ -533,9 +533,9 @@
 
           <!-- Data Summary (Always Visible) -->
           <div id="data-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-            <div class="stat-card" style="background: rgba(72, 187, 120, 0.1); border: 2px solid rgba(72, 187, 120, 0.2); padding: 15px; border-radius: 10px;">
-              <div class="stat-value" id="active-agents-count" style="color: #48bb78; font-size: 28px; font-weight: 800;">0</div>
-              <div class="stat-label" style="color: var(--text-secondary); font-size: 13px; font-weight: 600;">Active Agents</div>
+            <div class="stat-card" id="session-status-card" style="background: rgba(102, 126, 234, 0.1); border: 2px solid rgba(102, 126, 234, 0.2); padding: 15px; border-radius: 10px;">
+              <div class="stat-value" id="session-status-value" style="color: #667eea; font-size: 18px; font-weight: 800;">No Session</div>
+              <div class="stat-label" style="color: var(--text-secondary); font-size: 13px; font-weight: 600;">Session Status</div>
             </div>
             <div class="stat-card" style="background: rgba(102, 126, 234, 0.1); border: 2px solid rgba(102, 126, 234, 0.2); padding: 15px; border-radius: 10px;">
               <div class="stat-value" id="total-tasks-count" style="color: #667eea; font-size: 28px; font-weight: 800;">0</div>
@@ -1137,13 +1137,37 @@
     // Load data summary
     async function loadDataSummary() {
       try {
-        // Count active agents from current session
-        let activeAgents = 0;
+        // Get session status
+        let sessionStatus = 'No Session';
+        let sessionColor = '#667eea';
+        let sessionBg = 'rgba(102, 126, 234, 0.1)';
+        let sessionBorder = 'rgba(102, 126, 234, 0.2)';
         let totalTasks = 0;
+
         if (currentSessionId) {
           const response = await fetch(`/api/sessions/${currentSessionId}`);
           const session = await response.json();
-          activeAgents = Object.values(session.agents || {}).filter(a => a.status === 'in_progress').length;
+
+          const activeAgents = Object.values(session.agents || {}).filter(a => a.status === 'in_progress').length;
+          const orchestratorStatus = session.agents?.orchestrator?.status;
+
+          if (activeAgents > 0) {
+            sessionStatus = `Running (${activeAgents} agents)`;
+            sessionColor = '#48bb78';
+            sessionBg = 'rgba(72, 187, 120, 0.1)';
+            sessionBorder = 'rgba(72, 187, 120, 0.2)';
+          } else if (orchestratorStatus === 'completed') {
+            sessionStatus = 'Completed';
+            sessionColor = '#667eea';
+            sessionBg = 'rgba(102, 126, 234, 0.1)';
+            sessionBorder = 'rgba(102, 126, 234, 0.2)';
+          } else {
+            sessionStatus = 'Idle';
+            sessionColor = '#94a3b8';
+            sessionBg = 'rgba(148, 163, 184, 0.1)';
+            sessionBorder = 'rgba(148, 163, 184, 0.2)';
+          }
+
           totalTasks = Object.values(session.agents || {}).reduce((sum, a) =>
             sum + (a.completedTasks?.length || 0) + (a.currentTask ? 1 : 0), 0);
         }
@@ -1154,7 +1178,15 @@
           fetch('/api/data/leads').then(r => r.json()).catch(() => [])
         ]);
 
-        document.getElementById('active-agents-count').textContent = activeAgents;
+        // Update session status
+        const statusCard = document.getElementById('session-status-card');
+        const statusValue = document.getElementById('session-status-value');
+        statusCard.style.background = sessionBg;
+        statusCard.style.borderColor = sessionBorder;
+        statusValue.style.color = sessionColor;
+        statusValue.textContent = sessionStatus;
+
+        // Update counts
         document.getElementById('total-tasks-count').textContent = totalTasks;
         document.getElementById('campaigns-count').textContent = campaigns.length;
         document.getElementById('leads-count').textContent = leads.length;
@@ -1213,10 +1245,10 @@
             `).join('')}
           </div>
           <div style="background: rgba(248, 250, 252, 0.8); padding: 12px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.1); margin-top: 10px;">
-            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Agent Activity</div>
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Session Summary</div>
             <div style="padding: 8px; background: white; border-radius: 6px;">
               <div style="font-size: 13px; color: var(--text-secondary);">
-                Active: <span style="color: #48bb78; font-weight: 700;">${document.getElementById('active-agents-count').textContent}</span> agents<br>
+                Status: <span style="color: #667eea; font-weight: 700;">${document.getElementById('session-status-value').textContent}</span><br>
                 Tasks: <span style="color: #667eea; font-weight: 700;">${document.getElementById('total-tasks-count').textContent}</span> total
               </div>
             </div>
