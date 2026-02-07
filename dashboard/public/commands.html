@@ -871,6 +871,19 @@ rm -rf ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*</div>
     </div>
   </div>
 
+  <!-- Document Viewer Modal -->
+  <div id="doc-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 1000; padding: 20px; align-items: center; justify-content: center;">
+    <div style="background: var(--glass-white); backdrop-filter: blur(var(--glass-blur)) saturate(180%); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%); border: 2px solid var(--glass-border); border-radius: var(--border-radius-lg); max-width: 1000px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-2xl);">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 25px 30px; border-bottom: 2px solid rgba(102, 126, 234, 0.1);">
+        <h2 id="doc-title" style="margin: 0; font-size: 1.75rem; color: var(--text-primary); font-weight: 700;">Document</h2>
+        <button onclick="closeDocModal()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-muted); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; transition: all 0.2s;">&times;</button>
+      </div>
+      <div id="doc-content" style="padding: 30px; color: var(--text-primary); line-height: 1.8; font-size: 15px;">
+        Loading...
+      </div>
+    </div>
+  </div>
+
   <script>
     function showTab(tabId) {
       // Hide all tabs
@@ -904,16 +917,54 @@ rm -rf ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*</div>
       });
     }
 
-    function openDoc(docPath) {
-      // In a real implementation, this would fetch and display the doc
-      // For now, just alert the user
+    async function openDoc(docPath) {
       const baseUrl = '/Users/bjornevers_MacPro/HomeCare/be-agent-service/';
       const fullPath = baseUrl + docPath;
 
-      alert('Opening: ' + fullPath + '\n\nIn terminal:\ncat ' + fullPath);
+      // Show modal
+      const modal = document.getElementById('doc-modal');
+      const title = document.getElementById('doc-title');
+      const content = document.getElementById('doc-content');
 
-      // Or you could open in a modal, or create an API endpoint to serve markdown
+      modal.style.display = 'flex';
+      title.textContent = docPath.split('/').pop();
+      content.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Loading...</div>';
+
+      try {
+        const response = await fetch(`/api/file?path=${encodeURIComponent(fullPath)}`);
+        if (!response.ok) {
+          throw new Error('Failed to load document');
+        }
+
+        const text = await response.text();
+        // Simple markdown-like rendering (convert ## to h2, etc.)
+        const html = text
+          .replace(/```([\s\S]*?)```/g, '<pre style="background: rgba(248, 250, 252, 0.95); padding: 15px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.1); overflow-x: auto; margin: 15px 0;"><code style="color: #2563eb; font-family: Monaco, monospace; font-size: 13px;">$1</code></pre>')
+          .replace(/### (.*)/g, '<h3 style="color: var(--text-primary); margin-top: 25px; margin-bottom: 10px; font-weight: 700; font-size: 1.3rem;">$1</h3>')
+          .replace(/## (.*)/g, '<h2 style="color: var(--text-primary); margin-top: 30px; margin-bottom: 12px; font-weight: 700; font-size: 1.6rem;">$1</h2>')
+          .replace(/# (.*)/g, '<h1 style="color: var(--text-primary); margin-top: 35px; margin-bottom: 15px; font-weight: 800; font-size: 2rem;">$1</h1>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight: 700; color: var(--text-primary);">$1</strong>')
+          .replace(/`(.*?)`/g, '<code style="background: rgba(102, 126, 234, 0.1); padding: 2px 6px; border-radius: 4px; font-family: Monaco, monospace; font-size: 0.9em; color: #667eea;">$1</code>')
+          .replace(/\n\n/g, '<p style="margin: 15px 0;"></p>')
+          .replace(/^- (.*)/gm, '<li style="margin-left: 20px; margin-bottom: 8px; color: var(--text-secondary);">$1</li>');
+
+        content.innerHTML = `<div style="color: var(--text-primary); line-height: 1.8; font-size: 15px;">${html}</div>`;
+      } catch (error) {
+        content.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--danger);">Error loading document: ${error.message}</div>`;
+      }
     }
+
+    function closeDocModal() {
+      document.getElementById('doc-modal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('doc-modal');
+      if (event.target === modal) {
+        closeDocModal();
+      }
+    });
   </script>
 </body>
 </html>
