@@ -1,0 +1,437 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Feedback Schema",
+  "description": "Standardized feedback structure for multi-agent coordination",
+  "type": "object",
+  "required": ["agentName", "status", "timestamp"],
+  "properties": {
+    "agentName": {
+      "type": "string",
+      "description": "Name of the agent providing feedback",
+      "enum": [
+        "orchestrator",
+        "backend",
+        "frontend",
+        "infrastructure",
+        "verification"
+      ],
+      "examples": ["backend", "verification"]
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the agent's work",
+      "enum": ["pending", "in_progress", "completed", "blocked", "failed"],
+      "examples": ["completed", "blocked"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of feedback generation",
+      "examples": ["2026-02-07T08:45:00Z"]
+    },
+    "completedTasks": {
+      "type": "array",
+      "description": "List of tasks successfully completed by this agent",
+      "items": {
+        "type": "object",
+        "required": ["id", "description"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique task identifier",
+            "examples": ["backend-1", "schema-update"]
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable task description",
+            "examples": ["Updated Prisma schema with certifications table"]
+          },
+          "duration": {
+            "type": "number",
+            "description": "Task duration in seconds",
+            "examples": [45, 120]
+          },
+          "artifacts": {
+            "type": "array",
+            "description": "Files created or modified by this task",
+            "items": {
+              "type": "string"
+            },
+            "examples": [
+              [
+                "apps/dashboard-server/src/schema.prisma",
+                "apps/dashboard-server/prisma/migrations/..."
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "description": "Key artifacts produced by the agent",
+      "properties": {
+        "files": {
+          "type": "array",
+          "description": "Files created or modified",
+          "items": {
+            "type": "object",
+            "required": ["path", "action"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Relative path from repo root",
+                "examples": ["apps/dashboard-server/src/schema.prisma"]
+              },
+              "action": {
+                "type": "string",
+                "enum": ["created", "modified", "deleted"],
+                "examples": ["modified"]
+              },
+              "linesChanged": {
+                "type": "number",
+                "description": "Approximate lines added/removed",
+                "examples": [25, 150]
+              }
+            }
+          }
+        },
+        "commits": {
+          "type": "array",
+          "description": "Git commits created by the agent",
+          "items": {
+            "type": "object",
+            "required": ["hash", "message"],
+            "properties": {
+              "hash": {
+                "type": "string",
+                "description": "Short commit hash",
+                "examples": ["abc123f"]
+              },
+              "message": {
+                "type": "string",
+                "description": "Commit message",
+                "examples": ["feat(db): add certifications table"]
+              }
+            }
+          }
+        },
+        "exports": {
+          "type": "object",
+          "description": "Data exported for other agents",
+          "properties": {
+            "schemaUpdated": {
+              "type": "boolean",
+              "description": "Whether GraphQL schema was updated (triggers frontend codegen)"
+            },
+            "migrationsCreated": {
+              "type": "array",
+              "description": "List of migration names created",
+              "items": {
+                "type": "string"
+              }
+            },
+            "resolversAdded": {
+              "type": "array",
+              "description": "List of resolver names added",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "concerns": {
+      "type": "array",
+      "description": "Non-blocking issues or warnings discovered",
+      "items": {
+        "type": "object",
+        "required": ["severity", "message"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warning", "error"],
+            "description": "Severity level of the concern",
+            "examples": ["warning"]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable concern description",
+            "examples": ["Found 3 unused GraphQL operations"]
+          },
+          "recommendation": {
+            "type": "string",
+            "description": "Suggested action to address concern",
+            "examples": ["Consider removing unused operations in cleanup PR"]
+          },
+          "affectedFiles": {
+            "type": "array",
+            "description": "Files related to this concern",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "description": "Critical issues preventing progress",
+      "items": {
+        "type": "object",
+        "required": ["type", "message"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "dependency",
+              "error",
+              "missing_context",
+              "architecture",
+              "security"
+            ],
+            "description": "Type of blocker",
+            "examples": ["dependency", "error"]
+          },
+          "message": {
+            "type": "string",
+            "description": "Detailed blocker description",
+            "examples": [
+              "Backend schema changes not committed, frontend cannot proceed"
+            ]
+          },
+          "requiresAgent": {
+            "type": "string",
+            "description": "Which agent must resolve this blocker",
+            "examples": ["backend", "orchestrator"]
+          },
+          "requiresHuman": {
+            "type": "boolean",
+            "description": "Whether human intervention is required",
+            "default": false
+          },
+          "errorDetails": {
+            "type": "object",
+            "description": "Additional error information if applicable",
+            "properties": {
+              "command": {
+                "type": "string",
+                "description": "Command that failed"
+              },
+              "exitCode": {
+                "type": "number",
+                "description": "Exit code of failed command"
+              },
+              "output": {
+                "type": "string",
+                "description": "Error output"
+              }
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Performance and progress metrics",
+      "properties": {
+        "startTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When agent started work"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When agent finished work"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Total duration in seconds"
+        },
+        "tasksCompleted": {
+          "type": "number",
+          "description": "Number of tasks completed"
+        },
+        "tasksFailed": {
+          "type": "number",
+          "description": "Number of tasks that failed"
+        }
+      }
+    },
+    "nextSteps": {
+      "type": "array",
+      "description": "Recommended next actions for orchestrator or other agents",
+      "items": {
+        "type": "object",
+        "required": ["agent", "action"],
+        "properties": {
+          "agent": {
+            "type": "string",
+            "description": "Which agent should perform this action",
+            "examples": ["frontend", "verification", "orchestrator"]
+          },
+          "action": {
+            "type": "string",
+            "description": "Description of recommended action",
+            "examples": [
+              "Run codegen to generate hooks from updated schema",
+              "Verify build passes before creating PR"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["required", "recommended", "optional"],
+            "default": "recommended"
+          },
+          "dependencies": {
+            "type": "array",
+            "description": "Other actions that must complete first",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "replanRequired": {
+      "type": "boolean",
+      "description": "Whether agent discovered scope changes requiring orchestrator to replan",
+      "default": false
+    },
+    "replanReason": {
+      "type": "string",
+      "description": "Explanation of why replanning is needed",
+      "examples": [
+        "Discovered additional database tables needed for foreign keys"
+      ]
+    }
+  },
+  "examples": [
+    {
+      "agentName": "backend",
+      "status": "completed",
+      "timestamp": "2026-02-07T08:45:00Z",
+      "completedTasks": [
+        {
+          "id": "backend-1",
+          "description": "Updated Prisma schema with employee certifications table",
+          "duration": 45,
+          "artifacts": ["apps/dashboard-server/src/schema.prisma"]
+        },
+        {
+          "id": "backend-2",
+          "description": "Generated and applied database migration",
+          "duration": 30,
+          "artifacts": [
+            "apps/dashboard-server/prisma/migrations/20260207_add_certifications/migration.sql"
+          ]
+        },
+        {
+          "id": "backend-3",
+          "description": "Added GraphQL types and queries for certifications",
+          "duration": 60,
+          "artifacts": ["apps/dashboard-server/src/schema.graphql"]
+        }
+      ],
+      "artifacts": {
+        "files": [
+          {
+            "path": "apps/dashboard-server/src/schema.prisma",
+            "action": "modified",
+            "linesChanged": 15
+          },
+          {
+            "path": "apps/dashboard-server/src/schema.graphql",
+            "action": "modified",
+            "linesChanged": 25
+          }
+        ],
+        "commits": [
+          {
+            "hash": "abc123f",
+            "message": "feat(db): add employee certifications schema"
+          }
+        ],
+        "exports": {
+          "schemaUpdated": true,
+          "migrationsCreated": ["20260207_add_certifications"],
+          "resolversAdded": ["getCertifications", "createCertification"]
+        }
+      },
+      "concerns": [],
+      "blockers": [],
+      "metrics": {
+        "startTime": "2026-02-07T08:30:00Z",
+        "endTime": "2026-02-07T08:45:00Z",
+        "duration": 900,
+        "tasksCompleted": 3,
+        "tasksFailed": 0
+      },
+      "nextSteps": [
+        {
+          "agent": "frontend",
+          "action": "Run codegen to generate hooks from updated schema",
+          "priority": "required"
+        },
+        {
+          "agent": "verification",
+          "action": "Verify type-check passes after schema changes",
+          "priority": "required"
+        }
+      ],
+      "replanRequired": false
+    },
+    {
+      "agentName": "verification",
+      "status": "blocked",
+      "timestamp": "2026-02-07T09:00:00Z",
+      "completedTasks": [
+        {
+          "id": "verify-1",
+          "description": "Ran type-check across all workspaces",
+          "duration": 120
+        }
+      ],
+      "artifacts": {
+        "files": []
+      },
+      "concerns": [
+        {
+          "severity": "warning",
+          "message": "Found 5 unused imports in dashboard app",
+          "recommendation": "Clean up in separate refactoring PR",
+          "affectedFiles": ["apps/dashboard/src/pages/employees.tsx"]
+        }
+      ],
+      "blockers": [
+        {
+          "type": "error",
+          "message": "Type-check failed with 3 errors in frontend",
+          "requiresAgent": "frontend",
+          "requiresHuman": false,
+          "errorDetails": {
+            "command": "turbo run type-check",
+            "exitCode": 1,
+            "output": "apps/dashboard/src/pages/certifications.tsx:15:3 - error TS2322: Type 'string' is not assignable to type 'number'"
+          }
+        }
+      ],
+      "metrics": {
+        "startTime": "2026-02-07T08:58:00Z",
+        "duration": 120,
+        "tasksCompleted": 1,
+        "tasksFailed": 1
+      },
+      "nextSteps": [
+        {
+          "agent": "frontend",
+          "action": "Fix type errors in certifications page",
+          "priority": "required"
+        }
+      ],
+      "replanRequired": false
+    }
+  ]
+}

@@ -18,3 +18,8 @@ logs/
 # Temporary files
 tmp/
 *.tmp
+
+# Multi-agent architecture runtime directories
+.compound-state/
+logs/orchestrator-sessions/
+logs/verification-sessions/
