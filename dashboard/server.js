@@ -226,6 +226,59 @@ function handleRequest(req, res) {
     return;
   }
 
+  // Marketing Data API endpoints
+  if (pathname === '/api/data/campaigns') {
+    const dataFile = path.join(STATE_DIR, 'data', 'campaigns.json');
+    if (fs.existsSync(dataFile)) {
+      const data = fs.readFileSync(dataFile, 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data);
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify([]));
+    }
+    return;
+  }
+
+  if (pathname === '/api/data/leads') {
+    const dataFile = path.join(STATE_DIR, 'data', 'leads.json');
+    if (fs.existsSync(dataFile)) {
+      const data = fs.readFileSync(dataFile, 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data);
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify([]));
+    }
+    return;
+  }
+
+  if (pathname === '/api/data/content') {
+    const dataFile = path.join(STATE_DIR, 'data', 'content.json');
+    if (fs.existsSync(dataFile)) {
+      const data = fs.readFileSync(dataFile, 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data);
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify([]));
+    }
+    return;
+  }
+
+  if (pathname === '/api/data/social') {
+    const dataFile = path.join(STATE_DIR, 'data', 'social-posts.json');
+    if (fs.existsSync(dataFile)) {
+      const data = fs.readFileSync(dataFile, 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data);
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify([]));
+    }
+    return;
+  }
+
   // Read file from disk (for documentation viewer)
   if (pathname === '/api/file') {
     const filePath = parsedUrl.query.path;
@@ -264,7 +317,7 @@ function handleRequest(req, res) {
   }
 
   // Serve static files
-  let filePath = path.join(__dirname, 'public', pathname === '/' ? 'index.html' : pathname);
+  let filePath = path.join(__dirname, 'public', pathname === '/' ? 'control-tower.html' : pathname);
 
   // Security: prevent directory traversal
   if (!filePath.startsWith(path.join(__dirname, 'public'))) {
@@ -305,11 +358,15 @@ server.listen(PORT, () => {
   console.log(`API available at http://localhost:${PORT}/api/`);
   console.log('');
   console.log('Endpoints:');
-  console.log('  GET /api/sessions       - List all sessions');
-  console.log('  GET /api/sessions/:id   - Get session details');
-  console.log('  GET /api/logs/:id       - Get session logs');
-  console.log('  GET /api/stats          - Get system statistics');
-  console.log('  GET /api/file?path=...  - Read documentation file');
+  console.log('  GET /api/sessions           - List all sessions');
+  console.log('  GET /api/sessions/:id       - Get session details');
+  console.log('  GET /api/logs/:id           - Get session logs');
+  console.log('  GET /api/stats              - Get system statistics');
+  console.log('  GET /api/data/campaigns     - Get marketing campaigns');
+  console.log('  GET /api/data/leads         - Get marketing leads');
+  console.log('  GET /api/data/content       - Get content pieces');
+  console.log('  GET /api/data/social        - Get social posts');
+  console.log('  GET /api/file?path=...      - Read documentation file');
   console.log('========================================');
 });
 
