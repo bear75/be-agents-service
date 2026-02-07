@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Agent Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>🤖 Multi-Agent Orchestrator</h1>
+      <p class="subtitle">Real-time monitoring for autonomous agent workflows</p>
+      <div class="last-update">Last updated: <span id="last-update">Never</span></div>
+    </header>
+
+    <!-- System Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="total-sessions">0</div>
+        <div class="stat-label">Total Sessions</div>
+      </div>
+      <div class="stat-card stat-running">
+        <div class="stat-value" id="running-sessions">0</div>
+        <div class="stat-label">Running</div>
+      </div>
+      <div class="stat-card stat-completed">
+        <div class="stat-value" id="completed-sessions">0</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-card stat-failed">
+        <div class="stat-value" id="failed-sessions">0</div>
+        <div class="stat-label">Failed</div>
+      </div>
+      <div class="stat-card stat-blocked">
+        <div class="stat-value" id="blocked-sessions">0</div>
+        <div class="stat-label">Blocked</div>
+      </div>
+    </div>
+
+    <!-- Sessions List -->
+    <div class="section">
+      <h2>Recent Sessions</h2>
+      <div id="sessions-list" class="sessions-list">
+        <div class="loading">Loading sessions...</div>
+      </div>
+    </div>
+
+    <!-- Session Details Modal -->
+    <div id="session-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-title">Session Details</h2>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+          <div class="loading">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
