@@ -422,14 +422,38 @@
           <h4>Start New Sprint</h4>
           <div class="form-group">
             <label>Team</label>
-            <select id="team-select">
+            <select id="team-select" onchange="updateAgentsList()">
               <option value="engineering">Engineering</option>
               <option value="marketing">Marketing</option>
             </select>
           </div>
           <div class="form-group">
-            <label>Priority File</label>
+            <label>Model</label>
+            <select id="model-select">
+              <option value="sonnet">Sonnet 4.5 (Recommended)</option>
+              <option value="opus">Opus 4.5 (Most Capable)</option>
+              <option value="haiku">Haiku 3.5 (Fast & Cost-Effective)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Input Method</label>
+            <select id="input-method" onchange="toggleInputMethod()">
+              <option value="file">File Path</option>
+              <option value="upload">Upload File</option>
+              <option value="chat">Chat/Description</option>
+            </select>
+          </div>
+          <div class="form-group" id="file-path-input">
+            <label>Priority File Path</label>
             <input type="text" id="priority-file" placeholder="reports/priorities-2026-02-07.md">
+          </div>
+          <div class="form-group" id="file-upload-input" style="display: none;">
+            <label>Upload Priority/PRD</label>
+            <input type="file" id="priority-upload" accept=".md,.txt,.pdf">
+          </div>
+          <div class="form-group" id="chat-input" style="display: none;">
+            <label>Describe Your Priority</label>
+            <textarea id="priority-description" placeholder="E.g., Create a blog post about our new employee scheduling feature..." rows="4" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-family: inherit;"></textarea>
           </div>
           <div class="form-group">
             <label>Branch Name</label>
@@ -437,6 +461,9 @@
           </div>
           <button class="control-btn start" onclick="startCustomJob()" style="width: 100%; margin-top: 10px;">
             🚀 Start Sprint
+          </button>
+          <button class="control-btn status" onclick="showDocumentsPanel()" style="width: 100%; margin-top: 10px;">
+            📚 View Team Docs
           </button>
         </div>
 
@@ -541,6 +568,7 @@
       loadSessions();
       loadAgents();
       refreshBoard();
+      updateAgentsList(); // Initialize agents list with default team
 
       // Auto-refresh
       setInterval(() => {
@@ -755,20 +783,254 @@
 
     async function startCustomJob() {
       const team = document.getElementById('team-select').value;
-      const priorityFile = document.getElementById('priority-file').value;
+      const model = document.getElementById('model-select').value;
+      const inputMethod = document.getElementById('input-method').value;
       const branchName = document.getElementById('branch-name').value;
 
-      if (!priorityFile || !branchName) {
-        alert('Please fill in all fields');
+      let priorityInput = '';
+      if (inputMethod === 'file') {
+        priorityInput = document.getElementById('priority-file').value;
+        if (!priorityInput) {
+          alert('Please enter a file path');
+          return;
+        }
+      } else if (inputMethod === 'upload') {
+        const fileInput = document.getElementById('priority-upload');
+        if (!fileInput.files.length) {
+          alert('Please select a file to upload');
+          return;
+        }
+        priorityInput = fileInput.files[0].name;
+        // In real implementation, would upload file first
+        alert('File upload not yet implemented. Will upload: ' + priorityInput);
+        return;
+      } else if (inputMethod === 'chat') {
+        priorityInput = document.getElementById('priority-description').value;
+        if (!priorityInput) {
+          alert('Please describe your priority');
+          return;
+        }
+        // In real implementation, would create priority file from description
+        alert('Chat input not yet implemented. Team lead would process:\n\n' + priorityInput);
+        return;
+      }
+
+      if (!branchName) {
+        alert('Please enter a branch name');
         return;
       }
 
       const command = team === 'engineering'
-        ? `./scripts/orchestrator.sh ~/HomeCare/beta-appcaire ${priorityFile} tasks/prd.json ${branchName}`
-        : `./agents/marketing/jarvis-orchestrator.sh ~/HomeCare/beta-appcaire ${priorityFile} tasks/marketing-prd.json ${branchName}`;
+        ? `CLAUDE_MODEL=${model} ./scripts/orchestrator.sh ~/HomeCare/beta-appcaire ${priorityInput} tasks/prd.json ${branchName}`
+        : `CLAUDE_MODEL=${model} ./agents/marketing/jarvis-orchestrator.sh ~/HomeCare/beta-appcaire ${priorityInput} tasks/marketing-prd.json ${branchName}`;
 
-      alert(`Would execute:\n\n${command}\n\nImplement API endpoint to actually run this.`);
+      alert(`Would execute:\n\n${command}\n\nModel: ${model}\nTeam: ${team}\n\nImplement API endpoint to actually run this.`);
     }
+
+    function toggleInputMethod() {
+      const method = document.getElementById('input-method').value;
+
+      document.getElementById('file-path-input').style.display = method === 'file' ? 'block' : 'none';
+      document.getElementById('file-upload-input').style.display = method === 'upload' ? 'block' : 'none';
+      document.getElementById('chat-input').style.display = method === 'chat' ? 'block' : 'none';
+    }
+
+    // Agent configurations
+    const AGENT_CONFIGS = {
+      engineering: [
+        { name: 'Orchestrator', status: 'idle', emoji: '🎯' },
+        { name: 'Backend', status: 'idle', emoji: '⚙️' },
+        { name: 'Frontend', status: 'idle', emoji: '🎨' },
+        { name: 'Infrastructure', status: 'idle', emoji: '🏗️' },
+        { name: 'Verification', status: 'idle', emoji: '✅' },
+        { name: 'Senior Reviewer', status: 'idle', emoji: '🔍' }
+      ],
+      marketing: [
+        { name: 'Jarvis (Lead)', status: 'idle', emoji: '🤵' },
+        { name: 'Shuri (Product)', status: 'idle', emoji: '👩‍🔬' },
+        { name: 'Fury (Research)', status: 'idle', emoji: '👁️' },
+        { name: 'Vision (SEO)', status: 'idle', emoji: '💎' },
+        { name: 'Loki (Content)', status: 'idle', emoji: '✍️' },
+        { name: 'Quill (Social)', status: 'idle', emoji: '🎸' },
+        { name: 'Wanda (Design)', status: 'idle', emoji: '✨' },
+        { name: 'Pepper (Email)', status: 'idle', emoji: '💼' },
+        { name: 'Friday (Dev)', status: 'idle', emoji: '💻' },
+        { name: 'Wong (Notion)', status: 'idle', emoji: '📚' }
+      ]
+    };
+
+    function updateAgentsList() {
+      const team = document.getElementById('team-select').value;
+      const agentsList = document.getElementById('agents-list');
+      const agents = AGENT_CONFIGS[team];
+
+      agentsList.innerHTML = agents.map(agent => `
+        <div class="agent-item idle">
+          <div class="agent-name">${agent.emoji} ${agent.name}</div>
+          <div class="agent-status">${agent.status}</div>
+        </div>
+      `).join('');
+    }
+
+    // Document viewer modal
+    function viewDocument(docPath, title) {
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.display = 'flex';
+
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 1000px; width: 90%;">
+          <div class="modal-header">
+            <h2>${title}</h2>
+            <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="loading">Loading document...</div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      // Fetch document content from actual file system
+      fetch(`/api/file?path=${encodeURIComponent(docPath)}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Document not found');
+          return res.text();
+        })
+        .then(content => {
+          const body = modal.querySelector('.modal-body');
+          // Render markdown as formatted text
+          body.innerHTML = `<pre style="white-space: pre-wrap; font-family: 'Inter', sans-serif; line-height: 1.8; padding: 20px; background: rgba(0,0,0,0.05); border-radius: 8px; max-height: 70vh; overflow-y: auto;">${escapeHtml(content)}</pre>`;
+        })
+        .catch(error => {
+          const body = modal.querySelector('.modal-body');
+          body.innerHTML = `
+            <div style="color: var(--danger); padding: 20px;">
+              <h3>Error Loading Document</h3>
+              <p>${error.message}</p>
+              <p style="font-size: 0.9em; color: #666;">Path: ${docPath}</p>
+            </div>
+          `;
+        });
+
+      // Close on background click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Quick access buttons for key documents
+    function showDocumentsPanel() {
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.display = 'flex';
+
+      const team = document.getElementById('team-select').value;
+      const docs = team === 'engineering' ? ENGINEERING_DOCS : MARKETING_DOCS;
+
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 800px;">
+          <div class="modal-header">
+            <h2>📚 ${team === 'engineering' ? 'Engineering' : 'Marketing'} Team Documentation</h2>
+            <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div style="display: grid; gap: 15px;">
+              ${docs.map(doc => `
+                <div class="doc-card" onclick="this.closest('.modal').remove(); viewDocument('${doc.path}', '${doc.title}')" style="padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">${doc.icon}</span>
+                    <div>
+                      <h3 style="margin: 0; font-size: 16px;">${doc.title}</h3>
+                      <p style="margin: 5px 0 0 0; font-size: 14px; color: rgba(255,255,255,0.7);">${doc.description}</p>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    }
+
+    const ENGINEERING_DOCS = [
+      {
+        icon: '🎯',
+        title: 'Agent Competencies',
+        description: 'Roles and responsibilities for each engineering agent',
+        path: '/Users/bjornevers_MacPro/HomeCare/be-agent-service/AGENTS.md'
+      },
+      {
+        icon: '📋',
+        title: 'Orchestrator Workflow',
+        description: 'How the Scrum Master coordinates the team',
+        path: '/Users/bjornevers_MacPro/HomeCare/be-agent-service/ARCHITECTURE.md'
+      },
+      {
+        icon: '⚙️',
+        title: 'Backend Specialist Guide',
+        description: 'Database, GraphQL, and resolver patterns',
+        path: '/Users/bjornevers_MacPro/HomeCare/beta-appcaire/CLAUDE.md'
+      },
+      {
+        icon: '🎨',
+        title: 'Frontend Specialist Guide',
+        description: 'React, Apollo Client, and UI patterns',
+        path: '/Users/bjornevers_MacPro/HomeCare/beta-appcaire/docs/FRONTEND_GRAPHQL_GUIDE.md'
+      },
+      {
+        icon: '🔍',
+        title: 'Senior Code Reviewer Rules',
+        description: 'Quality gates and architecture compliance',
+        path: '/Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/senior-code-reviewer.sh'
+      },
+      {
+        icon: '🗺️',
+        title: 'Roadmap (Options 1-3)',
+        description: 'Evolution from basic to multi-evaluator system',
+        path: '/Users/bjornevers_MacPro/HomeCare/be-agent-service/ROADMAP.md'
+      }
+    ];
+
+    const MARKETING_DOCS = [
+      {
+        icon: '🤵',
+        title: 'Marketing Agent Registry',
+        description: 'All 10 Marvel character agents with personalities',
+        path: '/Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/AGENTS_REGISTRY.md'
+      },
+      {
+        icon: '📖',
+        title: 'Marketing Team Guide',
+        description: 'Workflows and coordination patterns',
+        path: '/Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/README.md'
+      },
+      {
+        icon: '🎯',
+        title: 'Jarvis Orchestrator',
+        description: 'Marketing squad lead coordination logic',
+        path: '/Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/jarvis-orchestrator.sh'
+      },
+      {
+        icon: '💎',
+        title: 'Vision SEO Analyst',
+        description: 'SEO specialist implementation example',
+        path: '/Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/vision-seo-analyst.sh'
+      }
+    ];
 
     // Initialize on load
     init();

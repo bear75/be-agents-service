@@ -226,6 +226,43 @@ function handleRequest(req, res) {
     return;
   }
 
+  // Read file from disk (for documentation viewer)
+  if (pathname === '/api/file') {
+    const filePath = parsedUrl.query.path;
+
+    if (!filePath) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Missing path parameter' }));
+      return;
+    }
+
+    // Security: Only allow reading from specific directories
+    const allowedPaths = [
+      '/Users/bjornevers_MacPro/HomeCare/be-agent-service',
+      '/Users/bjornevers_MacPro/HomeCare/beta-appcaire'
+    ];
+
+    const isAllowed = allowedPaths.some(allowed => filePath.startsWith(allowed));
+
+    if (!isAllowed) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Access denied to this path' }));
+      return;
+    }
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'File not found' }));
+        return;
+      }
+
+      res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end(data);
+    });
+    return;
+  }
+
   // Serve static files
   let filePath = path.join(__dirname, 'public', pathname === '/' ? 'index.html' : pathname);
 
@@ -272,6 +309,7 @@ server.listen(PORT, () => {
   console.log('  GET /api/sessions/:id   - Get session details');
   console.log('  GET /api/logs/:id       - Get session logs');
   console.log('  GET /api/stats          - Get system statistics');
+  console.log('  GET /api/file?path=...  - Read documentation file');
   console.log('========================================');
 });
 
