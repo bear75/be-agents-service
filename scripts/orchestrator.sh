@@ -30,8 +30,9 @@ SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 LIB_DIR="$SERVICE_ROOT/lib"
 AGENTS_DIR="$SERVICE_ROOT/agents"
 
-# Source state manager
+# Source state manager and parallel executor
 source "$LIB_DIR/state-manager.sh"
+source "$LIB_DIR/parallel-executor.sh"
 
 # Configuration
 TARGET_REPO="${1:-}"
@@ -183,33 +184,95 @@ log_info "=========================================="
 
 update_state "$SESSION_ID" "orchestrator" '.phase' 'phase1_parallel'
 
-# NOTE: For now, we use the existing loop.sh to execute tasks
-# In Phase 2, we'll replace this with actual specialist agents
-# This is a transition step - orchestrator coordinates the workflow
+# Use specialist agents if enabled, otherwise fallback to loop.sh
+USE_SPECIALISTS="${USE_SPECIALISTS:-true}"
 
-log_info "Delegating to loop.sh for implementation (Phase 2 will use specialist agents)"
-cd "$TARGET_REPO"
+if [[ "$USE_SPECIALISTS" == "true" ]]; then
+  log_info "Using specialist agents for implementation"
 
-# Run loop.sh (existing sequential implementation)
-"$SCRIPT_DIR/loop.sh" 25 >> "$LOG_DIR/implementation.log" 2>&1
-IMPLEMENTATION_EXIT=$?
+  # Spawn backend + infrastructure in parallel
+  PARALLEL_PIDS=()
 
-if [[ $IMPLEMENTATION_EXIT -ne 0 ]]; then
-  log_error "Implementation failed (exit code: $IMPLEMENTATION_EXIT)"
-  update_state "$SESSION_ID" "orchestrator" '.status' 'failed'
-  exit $IMPLEMENTATION_EXIT
+  if [[ "$NEEDS_BACKEND" == "true" ]]; then
+    log_info "Spawning backend specialist..."
+    "$AGENTS_DIR/backend-specialist.sh" "$SESSION_ID" "$TARGET_REPO" "$PRIORITY_FILE" >> "$LOG_DIR/backend-orchestrated.log" 2>&1 &
+    BACKEND_PID=$!
+    PARALLEL_PIDS+=("$BACKEND_PID")
+    log_info "Backend specialist spawned (PID: $BACKEND_PID)"
+  fi
+
+  if [[ "$NEEDS_INFRASTRUCTURE" == "true" ]]; then
+    log_info "Spawning infrastructure specialist..."
+    "$AGENTS_DIR/infrastructure-specialist.sh" "$SESSION_ID" "$TARGET_REPO" "$PRIORITY_FILE" >> "$LOG_DIR/infrastructure-orchestrated.log" 2>&1 &
+    INFRA_PID=$!
+    PARALLEL_PIDS+=("$INFRA_PID")
+    log_info "Infrastructure specialist spawned (PID: $INFRA_PID)"
+  fi
+
+  # Wait for parallel agents to complete
+  if [[ ${#PARALLEL_PIDS[@]} -gt 0 ]]; then
+    log_info "Waiting for ${#PARALLEL_PIDS[@]} parallel specialist(s) to complete..."
+
+    PARALLEL_FAILED=0
+    for pid in "${PARALLEL_PIDS[@]}"; do
+      if wait "$pid"; then
+        log_info "✓ Specialist $pid completed successfully"
+      else
+        EXIT_CODE=$?
+        log_error "✗ Specialist $pid failed (exit code: $EXIT_CODE)"
+        PARALLEL_FAILED=$((PARALLEL_FAILED + 1))
+      fi
+    done
+
+    if [[ $PARALLEL_FAILED -gt 0 ]]; then
+      log_error "Parallel specialists failed: $PARALLEL_FAILED agent(s)"
+      update_state "$SESSION_ID" "orchestrator" '.status' 'failed'
+      exit 1
+    fi
+
+    log_info "✓ All parallel specialists completed successfully"
+  fi
+
+else
+  log_warn "Specialist agents disabled, using fallback loop.sh"
+  cd "$TARGET_REPO"
+  "$SCRIPT_DIR/loop.sh" 25 >> "$LOG_DIR/implementation.log" 2>&1
+  IMPLEMENTATION_EXIT=$?
+
+  if [[ $IMPLEMENTATION_EXIT -ne 0 ]]; then
+    log_error "Implementation failed (exit code: $IMPLEMENTATION_EXIT)"
+    update_state "$SESSION_ID" "orchestrator" '.status' 'failed'
+    exit $IMPLEMENTATION_EXIT
+  fi
 fi
 
-log_info "✓ Implementation completed successfully"
+log_info "✓ Phase 1 completed"
 
 #
 # Phase 2: Frontend (Sequential, after backend)
 #
-# NOTE: Currently handled by loop.sh above
-# In Phase 2, we'll spawn frontend specialist here after backend completes
+if [[ "$USE_SPECIALISTS" == "true" && "$NEEDS_FRONTEND" == "true" ]]; then
+  log_info "=========================================="
+  log_info "Phase 2: Frontend (After Backend)"
+  log_info "=========================================="
+
+  update_state "$SESSION_ID" "orchestrator" '.phase' 'phase2_frontend'
+
+  log_info "Spawning frontend specialist..."
+  "$AGENTS_DIR/frontend-specialist.sh" "$SESSION_ID" "$TARGET_REPO" "$PRIORITY_FILE" >> "$LOG_DIR/frontend-orchestrated.log" 2>&1
+  FRONTEND_EXIT=$?
+
+  if [[ $FRONTEND_EXIT -ne 0 ]]; then
+    log_error "Frontend specialist failed (exit code: $FRONTEND_EXIT)"
+    update_state "$SESSION_ID" "orchestrator" '.status' 'failed'
+    exit 1
+  fi
+
+  log_info "✓ Frontend specialist completed"
+fi
 
 #
-# Phase 3: Verification
+# Phase 3: Verification (Always runs)
 #
 if [[ "$SKIP_VERIFICATION" == "false" ]]; then
   log_info "=========================================="

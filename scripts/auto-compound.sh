@@ -84,9 +84,9 @@ echo "Branch: $BRANCH_NAME"
 # Create feature branch
 git checkout -b "$BRANCH_NAME"
 
-# Create PRD
+# Create PRD (pass report for context - agent reads required docs listed in report)
 echo "Creating PRD..."
-claude -p "Load the prd skill if available, or create a detailed Product Requirements Document for: $PRIORITY_ITEM. Save it to tasks/prd-$(basename $BRANCH_NAME).md. Include: problem statement, proposed solution, technical approach, acceptance criteria, and edge cases to consider." --dangerously-skip-permissions
+claude -p "Read the report at $LATEST_REPORT for full context. It contains required reading (MOBILE_PLATFORM_PRD.md, plan file), architecture, dependencies, and validation. Then create a detailed Product Requirements Document for: $PRIORITY_ITEM. Save it to tasks/prd-$(basename $BRANCH_NAME).md. Include: problem statement, proposed solution, technical approach, acceptance criteria, and edge cases. Follow the architecture and constraints from the report." --dangerously-skip-permissions
 
 # Check if PRD was created
 PRD_FILE="tasks/prd-$(basename $BRANCH_NAME).md"
@@ -99,9 +99,39 @@ fi
 echo "Converting PRD to tasks..."
 claude -p "Read the PRD at $PRD_FILE and convert it into a structured JSON task list. Save to scripts/compound/prd.json with format: {\"tasks\": [{\"id\": 1, \"description\": \"...\", \"status\": \"pending\"}]}. Break down the implementation into 5-10 concrete, testable tasks." --dangerously-skip-permissions
 
-# Run the execution loop
-if [ -f scripts/compound/loop.sh ]; then
-  echo "Running execution loop..."
+# Run the execution loop (pass context for agent)
+export REPORT_PATH="$LATEST_REPORT"
+export PRD_FILE="$PRD_FILE"
+
+# Feature flag: Use orchestrator for multi-agent workflow (default: false for gradual rollout)
+USE_ORCHESTRATOR="${USE_ORCHESTRATOR:-false}"
+USE_SPECIALISTS="${USE_SPECIALISTS:-true}"  # Within orchestrator, use specialists
+
+# Get be-agent-service directory (parent of scripts/)
+BE_AGENT_SERVICE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [ "$USE_ORCHESTRATOR" = true ]; then
+  echo "Using multi-agent orchestrator workflow..."
+
+  # Run orchestrator from be-agent-service
+  "$BE_AGENT_SERVICE_DIR/scripts/orchestrator.sh" \
+    "$(pwd)" \
+    "$LATEST_REPORT" \
+    "$PRD_FILE" \
+    "$BRANCH_NAME"
+
+  ORCHESTRATOR_EXIT=$?
+
+  if [ $ORCHESTRATOR_EXIT -ne 0 ]; then
+    echo "❌ Orchestrator failed (exit code: $ORCHESTRATOR_EXIT)"
+    echo "Check logs in: $BE_AGENT_SERVICE_DIR/logs/orchestrator-sessions/"
+    exit 1
+  fi
+
+  echo "✓ Orchestrator completed successfully"
+
+elif [ -f scripts/compound/loop.sh ]; then
+  echo "Running legacy execution loop..."
   ./scripts/compound/loop.sh 25
 else
   echo "Warning: loop.sh not found. Implementing directly..."
