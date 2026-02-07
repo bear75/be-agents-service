@@ -16,30 +16,31 @@
       display: flex;
       gap: 10px;
       margin-bottom: 30px;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 2px solid rgba(102, 126, 234, 0.2);
       padding-bottom: 10px;
     }
 
     .nav-tab {
       padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
+      background: rgba(102, 126, 234, 0.1);
+      border: 2px solid transparent;
       border-radius: 8px 8px 0 0;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--text-primary);
       cursor: pointer;
       transition: all 0.3s ease;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .nav-tab:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.9);
+      background: rgba(102, 126, 234, 0.15);
+      border-color: rgba(102, 126, 234, 0.3);
     }
 
     .nav-tab.active {
-      background: var(--primary);
+      background: var(--gradient-blue);
       color: white;
+      box-shadow: var(--shadow-md);
     }
 
     .tab-content {
@@ -51,52 +52,62 @@
     }
 
     .section {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      background: var(--glass-light);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius);
       padding: 25px;
       margin-bottom: 25px;
+      box-shadow: var(--shadow-md);
     }
 
     .section h2 {
       margin-top: 0;
-      color: white;
+      color: var(--text-primary);
       font-size: 22px;
       margin-bottom: 15px;
       display: flex;
       align-items: center;
       gap: 10px;
+      font-weight: 700;
     }
 
     .section h3 {
-      color: rgba(255, 255, 255, 0.9);
+      color: var(--text-secondary);
       font-size: 18px;
       margin-top: 20px;
       margin-bottom: 12px;
+      font-weight: 600;
     }
 
     .command-block {
-      background: rgba(0, 0, 0, 0.3);
-      border-left: 3px solid var(--primary);
+      background: rgba(248, 250, 252, 0.8);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-left: 4px solid #667eea;
       padding: 15px;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 15px;
       font-family: 'Monaco', 'Menlo', monospace;
       font-size: 13px;
-      color: #00ff88;
+      color: #2d3748;
       position: relative;
+      box-shadow: var(--shadow-sm);
     }
 
     .command-block .description {
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-secondary);
       font-family: system-ui, -apple-system, sans-serif;
       font-size: 12px;
       margin-bottom: 8px;
+      font-weight: 500;
     }
 
     .command-block .command {
-      color: #00ff88;
+      color: #2563eb;
       user-select: all;
       cursor: text;
+      font-weight: 600;
     }
 
     .command-block .copy-btn {
@@ -256,16 +267,16 @@
 </head>
 <body>
   <div class="commands-container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <a href="/" class="back-link">← Back to Dashboard</a>
-      <nav style="display: flex; gap: 10px;">
-        <a href="/" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 14px;">Dashboard</a>
-        <a href="/control-tower.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 14px;">🎮 Control Tower</a>
-        <a href="/commands.html" style="color: white; text-decoration: none; padding: 8px 16px; background: var(--primary); border-radius: 6px; font-size: 14px;">📋 Commands</a>
-      </nav>
-    </div>
-
-    <h1>Command Center & Product Owner Guide</h1>
+    <header style="background: var(--glass-white); backdrop-filter: blur(var(--glass-blur)) saturate(180%); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%); padding: 30px; border-radius: var(--border-radius-lg); border: 2px solid var(--glass-border); box-shadow: var(--shadow-lg); margin-bottom: 30px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h1 style="margin: 0; font-size: 2.5rem; background: var(--gradient-blue); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800;">📋 Command Center & Product Owner Guide</h1>
+        <nav style="display: flex; gap: 10px;">
+          <a href="/" class="nav-link">Dashboard</a>
+          <a href="/control-tower.html" class="nav-link">🎮 Control Tower</a>
+          <a href="/commands.html" class="nav-link active">📋 Commands</a>
+        </nav>
+      </div>
+    </header>
 
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="showTab('po-guide')">Product Owner Guide</button>

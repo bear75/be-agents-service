@@ -17,33 +17,26 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
-      padding: 15px 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
+      padding: 20px 30px;
+      background: var(--glass-white);
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .nav-header h1 {
+      background: var(--gradient-blue);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
     }
 
     .nav-links {
       display: flex;
       gap: 10px;
-    }
-
-    .nav-link {
-      padding: 8px 16px;
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 6px;
-      color: white;
-      text-decoration: none;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .nav-link:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .nav-link.active {
-      background: var(--primary);
     }
 
     .dashboard-grid {
