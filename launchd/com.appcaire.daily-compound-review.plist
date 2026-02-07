@@ -7,7 +7,7 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/bjornevers_MacPro/HomeCare/be-agents-service/scripts/compound/daily-compound-review.sh</string>
+    <string>/Users/bjornevers_MacPro/HomeCare/be-agents-service/scripts/daily-compound-review.sh</string>
     <string>beta-appcaire</string>
   </array>
 

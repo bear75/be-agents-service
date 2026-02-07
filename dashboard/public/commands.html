@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Command Center - Multi-Agent Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .commands-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+      padding-bottom: 10px;
+    }
+
+    .nav-tab {
+      padding: 10px 20px;
+      background: rgba(102, 126, 234, 0.1);
+      border: 2px solid transparent;
+      border-radius: 8px 8px 0 0;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav-tab:hover {
+      background: rgba(102, 126, 234, 0.15);
+      border-color: rgba(102, 126, 234, 0.3);
+    }
+
+    .nav-tab.active {
+      background: var(--gradient-blue);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .section {
+      background: var(--glass-light);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .section h2 {
+      margin-top: 0;
+      color: var(--text-primary);
+      font-size: 22px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    .section h3 {
+      color: var(--text-secondary);
+      font-size: 18px;
+      margin-top: 20px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .command-block {
+      background: rgba(248, 250, 252, 0.8);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      color: #2d3748;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .command-block .description {
+      color: var(--text-secondary);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .command-block .command {
+      color: #2563eb;
+      user-select: all;
+      cursor: text;
+      font-weight: 600;
+    }
+
+    .command-block .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .command-block:hover .copy-btn {
+      opacity: 1;
+    }
+
+    .command-block .copy-btn:hover {
+      background: #5a91f5;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .agent-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      border-left: 4px solid #667eea;
+      border: 2px solid rgba(102, 126, 234, 0.15);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .agent-card h4 {
+      margin: 0 0 5px 0;
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .agent-card .role {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .agent-card .session-key {
+      background: rgba(102, 126, 234, 0.1);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-family: 'Monaco', monospace;
+      font-size: 11px;
+      color: #667eea;
+      display: inline-block;
+      font-weight: 600;
+      border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .workflow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .workflow-step {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      border: 2px solid rgba(102, 126, 234, 0.15);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+
+    .workflow-step:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
+    }
+
+    .workflow-step .step-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .workflow-step .step-content h4 {
+      margin: 0 0 8px 0;
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .workflow-step .step-content p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .doc-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .doc-item {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      border: 2px solid rgba(102, 126, 234, 0.15);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .doc-item:hover {
+      background: #ffffff;
+      border-left-color: #667eea;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      border-left-width: 4px;
+    }
+
+    .doc-item h4 {
+      margin: 0 0 5px 0;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .doc-item p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 16px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      background: rgba(59, 130, 246, 0.2);
+      text-decoration: none;
+    }
+
+    .emoji {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="commands-container">
+    <header style="background: var(--glass-white); backdrop-filter: blur(var(--glass-blur)) saturate(180%); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%); padding: 30px; border-radius: var(--border-radius-lg); border: 2px solid var(--glass-border); box-shadow: var(--shadow-lg); margin-bottom: 30px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h1 style="margin: 0; font-size: 2.5rem; background: var(--gradient-blue); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800;">📋 Command Center & Product Owner Guide</h1>
+        <nav style="display: flex; gap: 10px;">
+          <a href="/" class="nav-link">Dashboard</a>
+          <a href="/control-tower.html" class="nav-link">🎮 Control Tower</a>
+          <a href="/commands.html" class="nav-link active">📋 Commands</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showTab('po-guide')">Product Owner Guide</button>
+      <button class="nav-tab" onclick="showTab('engineering')">Engineering Commands</button>
+      <button class="nav-tab" onclick="showTab('marketing')">Marketing Commands</button>
+      <button class="nav-tab" onclick="showTab('agents')">All Agents</button>
+      <button class="nav-tab" onclick="showTab('docs')">Documentation</button>
+    </div>
+
+    <!-- Product Owner Guide Tab -->
+    <div id="po-guide" class="tab-content active">
+      <div class="section">
+        <h2><span class="emoji">👔</span> Product Owner Guide</h2>
+        <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 25px;">
+          You are the <strong>Product Manager</strong>. The orchestrator is your <strong>Scrum Master</strong>.
+          The specialists are your <strong>Development Team</strong>. You define WHAT to build, they figure out HOW.
+        </p>
+
+        <h3>Your Daily Workflow</h3>
+        <div class="workflow-steps">
+          <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Evening: Define Tomorrow's Sprint Goal</h4>
+              <p>Create a priority file describing what you want built. Be specific about outcomes, not implementation.</p>
+              <div class="command-block">
+                <div class="description">Create engineering priority</div>
+                <div class="command">cat > ~/HomeCare/beta-appcaire/reports/priorities-$(date -v+1d +%Y-%m-%d).md <<'EOF'
+# Priority 1
+
+**Description:** Add employee certifications tracking
+
+**Expected outcome:**
+- Database schema for certifications with expiry dates
+- GraphQL API for CRUD operations
+- UI page to view and manage certifications
+- Automated expiry notifications
+
+**Files:**
+- apps/dashboard-server/src/schema.prisma
+- apps/dashboard/src/pages/certifications/
+
+**Complexity:** Medium
+EOF</div>
+                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Night: Team Executes Sprint (Automatic)</h4>
+              <p>
+                <strong>10:30 PM</strong> - Review agent scans yesterday's work, extracts learnings<br>
+                <strong>11:00 PM</strong> - Scrum Master (orchestrator) reads your priority, creates sprint plan, coordinates specialists, creates PR
+              </p>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Morning: Review Sprint Deliverable</h4>
+              <p>Check the PR created overnight. It's in draft mode waiting for your review.</p>
+              <div class="command-block">
+                <div class="description">Review overnight PR</div>
+                <div class="command">gh pr list
+gh pr view [NUMBER]
+# Review code changes, test locally if needed</div>
+                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Morning: Accept or Reject Work</h4>
+              <p>If the sprint met your acceptance criteria, merge. Otherwise, provide feedback in PR comments.</p>
+              <div class="command-block">
+                <div class="description">Accept work (merge PR)</div>
+                <div class="command">gh pr merge [NUMBER] --squash</div>
+                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+              </div>
+              <div class="command-block">
+                <div class="description">Or request changes (reject)</div>
+                <div class="command">gh pr comment [NUMBER] --body "Please fix: ..."</div>
+                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Starting a Marketing Sprint (Manual)</h3>
+        <div class="workflow-steps">
+          <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Create Marketing Priority</h4>
+              <p>Define the marketing objective with clear deliverables.</p>
+              <div class="command-block">
+                <div class="description">Create marketing sprint goal</div>
+                <div class="command">cat > ~/HomeCare/beta-appcaire/reports/marketing-blog-$(date +%Y-%m-%d).md <<'EOF'
+# Priority: SEO Blog Post
+
+**Description:** Create blog post about employee scheduling best practices
+
+**Expected outcome:**
+- Keyword research (target keywords with volume/difficulty)
+- Product positioning analysis
+- Customer pain points identified
+- Blog post written (1500+ words, SEO-optimized)
+- Header image created
+- Published to website
+- Promoted on social media
+
+**Complexity:** Medium
+EOF</div>
+                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Run Jarvis Marketing Orchestrator</h4>
+              <p>Jarvis (squad lead) will coordinate all marketing specialists based on your priority.</p>
+              <div class="command-block">
+                <div class="description">Execute marketing sprint</div>
+                <div class="command">cd ~/HomeCare/be-agent-service
+./agents/marketing/jarvis-orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-blog-$(date +%Y-%m-%d).md \
+  ~/HomeCare/beta-appcaire/tasks/marketing-prd.json \
+  feature/blog-scheduling-$(date +%Y%m%d)</div>
+                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Monitor Dashboard</h4>
+              <p>Watch agents work in real-time. Dashboard shows which phase is running.</p>
+              <div class="command-block">
+                <div class="description">Open dashboard</div>
+                <div class="command">open http://localhost:3030</div>
+                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Review and Merge</h4>
+              <p>Same as engineering - review PR and merge if acceptable.</p>
+            </div>
+          </div>
+        </div>
+
+        <h3>Your 5-Minute Daily Routine</h3>
+        <div class="command-block">
+          <div class="description">Morning routine (5 min)</div>
+          <div class="command"># 1. Check dashboard
+open http://localhost:3030
+
+# 2. Review overnight PR
+gh pr list
+gh pr view [NUMBER]
+
+# 3. Accept or reject
+gh pr merge [NUMBER] --squash  # Accept
+# OR provide feedback in comments for reject</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Evening routine (5 min)</div>
+          <div class="command"># Define tomorrow's sprint goal
+cat > ~/HomeCare/beta-appcaire/reports/priorities-$(date -v+1d +%Y-%m-%d).md <<'EOF'
+# Priority 1
+**Description:** [What to build]
+**Expected outcome:**
+- [Deliverable 1]
+- [Deliverable 2]
+EOF
+
+# That's it! Team executes overnight.</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Key Principles</h3>
+        <div class="agent-grid">
+          <div class="agent-card">
+            <h4>Focus on Outcomes</h4>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">Define WHAT you want (user value), not HOW to build it (implementation details). Let the team decide technical approach.</p>
+          </div>
+          <div class="agent-card">
+            <h4>Trust the Team</h4>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">Specialists know their domain. Backend knows database design, Frontend knows UI patterns. Review results, not process.</p>
+          </div>
+          <div class="agent-card">
+            <h4>Compound Learning</h4>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">Team learns from mistakes. Same error won't happen twice. Velocity increases over time as knowledge compounds.</p>
+          </div>
+          <div class="agent-card">
+            <h4>Verification Gate</h4>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">No broken PRs reach you. Verification specialist blocks PRs that fail type-check, build, or security audit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engineering Commands Tab -->
+    <div id="engineering" class="tab-content">
+      <div class="section">
+        <h2><span class="emoji">⚙️</span> Engineering Agent Commands</h2>
+
+        <h3>Automatic Nightly Execution</h3>
+        <div class="command-block">
+          <div class="description">Check if nightly jobs are loaded</div>
+          <div class="command">launchctl list | grep appcaire</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View nightly execution logs</div>
+          <div class="command">tail -50 ~/Library/Logs/appcaire-compound.log
+tail -50 ~/Library/Logs/appcaire-daily-review.log</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Manually trigger tonight's run</div>
+          <div class="command">launchctl start com.appcaire.auto-compound</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Manual Orchestrator Execution</h3>
+        <div class="command-block">
+          <div class="description">Run full orchestrator workflow</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-07.md \
+  ~/HomeCare/beta-appcaire/tasks/prd.json \
+  feature/test-branch</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Individual Specialist Agents</h3>
+        <div class="command-block">
+          <div class="description">Run backend specialist</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/backend-specialist.sh \
+  "session-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-07.md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Run frontend specialist</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/frontend-specialist.sh \
+  "session-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-07.md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Run verification (quality gate)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/verification-specialist.sh "session-$(date +%s)"</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Session Management</h3>
+        <div class="command-block">
+          <div class="description">List all sessions</div>
+          <div class="command">ls -la ~/HomeCare/be-agent-service/.compound-state/</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View latest orchestrator state</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-*/orchestrator.json | jq '.'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View verification results</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-*/verification.json | jq '.blockers'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Clean old sessions</div>
+          <div class="command">rm -rf ~/HomeCare/be-agent-service/.compound-state/session-*
+rm -rf ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marketing Commands Tab -->
+    <div id="marketing" class="tab-content">
+      <div class="section">
+        <h2><span class="emoji">📢</span> Marketing Agent Commands</h2>
+
+        <h3>Jarvis Orchestrator (Squad Lead)</h3>
+        <div class="command-block">
+          <div class="description">Run full marketing workflow</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/marketing/jarvis-orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-blog.md \
+  ~/HomeCare/beta-appcaire/tasks/marketing-prd.json \
+  feature/blog-scheduling</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Individual Marketing Specialists</h3>
+        <div class="command-block">
+          <div class="description">Vision - SEO Analyst</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/marketing/vision-seo-analyst.sh \
+  "session-marketing-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-priority.md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Shuri - Product Analyst (TODO)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/marketing/shuri-product-analyst.sh \
+  "session-marketing-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-priority.md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Loki - Content Writer (TODO)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/marketing/loki-content-writer.sh \
+  "session-marketing-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-priority.md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Marketing Session Management</h3>
+        <div class="command-block">
+          <div class="description">View marketing sessions</div>
+          <div class="command">ls -la ~/HomeCare/be-agent-service/.compound-state/ | grep marketing</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View Jarvis orchestrator state</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-marketing-*/jarvis.json | jq '.'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View Vision SEO analysis</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-marketing-*/vision.json | jq '.deliverables'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Agents Tab -->
+    <div id="agents" class="tab-content">
+      <div class="section">
+        <h2><span class="emoji">🤖</span> Engineering Team</h2>
+        <div class="agent-grid">
+          <div class="agent-card">
+            <h4>Orchestrator</h4>
+            <div class="role">Scrum Master / Coordinator</div>
+            <div class="session-key">orchestrator.sh</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Reads priorities, creates PRD, spawns specialists, coordinates handoffs, creates PR
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Backend Specialist</h4>
+            <div class="role">Backend Developer</div>
+            <div class="session-key">backend-specialist.sh</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Database schema, migrations, GraphQL, resolvers, business logic
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Frontend Specialist</h4>
+            <div class="role">Frontend Developer</div>
+            <div class="session-key">frontend-specialist.sh</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              GraphQL operations, codegen, UI components, state management
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Infrastructure Specialist</h4>
+            <div class="role">DevOps Engineer</div>
+            <div class="session-key">infrastructure-specialist.sh</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Package management, configs, documentation, monorepo rules
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Verification Specialist</h4>
+            <div class="role">QA Engineer</div>
+            <div class="session-key">verification-specialist.sh</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Type-check, build, architecture review, security audit - blocks broken PRs
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🎭</span> Marketing Team (Marvel Characters)</h2>
+        <div class="agent-grid">
+          <div class="agent-card">
+            <h4>Jarvis</h4>
+            <div class="role">J.A.R.V.I.S. - Squad Lead</div>
+            <div class="session-key">agent:main:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Sophisticated coordinator. Analyzes priorities, assigns tasks, manages parallel execution
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Shuri</h4>
+            <div class="role">Product Analyst</div>
+            <div class="session-key">agent:product-analyst:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Brilliant innovator. Market research, competitive analysis, product positioning
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Fury</h4>
+            <div class="role">Customer Researcher</div>
+            <div class="session-key">agent:customer-researcher:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Strategic researcher. Customer interviews, personas, journey maps, pain points
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Vision</h4>
+            <div class="role">SEO Analyst</div>
+            <div class="session-key">agent:seo-analyst:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Pattern recognition expert. Keyword research, technical SEO, content optimization
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Loki</h4>
+            <div class="role">Content Writer</div>
+            <div class="session-key">agent:content-writer:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Master storyteller. Blog posts, landing pages, case studies, persuasive copy
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Quill</h4>
+            <div class="role">Social Media Manager</div>
+            <div class="session-key">agent:social-media-manager:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Charismatic engager. Social calendar, community management, trend monitoring
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Wanda</h4>
+            <div class="role">Designer</div>
+            <div class="session-key">agent:designer:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Creative visionary. Visual assets, brand identity, UI/UX design, design systems
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Pepper</h4>
+            <div class="role">Email Marketing</div>
+            <div class="session-key">agent:email-marketing:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Organized professional. Email campaigns, segmentation, A/B testing, automation
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Friday</h4>
+            <div class="role">Developer</div>
+            <div class="session-key">agent:developer:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Technical expert. Marketing sites, landing pages, analytics integration, automation
+            </p>
+          </div>
+          <div class="agent-card">
+            <h4>Wong</h4>
+            <div class="role">Notion Agent</div>
+            <div class="session-key">agent:notion-agent:main</div>
+            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
+              Knowledge guardian. Documentation, knowledge base, process docs, templates
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documentation Tab -->
+    <div id="docs" class="tab-content">
+      <div class="section">
+        <h2><span class="emoji">📚</span> Documentation</h2>
+        <div class="doc-list">
+          <div class="doc-item" onclick="openDoc('QUICK_START.md')">
+            <h4>Quick Start Guide</h4>
+            <p>TL;DR - How the system works, daily workflow, common commands</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('WORKFLOW.md')">
+            <h4>Complete Workflow</h4>
+            <p>Priority files → Sessions → Tasks → Learnings → Compound knowledge</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('ARCHITECTURE.md')">
+            <h4>Architecture (Agile/Scrum)</h4>
+            <p>Team structure, sprint workflow, you as Product Manager</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('AGENTS.md')">
+            <h4>Agent Competencies</h4>
+            <p>Detailed roles, responsibilities, patterns, quality checks</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('COMPARISON.md')">
+            <h4>System Comparison</h4>
+            <p>File-based vs database-backed multi-agent systems</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('agents/marketing/AGENTS_REGISTRY.md')">
+            <h4>Marketing Agents Registry</h4>
+            <p>All 10 Marvel character agents with personalities</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('agents/marketing/README.md')">
+            <h4>Marketing Agents Guide</h4>
+            <p>How to use marketing team, workflow examples</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('SAFETY.md')">
+            <h4>Safety Guide</h4>
+            <p>Safety checks, nightly execution, troubleshooting</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('README.md')">
+            <h4>Main README</h4>
+            <p>Overview, installation, configuration, usage</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('MAC_MINI_SETUP.md')">
+            <h4>Mac Mini Setup</h4>
+            <p>Complete setup guide for brand new Mac (8 phases)</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('SETUP.md')">
+            <h4>Setup Guide</h4>
+            <p>Installation, configuration, testing</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Document Viewer Modal -->
+  <div id="doc-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 1000; padding: 20px; align-items: center; justify-content: center;">
+    <div style="background: var(--glass-white); backdrop-filter: blur(var(--glass-blur)) saturate(180%); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%); border: 2px solid var(--glass-border); border-radius: var(--border-radius-lg); max-width: 1000px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-2xl);">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 25px 30px; border-bottom: 2px solid rgba(102, 126, 234, 0.1);">
+        <h2 id="doc-title" style="margin: 0; font-size: 1.75rem; color: var(--text-primary); font-weight: 700;">Document</h2>
+        <button onclick="closeDocModal()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-muted); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; transition: all 0.2s;">&times;</button>
+      </div>
+      <div id="doc-content" style="padding: 30px; color: var(--text-primary); line-height: 1.8; font-size: 15px;">
+        Loading...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      // Hide all tabs
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      // Remove active from all nav tabs
+      const navTabs = document.querySelectorAll('.nav-tab');
+      navTabs.forEach(tab => tab.classList.remove('active'));
+
+      // Show selected tab
+      document.getElementById(tabId).classList.add('active');
+
+      // Mark nav tab as active
+      event.target.classList.add('active');
+    }
+
+    function copyCommand(button) {
+      const commandBlock = button.closest('.command-block');
+      const commandText = commandBlock.querySelector('.command').textContent;
+
+      navigator.clipboard.writeText(commandText).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.style.background = 'var(--success)';
+
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = 'var(--primary)';
+        }, 2000);
+      });
+    }
+
+    async function openDoc(docPath) {
+      const baseUrl = '/Users/bjornevers_MacPro/HomeCare/be-agent-service/';
+      const fullPath = baseUrl + docPath;
+
+      // Show modal
+      const modal = document.getElementById('doc-modal');
+      const title = document.getElementById('doc-title');
+      const content = document.getElementById('doc-content');
+
+      modal.style.display = 'flex';
+      title.textContent = docPath.split('/').pop();
+      content.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Loading...</div>';
+
+      try {
+        const response = await fetch(`/api/file?path=${encodeURIComponent(fullPath)}`);
+        if (!response.ok) {
+          throw new Error('Failed to load document');
+        }
+
+        const text = await response.text();
+        // Simple markdown-like rendering (convert ## to h2, etc.)
+        const html = text
+          .replace(/```([\s\S]*?)```/g, '<pre style="background: rgba(248, 250, 252, 0.95); padding: 15px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.1); overflow-x: auto; margin: 15px 0;"><code style="color: #2563eb; font-family: Monaco, monospace; font-size: 13px;">$1</code></pre>')
+          .replace(/### (.*)/g, '<h3 style="color: var(--text-primary); margin-top: 25px; margin-bottom: 10px; font-weight: 700; font-size: 1.3rem;">$1</h3>')
+          .replace(/## (.*)/g, '<h2 style="color: var(--text-primary); margin-top: 30px; margin-bottom: 12px; font-weight: 700; font-size: 1.6rem;">$1</h2>')
+          .replace(/# (.*)/g, '<h1 style="color: var(--text-primary); margin-top: 35px; margin-bottom: 15px; font-weight: 800; font-size: 2rem;">$1</h1>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight: 700; color: var(--text-primary);">$1</strong>')
+          .replace(/`(.*?)`/g, '<code style="background: rgba(102, 126, 234, 0.1); padding: 2px 6px; border-radius: 4px; font-family: Monaco, monospace; font-size: 0.9em; color: #667eea;">$1</code>')
+          .replace(/\n\n/g, '<p style="margin: 15px 0;"></p>')
+          .replace(/^- (.*)/gm, '<li style="margin-left: 20px; margin-bottom: 8px; color: var(--text-secondary);">$1</li>');
+
+        content.innerHTML = `<div style="color: var(--text-primary); line-height: 1.8; font-size: 15px;">${html}</div>`;
+      } catch (error) {
+        content.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--danger);">Error loading document: ${error.message}</div>`;
+      }
+    }
+
+    function closeDocModal() {
+      document.getElementById('doc-modal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('doc-modal');
+      if (event.target === modal) {
+        closeDocModal();
+      }
+    });
+  </script>
+</body>
+</html>

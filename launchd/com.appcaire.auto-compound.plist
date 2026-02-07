@@ -7,7 +7,7 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/bjornevers_MacPro/HomeCare/be-agents-service/scripts/compound/auto-compound.sh</string>
+    <string>/Users/bjornevers_MacPro/HomeCare/be-agents-service/scripts/auto-compound.sh</string>
     <string>beta-appcaire</string>
   </array>
 

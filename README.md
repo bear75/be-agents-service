@@ -1,257 +1,370 @@
-# Agent Service
+# BE Agent Service
 
-Agent automation orchestration system for managing Claude Code agents across multiple repositories.
+Multi-agent autonomous service for software development and marketing automation running on Mac Mini.
 
 ## Overview
 
-This service provides centralized orchestration for compound agent workflows across multiple repositories. It includes:
+This service provides **two specialized agent teams**:
 
-- **Automated Workflows**: Nightly review and implementation of prioritized tasks
-- **API Server**: REST API for monitoring and controlling agents
-- **Web Dashboard**: Real-time status, logs, and priority management
-- **Multi-Repo Support**: Manage agents for multiple repositories from one place
+### Engineering Team (Automatic Nightly)
+- **10:30 PM**: Reviews Claude Code threads, updates CLAUDE.md files
+- **11:00 PM**: Auto-implements priority #1 from daily reports, creates PR
+- **Agents**: Backend, Frontend, Infrastructure, Verification
 
-## Architecture
+### Marketing Team (Manual/On-Demand)
+- **Agents**: Jarvis (Squad Lead), Shuri (Product Analyst), Fury (Customer Research), Vision (SEO), Loki (Content Writer), Quill (Social Media), Wanda (Designer), Pepper (Email), Friday (Developer), Wong (Notion)
+- **Use cases**: Blog posts, SEO campaigns, social media, email marketing, market research
+
+## Repository Structure
 
 ```
 be-agents-service/
-├── apps/
-│   ├── server/         # API server (port 4010)
-│   └── dashboard/      # Web UI (port 3010)
+├── agents/
+│   ├── marketing/                   # Marketing agent team (10 Marvel characters)
+│   │   ├── jarvis-orchestrator.sh   # Squad lead
+│   │   ├── vision-seo-analyst.sh    # SEO specialist
+│   │   └── ... (8 more agents)
+│   ├── backend-specialist.sh        # Engineering: Database, GraphQL, resolvers
+│   ├── frontend-specialist.sh       # Engineering: UI, codegen, operations
+│   ├── infrastructure-specialist.sh # Engineering: Packages, configs, docs
+│   └── verification-specialist.sh   # Engineering: Quality gate
 ├── scripts/
-│   └── compound/       # Agent automation scripts
-├── config/
-│   └── repos.yaml      # Repository configuration
-├── data/
-│   └── state/          # Runtime state
-└── launchd/            # macOS scheduled jobs
+│   ├── orchestrator.sh              # Multi-repo coordinator
+│   ├── daily-compound-review.sh     # 10:30 PM - Extract learnings
+│   ├── auto-compound.sh             # 11:00 PM - Auto-implement
+│   ├── loop.sh                      # Task execution loop
+│   ├── analyze-report.sh            # Parse priorities report
+│   ├── check-status.sh              # Status monitoring
+│   └── test-safety.sh               # Safety mechanism tests
+├── lib/
+│   ├── state-manager.sh             # JSON state coordination
+│   ├── feedback-schema.json         # Agent communication schema
+│   └── parallel-executor.sh         # Parallel agent spawning
+├── dashboard/
+│   ├── server.js                    # Real-time dashboard (port 3030)
+│   ├── public/                      # Dashboard UI
+│   └── start.sh                     # Dashboard startup
+├── launchd/
+│   ├── com.appcaire.auto-compound.plist
+│   ├── com.appcaire.caffeinate.plist
+│   ├── com.appcaire.daily-compound-review.plist
+│   └── com.appcaire.dashboard.plist
+├── .compound-state/                 # Agent session states (JSON)
+├── logs/                            # Agent execution logs
+├── README.md                        # This file
+├── ARCHITECTURE.md                  # Agile/Scrum methodology mapping
+├── AGENTS.md                        # Agent competencies and roles
+├── WORKFLOW.md                      # Tasks, sessions, learnings
+├── COMPARISON.md                    # File-based vs database systems
+└── SAFETY.md                        # Safety mechanisms
 ```
 
-## Quick Start
+## Installation
 
-### Prerequisites
-
-- Node.js 20+ with Volta
-- Yarn 1.22+
-- Claude Code CLI installed and configured
-- gh CLI authenticated
-
-### Installation
+### 1. Clone Repository
 
 ```bash
-# Clone repository
 cd ~/HomeCare
-git clone git@github.com:bear75/be-agents-service.git
+git clone https://github.com/bear75/be-agents-service.git
 cd be-agents-service
-
-# Install dependencies
-yarn install
-
-# Configure repositories
-cp config/repos.yaml config/repos.local.yaml
-vim config/repos.local.yaml
 ```
 
-### Configuration
+### 2. Configure LaunchAgents
 
-Edit `config/repos.yaml` to add repositories:
+```bash
+# Copy plist files to LaunchAgents directory
+cp launchd/*.plist ~/Library/LaunchAgents/
 
-```yaml
-repos:
-  your-repo:
-    path: ~/path/to/repo
-    schedule:
-      review: "22:30"
-      compound: "23:00"
-    priorities_dir: reports/
-    logs_dir: logs/
-    enabled: true
+# Load the agents
+launchctl load ~/Library/LaunchAgents/com.appcaire.daily-compound-review.plist
+launchctl load ~/Library/LaunchAgents/com.appcaire.auto-compound.plist
+launchctl load ~/Library/LaunchAgents/com.appcaire.caffeinate.plist
 ```
 
-### Manual Usage
+### 3. Configure Paths
 
-Run agent workflows manually:
+Edit plist files to update paths:
+```bash
+# Update WorkingDirectory and ProgramArguments paths
+vim ~/Library/LaunchAgents/com.appcaire.*.plist
+```
+
+### 4. Test Installation
+
+```bash
+# Run daily review manually
+./scripts/daily-compound-review.sh
+
+# Run auto-compound manually
+./scripts/auto-compound.sh
+```
+
+## Schedules
+
+| Script | Schedule | Purpose |
+|--------|----------|---------|
+| daily-compound-review.sh | 10:30 PM daily | Extract learnings from Claude threads |
+| auto-compound.sh | 11:00 PM daily | Auto-implement priority #1 task |
+| caffeinate | Always | Keep Mac awake for automation |
+
+## Safety Mechanisms
+
+### 1. Branch Check
+✅ Must be on `main` branch before starting
+
+### 2. Auto-Stash
+✅ Automatically stashes uncommitted work
+
+### 3. PR Creation
+✅ Creates PR instead of direct main push
+
+### 4. Safety Commit
+✅ Auto-commits if Claude forgets
+
+### 5. Error Handling
+✅ Stops on errors, logs failures
+
+## Dashboard
+
+**Real-time monitoring at http://localhost:3030**
+
+```bash
+# Start dashboard
+cd ~/HomeCare/be-agents-service
+./dashboard/start.sh
+
+# Auto-starts on boot via LaunchAgent
+```
+
+Features:
+- Live session monitoring (3s refresh)
+- Agent status tracking
+- Session logs viewer
+- System statistics
+- Command center (all commands in one place)
+- Documentation browser
+
+## Usage
+
+### Engineering Agents (Automatic)
 
 ```bash
 # Run daily review
-./scripts/compound/daily-compound-review.sh <repo-name>
+cd ~/HomeCare/beta-appcaire
+../be-agents-service/scripts/daily-compound-review.sh
 
 # Run auto-compound
-./scripts/compound/auto-compound.sh <repo-name>
+cd ~/HomeCare/beta-appcaire
+../be-agents-service/scripts/auto-compound.sh
+
+# Run orchestrator manually
+cd ~/HomeCare/be-agents-service
+./scripts/orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-07.md \
+  ~/HomeCare/beta-appcaire/tasks/prd.json \
+  feature/test-branch
 
 # Check status
-./scripts/compound/check-status.sh <repo-name>
+../be-agent-service/scripts/check-status.sh
+
+# Test safety mechanisms
+../be-agent-service/scripts/test-safety.sh
 ```
 
-### Automated Scheduling (macOS)
-
-The service uses launchd for automated scheduling:
+### Marketing Agents (Manual)
 
 ```bash
-# Install launchd jobs
-cp launchd/*.plist ~/Library/LaunchAgents/
+# Create marketing priority
+cat > ~/HomeCare/beta-appcaire/reports/marketing-blog.md <<EOF
+# Priority: SEO Blog Post
+**Description:** Create SEO-optimized blog about employee scheduling
+**Expected outcome:**
+- Keyword research
+- Blog post written (1500+ words)
+- Header image created
+- Published to website
+- Promoted on social media
+EOF
 
-# Update paths in plist files to match your installation
-# Then load the jobs:
-launchctl load ~/Library/LaunchAgents/com.appcaire.agent-server.plist
-launchctl load ~/Library/LaunchAgents/com.appcaire.caffeinate.plist
-launchctl load ~/Library/LaunchAgents/com.appcaire.daily-compound-review.plist
-launchctl load ~/Library/LaunchAgents/com.appcaire.auto-compound.plist
+# Run Jarvis marketing orchestrator
+cd ~/HomeCare/be-agents-service
+./agents/marketing/jarvis-orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-blog.md \
+  ~/HomeCare/beta-appcaire/tasks/marketing-prd.json \
+  feature/blog-post-scheduling
 
-# Verify jobs are loaded
+# Run individual marketing agent
+./agents/marketing/vision-seo-analyst.sh \
+  "session-test-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-blog.md
+```
+
+### Scheduled Execution
+
+LaunchAgents handle automatic execution:
+
+```bash
+# Check if agents are loaded
 launchctl list | grep appcaire
+
+# View logs
+tail -f ~/Library/Logs/appcaire-compound.log
+tail -f ~/Library/Logs/appcaire-daily-review.log
+
+# Manually trigger
+launchctl start com.appcaire.auto-compound
+launchctl start com.appcaire.daily-compound-review
+```
+
+## Configuration
+
+### Repository Location
+
+The service expects beta-appcaire at:
+```
+~/HomeCare/beta-appcaire
+```
+
+Update plist files if location differs.
+
+### Priority Reports
+
+Daily priorities should be in:
+```
+~/HomeCare/beta-appcaire/reports/priorities-YYYY-MM-DD.md
+```
+
+Format:
+```markdown
+# Priority 1
+
+**Description:** Clear task description
+**Expected outcome:** What should be achieved
+**Files:** Relevant file paths
+```
+
+## Logs
+
+Logs are stored in:
+```
+~/Library/Logs/appcaire-compound.log
+~/Library/Logs/appcaire-daily-review.log
+```
+
+View recent logs:
+```bash
+tail -f ~/Library/Logs/appcaire-*.log
+```
+
+## Troubleshooting
+
+### Agent Not Running
+
+```bash
+# Check if loaded
+launchctl list | grep appcaire
+
+# Reload if needed
+launchctl unload ~/Library/LaunchAgents/com.appcaire.auto-compound.plist
+launchctl load ~/Library/LaunchAgents/com.appcaire.auto-compound.plist
+```
+
+### Wrong Branch Error
+
+```bash
+# Ensure on main branch
+cd ~/HomeCare/beta-appcaire
+git checkout main
+git pull origin main
+```
+
+### Permission Errors
+
+```bash
+# Make scripts executable
+chmod +x ~/HomeCare/be-agents-service/scripts/*.sh
 ```
 
 ## Development
 
-### Start API Server
+### Testing Scripts
 
 ```bash
-yarn dev:server
-# Server runs on http://localhost:4010
+# Test daily review (dry run)
+./scripts/daily-compound-review.sh --dry-run
+
+# Test auto-compound (dry run)
+./scripts/auto-compound.sh --dry-run
+
+# Run safety tests
+./scripts/test-safety.sh
 ```
 
-### Start Dashboard
+### Modifying Schedules
 
+Edit plist files:
+```xml
+<key>StartCalendarInterval</key>
+<dict>
+    <key>Hour</key>
+    <integer>22</integer>  <!-- 10 PM -->
+    <key>Minute</key>
+    <integer>30</integer>
+</dict>
+```
+
+Then reload:
 ```bash
-yarn dev:dashboard
-# Dashboard runs on http://localhost:3010
+launchctl unload ~/Library/LaunchAgents/com.appcaire.auto-compound.plist
+launchctl load ~/Library/LaunchAgents/com.appcaire.auto-compound.plist
 ```
 
-### Run Both
+## Architecture
 
-```bash
-yarn dev:server &
-yarn dev:dashboard &
+```
+┌─────────────────────────────────────────┐
+│  Mac Mini (Agent Host)                  │
+│                                         │
+│  LaunchAgent (10:30 PM)                │
+│         ↓                               │
+│  daily-compound-review.sh              │
+│         ↓                               │
+│  Reviews Claude threads                │
+│  Updates CLAUDE.md files               │
+│  Commits to main                        │
+│                                         │
+│  LaunchAgent (11:00 PM)                │
+│         ↓                               │
+│  auto-compound.sh                      │
+│         ↓                               │
+│  analyze-report.sh                     │
+│         ↓                               │
+│  loop.sh (Claude Code API)            │
+│         ↓                               │
+│  Creates feature branch                │
+│  Implements task                        │
+│  Creates PR                             │
+│                                         │
+└─────────────────────────────────────────┘
+                 ↓
+         GitHub Pull Request
+                 ↓
+         Human Review & Merge
 ```
 
-## API Endpoints
+## Related Repositories
 
-### Repositories
-
-- `GET /api/repos` - List all configured repositories
-- `GET /api/repos/:name/status` - Get agent status for a repository
-- `GET /api/repos/:name/priorities` - Get priorities from repository
-- `GET /api/repos/:name/logs` - Get logs from repository
-
-### Agent Control
-
-- `POST /api/agents/trigger/:name` - Manually trigger agent run
-- `POST /api/agents/cancel/:name` - Cancel running agent
-
-## How It Works
-
-### Daily Workflow
-
-1. **10:30 PM** - `daily-compound-review.sh` runs
-   - Reviews Claude Code threads from last 24h
-   - Extracts learnings
-   - Updates CLAUDE.md files in target repository
-   - Commits directly to main
-
-2. **11:00 PM** - `auto-compound.sh` runs
-   - Reads priorities from target repository's `reports/` directory
-   - Picks priority #1
-   - Creates feature branch in target repository
-   - Implements using Claude Code
-   - Creates PR (never pushes directly to main)
-
-3. **Morning** - Review generated PR
-
-### Multi-Repo Pattern
-
-- **Scripts live here** (be-agents-service)
-- **Data lives there** (target repositories)
-- Scripts accept repo name as argument
-- Read configuration from `config/repos.yaml`
-- Write logs and PRDs to target repository
-
-### Safety Mechanisms
-
-- **Branch check**: Must be on main branch
-- **Auto-stash**: Stashes uncommitted work before starting
-- **PR creation**: Creates PR, never pushes directly to main
-- **Safety commits**: Auto-commits if Claude forgets
-
-## Troubleshooting
-
-### Scripts fail with "repo not found"
-
-Check that the repo is configured in `config/repos.yaml` and the path exists:
-
-```bash
-cat config/repos.yaml
-ls -la ~/HomeCare/your-repo
-```
-
-### launchd jobs not running
-
-Check job status and logs:
-
-```bash
-launchctl list | grep appcaire
-tail -f ~/Library/Logs/appcaire-*.log
-```
-
-Verify plist paths are correct:
-
-```bash
-plutil -lint ~/Library/LaunchAgents/com.appcaire.*.plist
-```
-
-### Agent can't find priorities
-
-Ensure priorities file exists in target repo:
-
-```bash
-ls -la ~/HomeCare/your-repo/reports/priorities-*.md
-```
-
-## Documentation
-
-- See `docs/` for detailed workflow documentation
-- See `CLAUDE.md` for development learnings
-- See target repository documentation for repository-specific details
-
-## Documentation
-
-Comprehensive documentation is available:
-
-- **[CLAUDE.md](CLAUDE.md)** - Complete service learnings and patterns (READ THIS FIRST)
-- **[DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
-- **[COMPOUND_WORKFLOW.md](docs/COMPOUND_WORKFLOW.md)** - Detailed workflow documentation
-- **[COMPOUND_SETUP_GUIDE.md](docs/COMPOUND_SETUP_GUIDE.md)** - Initial setup guide
-- **[PRODUCTIVITY_SYSTEM.md](docs/PRODUCTIVITY_SYSTEM.md)** - Boris productivity patterns
-- **[QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md)** - Command reference
-
-### For New Developers
-
-If you're new to the agent service:
-
-1. Read [CLAUDE.md](CLAUDE.md) - Main learnings file
-2. Follow [DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) - Deploy the service
-3. Review [COMPOUND_WORKFLOW.md](docs/COMPOUND_WORKFLOW.md) - Understand the workflow
-4. Use [QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) - Common commands
-
-### Onboarding
-
-Run the onboarding script when starting a new development session:
-
-```bash
-./scripts/onboard-claude.sh
-```
-
-This will guide you through the codebase and ensure Claude Code understands the project structure.
-
-## Contributing
-
-This is an internal service. For issues or improvements:
-
-1. Create issue describing the problem
-2. Create feature branch
-3. Implement and test
-4. Create PR for review
+- **beta-appcaire**: Main application repository
+  - https://github.com/[org]/beta-appcaire
+>>>>>>> feature/dashboard-design-system
 
 ## License
 
 Private - Internal use only
+
+## Contact
+
+Issues: https://github.com/bear75/be-agents-service/issues
