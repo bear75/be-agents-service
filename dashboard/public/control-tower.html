@@ -47,16 +47,21 @@
     }
 
     .sidebar {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
+      background: var(--glass-light);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius);
       padding: 20px;
+      box-shadow: var(--shadow-md);
     }
 
     .sidebar h3 {
       margin-top: 0;
-      color: white;
+      color: var(--text-primary);
       font-size: 18px;
       margin-bottom: 15px;
+      font-weight: 700;
     }
 
     .job-controls {
@@ -88,8 +93,10 @@
     }
 
     .control-btn.status {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--text-primary);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      font-weight: 600;
     }
 
     .control-btn:hover {
@@ -107,50 +114,58 @@
     }
 
     .agent-item {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(248, 250, 252, 0.8);
       padding: 12px;
       border-radius: 8px;
       margin-bottom: 10px;
-      border-left: 3px solid transparent;
+      border-left: 4px solid transparent;
       cursor: pointer;
       transition: all 0.2s;
+      border: 2px solid rgba(102, 126, 234, 0.1);
     }
 
     .agent-item:hover {
-      background: rgba(0, 0, 0, 0.3);
-      border-left-color: var(--primary);
+      background: rgba(255, 255, 255, 0.95);
+      border-left-color: #667eea;
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
     }
 
     .agent-item.active {
       border-left-color: var(--success);
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(72, 187, 120, 0.1);
     }
 
     .agent-item.idle {
-      border-left-color: rgba(255, 255, 255, 0.3);
+      border-left-color: rgba(102, 126, 234, 0.3);
     }
 
     .agent-item.blocked {
       border-left-color: var(--danger);
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(245, 87, 108, 0.1);
     }
 
     .agent-name {
-      font-weight: 600;
-      color: white;
+      font-weight: 700;
+      color: var(--text-primary);
       margin-bottom: 4px;
     }
 
     .agent-status {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-secondary);
+      font-weight: 500;
     }
 
     .kanban-board {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
+      background: var(--glass-light);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius-lg);
       padding: 20px;
       min-height: 600px;
+      box-shadow: var(--shadow-md);
     }
 
     .kanban-header {
@@ -162,7 +177,8 @@
 
     .kanban-header h2 {
       margin: 0;
-      color: white;
+      color: var(--text-primary);
+      font-weight: 700;
     }
 
     .kanban-controls {
@@ -177,10 +193,14 @@
     }
 
     .kanban-column {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 2px solid rgba(102, 126, 234, 0.15);
+      border-radius: var(--border-radius);
       padding: 15px;
       min-height: 500px;
+      box-shadow: var(--shadow-sm);
     }
 
     .column-header {
@@ -189,55 +209,64 @@
       align-items: center;
       margin-bottom: 15px;
       padding-bottom: 10px;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 2px solid rgba(102, 126, 234, 0.2);
     }
 
     .column-title {
-      font-weight: 600;
-      color: white;
+      font-weight: 700;
+      color: var(--text-primary);
       font-size: 14px;
     }
 
     .column-count {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 2px 8px;
+      background: rgba(102, 126, 234, 0.15);
+      color: var(--text-primary);
+      padding: 4px 10px;
       border-radius: 12px;
       font-size: 12px;
+      font-weight: 700;
     }
 
     .task-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
       cursor: pointer;
-      transition: all 0.2s;
-      border-left: 3px solid transparent;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      border: 2px solid rgba(102, 126, 234, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     }
 
     .task-card:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: translateY(-2px);
+      background: #ffffff;
+      transform: translateY(-4px) translateX(2px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(102, 126, 234, 0.2);
     }
 
     .task-card.high {
       border-left-color: var(--danger);
+      border-left-width: 4px;
     }
 
     .task-card.medium {
       border-left-color: var(--warning);
+      border-left-width: 4px;
     }
 
     .task-card.low {
       border-left-color: var(--success);
+      border-left-width: 4px;
     }
 
     .task-title {
-      color: white;
+      color: var(--text-primary);
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 8px;
+      line-height: 1.4;
     }
 
     .task-meta {
@@ -248,34 +277,38 @@
     }
 
     .task-agent {
-      background: rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
-      padding: 2px 8px;
-      border-radius: 4px;
+      background: rgba(102, 126, 234, 0.15);
+      color: #667eea;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .task-time {
+      color: var(--text-muted);
       font-size: 11px;
       font-weight: 500;
     }
 
-    .task-time {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 11px;
-    }
-
     .empty-column {
       text-align: center;
-      color: rgba(255, 255, 255, 0.3);
+      color: var(--text-muted);
       padding: 40px 20px;
       font-size: 14px;
+      font-weight: 500;
     }
 
     .session-selector {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 6px;
-      padding: 8px 12px;
-      color: white;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text-primary);
       font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .session-selector:focus {
@@ -299,16 +332,19 @@
     }
 
     .new-job-form {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
+      background: rgba(248, 250, 252, 0.8);
+      border: 2px solid rgba(102, 126, 234, 0.15);
+      border-radius: var(--border-radius);
       padding: 15px;
       margin-top: 20px;
+      box-shadow: var(--shadow-sm);
     }
 
     .new-job-form h4 {
       margin-top: 0;
-      color: white;
+      color: var(--text-primary);
       font-size: 16px;
+      font-weight: 700;
       margin-bottom: 12px;
     }
 
@@ -318,8 +354,9 @@
 
     .form-group label {
       display: block;
-      color: rgba(255, 255, 255, 0.8);
+      color: var(--text-secondary);
       font-size: 13px;
+      font-weight: 600;
       margin-bottom: 6px;
     }
 
@@ -327,19 +364,22 @@
     .form-group select,
     .form-group textarea {
       width: 100%;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 6px;
-      padding: 8px 12px;
-      color: white;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-primary);
       font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
       outline: none;
-      border-color: var(--primary);
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
     .form-group textarea {
@@ -446,7 +486,7 @@
           </div>
           <div class="form-group" id="chat-input" style="display: none;">
             <label>Describe Your Priority</label>
-            <textarea id="priority-description" placeholder="E.g., Create a blog post about our new employee scheduling feature..." rows="4" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-family: inherit;"></textarea>
+            <textarea id="priority-description" placeholder="E.g., Create a blog post about our new employee scheduling feature..." rows="4"></textarea>
           </div>
           <div class="form-group">
             <label>Branch Name</label>
