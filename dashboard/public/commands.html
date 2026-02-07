@@ -238,10 +238,15 @@
       color: var(--primary);
       text-decoration: none;
       font-size: 14px;
+      padding: 8px 16px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 6px;
+      transition: all 0.2s;
     }
 
     .back-link:hover {
-      text-decoration: underline;
+      background: rgba(59, 130, 246, 0.2);
+      text-decoration: none;
     }
 
     .emoji {
@@ -251,7 +256,14 @@
 </head>
 <body>
   <div class="commands-container">
-    <a href="/" class="back-link">← Back to Dashboard</a>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <a href="/" class="back-link">← Back to Dashboard</a>
+      <nav style="display: flex; gap: 10px;">
+        <a href="/" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 14px;">Dashboard</a>
+        <a href="/control-tower.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 14px;">🎮 Control Tower</a>
+        <a href="/commands.html" style="color: white; text-decoration: none; padding: 8px 16px; background: var(--primary); border-radius: 6px; font-size: 14px;">📋 Commands</a>
+      </nav>
+    </div>
 
     <h1>Command Center & Product Owner Guide</h1>
 
