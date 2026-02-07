@@ -11,40 +11,53 @@ OpenClaw can monitor your business emails to automatically capture leads from:
 
 ## Recommended Email Setup
 
-### Option 1: Single General Email (Recommended for Start)
-Use your main business inbox that receives all inquiries:
+### Full Multi-Domain Configuration (Recommended)
+Monitor all business emails across all properties:
 
 ```bash
 cp .env.template .env
-# Edit .env:
-EMAIL_USER=info@caire.se
-EMAIL_PASSWORD=your-app-specific-password
+# Configure all 9 email addresses:
+
+# CAIRE.SE (AppCaire main product)
+EMAIL_1_USER=sales@caire.se
+EMAIL_1_PASSWORD=app-password-1
+
+EMAIL_2_USER=info@caire.se
+EMAIL_2_PASSWORD=app-password-2
+
+EMAIL_3_USER=bjorn@caire.se
+EMAIL_3_PASSWORD=app-password-3
+
+# EIRTECH.AI (Ireland/EU market)
+EMAIL_4_USER=sales@eirtech.ai
+EMAIL_4_PASSWORD=app-password-4
+
+EMAIL_5_USER=info@eirtech.ai
+EMAIL_5_PASSWORD=app-password-5
+
+EMAIL_6_USER=bjorn@eirtech.ai
+EMAIL_6_PASSWORD=app-password-6
+
+# NACKAHEMTJANST.SE (Nacka local market)
+EMAIL_7_USER=sales@nackahemtjanst.se
+EMAIL_7_PASSWORD=app-password-7
+
+EMAIL_8_USER=info@nackahemtjanst.se
+EMAIL_8_PASSWORD=app-password-8
+
+EMAIL_9_USER=bjorn@nackahemtjanst.se
+EMAIL_9_PASSWORD=app-password-9
 ```
 
-**Best for:**
-- `info@caire.se` - Main AppCaire inquiries
-- `contact@caire.se` - General contact form
-- `hello@caire.se` - Friendly inquiry address
+**Why monitor all addresses?**
+- **sales@** - Direct sales inquiries (usually highest intent)
+- **info@** - General inquiries (mix of leads and support)
+- **bjorn@** - Personal inquiries (often high-value partnerships)
 
-### Option 2: Multiple Domain Monitoring
-Monitor leads from all your properties:
-
-```bash
-# In .env, configure all three:
-EMAIL_USER=info@caire.se
-EMAIL_PASSWORD=caire-app-password
-
-EMAIL_USER_2=info@eirtech.ai
-EMAIL_PASSWORD_2=eirtech-app-password
-
-EMAIL_USER_3=info@nackahemtjanst.se
-EMAIL_PASSWORD_3=nackahemtjanst-app-password
-```
-
-**Best for:**
-- Each property gets its own lead source tracking
-- SEO sites (eirtech.ai, nackahemtjanst.se) generate separate leads
-- Better attribution per marketing channel
+**Lead source attribution:**
+- Each email tracked separately in dashboard
+- See which domain generates most leads (caire.se vs eirtech.ai vs nackahemtjanst.se)
+- Identify best-performing email address (sales@ vs info@)
 
 ## Gmail App Password Setup
 
@@ -118,27 +131,121 @@ EMAIL_LEAD_KEYWORDS=demo,trial,pricing,contact,inquiry,interested,quote,schedule
 
 ## Running OpenClaw
 
+### Prerequisites
+
+OpenClaw requires `jq` for JSON processing:
+```bash
+# Check if jq is installed
+which jq
+
+# Install if needed
+brew install jq
+```
+
 ### Manual Test
 ```bash
 cd ~/HomeCare/be-agent-service
+
+# First-time setup: Copy and configure .env
+cp .env.template .env
+vim .env  # Add your email app passwords
+
+# Run the scraper
 ./agents/marketing/openclaw-lead-scraper.sh
 ```
 
-### Automatic (Every 15 Minutes)
-OpenClaw runs automatically via launchd:
-
-```bash
-# Check if it's running
-launchctl list | grep openclaw
-
-# View logs
-tail -f logs/openclaw.log
+**Expected output:**
+```
+[2026-02-07 16:30:45] 📧 OpenClaw Lead Scraper Starting...
+[2026-02-07 16:30:45] Checking sales@caire.se...
+[2026-02-07 16:30:46]   No unread emails
+[2026-02-07 16:30:46] Checking info@caire.se...
+[2026-02-07 16:30:47]   Found unread emails: 1234 1235
+[2026-02-07 16:30:48]     ✅ New lead: Sarah Johnson (sarah@sunrisehc.com) - Score: 85
+[2026-02-07 16:30:49] 📊 Lead Statistics:
+[2026-02-07 16:30:49] Total leads: 1
+[2026-02-07 16:30:49] New leads this run: 1
+[2026-02-07 16:30:49] ✅ Lead scraper completed
 ```
 
-### Stop Automatic Scraping
+### Automatic (Every 15 Minutes)
+
+**Install launchd job:**
+```bash
+cd ~/HomeCare/be-agent-service
+
+# Copy plist to LaunchAgents
+cp com.appcaire.openclaw.plist ~/Library/LaunchAgents/
+
+# Load the job
+launchctl load ~/Library/LaunchAgents/com.appcaire.openclaw.plist
+
+# Verify it's loaded
+launchctl list | grep openclaw
+```
+
+**Monitor activity:**
+```bash
+# View logs
+tail -f logs/openclaw.log
+
+# View live lead count
+watch -n 5 'cat .compound-state/data/leads.json | jq "length"'
+
+# View latest leads
+cat .compound-state/data/leads.json | jq '.[-5:] | .[] | {name, email, score, status}'
+```
+
+**Stop Automatic Scraping:**
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.appcaire.openclaw.plist
 ```
+
+**Restart after .env changes:**
+```bash
+# Unload
+launchctl unload ~/Library/LaunchAgents/com.appcaire.openclaw.plist
+
+# Reload
+launchctl load ~/Library/LaunchAgents/com.appcaire.openclaw.plist
+```
+
+## How OpenClaw Works
+
+OpenClaw uses IMAP (via curl) to monitor all 9 configured email accounts:
+
+1. **Connect to IMAP** - Loops through EMAIL_1_USER through EMAIL_9_USER
+2. **Search for unread emails** - Uses IMAP SEARCH UNSEEN command
+3. **Keyword filtering** - Checks if email contains any lead keywords
+4. **Extract contact info** - Parses sender name, email, company from domain
+5. **Score the lead** - Calculates score based on keywords, domain, and content
+6. **Save to leads.json** - Appends new lead with all extracted data
+7. **Mark as read** - Sets IMAP \\Seen flag to avoid reprocessing
+
+**IMAP Commands Used:**
+```bash
+# Search for unread emails
+curl "imaps://imap.gmail.com:993/INBOX" \
+  --user "info@caire.se:app-password" \
+  -X "SEARCH UNSEEN"
+
+# Fetch email content
+curl "imaps://imap.gmail.com:993/INBOX;UID=1234" \
+  --user "info@caire.se:app-password"
+
+# Mark as read
+curl "imaps://imap.gmail.com:993/INBOX;UID=1234" \
+  --user "info@caire.se:app-password" \
+  -X "STORE 1234 +FLAGS \\Seen"
+```
+
+**Lead Attribution:**
+Each lead is tagged with its source email:
+- `source: "email-sales@caire.se"` → Sales inquiry
+- `source: "email-info@eirtech.ai"` → EU market inquiry
+- `source: "email-bjorn@nackahemtjanst.se"` → Local/personal inquiry
+
+This allows you to track which email address generates the most qualified leads.
 
 ## What Gets Extracted
 

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.appcaire.marketing-agents</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>
+      # Run marketing agents in sequence
+      /Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/openclaw-lead-scraper.sh &gt;&gt; /Users/bjornevers_MacPro/HomeCare/be-agent-service/logs/marketing-agents.log 2&gt;&amp;1
+      /Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/fury-researcher.sh &gt;&gt; /Users/bjornevers_MacPro/HomeCare/be-agent-service/logs/marketing-agents.log 2&gt;&amp;1
+      /Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/shuri-analyst.sh &gt;&gt; /Users/bjornevers_MacPro/HomeCare/be-agent-service/logs/marketing-agents.log 2&gt;&amp;1
+      /Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/pepper-email.sh &gt;&gt; /Users/bjornevers_MacPro/HomeCare/be-agent-service/logs/marketing-agents.log 2&gt;&amp;1
+      /Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/quill-social.sh &gt;&gt; /Users/bjornevers_MacPro/HomeCare/be-agent-service/logs/marketing-agents.log 2&gt;&amp;1
+      /Users/bjornevers_MacPro/HomeCare/be-agent-service/agents/marketing/loki-content.sh &gt;&gt; /Users/bjornevers_MacPro/HomeCare/be-agent-service/logs/marketing-agents.log 2&gt;&amp;1
+    </string>
+  </array>
+
+  <key>StartInterval</key>
+  <integer>900</integer>  <!-- 15 minutes in seconds -->
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service/logs/marketing-agents.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service/logs/marketing-agents-error.log</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>/Users/bjornevers_MacPro</string>
+  </dict>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service</string>
+
+  <key>KeepAlive</key>
+  <false/>
+
+  <key>Disabled</key>
+  <true/>  <!-- Set to false to enable -->
+</dict>
+</plist>

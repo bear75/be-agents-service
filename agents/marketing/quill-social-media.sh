@@ -131,7 +131,7 @@ EOF
   "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "startTime": "$start_time",
   "endTime": "$end_time",
-  "completedTasks": $(printf '%s\n' "${tasks_completed[@]}" | jq -R . | jq -s .),
+  "completedTasks": $(if [ ${#tasks_completed[@]} -eq 0 ]; then echo "[]"; else printf '%s\n' "${tasks_completed[@]}" | jq -R . | jq -s .; fi),
   "deliverables": $deliverables_json,
   "messages": [
     {
