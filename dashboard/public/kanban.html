@@ -136,6 +136,7 @@
     }
 
     .task-card {
+      position: relative;
       background: var(--glass-white);
       border: 2px solid var(--glass-border);
       border-radius: 10px;
@@ -290,19 +291,19 @@
     <!-- Stats Bar -->
     <div class="stats-bar">
       <div class="stat-card">
-        <div class="stat-value" id="total-tasks">0</div>
+        <div class="stat-value" id="stat-total-tasks">0</div>
         <div class="stat-label">Total Tasks</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="active-tasks">0</div>
+        <div class="stat-value" id="stat-active-tasks">0</div>
         <div class="stat-label">Active</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="completed-tasks">0</div>
+        <div class="stat-value" id="stat-completed-tasks">0</div>
         <div class="stat-label">Completed</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="failed-tasks">0</div>
+        <div class="stat-value" id="stat-failed-tasks">0</div>
         <div class="stat-label">Failed</div>
       </div>
     </div>
@@ -385,7 +386,11 @@
     async function loadAgents() {
       try {
         const response = await fetch('/api/agents');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         allAgents = await response.json();
+        console.log('Loaded agents:', allAgents.length, allAgents);
 
         const agentFilter = document.getElementById('agent-filter');
         allAgents.forEach(agent => {
@@ -396,14 +401,19 @@
         });
       } catch (error) {
         console.error('Error loading agents:', error);
+        allAgents = [];
       }
     }
 
     async function loadSessions() {
       try {
         const response = await fetch('/api/sessions');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         const data = await response.json();
         allSessions = Array.isArray(data) ? data : data.sessions || [];
+        console.log('Loaded sessions:', allSessions.length, allSessions.slice(0, 3));
 
         const sessionFilter = document.getElementById('session-filter');
         allSessions.slice(0, 20).forEach(session => {
@@ -414,6 +424,7 @@
         });
       } catch (error) {
         console.error('Error loading sessions:', error);
+        allSessions = [];
       }
     }
 
@@ -436,6 +447,9 @@
         const response = await fetch(url);
         allTasks = await response.json();
 
+        console.log('Loaded tasks:', allTasks.length, allTasks);
+        console.log('Loaded agents:', allAgents.length, allAgents);
+
         renderKanban();
         updateStats();
       } catch (error) {
@@ -444,12 +458,15 @@
     }
 
     function renderKanban() {
+      console.log('renderKanban() called, allTasks:', allTasks.length);
       const statuses = ['pending', 'in_progress', 'completed', 'failed', 'blocked'];
 
       statuses.forEach(status => {
         const tasks = allTasks.filter(t => t.status === status);
         const container = document.getElementById(`${status}-tasks`);
         const countEl = document.getElementById(`${status}-count`);
+
+        console.log(`Status ${status}: ${tasks.length} tasks`, tasks);
 
         countEl.textContent = tasks.length;
 
@@ -458,11 +475,14 @@
           return;
         }
 
-        container.innerHTML = tasks.map(task => {
-          const agent = allAgents.find(a => a.id === task.agent_id);
-          const agentEmoji = agent ? agent.emoji : '🤖';
-          const agentName = agent ? agent.name : task.agent_id;
-          const teamName = task.team_name || 'Unknown Team';
+        console.log(`Rendering ${tasks.length} tasks for status ${status}`);
+
+        try {
+          const renderedCards = tasks.map(task => {
+            const agent = allAgents.find(a => a.id === task.agent_id);
+            const agentEmoji = agent ? agent.emoji : '🤖';
+            const agentName = agent ? agent.name : task.agent_id;
+            const teamName = task.team_name || 'Unknown Team';
 
           const startedAt = task.started_at ? new Date(task.started_at) : null;
           const completedAt = task.completed_at ? new Date(task.completed_at) : null;
@@ -529,7 +549,16 @@
               </div>
             </div>
           `;
-        }).join('');
+          });
+
+          const joinedHTML = renderedCards.join('');
+          console.log(`Generated HTML length for ${status}:`, joinedHTML.length, 'chars');
+          container.innerHTML = joinedHTML;
+          console.log(`Successfully rendered ${tasks.length} cards for ${status}, container children:`, container.children.length);
+        } catch (error) {
+          console.error(`Error rendering ${status} tasks:`, error);
+          container.innerHTML = `<div class="empty-column">Error: ${error.message}</div>`;
+        }
       });
 
       updateStats();
@@ -541,10 +570,10 @@
       const completed = allTasks.filter(t => t.status === 'completed').length;
       const failed = allTasks.filter(t => t.status === 'failed').length;
 
-      document.getElementById('total-tasks').textContent = total;
-      document.getElementById('active-tasks').textContent = active;
-      document.getElementById('completed-tasks').textContent = completed;
-      document.getElementById('failed-tasks').textContent = failed;
+      document.getElementById('stat-total-tasks').textContent = total;
+      document.getElementById('stat-active-tasks').textContent = active;
+      document.getElementById('stat-completed-tasks').textContent = completed;
+      document.getElementById('stat-failed-tasks').textContent = failed;
     }
 
     function getTimeAgo(date) {
