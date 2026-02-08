@@ -1,7 +1,7 @@
 # CLAUDE.md - Agent Service
 
-Last updated: 2026-02-03
-Times updated: 1
+Last updated: 2026-02-08
+Times updated: 2
 
 This file contains learnings about the agent automation service that orchestrates Claude Code agents across multiple repositories.
 
@@ -11,12 +11,13 @@ This file contains learnings about the agent automation service that orchestrate
 
 1. [Service Overview](#service-overview)
 2. [Architecture](#architecture)
-3. [Directory Structure](#directory-structure)
-4. [Configuration](#configuration)
-5. [Common Workflows](#common-workflows)
-6. [Deployment](#deployment)
-7. [Troubleshooting](#troubleshooting)
-8. [Common Mistakes](#common-mistakes)
+3. [Shared Markdown Workspace](#shared-markdown-workspace)
+4. [Directory Structure](#directory-structure)
+5. [Configuration](#configuration)
+6. [Common Workflows](#common-workflows)
+7. [Deployment](#deployment)
+8. [Troubleshooting](#troubleshooting)
+9. [Common Mistakes](#common-mistakes)
 
 ---
 
@@ -81,12 +82,80 @@ be-agents-service/
 │   ├── com.appcaire.daily-compound-review.plist # 10:30 PM review
 │   └── com.appcaire.caffeinate.plist            # Keep Mac awake
 │
-└── docs/               # Documentation
-    ├── COMPOUND_WORKFLOW.md
-    ├── COMPOUND_SETUP_GUIDE.md
-    ├── PRODUCTIVITY_SYSTEM.md
-    └── QUICK_REFERENCE.md
+├── docs/               # Documentation
+│   ├── COMPOUND_WORKFLOW.md
+│   ├── COMPOUND_SETUP_GUIDE.md
+│   ├── PRODUCTIVITY_SYSTEM.md
+│   ├── QUICK_REFERENCE.md
+│   └── WORKSPACE.md           # Shared workspace documentation
+│
+├── scripts/
+│   ├── workspace/             # Workspace management scripts
+│   │   ├── init-workspace.sh
+│   │   ├── generate-checkin.sh
+│   │   ├── sync-to-workspace.sh
+│   │   ├── process-inbox.sh
+│   │   └── templates/         # Markdown templates
+│   └── notifications/         # Push notification scripts
+│       ├── morning-briefing.sh
+│       ├── session-complete.sh
+│       └── weekly-review.sh
+│
+├── apps/openclaw-bridge/      # MCP bridge for OpenClaw
+│   └── src/
+│       ├── index.ts           # MCP server entry
+│       ├── tools.ts           # 11 workspace tools
+│       └── workspace-bridge.ts
+│
+└── config/openclaw/           # OpenClaw configuration
+    ├── openclaw.json          # Template config
+    ├── system-prompt.md       # Bot personality
+    └── README.md              # Setup guide
 ```
+
+---
+
+## Shared Markdown Workspace
+
+### Overview
+
+The workspace is a **shared markdown directory** where both humans and agents read/write. It's the unstructured data layer alongside the structured config (repos.yaml) and state (.compound-state/).
+
+**Key insight:** Markdown is the universal format both humans and AI agents handle natively. Use it for tasks, priorities, check-ins, memory, and follow-ups.
+
+### Three-Layer Architecture
+
+1. **Interaction Layer** — Telegram/WhatsApp (via OpenClaw), Dashboard, direct file editing
+2. **Storage Layer** — Flat markdown files on iCloud (human + agent shared surface)
+3. **Execution Layer** — Agent scripts consume and update workspace files
+
+### Workspace Structure
+
+```
+workspace/
+├── inbox.md              ← Quick-drop ideas (checkbox format)
+├── priorities.md         ← Agent picks #1 nightly
+├── tasks.md              ← Task tracking with metadata
+├── follow-ups.md         ← Revisit later items
+├── check-ins/daily/      ← Daily notes + agent activity
+├── check-ins/weekly/     ← Weekly reviews
+├── check-ins/monthly/    ← Monthly planning
+├── memory/               ← Decisions, learnings, context
+└── agent-reports/        ← Agent session summaries
+```
+
+### Key Scripts
+
+- `scripts/workspace/init-workspace.sh` — Creates workspace structure
+- `scripts/workspace/sync-to-workspace.sh` — Syncs agent state → markdown
+- `scripts/workspace/generate-checkin.sh` — Creates check-in from template
+- `scripts/workspace/process-inbox.sh` — Triages inbox with Claude
+
+### OpenClaw MCP Bridge
+
+`apps/openclaw-bridge/` is an MCP server that exposes workspace operations as tools. OpenClaw connects via stdio and can read/write inbox, priorities, tasks, etc.
+
+**See:** `docs/WORKSPACE.md` for complete documentation.
 
 ---
 
