@@ -26,6 +26,10 @@ export function loadReposConfig(): ReposConfig {
     if (repo.path.startsWith('~')) {
       repo.path = repo.path.replace('~', process.env.HOME || '~');
     }
+    // Expand ~ in workspace path
+    if (repo.workspace?.path?.startsWith('~')) {
+      repo.workspace.path = repo.workspace.path.replace('~', process.env.HOME || '~');
+    }
   });
 
   return config;
