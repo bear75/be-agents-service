@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.openclaw.ai/schema.json",
+  "_comment": "OpenClaw configuration template for the Agent Service workspace bridge. Copy to ~/.openclaw/openclaw.json and update values.",
+
+  "agent": {
+    "workspace": "~/.openclaw/workspace",
+    "model": "claude-sonnet-4-20250514",
+    "systemPromptFile": "~/HomeCare/be-agents-service/config/openclaw/system-prompt.md"
+  },
+
+  "channels": {
+    "telegram": {
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "allowFrom": ["YOUR_TELEGRAM_USER_ID"]
+    },
+    "whatsapp": {
+      "allowFrom": ["+46XXXXXXXXX"]
+    }
+  },
+
+  "mcpServers": {
+    "agent-workspace": {
+      "command": "node",
+      "args": ["~/HomeCare/be-agents-service/apps/openclaw-bridge/dist/index.js"],
+      "env": {
+        "WORKSPACE_CONFIG": "~/HomeCare/be-agents-service/config/repos.yaml",
+        "WORKSPACE_REPO": "beta-appcaire"
+      }
+    }
+  }
+}
