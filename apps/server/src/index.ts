@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { config } from 'dotenv';
 import reposRouter from './routes/repos.js';
 import agentsRouter from './routes/agents.js';
+import workspaceRouter from './routes/workspace.js';
 
 // Load environment variables
 config();
@@ -36,6 +37,7 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/repos', reposRouter);
 app.use('/api/agents', agentsRouter);
+app.use('/api/workspace', workspaceRouter);
 
 // 404 handler
 app.use((req, res) => {
@@ -62,6 +64,7 @@ app.listen(PORT, () => {
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`📁 Repos API: http://localhost:${PORT}/api/repos`);
   console.log(`🎯 Agents API: http://localhost:${PORT}/api/agents`);
+  console.log(`📝 Workspace API: http://localhost:${PORT}/api/workspace`);
 });
 
 // Graceful shutdown
