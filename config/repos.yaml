@@ -30,3 +30,9 @@ repos:
       # API keys loaded from ~/.config/caire/env
       # ANTHROPIC_API_KEY
       # GITHUB_TOKEN
+
+    # Feature project configs (long-lived branches, PRs merge here not main)
+    feature_projects:
+      ess-fsr-integration:
+        base_branch: feature/ess-fsr-integration
+        # Priority files: reports/ess-fsr/priorities-YYYY-MM-DD.md

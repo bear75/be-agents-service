@@ -257,14 +257,22 @@
     <div class="nav-header">
       <h1 style="margin: 0;">⚙️ Engineering Team</h1>
       <div class="nav-links">
-        <a href="/management-team.html" class="nav-link">Management</a>
-        <a href="/engineering.html" class="nav-link active">Engineering</a>
-        <a href="/sales-marketing.html" class="nav-link">Sales & Marketing</a>
-        <a href="/rl-dashboard.html" class="nav-link">RL Dashboard</a>
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/management-team.html" class="nav-link">Management (4)</a>
+        <a href="/engineering.html" class="nav-link active">Engineering (10)</a>
+        <a href="/sales-marketing.html" class="nav-link">Sales & Marketing (10)</a>
+        <a href="/rl-dashboard.html" class="nav-link">RL</a>
         <a href="/kanban.html" class="nav-link">📋 Task Board</a>
-        <a href="/commands.html" class="nav-link">Docs & Commands</a>
+        <a href="/commands.html" class="nav-link">Docs</a>
         <a href="/settings.html" class="nav-link">⚙️ Settings</a>
       </div>
+    </div>
+
+    <!-- Quick Start Projects -->
+    <div class="quick-start-projects" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+      <button type="button" class="btn btn-primary" onclick="loadESSFSRPreset()" style="padding: 12px 20px;">
+        📅 Load ESS+FSR Sprint 1
+      </button>
     </div>
 
     <!-- Job Control Panel -->
@@ -281,11 +289,15 @@
         </div>
         <div class="form-group">
           <label>Priority File</label>
-          <input type="text" id="priority-file" placeholder="reports/priorities-2026-02-08.md">
+          <input type="text" id="priority-file" placeholder="reports/ess-fsr/priorities-2026-02-10.md">
         </div>
         <div class="form-group">
           <label>Branch Name</label>
-          <input type="text" id="branch-name" placeholder="feature/new-feature">
+          <input type="text" id="branch-name" placeholder="feature/ess-fsr-sprint1-night1">
+        </div>
+        <div class="form-group">
+          <label>Base Branch (PR target, optional)</label>
+          <input type="text" id="base-branch" placeholder="feature/ess-fsr-integration or leave empty for main">
         </div>
         <div class="form-group">
           <label>Target Repository</label>
@@ -315,8 +327,23 @@
   </div>
 
   <script>
+    function loadESSFSRPreset() {
+      const today = new Date().toISOString().slice(0, 10);
+      document.getElementById('priority-file').value = `reports/ess-fsr/priorities-${today}.md`;
+      document.getElementById('branch-name').value = `feature/ess-fsr-${today}`;
+      document.getElementById('base-branch').value = 'feature/ess-fsr-integration';
+    }
+
+    function initFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('project') === 'ess-fsr') {
+        loadESSFSRPreset();
+      }
+    }
+
     // Initialize
     async function init() {
+      initFromUrl();
       await Promise.all([
         loadAgents(),
         loadJobs()
@@ -445,6 +472,7 @@
       const model = document.getElementById('model-select').value;
       const priorityFile = document.getElementById('priority-file').value;
       const branchName = document.getElementById('branch-name').value;
+      const baseBranch = document.getElementById('base-branch').value.trim() || undefined;
       const targetRepo = document.getElementById('target-repo').value;
 
       if (!priorityFile) {
@@ -466,6 +494,7 @@
             model,
             priorityFile,
             branchName,
+            baseBranch,
             targetRepo: targetRepo || undefined
           })
         });

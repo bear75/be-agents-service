@@ -61,6 +61,18 @@ be-agents-service/
 │           ├── pages/      # Dashboard pages
 │           └── lib/        # API client
 │
+├── agents/              # Engineering specialist scripts (orchestrator spawns)
+│   ├── backend-specialist.sh
+│   ├── frontend-specialist.sh
+│   ├── infrastructure-specialist.sh
+│   ├── verification-specialist.sh
+│   ├── senior-code-reviewer.sh
+│   ├── db-architect-specialist.sh
+│   ├── ux-designer-specialist.sh
+│   ├── documentation-expert.sh
+│   ├── levelup-specialist.sh
+│   └── marketing/       # Marketing team agents
+│
 ├── scripts/
 │   └── compound/       # Agent automation scripts
 │       ├── auto-compound.sh              # Main automation

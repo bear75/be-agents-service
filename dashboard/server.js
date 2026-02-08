@@ -329,7 +329,7 @@ function handleRequest(req, res) {
     req.on('end', () => {
       try {
         const config = JSON.parse(body);
-        const { team, model, priorityFile, branchName, targetRepo } = config;
+        const { team, model, priorityFile, branchName, baseBranch, targetRepo } = config;
 
         if (!team || !priorityFile || !branchName) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -345,6 +345,7 @@ function handleRequest(req, res) {
             model,
             priorityFile,
             branchName,
+            baseBranch,
             targetRepo
           });
         } else if (team === 'marketing') {
@@ -972,8 +973,11 @@ function handleRequest(req, res) {
     return;
   }
 
-  // Serve static files
-  let filePath = path.join(__dirname, 'public', pathname === '/' ? 'management-team.html' : pathname);
+  // Root must serve dashboard overview (index.html), never management-team
+  const isRoot = pathname === '/' || pathname === '' || pathname === '/index.html';
+  const serveFile = isRoot ? 'index.html' : pathname.replace(/^\//, '') || 'index.html';
+
+  let filePath = path.join(__dirname, 'public', serveFile);
 
   // Security: prevent directory traversal
   if (!filePath.startsWith(path.join(__dirname, 'public'))) {

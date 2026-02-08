@@ -39,6 +39,7 @@ TARGET_REPO="${1:-}"
 PRIORITY_FILE="${2:-}"
 PRD_FILE="${3:-}"
 BRANCH_NAME="${4:-}"
+BASE_BRANCH="${BASE_BRANCH:-main}"
 USE_ORCHESTRATOR="${USE_ORCHESTRATOR:-true}"
 SKIP_VERIFICATION="${SKIP_VERIFICATION:-false}"
 
@@ -93,6 +94,11 @@ if [[ ! -d "$TARGET_REPO" ]]; then
   exit 2
 fi
 
+# Resolve priority file path if relative (relative to target repo)
+if [[ "$PRIORITY_FILE" != /* ]]; then
+  PRIORITY_FILE="$TARGET_REPO/$PRIORITY_FILE"
+fi
+
 if [[ ! -f "$PRIORITY_FILE" ]]; then
   log_error "Priority file not found: $PRIORITY_FILE"
   exit 2
@@ -100,6 +106,14 @@ fi
 
 # Create session log directory
 mkdir -p "$LOG_DIR"
+
+# Sync to DB on exit (success or failure) - ensures sessions/tasks visible in Kanban
+sync_on_exit() {
+  if [[ -n "$SESSION_ID" ]] && [[ -f "$SERVICE_ROOT/scripts/sync-to-db.js" ]] && command -v node >/dev/null 2>&1; then
+    node "$SERVICE_ROOT/scripts/sync-to-db.js" "$SESSION_ID" >> "$SESSION_LOG" 2>&1 || true
+  fi
+}
+trap sync_on_exit EXIT
 
 log_info "=========================================="
 log_info "Multi-Agent Orchestrator Session"
@@ -109,6 +123,7 @@ log_info "Target Repo: $TARGET_REPO"
 log_info "Priority: $PRIORITY_FILE"
 log_info "PRD: $PRD_FILE"
 log_info "Branch: $BRANCH_NAME"
+log_info "Base Branch (PR target): $BASE_BRANCH"
 log_info "=========================================="
 
 # Initialize session
@@ -125,11 +140,16 @@ INITIAL_STATE=$(cat <<EOF
   "priorityFile": "$PRIORITY_FILE",
   "prdFile": "$PRD_FILE",
   "branchName": "$BRANCH_NAME",
+  "baseBranch": "$BASE_BRANCH",
   "specialists": {
     "backend": "pending",
     "frontend": "pending",
     "infrastructure": "pending",
-    "verification": "pending"
+    "verification": "pending",
+    "db-architect": "pending",
+    "ux-designer": "pending",
+    "docs-expert": "pending",
+    "levelup": "pending"
   },
   "phase": "planning"
 }
@@ -137,6 +157,30 @@ EOF
 )
 
 write_state "$SESSION_ID" "orchestrator" "$INITIAL_STATE" >> "$SESSION_LOG" 2>&1
+
+#
+# Git setup: checkout base branch, create task branch
+#
+log_info "Setting up git branch..."
+cd "$TARGET_REPO"
+git fetch origin 2>/dev/null || true
+if git show-ref --verify --quiet "refs/heads/$BASE_BRANCH" 2>/dev/null; then
+  git checkout "$BASE_BRANCH"
+  git pull origin "$BASE_BRANCH" 2>/dev/null || true
+else
+  log_info "Base branch $BASE_BRANCH does not exist, creating from main"
+  git checkout main
+  git pull origin main 2>/dev/null || true
+  git checkout -b "$BASE_BRANCH"
+  git push -u origin "$BASE_BRANCH" 2>/dev/null || true
+fi
+if git show-ref --verify --quiet "refs/heads/$BRANCH_NAME" 2>/dev/null; then
+  git checkout "$BRANCH_NAME"
+  git pull origin "$BRANCH_NAME" 2>/dev/null || true
+else
+  git checkout -b "$BRANCH_NAME"
+fi
+log_info "Working on branch: $BRANCH_NAME (PR will target: $BASE_BRANCH)"
 
 #
 # Analyze priority to determine parallelization strategy
@@ -150,6 +194,10 @@ PRIORITY_CONTENT=$(cat "$PRIORITY_FILE")
 NEEDS_BACKEND=false
 NEEDS_FRONTEND=false
 NEEDS_INFRASTRUCTURE=false
+NEEDS_DB_ARCHITECT=false
+NEEDS_UX_DESIGNER=false
+NEEDS_DOCS_EXPERT=false
+NEEDS_LEVELUP=false
 
 # Simple heuristic: check for keywords in priority
 if echo "$PRIORITY_CONTENT" | grep -qi "schema\|database\|migration\|resolver\|graphql.*mutation\|prisma"; then
@@ -167,7 +215,27 @@ if echo "$PRIORITY_CONTENT" | grep -qi "package\|dependency\|config\|documentati
   log_info "✓ Infrastructure specialist needed (detected: package/config changes)"
 fi
 
-# If nothing detected, assume full-stack feature (needs all specialists)
+if echo "$PRIORITY_CONTENT" | grep -qi "schema design\|database design\|prisma.*design\|migration.*design"; then
+  NEEDS_DB_ARCHITECT=true
+  log_info "✓ DB Architect specialist needed (detected: schema/database design)"
+fi
+
+if echo "$PRIORITY_CONTENT" | grep -qi "ux\|accessibility\|responsive\|design system\|pwa\|mobile-first"; then
+  NEEDS_UX_DESIGNER=true
+  log_info "✓ UX Designer specialist needed (detected: UX/accessibility)"
+fi
+
+if echo "$PRIORITY_CONTENT" | grep -qi "documentation\|docs\|readme\|archive.*doc"; then
+  NEEDS_DOCS_EXPERT=true
+  log_info "✓ Documentation Expert specialist needed (detected: documentation)"
+fi
+
+if echo "$PRIORITY_CONTENT" | grep -qi "gamification\|xp\|achievements\|leaderboard"; then
+  NEEDS_LEVELUP=true
+  log_info "✓ Agent Levelup specialist needed (detected: gamification)"
+fi
+
+# If nothing detected, assume full-stack feature (needs all core specialists)
 if [[ "$NEEDS_BACKEND" == "false" && "$NEEDS_FRONTEND" == "false" && "$NEEDS_INFRASTRUCTURE" == "false" ]]; then
   log_warn "Could not determine specialist needs, assuming full-stack feature"
   NEEDS_BACKEND=true
@@ -207,6 +275,30 @@ if [[ "$USE_SPECIALISTS" == "true" ]]; then
     INFRA_PID=$!
     PARALLEL_PIDS+=("$INFRA_PID")
     log_info "Infrastructure specialist spawned (PID: $INFRA_PID)"
+  fi
+
+  if [[ "$NEEDS_DB_ARCHITECT" == "true" ]]; then
+    log_info "Spawning db-architect specialist..."
+    "$AGENTS_DIR/db-architect-specialist.sh" "$SESSION_ID" "$TARGET_REPO" "$PRIORITY_FILE" >> "$LOG_DIR/db-architect-orchestrated.log" 2>&1 &
+    DB_ARCH_PID=$!
+    PARALLEL_PIDS+=("$DB_ARCH_PID")
+    log_info "DB Architect specialist spawned (PID: $DB_ARCH_PID)"
+  fi
+
+  if [[ "$NEEDS_DOCS_EXPERT" == "true" ]]; then
+    log_info "Spawning documentation expert..."
+    "$AGENTS_DIR/documentation-expert.sh" "$SESSION_ID" "$TARGET_REPO" "$PRIORITY_FILE" >> "$LOG_DIR/docs-expert-orchestrated.log" 2>&1 &
+    DOCS_PID=$!
+    PARALLEL_PIDS+=("$DOCS_PID")
+    log_info "Documentation Expert specialist spawned (PID: $DOCS_PID)"
+  fi
+
+  if [[ "$NEEDS_LEVELUP" == "true" ]]; then
+    log_info "Spawning levelup specialist..."
+    "$AGENTS_DIR/levelup-specialist.sh" "$SESSION_ID" "$TARGET_REPO" "$PRIORITY_FILE" >> "$LOG_DIR/levelup-orchestrated.log" 2>&1 &
+    LEVELUP_PID=$!
+    PARALLEL_PIDS+=("$LEVELUP_PID")
+    log_info "Agent Levelup specialist spawned (PID: $LEVELUP_PID)"
   fi
 
   # Wait for parallel agents to complete
@@ -269,6 +361,24 @@ if [[ "$USE_SPECIALISTS" == "true" && "$NEEDS_FRONTEND" == "true" ]]; then
   fi
 
   log_info "✓ Frontend specialist completed"
+fi
+
+if [[ "$USE_SPECIALISTS" == "true" && "$NEEDS_UX_DESIGNER" == "true" ]]; then
+  log_info "=========================================="
+  log_info "Phase 2b: UX Designer (After Frontend)"
+  log_info "=========================================="
+
+  log_info "Spawning ux-designer specialist..."
+  "$AGENTS_DIR/ux-designer-specialist.sh" "$SESSION_ID" "$TARGET_REPO" "$PRIORITY_FILE" >> "$LOG_DIR/ux-designer-orchestrated.log" 2>&1
+  UX_EXIT=$?
+
+  if [[ $UX_EXIT -ne 0 ]]; then
+    log_error "UX Designer specialist failed (exit code: $UX_EXIT)"
+    update_state "$SESSION_ID" "orchestrator" '.status' 'failed'
+    exit 1
+  fi
+
+  log_info "✓ UX Designer specialist completed"
 fi
 
 #
@@ -356,7 +466,7 @@ This PR was created by the multi-agent orchestrator system running on Mac Mini.
 "
 
 cd "$TARGET_REPO"
-PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY" --base main --head "$BRANCH_NAME" 2>&1)
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY" --base "$BASE_BRANCH" --head "$BRANCH_NAME" 2>&1)
 PR_EXIT=$?
 
 if [[ $PR_EXIT -eq 0 ]]; then

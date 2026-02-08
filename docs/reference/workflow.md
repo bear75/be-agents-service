@@ -110,12 +110,13 @@ A **session** is one execution of the orchestrator - equivalent to a sprint in A
 ### Session Lifecycle
 
 ```
-1. Planning      → Orchestrator analyzes priority
-2. Phase 1       → Backend + Infrastructure (parallel)
+1. Planning      → Orchestrator analyzes priority (keyword detection)
+2. Phase 1       → Backend, Infrastructure, DB Architect, Docs Expert, Levelup (parallel)
 3. Phase 2       → Frontend (sequential, waits for backend)
-4. Verification  → QA checks quality
-5. PR Creation   → Deliverable ready for review
-6. Completed     → Session ends, PR awaits merge
+4. Phase 2b      → UX Designer (after frontend, when UX keywords detected)
+5. Verification  → QA checks quality
+6. PR Creation   → Deliverable ready for review
+7. Completed     → Session ends, PR awaits merge
 ```
 
 ### Session Directory
@@ -127,6 +128,10 @@ A **session** is one execution of the orchestrator - equivalent to a sprint in A
 ├── backend.json           # Backend specialist state
 ├── frontend.json          # Frontend specialist state
 ├── infrastructure.json    # Infrastructure specialist state
+├── db-architect.json      # DB Architect specialist state (when spawned)
+├── ux-designer.json       # UX Designer specialist state (when spawned)
+├── docs-expert.json       # Documentation Expert state (when spawned)
+├── levelup.json           # Agent Levelup specialist state (when spawned)
 └── verification.json      # Verification specialist state
 ```
 
@@ -176,7 +181,7 @@ logs/orchestrator-sessions/session-1770451234/
 | State | Meaning | Duration |
 |-------|---------|----------|
 | `planning` | Analyzing priority, creating PRD | 1-2 min |
-| `phase1_parallel` | Backend + Infra working | 5-15 min |
+| `phase1_parallel` | Backend + Infra + DB Architect + Docs Expert + Levelup (parallel) | 5-15 min |
 | `phase2_frontend` | Frontend working | 5-10 min |
 | `verification` | QA checking quality | 2-5 min |
 | `pr_creation` | Creating pull request | 1 min |

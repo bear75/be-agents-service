@@ -264,7 +264,7 @@ CREATE TABLE IF NOT EXISTS llm_usage (
 
 -- Seed teams
 INSERT OR IGNORE INTO teams (id, name, domain, description) VALUES
-    ('team-engineering', 'Engineering', 'engineering', '4 specialists + orchestrator + senior reviewer'),
+    ('team-engineering', 'Engineering', 'engineering', '10 specialists + orchestrator + senior reviewer'),
     ('team-marketing', 'Marketing', 'marketing', '10 Marvel character agents led by Jarvis'),
     ('team-management', 'Management', 'management', 'Executive leadership: CEO, CPO/CTO, CMO/CSO, HR Agent Lead');
 
@@ -275,7 +275,11 @@ INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VA
     ('agent-frontend', 'team-engineering', 'Frontend', 'React & UI', '🎨', 'sonnet'),
     ('agent-infrastructure', 'team-engineering', 'Infrastructure', 'DevOps & CI/CD', '🏗️', 'sonnet'),
     ('agent-verification', 'team-engineering', 'Verification', 'Testing & QA', '✅', 'haiku'),
-    ('agent-senior-reviewer', 'team-engineering', 'Senior Reviewer', 'Code Review', '🔍', 'opus');
+    ('agent-senior-reviewer', 'team-engineering', 'Senior Reviewer', 'Code Review', '🔍', 'opus'),
+    ('agent-db-architect', 'team-engineering', 'DB Architect', 'Database design, Prisma schema, Apollo GraphQL, PostgreSQL optimization, query performance', '🗄️', 'sonnet'),
+    ('agent-ux-designer', 'team-engineering', 'UX Designer', 'Modern UX 2026, responsive design, PWA, React Native, brand guidelines, accessibility, mobile-first', '🎭', 'opus'),
+    ('agent-docs-expert', 'team-engineering', 'Documentation Expert', 'Keep docs updated, archive obsolete docs, verify with team, publish to docs page, maintain accuracy', '📚', 'sonnet'),
+    ('agent-levelup', 'team-engineering', 'Agent Levelup', 'Gamification expert: XP systems, achievements, leaderboards, progression mechanics, engagement optimization', '🎮', 'sonnet');
 
 -- Seed marketing agents
 INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VALUES

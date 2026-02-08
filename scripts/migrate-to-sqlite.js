@@ -21,6 +21,28 @@ let stats = {
 };
 
 /**
+ * Map owner name from JSON (e.g. "jarvis") to agent_id in database (e.g. "agent-jarvis")
+ * campaigns.json uses short names; campaigns.owner REFERENCES agents(id)
+ */
+function mapOwnerToAgentId(owner) {
+  if (!owner) return null;
+  const agentMap = {
+    jarvis: 'agent-jarvis',
+    vision: 'agent-vision',
+    shuri: 'agent-shuri',
+    fury: 'agent-fury',
+    loki: 'agent-loki',
+    quill: 'agent-quill',
+    wanda: 'agent-wanda',
+    pepper: 'agent-pepper',
+    friday: 'agent-friday',
+    wong: 'agent-wong'
+  };
+  const lower = owner.toLowerCase();
+  return agentMap[lower] || (owner.startsWith('agent-') ? owner : `agent-${lower}`);
+}
+
+/**
  * Migrate session directories to database
  */
 function migrateSessions() {
@@ -205,6 +227,9 @@ function migrateMarketingData() {
           continue;
         }
 
+        // Map owner name to agent_id (campaigns.json uses "jarvis", DB expects "agent-jarvis")
+        const ownerId = mapOwnerToAgentId(campaign.owner);
+
         db.db.prepare(`
           INSERT INTO campaigns (id, name, type, owner, status, channels, deliverables, metrics, start_date, end_date)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -212,7 +237,7 @@ function migrateMarketingData() {
           campaign.id,
           campaign.name,
           campaign.type,
-          campaign.owner || null,
+          ownerId,
           campaign.status || 'draft',
           JSON.stringify(campaign.channels || []),
           JSON.stringify(campaign.deliverables || []),

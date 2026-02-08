@@ -331,13 +331,14 @@
     <div class="nav-header">
       <h1>📋 Docs & Commands</h1>
       <div class="nav-links">
-        <a href="/management-team.html" class="nav-link">Management</a>
-        <a href="/engineering.html" class="nav-link">Engineering</a>
-        <a href="/sales-marketing.html" class="nav-link">Sales & Marketing</a>
-        <a href="/rl-dashboard.html" class="nav-link">RL Dashboard</a>
-        <a href="/kanban.html" class="nav-link">Task Board</a>
-        <a href="/commands.html" class="nav-link active">Docs & Commands</a>
-        <a href="/settings.html" class="nav-link">Settings</a>
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/management-team.html" class="nav-link">Management (4)</a>
+        <a href="/engineering.html" class="nav-link">Engineering (10)</a>
+        <a href="/sales-marketing.html" class="nav-link">Sales & Marketing (10)</a>
+        <a href="/rl-dashboard.html" class="nav-link">RL</a>
+        <a href="/kanban.html" class="nav-link">📋 Task Board</a>
+        <a href="/commands.html" class="nav-link active">Docs</a>
+        <a href="/settings.html" class="nav-link">⚙️ Settings</a>
       </div>
     </div>
 
@@ -356,17 +357,23 @@
       <div class="section">
         <h2><span class="emoji">🎯</span> Dashboard Navigation Guide</h2>
         <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 25px;">
-          The agent service dashboard is organized into <strong>5 pages</strong> reflecting the management hierarchy:
-          CEO → Management Team → Engineering & Marketing Teams → RL System
+          The agent service dashboard is organized into <strong>8 sections</strong>:
+          Dashboard (overview) → Management (4) → Engineering (10) → Sales & Marketing (10) → RL → Task Board → Docs → Settings
         </p>
 
-        <h3>1. 👔 Management Team (Home)</h3>
-        <p><code>http://localhost:3030/management-team.html</code> (Default page)</p>
+        <h3>1. 📊 Dashboard (Overview)</h3>
+        <p><code>http://localhost:3030/</code> (Default start page)</p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <p>Overview with quick stats (total agents, team counts, active sessions) and links to all sections.</p>
+        </div>
+
+        <h3>2. 👔 Management (4)</h3>
+        <p><code>http://localhost:3030/management-team.html</code></p>
         <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
           <h4 style="margin-top: 0;">Executive Dashboard</h4>
           <ul style="line-height: 1.8;">
             <li><strong>CEO (You)</strong>: Upload tasks, set strategy, issue prompts</li>
-            <li><strong>CPO & CTO</strong>: Engineering lead managing 6 agents</li>
+            <li><strong>CPO & CTO</strong>: Engineering lead managing 10 agents</li>
             <li><strong>CMO & CSO</strong>: Marketing lead managing 10 agents</li>
             <li><strong>HR Agent Lead</strong>: Hire/fire agents, RL evaluations</li>
           </ul>
@@ -381,17 +388,21 @@
           </ul>
         </div>
 
-        <h3>2. ⚙️ Engineering Team</h3>
+        <h3>3. ⚙️ Engineering (10)</h3>
         <p><code>http://localhost:3030/engineering.html</code></p>
         <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
-          <h4 style="margin-top: 0;">6 Engineering Agents:</h4>
+          <h4 style="margin-top: 0;">10 Engineering Agents:</h4>
           <ul style="line-height: 1.8;">
             <li>🎯 <strong>Orchestrator</strong>: Workflow coordination</li>
             <li>⚙️ <strong>Backend</strong>: API, database, server logic</li>
             <li>🎨 <strong>Frontend</strong>: UI/UX, components, styling</li>
             <li>🔧 <strong>Infrastructure</strong>: DevOps, deployment, monitoring</li>
+            <li>🗄️ <strong>DB Architect</strong>: Schema design, Prisma, migrations</li>
+            <li>🎭 <strong>UX Designer</strong>: Accessibility, responsive, design system</li>
+            <li>📚 <strong>Documentation Expert</strong>: Docs, README, archive</li>
+            <li>🎮 <strong>Agent Levelup</strong>: Gamification, XP, achievements</li>
             <li>✅ <strong>Verification</strong>: Testing, QA, validation</li>
-            <li>👨‍💼 <strong>Senior Reviewer</strong>: Code review, architecture</li>
+            <li>🔍 <strong>Senior Reviewer</strong>: Code review, architecture</li>
           </ul>
           <h4>Start Engineering Job:</h4>
           <ol style="line-height: 1.8;">
@@ -403,7 +414,7 @@
           <p><strong>Monitor:</strong> Active Jobs section shows running jobs with logs and stop controls</p>
         </div>
 
-        <h3>3. 📊 Sales & Marketing Team</h3>
+        <h3>4. 📊 Sales & Marketing (10)</h3>
         <p><code>http://localhost:3030/sales-marketing.html</code></p>
         <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
           <h4 style="margin-top: 0;">10 Marketing Avengers:</h4>
@@ -430,7 +441,7 @@
           <p><strong>View:</strong> Recent leads, active campaigns, and social posts</p>
         </div>
 
-        <h3>4. 🧠 RL Dashboard</h3>
+        <h3>5. 🧠 RL Dashboard</h3>
         <p><code>http://localhost:3030/rl-dashboard.html</code></p>
         <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
           <h4 style="margin-top: 0;">Reinforcement Learning System:</h4>
@@ -449,7 +460,14 @@
           </ul>
         </div>
 
-        <h3>5. 📋 Docs & Commands</h3>
+        <h3>6. 📋 Task Board</h3>
+        <p><code>http://localhost:3030/kanban.html</code></p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <p>Kanban view for all teams, agents, tasks, status, schedules, and priority files.</p>
+          <p><strong>Quick Start:</strong> ESS+FSR project card at top → <a href="/engineering.html?project=ess-fsr" style="color: var(--primary);">Start ESS+FSR Job</a></p>
+        </div>
+
+        <h3>7. 📚 Docs & Commands</h3>
         <p><code>http://localhost:3030/commands.html</code> (This page)</p>
         <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
           <p>Complete reference for:</p>
@@ -460,6 +478,12 @@
             <li>All agent capabilities and specialties</li>
             <li>API documentation</li>
           </ul>
+        </div>
+
+        <h3>8. ⚙️ Settings</h3>
+        <p><code>http://localhost:3030/settings.html</code></p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <p>Integrations, repositories, email, social, and environment configuration.</p>
         </div>
 
         <h3>💻 API Endpoints</h3>
@@ -668,6 +692,17 @@
           Go to <a href="/engineering.html" style="color: var(--primary);">Engineering page</a>, select model, enter priority file and branch, click "Start Engineering Job"
         </p>
 
+        <h3>📅 Quick Start: ESS+FSR Integration</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Long-lived feature branch project. PRs merge to <code>feature/ess-fsr-integration</code>, not main.
+        </p>
+        <div style="background: rgba(102, 126, 234, 0.1); border: 2px solid rgba(102, 126, 234, 0.2); border-radius: 10px; padding: 20px; margin: 15px 0;">
+          <p><strong>Option 1:</strong> <a href="/kanban.html" style="color: var(--primary);">Task Board</a> → Click "Start ESS+FSR Job"</p>
+          <p><strong>Option 2:</strong> <a href="/engineering.html?project=ess-fsr" style="color: var(--primary);">Engineering</a> → Click "Load ESS+FSR Sprint 1" → Start Engineering Job</p>
+          <p><strong>Manual:</strong> Priority: <code>reports/ess-fsr/priorities-YYYY-MM-DD.md</code>, Branch: <code>feature/ess-fsr-YYYY-MM-DD</code>, Base: <code>feature/ess-fsr-integration</code></p>
+          <p><strong>Doc:</strong> <code>docs/guides/ess-fsr-workflow.md</code></p>
+        </div>
+
         <h3>Via CLI</h3>
         <div class="command-block">
           <div class="description">Run orchestrator manually</div>
@@ -788,6 +823,109 @@ turbo run build</div>
         <div class="command-block">
           <div class="description">View latest frontend logs</div>
           <div class="command">tail ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*/frontend.log</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🔄</span> Monitoring & Automation Scripts</h2>
+
+        <h3>Health Checks</h3>
+        <div class="command-block">
+          <div class="description">Check system health and status</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/check-status.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Continuous monitoring loop (runs in background)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/loop.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Monitor CI/CD pipeline status</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/ci-monitor.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Learning & Optimization</h3>
+        <div class="command-block">
+          <div class="description">Run daily compound review (RL learning extraction)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/daily-compound-review.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Analyze priority report and extract insights</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/analyze-report.sh ~/HomeCare/beta-appcaire/reports/priorities-2026-02-08.md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Documentation & Maintenance</h3>
+        <div class="command-block">
+          <div class="description">Update CLAUDE.md with latest learnings</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/update-claude-md.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Onboard new Claude instance with context</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/onboard-claude.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Testing & Safety</h3>
+        <div class="command-block">
+          <div class="description">Test safety mechanisms (branch checks, auto-stash)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/test-safety.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Database Management</h3>
+        <div class="command-block">
+          <div class="description">Seed agents database (initialize all 24 agents)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+node scripts/seed-agents.js</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Sync session state from files to database</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+node scripts/sync-to-db.js session-1770537842</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Sync all sessions to database</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+for session in .compound-state/session-*; do
+  session_id=$(basename "$session")
+  node scripts/sync-to-db.js "$session_id"
+done</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Setup email integrations (9 IMAP accounts)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+node scripts/setup-email-integrations.js</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Setup social media integrations (10 accounts)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+node scripts/setup-social-integrations.js</div>
           <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
         </div>
       </div>

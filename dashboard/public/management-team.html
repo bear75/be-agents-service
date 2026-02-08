@@ -342,12 +342,13 @@
     <div class="nav-header">
       <h1 style="margin: 0;">👔 Management Team</h1>
       <div class="nav-links">
-        <a href="/management-team.html" class="nav-link active">Management</a>
-        <a href="/engineering.html" class="nav-link">Engineering</a>
-        <a href="/sales-marketing.html" class="nav-link">Sales & Marketing</a>
-        <a href="/rl-dashboard.html" class="nav-link">RL Dashboard</a>
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/management-team.html" class="nav-link active">Management (4)</a>
+        <a href="/engineering.html" class="nav-link">Engineering (10)</a>
+        <a href="/sales-marketing.html" class="nav-link">Sales & Marketing (10)</a>
+        <a href="/rl-dashboard.html" class="nav-link">RL</a>
         <a href="/kanban.html" class="nav-link">📋 Task Board</a>
-        <a href="/commands.html" class="nav-link">Docs & Commands</a>
+        <a href="/commands.html" class="nav-link">Docs</a>
         <a href="/settings.html" class="nav-link">⚙️ Settings</a>
       </div>
     </div>
@@ -463,12 +464,16 @@
         </div>
         <div class="exec-stats">
           <div class="stat-item">
-            <div class="stat-value" id="total-agents">16</div>
+            <div class="stat-value" id="total-agents">0</div>
             <div class="stat-label">Total Agents</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value" id="active-agents">16</div>
+            <div class="stat-value" id="active-agents">0</div>
             <div class="stat-label">Active</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="other-agents-count">0</div>
+            <div class="stat-label">Management / Other</div>
           </div>
           <div class="stat-item">
             <div class="stat-value" id="high-performers">0</div>
@@ -667,28 +672,41 @@
 
         const engAgents = agents.filter(a => a.team === 'Engineering');
         const mktAgents = agents.filter(a => a.team === 'Marketing');
+        const otherAgents = agents.filter(a => a.team !== 'Engineering' && a.team !== 'Marketing');
 
-        const engCompleted = engAgents.reduce((sum, a) => sum + a.tasksCompleted, 0);
-        const mktCompleted = mktAgents.reduce((sum, a) => sum + a.tasksCompleted, 0);
+        const engCompleted = engAgents.reduce((sum, a) => sum + (a.tasksCompleted || 0), 0);
+        const mktCompleted = mktAgents.reduce((sum, a) => sum + (a.tasksCompleted || 0), 0);
 
-        const engSuccess = engAgents.length > 0
-          ? Math.round(engAgents.reduce((sum, a) => sum + parseInt(a.successRate), 0) / engAgents.length)
+        // Only include agents with at least 1 task (completed or failed) in success rate
+        const engAgentsWithTasks = engAgents.filter(a => (a.tasksCompleted || 0) + (a.tasksFailed || 0) > 0);
+        const mktAgentsWithTasks = mktAgents.filter(a => (a.tasksCompleted || 0) + (a.tasksFailed || 0) > 0);
+
+        const engSuccess = engAgentsWithTasks.length > 0
+          ? Math.round(engAgentsWithTasks.reduce((sum, a) => sum + parseInt(a.successRate, 10) || 0, 0) / engAgentsWithTasks.length)
           : 0;
-        const mktSuccess = mktAgents.length > 0
-          ? Math.round(mktAgents.reduce((sum, a) => sum + parseInt(a.successRate), 0) / mktAgents.length)
+        const mktSuccess = mktAgentsWithTasks.length > 0
+          ? Math.round(mktAgentsWithTasks.reduce((sum, a) => sum + parseInt(a.successRate, 10) || 0, 0) / mktAgentsWithTasks.length)
           : 0;
 
-        // Update engineering stats
+        // Update engineering stats (including team size)
+        const engTeamSizeEl = document.getElementById('eng-team-size');
         const engSuccessEl = document.getElementById('eng-success-rate');
         const engCompletedEl = document.getElementById('eng-completed');
+        if (engTeamSizeEl) engTeamSizeEl.textContent = engAgents.length;
         if (engSuccessEl) engSuccessEl.textContent = engSuccess + '%';
         if (engCompletedEl) engCompletedEl.textContent = engCompleted;
 
-        // Update marketing stats
+        // Update marketing stats (including team size)
+        const mktTeamSizeEl = document.getElementById('mkt-team-size');
         const mktSuccessEl = document.getElementById('mkt-success-rate');
         const mktCompletedEl = document.getElementById('mkt-completed');
+        if (mktTeamSizeEl) mktTeamSizeEl.textContent = mktAgents.length;
         if (mktSuccessEl) mktSuccessEl.textContent = mktSuccess + '%';
         if (mktCompletedEl) mktCompletedEl.textContent = mktCompleted;
+
+        // Update HR card: missing/other agents (Management team, not in Engineering or Marketing)
+        const otherAgentsEl = document.getElementById('other-agents-count');
+        if (otherAgentsEl) otherAgentsEl.textContent = otherAgents.length;
       } catch (error) {
         console.error('Error loading management stats:', error);
       }
