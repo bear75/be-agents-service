@@ -37,7 +37,21 @@
     └── server.js                       ← Reads JSON files and serves them as API
 ```
 
-### Marketing Agent Data
+### OpenClaw & Marketing Data (API-ready)
+
+OpenClaw lead scraper and sample marketing data use `.compound-state/data/`:
+
+```
+.compound-state/data/
+├── leads.json              ← OpenClaw scraped leads (via /api/data/leads)
+├── campaigns.json          ← Marketing campaigns (via /api/data/campaigns)
+├── content.json            ← Content pieces (via /api/data/content)
+└── social-posts.json       ← Social posts (via /api/data/social)
+```
+
+Dashboard serves these via `GET /api/data/leads`, `/api/data/campaigns`, etc.
+
+### Marketing Agent Data (Jarvis/Manual Sessions)
 
 ```
 ~/HomeCare/be-agent-service/
@@ -458,10 +472,12 @@ cat .compound-state/session-marketing-*/vision.json | jq '.deliverables'
 | Data Type | Location | Format |
 |-----------|----------|--------|
 | **Session State** | `.compound-state/session-*/` | JSON files |
+| **OpenClaw Leads** | `.compound-state/data/leads.json` | JSON |
+| **Marketing Data** | `.compound-state/data/{campaigns,content,social-posts}.json` | JSON |
 | **Logs** | `logs/orchestrator-sessions/` | Plain text |
-| **Marketing Leads** | `.compound-state/session-marketing-*/pepper.json` | JSON |
-| **Email Campaigns** | `.compound-state/session-marketing-*/pepper.json` | JSON |
-| **Social Calendar** | `.compound-state/session-marketing-*/quill.json` | JSON |
+| **Marketing Leads (Jarvis)** | `.compound-state/session-marketing-*/pepper.json` | JSON |
+| **Email Campaigns (Jarvis)** | `.compound-state/session-marketing-*/pepper.json` | JSON |
+| **Social Calendar (Jarvis)** | `.compound-state/session-marketing-*/quill.json` | JSON |
 | **SEO Reports** | `.compound-state/session-marketing-*/vision.json` + `reports/seo/` | JSON + Files |
 | **Content** | `reports/content/` | Markdown/HTML files |
 | **Analytics** | `reports/analytics/` | JSON files |

@@ -97,11 +97,12 @@ The scripts will then run safely.
 You can run these scripts manually anytime:
 
 ```bash
+# From be-agent-service root:
 # Run daily review
-./scripts/compound/daily-compound-review.sh
+./scripts/daily-compound-review.sh
 
 # Run auto-compound
-./scripts/compound/auto-compound.sh
+./scripts/auto-compound.sh
 ```
 
 The same safety checks apply - they will abort if it's not safe.

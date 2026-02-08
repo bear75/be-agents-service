@@ -144,6 +144,8 @@ Features:
 - Command center (all commands in one place)
 - Documentation browser
 
+**Pages:** `/` (sessions), `/control-tower.html` (Kanban), `/commands.html` (commands & docs)
+
 ## Usage
 
 ### Engineering Agents (Automatic)
