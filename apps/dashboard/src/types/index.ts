@@ -47,3 +47,70 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
 }
+
+// ─── Shared Markdown Workspace Types ─────────────────────────────────────────
+
+export interface InboxItem {
+  id: string;
+  text: string;
+  done: boolean;
+  date?: string;
+  tags?: string[];
+}
+
+export interface WorkspaceTask {
+  id: string;
+  title: string;
+  status: 'pending' | 'in-progress' | 'done' | 'blocked';
+  priority?: 'high' | 'medium' | 'low';
+  branch?: string;
+  agent?: string;
+  startedAt?: string;
+  completedAt?: string;
+  pr?: string;
+  notes?: string;
+}
+
+export interface CheckIn {
+  date: string;
+  type: 'daily' | 'weekly' | 'monthly';
+  filename: string;
+  content: string;
+  sections: Record<string, string>;
+}
+
+export interface MemoryEntry {
+  filename: string;
+  title: string;
+  content: string;
+  lastModified: string;
+}
+
+export interface FollowUp {
+  id: string;
+  text: string;
+  done: boolean;
+  dueDate?: string;
+  tags?: string[];
+}
+
+export interface WorkspaceOverview {
+  inbox: {
+    total: number;
+    pending: number;
+    items: InboxItem[];
+  };
+  priorities: Priority[];
+  tasks: {
+    inProgress: WorkspaceTask[];
+    pending: WorkspaceTask[];
+    done: WorkspaceTask[];
+  };
+  latestCheckIn?: CheckIn;
+  followUps: {
+    total: number;
+    pending: number;
+    items: FollowUp[];
+  };
+  agentReport?: string;
+}
