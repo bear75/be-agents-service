@@ -92,11 +92,30 @@ echo "✓ Safety checks passed - updating main branch"
 git fetch origin main
 git reset --hard origin/main
 
-# Find the latest prioritized report
-LATEST_REPORT=$(ls -t reports/*.md 2>/dev/null | head -1)
+# ─── Find priorities: workspace first, then reports/ ─────────────────────────
+# Source workspace resolver to check for shared markdown workspace
+WORKSPACE_SCRIPT="$SCRIPT_DIR/../workspace/resolve-workspace.sh"
+WORKSPACE_PATH=""
+if [ -f "$WORKSPACE_SCRIPT" ]; then
+  source "$WORKSPACE_SCRIPT"
+  WORKSPACE_PATH=$(get_workspace_path "$REPO_NAME" 2>/dev/null || echo "")
+fi
+
+LATEST_REPORT=""
+
+# Check workspace priorities first
+if [ -n "$WORKSPACE_PATH" ] && [ -f "$WORKSPACE_PATH/priorities.md" ]; then
+  LATEST_REPORT="$WORKSPACE_PATH/priorities.md"
+  echo "Using workspace priorities: $LATEST_REPORT"
+fi
+
+# Fall back to reports/ in target repo
+if [ -z "$LATEST_REPORT" ]; then
+  LATEST_REPORT=$(ls -t reports/*.md 2>/dev/null | head -1)
+fi
 
 if [ -z "$LATEST_REPORT" ]; then
-  echo "No reports found in reports/ directory. Exiting."
+  echo "No priorities found (checked workspace and reports/ directory). Exiting."
   exit 0
 fi
 
@@ -172,6 +191,14 @@ gh pr create --draft --title "Compound: $PRIORITY_ITEM" --body "Auto-generated P
 **PRD:** See $PRD_FILE
 
 **Generated:** $(date)" --base main
+
+# ─── Sync to workspace ──────────────────────────────────────────────────────
+# Write session summary to shared markdown workspace (if configured)
+SYNC_SCRIPT="$SCRIPT_DIR/../workspace/sync-to-workspace.sh"
+if [ -f "$SYNC_SCRIPT" ]; then
+  echo "📝 Syncing session to workspace..."
+  "$SYNC_SCRIPT" "$REPO_NAME" 2>/dev/null || echo "⚠️  Workspace sync failed (non-fatal)"
+fi
 
 # RESTORE STASH: If we stashed changes at the beginning, restore them now
 # Note: We're still on the feature branch, so switch back to main first

@@ -136,6 +136,21 @@ else
   echo "✓ No uncommitted changes - review completed properly"
 fi
 
+# ─── Sync to workspace ──────────────────────────────────────────────────────
+# Write review summary to shared markdown workspace (if configured)
+SYNC_SCRIPT="$SCRIPT_DIR/../workspace/sync-to-workspace.sh"
+if [ -f "$SYNC_SCRIPT" ]; then
+  echo "📝 Syncing review to workspace..."
+  "$SYNC_SCRIPT" "$REPO_NAME" 2>/dev/null || echo "⚠️  Workspace sync failed (non-fatal)"
+fi
+
+# ─── Generate tomorrow's daily check-in ──────────────────────────────────────
+CHECKIN_SCRIPT="$SCRIPT_DIR/../workspace/generate-checkin.sh"
+if [ -f "$CHECKIN_SCRIPT" ]; then
+  echo "📝 Generating tomorrow's daily check-in..."
+  "$CHECKIN_SCRIPT" "$REPO_NAME" daily 2>/dev/null || echo "⚠️  Check-in generation failed (non-fatal)"
+fi
+
 # RESTORE STASH: If we stashed changes at the beginning, restore them now
 if [ "$STASH_CREATED" = true ]; then
   echo ""
