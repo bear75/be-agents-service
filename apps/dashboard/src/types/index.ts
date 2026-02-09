@@ -145,3 +145,107 @@ export interface WorkspaceOverview {
   };
   agentReport?: string;
 }
+
+// ─── DB types (sessions, tasks, agents, etc.) ───────────────────────────────
+
+export interface DbSession {
+  id: string;
+  team_id: string;
+  status: string;
+  target_repo?: string;
+  branch_name?: string;
+  pr_url?: string;
+  started_at?: string;
+  completed_at?: string;
+  team_name?: string;
+}
+
+export interface DbSessionWithTasks extends DbSession {
+  tasks: DbTask[];
+}
+
+export interface DbTask {
+  id: string;
+  agent_id: string;
+  session_id: string;
+  status: string;
+  description?: string;
+  priority?: string;
+  llm_model?: string;
+  started_at?: string;
+  completed_at?: string;
+  duration_seconds?: number;
+  agent_name?: string;
+  team_name?: string;
+  emoji?: string;
+}
+
+export interface JobInfo {
+  jobId: string;
+  type: string;
+  model?: string;
+  priorityFile?: string;
+  branchName?: string;
+  status: string;
+  startTime?: string;
+  endTime?: string;
+  pid?: number;
+  exitCode?: number;
+}
+
+export interface DbAgent {
+  id: string;
+  team_id: string;
+  name: string;
+  role: string;
+  emoji?: string;
+  llm_preference?: string;
+  is_active?: boolean;
+  team_name?: string;
+}
+
+export interface DbTeam {
+  id: string;
+  name: string;
+  domain: 'engineering' | 'marketing' | 'management';
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DbTeamWithDetails extends DbTeam {
+  agents: DbAgent[];
+  stats: {
+    total_tasks: number;
+    completed_tasks: number;
+    failed_tasks: number;
+    in_progress_tasks: number;
+    avg_duration_seconds: number;
+    success_rate: string;
+  };
+}
+
+export interface DbCampaign {
+  id: string;
+  name: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
+export interface DbLead {
+  id: string;
+  source?: string;
+  [key: string]: unknown;
+}
+
+export interface DbIntegration {
+  id: string;
+  type: string;
+  name?: string;
+  [key: string]: unknown;
+}
+
+export interface DbExperiment {
+  id: string;
+  [key: string]: unknown;
+}

@@ -1555,6 +1555,19 @@ EOF</div>
       </div>
 
       <div class="section">
+        <h2><span class="emoji">🏠</span> Start Here</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Documentation index — single source of truth
+        </p>
+        <div class="doc-list">
+          <div class="doc-item" onclick="openDoc('docs/README.md')">
+            <h4>Documentation Index</h4>
+            <p>docs/README.md — Map of all docs, setup, guides, reference</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
         <h2><span class="emoji">📖</span> Guides</h2>
         <p style="color: var(--text-secondary); margin-bottom: 15px;">
           Step-by-step guides for getting started and daily workflows
@@ -1639,9 +1652,30 @@ EOF</div>
             <h4>Safety Mechanisms</h4>
             <p>Branch checks, auto-stash, PR creation, safety commits, error handling</p>
           </div>
-          <div class="doc-item" onclick="openDoc('DATABASE_ACCESS.md')">
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🔧</span> Technical Deep-Dives</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Data flow, storage strategy, database access, UX design
+        </p>
+        <div class="doc-list">
+          <div class="doc-item" onclick="openDoc('docs/DATA_FLOW.md')">
+            <h4>Data Flow</h4>
+            <p>Files → DB → UI architecture, sync process, API reference</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('docs/DATA_STORAGE_STRATEGY.md')">
+            <h4>Data Storage Strategy</h4>
+            <p>What goes in DB vs files, decision matrix</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('docs/DATABASE_ACCESS.md')">
             <h4>Database Access</h4>
-            <p>Database connection, queries, security, backup procedures</p>
+            <p>DB location, TablePlus, CLI, backup procedures</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('docs/KANBAN_UX_IMPROVEMENTS.md')">
+            <h4>Kanban UX Improvements</h4>
+            <p>Task card design, modal drill-down, visual standards</p>
           </div>
         </div>
       </div>

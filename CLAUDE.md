@@ -1,7 +1,8 @@
 # CLAUDE.md - Agent Service
 
-Last updated: 2026-02-08
-Times updated: 2
+---
+
+> **Evergreen.** Update when architecture changes.
 
 This file contains learnings about the agent automation service that orchestrates Claude Code agents across multiple repositories.
 
@@ -28,8 +29,8 @@ This file contains learnings about the agent automation service that orchestrate
 The agent service orchestrates Claude Code automation workflows across multiple repositories. It provides:
 
 - **Centralized Scripts**: Config-driven automation scripts that work across repos
-- **API Server**: REST API for monitoring and controlling agents (port 4010)
-- **Web Dashboard**: Real-time UI for agent status and logs (port 3010)
+- **Unified Server**: API + dashboard on port 3030 (apps/server)
+- **Web Dashboard**: Unified dashboard at http://localhost:3030 (React + classic HTML)
 - **Scheduled Automation**: LaunchD integration for nightly workflows
 
 ### Key Principle: Separation of Concerns
@@ -49,14 +50,14 @@ The agent service orchestrates Claude Code automation workflows across multiple 
 ```
 be-agents-service/
 ├── apps/
-│   ├── server/         # API server (port 4010)
+│   ├── server/         # Unified API + static server (port 3030)
 │   │   ├── src/
 │   │   │   ├── routes/ # REST endpoints
 │   │   │   ├── lib/    # Configuration & file readers
 │   │   │   └── types/  # TypeScript types
 │   │   └── dist/       # Built server (for launchd)
 │   │
-│   └── dashboard/      # Web UI (port 3010)
+│   └── dashboard/      # Unified UI (port 3030)
 │       └── src/
 │           ├── components/ # React components
 │           ├── pages/      # Dashboard pages
@@ -177,7 +178,7 @@ workspace/
 
 **Purpose:** REST API for agent monitoring and control
 
-**Port:** 4010
+**Port:** 3030
 
 **Key Files:**
 - `src/index.ts` - Express server setup
@@ -203,7 +204,7 @@ GET  /api/agents/running            - List running agents
 
 **Purpose:** Web interface for agent monitoring
 
-**Port:** 3010
+**Port:** 3030
 
 **Key Components:**
 - `DashboardPage.tsx` - Main dashboard layout
@@ -369,25 +370,25 @@ git push origin main
 **Via Dashboard:**
 ```bash
 # Server should already be running via launchd
-open http://localhost:3010
+open http://localhost:3030
 ```
 
 **Via API:**
 ```bash
 # Check server health
-curl http://localhost:4010/health
+curl http://localhost:3030/health
 
 # List repositories
-curl http://localhost:4010/api/repos
+curl http://localhost:3030/api/repos
 
 # Get repo status
-curl http://localhost:4010/api/repos/beta-appcaire/status
+curl http://localhost:3030/api/repos/beta-appcaire/status
 
 # View priorities
-curl http://localhost:4010/api/repos/beta-appcaire/priorities
+curl http://localhost:3030/api/repos/beta-appcaire/priorities
 
 # View logs
-curl http://localhost:4010/api/repos/beta-appcaire/logs?limit=50
+curl http://localhost:3030/api/repos/beta-appcaire/logs?limit=50
 ```
 
 **Via Logs:**
@@ -474,10 +475,10 @@ launchctl list | grep appcaire
 
 ```bash
 # Check server is running
-curl http://localhost:4010/health
+curl http://localhost:3030/health
 
 # Check dashboard
-open http://localhost:3010
+open http://localhost:3030
 
 # Test script execution
 ./scripts/compound/check-status.sh beta-appcaire
@@ -692,7 +693,7 @@ cd ~/HomeCare/be-agents-service
 
 **Check Status:**
 ```bash
-curl http://localhost:4010/health
+curl http://localhost:3030/health
 launchctl list | grep appcaire
 ./scripts/compound/check-status.sh <repo-name>
 ```

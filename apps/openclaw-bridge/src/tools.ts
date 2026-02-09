@@ -576,4 +576,36 @@ export function registerWorkspaceTools(server: McpServer, workspacePath: string)
       return { content: [{ type: 'text' as const, text: `📚 **${name.charAt(0).toUpperCase() + name.slice(1)}**\n\n${content}` }] };
     }
   );
+
+  // ── trigger_agent ─────────────────────────────────────────────────────────
+
+  server.tool(
+    'trigger_agent',
+    'Trigger the agent service to run now for the configured repository. Use this when the user wants to start the agent immediately instead of waiting for the scheduled 11 PM run.',
+    {
+      repo: z.string().optional().describe('Repository name (optional, uses default from config if not provided)'),
+    },
+    async ({ repo }) => {
+      try {
+        // Get repo name from environment if not provided
+        const repoName = repo || process.env.WORKSPACE_REPO || 'beta-appcaire';
+
+        // Call the agent service API
+        const response = await fetch(`http://localhost:3030/api/agents/trigger/${repoName}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ workflow: 'compound' }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ error: response.statusText }));
+          return { content: [{ type: 'text' as const, text: `❌ Failed to trigger agent: ${error.error || 'Unknown error'}` }] };
+        }
+
+        return { content: [{ type: 'text' as const, text: `✅ Agent triggered for ${repoName}! The agent will start working on Priority #1 now. Check the dashboard at http://localhost:3030 to monitor progress.` }] };
+      } catch (error) {
+        return { content: [{ type: 'text' as const, text: `❌ Error: ${error instanceof Error ? error.message : 'Failed to trigger agent'}` }] };
+      }
+    }
+  );
 }

@@ -198,8 +198,8 @@ console.log(`   Bjorbevers:  3 platforms (LinkedIn, X, Instagram)`);
 console.log(`   Total:       10 social media accounts`);
 
 console.log(`\nNext steps:`);
-console.log(`1. Open http://localhost:3030/settings.html`);
-console.log(`2. Configure each social account with API tokens/credentials`);
+console.log(`1. Open http://localhost:3030 (dashboard)`);
+console.log(`2. Configure each social account with API tokens/credentials (via DB or API until Settings UI is added)`);
 console.log(`3. See platform docs for obtaining API access:`);
 console.log(`   - LinkedIn: https://www.linkedin.com/developers/`);
 console.log(`   - X (Twitter): https://developer.x.com/`);

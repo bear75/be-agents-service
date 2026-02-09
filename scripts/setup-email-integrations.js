@@ -181,6 +181,6 @@ console.log(`\n✅ Setup complete!`);
 console.log(`   Created: ${created} integrations`);
 console.log(`   Skipped: ${updated} (already exist)`);
 console.log(`\nNext steps:`);
-console.log(`1. Open http://localhost:3030/settings.html`);
+console.log(`1. Open http://localhost:3030 (dashboard)`);
 console.log(`2. Configure each email with username and app password`);
 console.log(`3. See EMAIL_SETUP_GUIDE.md for Gmail app password setup`);

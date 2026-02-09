@@ -13,8 +13,12 @@
   "scripts": {
     "dev:server": "yarn workspace server dev",
     "dev:dashboard": "yarn workspace dashboard dev",
+    "dev": "yarn build:unified && PORT=3030 yarn workspace server dev",
+    "start": "yarn build:unified && yarn workspace server build && PORT=3030 yarn workspace server start",
     "build:server": "yarn workspace server build",
     "build:dashboard": "yarn workspace dashboard build",
+    "build:dashboard:copy": "cp apps/dashboard/dist/index.html apps/server/public/index.html && cp -r apps/dashboard/dist/assets apps/server/public/ 2>/dev/null || true",
+    "build:unified": "yarn build:dashboard && yarn build:dashboard:copy",
     "type-check": "yarn workspaces run type-check",
     "lint": "yarn workspaces run lint"
   },

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { spawn } from 'child_process';
 import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 import { resolve } from 'path';
+import { db } from '../lib/services.js';
 
 const router = Router();
 
@@ -147,6 +148,116 @@ router.get('/running', (req, res) => {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
     });
+  }
+});
+
+// --- HR Agent Management (database) ---
+
+router.get('/', (req, res) => {
+  try {
+    const agents = db.getAllAgents();
+    res.json(agents);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+router.post('/create', (req, res) => {
+  try {
+    const { teamId, name, role, llmPreference, emoji } = req.body;
+
+    if (!teamId || !name || !role) {
+      return res.status(400).json({
+        error: 'Missing required fields: teamId, name, role',
+      });
+    }
+
+    const agentId = `agent-${teamId}-${name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+
+    const agent = db.createAgent({
+      id: agentId,
+      teamId,
+      name,
+      role,
+      llmPreference: llmPreference || 'sonnet',
+      emoji: emoji || '🤖',
+    });
+
+    res.json({
+      success: true,
+      message: `Agent ${name} hired successfully`,
+      agent,
+    });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+router.post('/:id/fire', (req, res) => {
+  try {
+    const { id } = req.params;
+    db.deactivateAgent(id);
+    res.json({
+      success: true,
+      message: 'Agent deactivated successfully',
+      agentId: id,
+    });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+router.post('/:id/rehire', (req, res) => {
+  try {
+    const { id } = req.params;
+    const agent = db.reactivateAgent(id);
+    res.json({
+      success: true,
+      message: 'Agent reactivated successfully',
+      agent,
+    });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+router.get('/:id/evaluation', (req, res) => {
+  try {
+    const { id } = req.params;
+    const evaluation = db.getAgentEvaluation(id);
+    if (!evaluation) {
+      return res.status(404).json({ error: 'Agent not found' });
+    }
+    res.json(evaluation);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+router.get('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const agent = db.getAgentById(id);
+    if (!agent) {
+      return res.status(404).json({ error: 'Agent not found' });
+    }
+    res.json(agent);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+router.patch('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const agent = db.updateAgent(id, req.body);
+    res.json({
+      success: true,
+      message: 'Agent updated successfully',
+      agent,
+    });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 

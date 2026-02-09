@@ -34,6 +34,24 @@ async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
   return data.data as T;
 }
 
+/** Fetch raw JSON from endpoints that don't use { success, data } wrapper */
+async function fetchRaw<T>(url: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE}${url}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error((err as { error?: string }).error || 'Request failed');
+  }
+
+  return response.json() as Promise<T>;
+}
+
 // Repository API
 export async function listRepositories(): Promise<Repository[]> {
   return fetchApi<Repository[]>('/repos');
@@ -147,4 +165,207 @@ export async function getPlan(slug: string): Promise<PlanDocument> {
 
 export async function getSetupStatus(repo: string): Promise<SetupStatus> {
   return fetchApi<SetupStatus>(`/plans/setup-status?repo=${repo}`);
+}
+
+// ─── Sessions API (raw response) ─────────────────────────────────────────────
+
+export async function getSessions(): Promise<DbSession[]> {
+  return fetchRaw<DbSession[]>('/sessions');
+}
+
+export async function getSession(sessionId: string): Promise<DbSessionWithTasks> {
+  return fetchRaw<DbSessionWithTasks>(`/sessions/${sessionId}`);
+}
+
+// ─── Tasks API (raw response) ────────────────────────────────────────────────
+
+export interface GetTasksParams {
+  team_id?: string;
+  agent_id?: string;
+  session_id?: string;
+  status?: string;
+}
+
+export async function getTasks(params?: GetTasksParams): Promise<DbTask[]> {
+  const q = new URLSearchParams(params as Record<string, string>).toString();
+  return fetchRaw<DbTask[]>(`/tasks${q ? `?${q}` : ''}`);
+}
+
+// ─── Jobs API (raw response) ────────────────────────────────────────────────
+
+export interface StartJobParams {
+  team: 'engineering' | 'marketing';
+  priorityFile: string;
+  branchName: string;
+  model?: string;
+  baseBranch?: string;
+  targetRepo?: string;
+}
+
+export async function getJobs(): Promise<JobInfo[]> {
+  return fetchRaw<JobInfo[]>('/jobs');
+}
+
+export async function startJob(params: StartJobParams): Promise<JobInfo> {
+  return fetchRaw<JobInfo>('/jobs/start', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export async function stopJob(jobId: string): Promise<{ success: boolean }> {
+  return fetchRaw<{ success: boolean }>(`/jobs/${jobId}/stop`, {
+    method: 'POST',
+  });
+}
+
+export async function getJobStatus(jobId: string): Promise<JobInfo> {
+  return fetchRaw<JobInfo>(`/jobs/${jobId}/status`);
+}
+
+export async function getJobLogs(jobId: string): Promise<string> {
+  const res = await fetch(`${API_BASE}/jobs/${jobId}/logs`);
+  if (!res.ok) throw new Error('Failed to fetch logs');
+  return res.text();
+}
+
+export async function triggerNightlyJob(): Promise<{ success: boolean }> {
+  return fetchRaw<{ success: boolean }>('/jobs/nightly/trigger', {
+    method: 'POST',
+  });
+}
+
+// ─── HR Agents API (raw response) ────────────────────────────────────────────
+
+export async function getHrAgents(): Promise<DbAgent[]> {
+  return fetchRaw<DbAgent[]>('/agents');
+}
+
+export async function createAgent(params: {
+  teamId: string;
+  name: string;
+  role: string;
+  llmPreference?: string;
+  emoji?: string;
+}): Promise<{ success: boolean; agent: DbAgent }> {
+  return fetchRaw('/agents/create', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export async function fireAgent(id: string): Promise<void> {
+  await fetchRaw(`/agents/${id}/fire`, { method: 'POST' });
+}
+
+export async function rehireAgent(id: string): Promise<{ agent: DbAgent }> {
+  return fetchRaw(`/agents/${id}/rehire`, { method: 'POST' });
+}
+
+// ─── Data API (campaigns, leads) ────────────────────────────────────────────
+
+export async function getCampaigns(): Promise<DbCampaign[]> {
+  return fetchRaw<DbCampaign[]>('/data/campaigns');
+}
+
+export async function getLeads(): Promise<DbLead[]> {
+  return fetchRaw<DbLead[]>('/data/leads');
+}
+
+// ─── Integrations API ───────────────────────────────────────────────────────
+
+export async function getIntegrations(): Promise<DbIntegration[]> {
+  return fetchRaw<DbIntegration[]>('/integrations');
+}
+
+export async function updateIntegration(
+  id: string,
+  data: Partial<DbIntegration>
+): Promise<void> {
+  await fetchRaw(`/integrations/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}
+
+// ─── RL API ─────────────────────────────────────────────────────────────────
+
+export async function getExperiments(): Promise<DbExperiment[]> {
+  return fetchRaw<DbExperiment[]>('/rl/experiments');
+}
+
+export async function getPatterns(): Promise<unknown> {
+  return fetchRaw('/rl/patterns');
+}
+
+// ─── Teams API ──────────────────────────────────────────────────────────────
+
+export async function getTeams(): Promise<DbTeam[]> {
+  return fetchRaw<DbTeam[]>('/teams');
+}
+
+export async function getTeam(id: string): Promise<DbTeamWithDetails> {
+  return fetchRaw<DbTeamWithDetails>(`/teams/${id}`);
+}
+
+export async function createTeam(params: {
+  id: string;
+  name: string;
+  domain: 'engineering' | 'marketing' | 'management';
+  description?: string;
+}): Promise<{ success: boolean; team: DbTeam }> {
+  return fetchRaw('/teams', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export async function updateTeam(
+  id: string,
+  updates: { name?: string; description?: string }
+): Promise<{ success: boolean; team: DbTeam }> {
+  return fetchRaw(`/teams/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updates),
+  });
+}
+
+// ─── Task Management API (Kanban) ───────────────────────────────────────────
+
+export async function getTask(id: string): Promise<DbTask> {
+  return fetchRaw<DbTask>(`/tasks/${id}`);
+}
+
+export async function createTask(params: {
+  sessionId: string;
+  agentId: string;
+  description: string;
+  priority?: 'low' | 'medium' | 'high';
+}): Promise<{ success: boolean; task: DbTask }> {
+  return fetchRaw('/tasks', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export async function updateTask(
+  id: string,
+  updates: { description?: string; priority?: string }
+): Promise<{ success: boolean; task: DbTask }> {
+  return fetchRaw(`/tasks/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updates),
+  });
+}
+
+export async function updateTaskStatus(
+  id: string,
+  status: 'pending' | 'in_progress' | 'completed' | 'failed',
+  llmUsed?: string,
+  errorMessage?: string
+): Promise<{ success: boolean; task: DbTask }> {
+  return fetchRaw(`/tasks/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status, llmUsed, errorMessage }),
+  });
 }

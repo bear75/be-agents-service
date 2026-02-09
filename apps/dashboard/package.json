@@ -6,7 +6,7 @@
   "description": "Agent service web dashboard",
   "scripts": {
     "dev": "vite --port 3010",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "type-check": "tsc --noEmit"

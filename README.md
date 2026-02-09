@@ -1,19 +1,56 @@
 # BE Agent Service
 
-Multi-agent autonomous service for software development and marketing automation running on Mac Mini.
+Multi-agent autonomous service for software development and marketing automation with closed-loop WhatsApp/Telegram integration.
 
 ## Overview
 
-This service provides **two specialized agent teams**:
+**Three agent teams (23 agents total):**
+- **Engineering (9 specialists):** Backend, Frontend, Infrastructure, Verification, DB Architect, UX Designer, Documentation Expert, Agent Levelup, Orchestrator
+- **Marketing (10 Marvel agents):** Jarvis, Shuri, Fury, Vision, Loki, Quill, Wanda, Pepper, Friday, Wong
+- **Management (4 executives):** CEO, CPO/CTO, CMO/CSO, HR Agent Lead
 
-### Engineering Team (Automatic Nightly)
-- **10:30 PM**: Reviews Claude Code threads, updates CLAUDE.md files
-- **11:00 PM**: Auto-implements priority #1 from daily reports, creates PR
-- **Agents**: Backend, Frontend, Infrastructure, Verification
+**Human-AI Interface:**
+- **WhatsApp/Telegram** → OpenClaw → Shared Workspace → Agent Service → Notifications back to you
+- **Dashboard:** http://localhost:3030
 
-### Marketing Team (Manual/On-Demand)
-- **Agents**: Jarvis (Squad Lead), Shuri (Product Analyst), Fury (Customer Research), Vision (SEO), Loki (Content Writer), Quill (Social Media), Wanda (Designer), Pepper (Email), Friday (Developer), Wong (Notion)
-- **Use cases**: Blog posts, SEO campaigns, social media, email marketing, market research
+**Automation:**
+- **Nightly:** 10:30 PM learnings extraction, 11:00 PM auto-implementation
+- **On-demand:** Trigger via Telegram or dashboard
+- **Notifications:** Session complete, morning briefing (8 AM), weekly review (Monday 8 AM)
+
+## Unified Dashboard (port 3030)
+
+Single entry point at **http://localhost:3030**:
+
+| URL | Content |
+|-----|---------|
+| `/` | React workspace UI (repo selector, workspace, plans, agents, logs) |
+
+**How to run:**
+```bash
+yarn start          # Build + start (single server on 3030)
+yarn dev            # Build + dev with hot reload
+```
+
+**Architecture:** One Express server (`apps/server`) on port 3030 serves API + static. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Documentation
+
+**All docs live in `docs/`.** Start with [docs/README.md](docs/README.md) for the full index.
+
+| Need | Doc |
+|------|-----|
+| **Closed-loop integration** | [docs/CLOSED_LOOP_INTEGRATION.md](docs/CLOSED_LOOP_INTEGRATION.md) ⭐ |
+| **Workspace setup** | [docs/WORKSPACE.md](docs/WORKSPACE.md) |
+| **OpenClaw setup** | [config/openclaw/SIMPLE_SETUP.md](config/openclaw/SIMPLE_SETUP.md) |
+| Quick commands | [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) |
+| Mac mini setup | [docs/FRESH_MAC_MINI_SETUP.md](docs/FRESH_MAC_MINI_SETUP.md) |
+| Mac mini recovery | [docs/MAC_MINI_RECOVERY.md](docs/MAC_MINI_RECOVERY.md) |
+| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Data flow | [docs/DATA_FLOW.md](docs/DATA_FLOW.md) |
+| Database access | [docs/DATABASE_ACCESS.md](docs/DATABASE_ACCESS.md) |
+| API reference | [docs/API_ENDPOINTS.md](docs/API_ENDPOINTS.md) |
+| Dashboard migration | [docs/DASHBOARD_MIGRATION.md](docs/DASHBOARD_MIGRATION.md) |
 
 ## Repository Structure
 
@@ -40,23 +77,20 @@ be-agents-service/
 │   ├── state-manager.sh             # JSON state coordination
 │   ├── feedback-schema.json         # Agent communication schema
 │   └── parallel-executor.sh         # Parallel agent spawning
-├── dashboard/
-│   ├── server.js                    # Real-time dashboard (port 3030)
-│   ├── public/                      # Dashboard UI
-│   └── start.sh                     # Dashboard startup
+├── apps/
+│   ├── server/                      # Unified server (port 3030): API + static in public/
+│   └── dashboard/                   # React workspace UI (build → server/public)
+├── scripts/
+│   └── start-dashboard.sh           # LaunchD: yarn workspace server start
 ├── launchd/
 │   ├── com.appcaire.auto-compound.plist
 │   ├── com.appcaire.caffeinate.plist
 │   ├── com.appcaire.daily-compound-review.plist
 │   └── com.appcaire.dashboard.plist
 ├── .compound-state/                 # Agent session states (JSON)
-├── logs/                            # Agent execution logs
-├── README.md                        # This file
-├── ARCHITECTURE.md                  # Agile/Scrum methodology mapping
-├── AGENTS.md                        # Agent competencies and roles
-├── WORKFLOW.md                      # Tasks, sessions, learnings
-├── COMPARISON.md                    # File-based vs database systems
-└── SAFETY.md                        # Safety mechanisms
+├── data/                            # SQLite database
+├── docs/                            # All documentation
+└── config/repos.yaml                # Multi-repo config
 ```
 
 ## Installation

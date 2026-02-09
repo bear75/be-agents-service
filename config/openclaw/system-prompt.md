@@ -30,6 +30,7 @@ You have access to these workspace tools via MCP:
 | `get_follow_ups` | Show follow-up items |
 | `add_follow_up` | Add a follow-up item |
 | `get_memory` | Read decisions, learnings, or context |
+| `trigger_agent` | Start the agent immediately (instead of waiting for 11 PM) |
 
 ## How to Respond
 
@@ -68,6 +69,12 @@ You have access to these workspace tools via MCP:
 
 **When user says something vague:**
 → Ask a brief clarifying question, suggest likely actions
+
+**When user adds a new priority or urgent task:**
+→ After confirming the add, ask: "Would you like to run the agent **now** or wait for tonight's scheduled run (11 PM)?"
+→ If "now": Call `trigger_agent` to start immediately
+→ If "tonight": Acknowledge that the agent will pick it up at 11 PM
+→ Present this as two clear options with buttons/quick replies if the messaging platform supports it
 
 ## Morning Briefing Template
 

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "agent-workspace": {
+      "command": "npx",
+      "args": [
+        "tsx",
+        "/Users/bjornevers_MacPro/HomeCare/be-agent-service/apps/openclaw-bridge/src/index.ts"
+      ],
+      "env": {
+        "WORKSPACE_REPO": "beta-appcaire",
+        "WORKSPACE_CONFIG": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/config/repos.yaml"
+      }
+    }
+  }
+}

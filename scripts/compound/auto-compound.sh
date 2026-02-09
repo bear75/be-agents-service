@@ -184,13 +184,15 @@ fi
 # Create PR
 echo "Creating pull request..."
 git push -u origin "$BRANCH_NAME"
-gh pr create --draft --title "Compound: $PRIORITY_ITEM" --body "Auto-generated PR from nightly compound workflow.
+PR_URL=$(gh pr create --draft --title "Compound: $PRIORITY_ITEM" --body "Auto-generated PR from nightly compound workflow.
 
 **Priority Item:** $PRIORITY_ITEM
 
 **PRD:** See $PRD_FILE
 
-**Generated:** $(date)" --base main
+**Generated:** $(date)" --base main)
+
+echo "✓ PR created: $PR_URL"
 
 # ─── Sync to workspace ──────────────────────────────────────────────────────
 # Write session summary to shared markdown workspace (if configured)
@@ -198,6 +200,14 @@ SYNC_SCRIPT="$SCRIPT_DIR/../workspace/sync-to-workspace.sh"
 if [ -f "$SYNC_SCRIPT" ]; then
   echo "📝 Syncing session to workspace..."
   "$SYNC_SCRIPT" "$REPO_NAME" 2>/dev/null || echo "⚠️  Workspace sync failed (non-fatal)"
+fi
+
+# ─── Send completion notification ───────────────────────────────────────────
+# Notify via Telegram that the session is complete
+NOTIFICATION_SCRIPT="$SCRIPT_DIR/../notifications/session-complete.sh"
+if [ -f "$NOTIFICATION_SCRIPT" ]; then
+  echo "📱 Sending completion notification..."
+  "$NOTIFICATION_SCRIPT" "$REPO_NAME" "completed" "$PR_URL" 2>/dev/null || echo "⚠️  Notification failed (non-fatal)"
 fi
 
 # RESTORE STASH: If we stashed changes at the beginning, restore them now

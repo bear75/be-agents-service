@@ -7,11 +7,11 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service/dashboard/start.sh</string>
+        <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service/scripts/start-dashboard.sh</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service/dashboard</string>
+    <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service</string>
 
     <key>RunAtLoad</key>
     <true/>
