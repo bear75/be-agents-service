@@ -4,6 +4,14 @@ import type {
   Priority,
   LogEntry,
   ApiResponse,
+  InboxItem,
+  WorkspaceTask,
+  CheckIn,
+  MemoryEntry,
+  FollowUp,
+  WorkspaceOverview,
+  PlanDocument,
+  SetupStatus,
 } from '../types';
 
 const API_BASE = '/api';
@@ -73,4 +81,70 @@ export async function getRunningAgents(): Promise<
   return fetchApi<Array<{ name: string; startTime: string; uptime: number }>>(
     '/agents/running'
   );
+}
+
+// ─── Workspace API ──────────────────────────────────────────────────────────
+
+export async function getWorkspaceOverview(repo: string): Promise<WorkspaceOverview> {
+  return fetchApi<WorkspaceOverview>(`/workspace/${repo}/overview`);
+}
+
+export async function getWorkspaceInbox(repo: string): Promise<InboxItem[]> {
+  return fetchApi<InboxItem[]>(`/workspace/${repo}/inbox`);
+}
+
+export async function addToInbox(repo: string, text: string): Promise<void> {
+  await fetchApi<void>(`/workspace/${repo}/inbox`, {
+    method: 'POST',
+    body: JSON.stringify({ text }),
+  });
+}
+
+export async function getWorkspacePriorities(repo: string): Promise<Priority[]> {
+  return fetchApi<Priority[]>(`/workspace/${repo}/priorities`);
+}
+
+export async function getWorkspaceTasks(repo: string): Promise<WorkspaceTask[]> {
+  return fetchApi<WorkspaceTask[]>(`/workspace/${repo}/tasks`);
+}
+
+export async function getWorkspaceCheckIns(
+  repo: string,
+  type?: 'daily' | 'weekly' | 'monthly'
+): Promise<CheckIn[]> {
+  const query = type ? `?type=${type}` : '';
+  return fetchApi<CheckIn[]>(`/workspace/${repo}/check-ins${query}`);
+}
+
+export async function getWorkspaceMemory(repo: string): Promise<MemoryEntry[]> {
+  return fetchApi<MemoryEntry[]>(`/workspace/${repo}/memory`);
+}
+
+export async function getWorkspaceFollowUps(repo: string): Promise<FollowUp[]> {
+  return fetchApi<FollowUp[]>(`/workspace/${repo}/follow-ups`);
+}
+
+export async function addFollowUp(
+  repo: string,
+  text: string,
+  dueDate?: string
+): Promise<void> {
+  await fetchApi<void>(`/workspace/${repo}/follow-ups`, {
+    method: 'POST',
+    body: JSON.stringify({ text, dueDate }),
+  });
+}
+
+// ─── Plans & Setup API ──────────────────────────────────────────────────────
+
+export async function getPlans(): Promise<PlanDocument[]> {
+  return fetchApi<PlanDocument[]>('/plans');
+}
+
+export async function getPlan(slug: string): Promise<PlanDocument> {
+  return fetchApi<PlanDocument>(`/plans/${slug}`);
+}
+
+export async function getSetupStatus(repo: string): Promise<SetupStatus> {
+  return fetchApi<SetupStatus>(`/plans/setup-status?repo=${repo}`);
 }

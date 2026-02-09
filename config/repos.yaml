@@ -6,6 +6,12 @@ repos:
     # Absolute path to repository
     path: ~/HomeCare/beta-appcaire
 
+    # Shared markdown workspace (iCloud or local)
+    # Both you and agents read/write here — inbox, priorities, check-ins, memory
+    workspace:
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/beta-appcaire
+      enabled: true
+
     # Schedule for automated runs (24-hour format)
     schedule:
       review: "22:30"     # Daily compound review
@@ -30,3 +36,13 @@ repos:
       # API keys loaded from ~/.config/caire/env
       # ANTHROPIC_API_KEY
       # GITHUB_TOKEN
+
+    # Notification channels (configured after OpenClaw setup)
+    # notifications:
+    #   telegram:
+    #     enabled: true
+    #     bot_token_env: TELEGRAM_BOT_TOKEN
+    #     chat_id_env: TELEGRAM_CHAT_ID
+    #   morning_briefing: "08:00"
+    #   session_complete: true
+    #   weekly_review: "monday 08:00"
