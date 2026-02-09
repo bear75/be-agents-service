@@ -4,6 +4,8 @@
 **Commit:** `a24bdea`
 **Date:** 2026-02-07
 
+**Status:** Design system applied. Dashboard pages: `/`, `/control-tower.html`, `/commands.html`.
+
 ---
 
 ## ✅ Completed Tasks

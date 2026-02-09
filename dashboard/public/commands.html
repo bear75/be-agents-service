@@ -3,44 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Command Center - Multi-Agent Dashboard</title>
+  <title>Docs & Commands - Agent Service</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .commands-container {
-      max-width: 1400px;
+      max-width: 1800px;
       margin: 0 auto;
       padding: 20px;
     }
 
-    .nav-tabs {
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 20px 30px;
+      background: var(--glass-white);
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .nav-header h1 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-link {
+      padding: 10px 20px;
+      background: rgba(102, 126, 234, 0.1);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 8px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      background: rgba(102, 126, 234, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .nav-link.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .sub-nav-tabs {
       display: flex;
       gap: 10px;
       margin-bottom: 30px;
-      border-bottom: 2px solid rgba(102, 126, 234, 0.2);
-      padding-bottom: 10px;
+      padding: 15px;
+      background: var(--glass-light);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius);
+      overflow-x: auto;
     }
 
-    .nav-tab {
+    .sub-nav-tab {
       padding: 10px 20px;
-      background: rgba(102, 126, 234, 0.1);
-      border: 2px solid transparent;
-      border-radius: 8px 8px 0 0;
+      background: rgba(102, 126, 234, 0.05);
+      border: 2px solid rgba(102, 126, 234, 0.1);
+      border-radius: 8px;
       color: var(--text-primary);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s;
       font-size: 14px;
       font-weight: 600;
+      white-space: nowrap;
     }
 
-    .nav-tab:hover {
+    .sub-nav-tab:hover {
       background: rgba(102, 126, 234, 0.15);
-      border-color: rgba(102, 126, 234, 0.3);
     }
 
-    .nav-tab.active {
-      background: var(--gradient-blue);
+    .sub-nav-tab.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      box-shadow: var(--shadow-md);
+      border-color: #667eea;
     }
 
     .tab-content {
@@ -269,23 +320,6 @@
       line-height: 1.4;
     }
 
-    .back-link {
-      display: inline-block;
-      margin-bottom: 20px;
-      color: var(--primary);
-      text-decoration: none;
-      font-size: 14px;
-      padding: 8px 16px;
-      background: rgba(59, 130, 246, 0.1);
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-
-    .back-link:hover {
-      background: rgba(59, 130, 246, 0.2);
-      text-decoration: none;
-    }
-
     .emoji {
       font-size: 20px;
     }
@@ -293,47 +327,257 @@
 </head>
 <body>
   <div class="commands-container">
-    <header style="background: var(--glass-white); backdrop-filter: blur(var(--glass-blur)) saturate(180%); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%); padding: 30px; border-radius: var(--border-radius-lg); border: 2px solid var(--glass-border); box-shadow: var(--shadow-lg); margin-bottom: 30px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h1 style="margin: 0; font-size: 2.5rem; background: var(--gradient-blue); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800;">📋 Command Center & Product Owner Guide</h1>
-        <nav style="display: flex; gap: 10px;">
-          <a href="/" class="nav-link">Dashboard</a>
-          <a href="/control-tower.html" class="nav-link">🎮 Control Tower</a>
-          <a href="/commands.html" class="nav-link active">📋 Commands</a>
-        </nav>
+    <!-- Top Navigation Header -->
+    <div class="nav-header">
+      <h1>📋 Docs & Commands</h1>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/management-team.html" class="nav-link">Management (4)</a>
+        <a href="/engineering.html" class="nav-link">Engineering (10)</a>
+        <a href="/sales-marketing.html" class="nav-link">Sales & Marketing (10)</a>
+        <a href="/rl-dashboard.html" class="nav-link">RL</a>
+        <a href="/kanban.html" class="nav-link">📋 Task Board</a>
+        <a href="/commands.html" class="nav-link active">Docs</a>
+        <a href="/settings.html" class="nav-link">⚙️ Settings</a>
       </div>
-    </header>
+    </div>
 
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="showTab('po-guide')">Product Owner Guide</button>
-      <button class="nav-tab" onclick="showTab('engineering')">Engineering Commands</button>
-      <button class="nav-tab" onclick="showTab('marketing')">Marketing Commands</button>
-      <button class="nav-tab" onclick="showTab('agents')">All Agents</button>
-      <button class="nav-tab" onclick="showTab('docs')">Documentation</button>
+    <!-- Sub-navigation Tabs -->
+    <div class="sub-nav-tabs">
+      <div class="sub-nav-tab active" onclick="showTab('dashboard-guide')">Dashboard Guide</div>
+      <div class="sub-nav-tab" onclick="showTab('po-guide')">PO Guide</div>
+      <div class="sub-nav-tab" onclick="showTab('engineering')">Engineering</div>
+      <div class="sub-nav-tab" onclick="showTab('marketing')">Marketing</div>
+      <div class="sub-nav-tab" onclick="showTab('agents')">Agents</div>
+      <div class="sub-nav-tab" onclick="showTab('documentation')">Documentation</div>
+    </div>
+
+    <!-- Dashboard Guide Tab -->
+    <div id="dashboard-guide" class="tab-content active">
+      <div class="section">
+        <h2><span class="emoji">🎯</span> Dashboard Navigation Guide</h2>
+        <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 25px;">
+          The agent service dashboard is organized into <strong>8 sections</strong>:
+          Dashboard (overview) → Management (4) → Engineering (10) → Sales & Marketing (10) → RL → Task Board → Docs → Settings
+        </p>
+
+        <h3>1. 📊 Dashboard (Overview)</h3>
+        <p><code>http://localhost:3030/</code> (Default start page)</p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <p>Overview with quick stats (total agents, team counts, active sessions) and links to all sections.</p>
+        </div>
+
+        <h3>2. 👔 Management (4)</h3>
+        <p><code>http://localhost:3030/management-team.html</code></p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <h4 style="margin-top: 0;">Executive Dashboard</h4>
+          <ul style="line-height: 1.8;">
+            <li><strong>CEO (You)</strong>: Upload tasks, set strategy, issue prompts</li>
+            <li><strong>CPO & CTO</strong>: Engineering lead managing 10 agents</li>
+            <li><strong>CMO & CSO</strong>: Marketing lead managing 10 agents</li>
+            <li><strong>HR Agent Lead</strong>: Hire/fire agents, RL evaluations</li>
+          </ul>
+          <h4>Key Actions:</h4>
+          <ul style="line-height: 1.8;">
+            <li>📤 <strong>Upload Task</strong>: Upload priority files or PRD documents</li>
+            <li>🎯 <strong>Set Strategy</strong>: Define quarterly goals and resource allocation</li>
+            <li>💬 <strong>Issue Prompt</strong>: Direct command to management team</li>
+            <li>➕ <strong>Hire Agent</strong>: Create new specialist agent (specify name, role, team)</li>
+            <li>❌ <strong>Fire Agent</strong>: Deactivate underperforming agent</li>
+            <li>📊 <strong>Agent Evaluations</strong>: View RL evaluation metrics with recommendations</li>
+          </ul>
+        </div>
+
+        <h3>3. ⚙️ Engineering (10)</h3>
+        <p><code>http://localhost:3030/engineering.html</code></p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <h4 style="margin-top: 0;">10 Engineering Agents:</h4>
+          <ul style="line-height: 1.8;">
+            <li>🎯 <strong>Orchestrator</strong>: Workflow coordination</li>
+            <li>⚙️ <strong>Backend</strong>: API, database, server logic</li>
+            <li>🎨 <strong>Frontend</strong>: UI/UX, components, styling</li>
+            <li>🔧 <strong>Infrastructure</strong>: DevOps, deployment, monitoring</li>
+            <li>🗄️ <strong>DB Architect</strong>: Schema design, Prisma, migrations</li>
+            <li>🎭 <strong>UX Designer</strong>: Accessibility, responsive, design system</li>
+            <li>📚 <strong>Documentation Expert</strong>: Docs, README, archive</li>
+            <li>🎮 <strong>Agent Levelup</strong>: Gamification, XP, achievements</li>
+            <li>✅ <strong>Verification</strong>: Testing, QA, validation</li>
+            <li>🔍 <strong>Senior Reviewer</strong>: Code review, architecture</li>
+          </ul>
+          <h4>Start Engineering Job:</h4>
+          <ol style="line-height: 1.8;">
+            <li>Select model (Sonnet/Opus/Haiku)</li>
+            <li>Enter priority file path: <code>reports/priorities-2026-02-08.md</code></li>
+            <li>Enter branch name: <code>feature/new-feature</code></li>
+            <li>Click "Start Engineering Job"</li>
+          </ol>
+          <p><strong>Monitor:</strong> Active Jobs section shows running jobs with logs and stop controls</p>
+        </div>
+
+        <h3>4. 📊 Sales & Marketing (10)</h3>
+        <p><code>http://localhost:3030/sales-marketing.html</code></p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <h4 style="margin-top: 0;">10 Marketing Avengers:</h4>
+          <ul style="line-height: 1.8; column-count: 2;">
+            <li>🤖 <strong>Jarvis</strong>: Campaign Orchestrator</li>
+            <li>💎 <strong>Shuri</strong>: Tech Integration</li>
+            <li>👁️ <strong>Fury</strong>: Strategy & Intelligence</li>
+            <li>💎 <strong>Vision</strong>: SEO & Analytics</li>
+            <li>✍️ <strong>Loki</strong>: Content Creation</li>
+            <li>🔮 <strong>Wanda</strong>: Brand & Creative</li>
+            <li>🎵 <strong>Quill</strong>: Social Media</li>
+            <li>📧 <strong>Pepper</strong>: Email Marketing</li>
+            <li>📊 <strong>Friday</strong>: Data & Reporting</li>
+            <li>📚 <strong>Wong</strong>: Knowledge Management</li>
+          </ul>
+          <h4>Start Marketing Campaign:</h4>
+          <ol style="line-height: 1.8;">
+            <li>Select model</li>
+            <li>Enter campaign file: <code>reports/marketing-campaign-Q1.md</code></li>
+            <li>Enter branch name: <code>feature/q1-campaign</code></li>
+            <li>Optionally describe campaign objectives</li>
+            <li>Click "Start Marketing Campaign"</li>
+          </ol>
+          <p><strong>View:</strong> Recent leads, active campaigns, and social posts</p>
+        </div>
+
+        <h3>5. 🧠 RL Dashboard</h3>
+        <p><code>http://localhost:3030/rl-dashboard.html</code></p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <h4 style="margin-top: 0;">Reinforcement Learning System:</h4>
+          <ul style="line-height: 1.8;">
+            <li>📊 <strong>Experiments</strong>: Keep/Kill/Double-down decisions (3+ failures = auto-kill)</li>
+            <li>🔍 <strong>Pattern Detection</strong>: Success/failure patterns identified from task execution</li>
+            <li>🤖 <strong>Automation Candidates</strong>: User repetitions (3+) trigger automation proposals</li>
+            <li>👥 <strong>Agent Performance</strong>: Real-time success rates and task completion metrics</li>
+            <li>💰 <strong>LLM Cost Tracking</strong>: Usage and cost breakdown by model</li>
+          </ul>
+          <h4>Key Principles:</h4>
+          <ul style="line-height: 1.8;">
+            <li>✅ <strong>If it's working</strong> → Double down (90%+ success, 5+ tasks)</li>
+            <li>❌ <strong>If it's not working</strong> → Kill it (3+ consecutive failures)</li>
+            <li>🔄 <strong>If user repeats</strong> → Automate it (3+ repetitions = new agent proposal)</li>
+          </ul>
+        </div>
+
+        <h3>6. 📋 Task Board</h3>
+        <p><code>http://localhost:3030/kanban.html</code></p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <p>Kanban view for all teams, agents, tasks, status, schedules, and priority files.</p>
+          <p><strong>Quick Start:</strong> ESS+FSR project card at top → <a href="/engineering.html?project=ess-fsr" style="color: var(--primary);">Start ESS+FSR Job</a></p>
+        </div>
+
+        <h3>7. 📚 Docs & Commands</h3>
+        <p><code>http://localhost:3030/commands.html</code> (This page)</p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <p>Complete reference for:</p>
+          <ul style="line-height: 1.8;">
+            <li>Product Owner workflow</li>
+            <li>Engineering commands and best practices</li>
+            <li>Marketing campaign management</li>
+            <li>All agent capabilities and specialties</li>
+            <li>API documentation</li>
+          </ul>
+        </div>
+
+        <h3>8. ⚙️ Settings</h3>
+        <p><code>http://localhost:3030/settings.html</code></p>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <p>Integrations, repositories, email, social, and environment configuration.</p>
+        </div>
+
+        <h3>💻 API Endpoints</h3>
+        <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin: 15px 0; font-family: monospace; font-size: 13px;">
+          <p><strong>Job Control:</strong></p>
+          <code style="display: block; margin: 5px 0;">POST /api/jobs/start         - Start engineering/marketing job</code>
+          <code style="display: block; margin: 5px 0;">POST /api/jobs/:id/stop      - Stop running job</code>
+          <code style="display: block; margin: 5px 0;">GET  /api/jobs/:id/logs      - View job logs</code>
+
+          <p style="margin-top: 15px;"><strong>HR Agent Management:</strong></p>
+          <code style="display: block; margin: 5px 0;">GET  /api/agents             - List all agents</code>
+          <code style="display: block; margin: 5px 0;">POST /api/agents/create      - Hire new agent</code>
+          <code style="display: block; margin: 5px 0;">POST /api/agents/:id/fire    - Fire agent</code>
+          <code style="display: block; margin: 5px 0;">GET  /api/agents/:id/evaluation - Get RL evaluation</code>
+
+          <p style="margin-top: 15px;"><strong>RL Dashboard:</strong></p>
+          <code style="display: block; margin: 5px 0;">GET  /api/rl/experiments     - Get experiments</code>
+          <code style="display: block; margin: 5px 0;">POST /api/rl/experiments/evaluate - Evaluate all experiments</code>
+          <code style="display: block; margin: 5px 0;">GET  /api/rl/patterns        - Get detected patterns</code>
+          <code style="display: block; margin: 5px 0;">GET  /api/rl/agent-performance - Get agent insights</code>
+        </div>
+      </div>
     </div>
 
     <!-- Product Owner Guide Tab -->
-    <div id="po-guide" class="tab-content active">
+    <div id="po-guide" class="tab-content">
       <div class="section">
-        <h2><span class="emoji">👔</span> Product Owner Guide</h2>
-        <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 25px;">
-          You are the <strong>Product Manager</strong>. The orchestrator is your <strong>Scrum Master</strong>.
-          The specialists are your <strong>Development Team</strong>. You define WHAT to build, they figure out HOW.
+        <h2><span class="emoji">📋</span> Product Owner Workflow</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 25px;">
+          Complete guide for Product Owners working with the multi-agent development team.
         </p>
 
-        <h3>Your Daily Workflow</h3>
         <div class="workflow-steps">
           <div class="workflow-step">
             <div class="step-number">1</div>
             <div class="step-content">
-              <h4>Evening: Define Tomorrow's Sprint Goal</h4>
-              <p>Create a priority file describing what you want built. Be specific about outcomes, not implementation.</p>
-              <div class="command-block">
-                <div class="description">Create engineering priority</div>
-                <div class="command">cat > ~/HomeCare/beta-appcaire/reports/priorities-$(date -v+1d +%Y-%m-%d).md <<'EOF'
-# Priority 1
+              <h4>Morning: Check Dashboard & Review PRs (5 min)</h4>
+              <p>Open dashboard, review overnight work, check for any PRs created by agents, merge if approved</p>
+            </div>
+          </div>
 
-**Description:** Add employee certifications tracking
+          <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Afternoon: Create Tomorrow's Priority (10 min)</h4>
+              <p>Create priority file for tomorrow's engineering work or marketing campaign</p>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Evening: Agents Work Automatically (11 PM)</h4>
+              <p>Engineering agents automatically implement priority #1 and create PR - no action required</p>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Next Morning: Review & Merge</h4>
+              <p>Review the PR created overnight, check quality, and merge if approved</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">📝</span> Creating Priority Files</h2>
+
+        <h3>Format</h3>
+        <div class="command-block">
+          <div class="description">Priority file template</div>
+          <div class="command"># Priority 1
+
+**Description:** [Clear description of what to build]
+
+**Expected outcome:**
+- [Specific deliverable 1]
+- [Specific deliverable 2]
+
+**Files:**
+- [Relevant file paths for context]
+
+**Complexity:** Low | Medium | High</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Example: Full-Stack Feature</h3>
+        <div class="command-block">
+          <div class="description">Employee certifications tracking system</div>
+          <div class="command"># Priority 1
+
+**Description:** Add employee certifications tracking system
 
 **Expected outcome:**
 - Database schema for certifications with expiry dates
@@ -343,73 +587,496 @@
 
 **Files:**
 - apps/dashboard-server/src/schema.prisma
-- apps/dashboard/src/pages/certifications/
+- apps/dashboard-server/src/schema.graphql
+- apps/dashboard/src/pages/employees/
 
-**Complexity:** Medium
-EOF</div>
-                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-              </div>
-            </div>
-          </div>
+**Complexity:** Medium</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
 
-          <div class="workflow-step">
-            <div class="step-number">2</div>
-            <div class="step-content">
-              <h4>Night: Team Executes Sprint (Automatic)</h4>
-              <p>
-                <strong>10:30 PM</strong> - Review agent scans yesterday's work, extracts learnings<br>
-                <strong>11:00 PM</strong> - Scrum Master (orchestrator) reads your priority, creates sprint plan, coordinates specialists, creates PR
-              </p>
-            </div>
-          </div>
+      <div class="section">
+        <h2><span class="emoji">⚡</span> Quick Commands</h2>
 
-          <div class="workflow-step">
-            <div class="step-number">3</div>
-            <div class="step-content">
-              <h4>Morning: Review Sprint Deliverable</h4>
-              <p>Check the PR created overnight. It's in draft mode waiting for your review.</p>
-              <div class="command-block">
-                <div class="description">Review overnight PR</div>
-                <div class="command">gh pr list
-gh pr view [NUMBER]
-# Review code changes, test locally if needed</div>
-                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="workflow-step">
-            <div class="step-number">4</div>
-            <div class="step-content">
-              <h4>Morning: Accept or Reject Work</h4>
-              <p>If the sprint met your acceptance criteria, merge. Otherwise, provide feedback in PR comments.</p>
-              <div class="command-block">
-                <div class="description">Accept work (merge PR)</div>
-                <div class="command">gh pr merge [NUMBER] --squash</div>
-                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-              </div>
-              <div class="command-block">
-                <div class="description">Or request changes (reject)</div>
-                <div class="command">gh pr comment [NUMBER] --body "Please fix: ..."</div>
-                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-              </div>
-            </div>
-          </div>
+        <div class="command-block">
+          <div class="description">Open dashboard</div>
+          <div class="command">open http://localhost:3030</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
         </div>
 
-        <h3>Starting a Marketing Sprint (Manual)</h3>
-        <div class="workflow-steps">
-          <div class="workflow-step">
-            <div class="step-number">1</div>
-            <div class="step-content">
-              <h4>Create Marketing Priority</h4>
-              <p>Define the marketing objective with clear deliverables.</p>
-              <div class="command-block">
-                <div class="description">Create marketing sprint goal</div>
-                <div class="command">cat > ~/HomeCare/beta-appcaire/reports/marketing-blog-$(date +%Y-%m-%d).md <<'EOF'
+        <div class="command-block">
+          <div class="description">Create today's priority file</div>
+          <div class="command">vim ~/HomeCare/beta-appcaire/reports/priorities-$(date +%Y-%m-%d).md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">List all PRs</div>
+          <div class="command">gh pr list</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Review specific PR</div>
+          <div class="command">gh pr view 123</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Merge PR with squash</div>
+          <div class="command">gh pr merge 123 --squash</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Check session state</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-*/orchestrator.json | jq '.'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View logs</div>
+          <div class="command">tail -50 ~/Library/Logs/appcaire-compound.log</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engineering Commands Tab -->
+    <div id="engineering" class="tab-content">
+      <div class="section">
+        <h2><span class="emoji">⚙️</span> Engineering Team</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+          6 engineering agents that automatically implement features, create PRs, and maintain quality standards.
+        </p>
+
+        <div class="agent-grid">
+          <div class="agent-card">
+            <h4>Orchestrator</h4>
+            <div class="role">Scrum Master</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Coordinates team, assigns work, removes blockers, creates PRs</p>
+          </div>
+          <div class="agent-card">
+            <h4>Backend Specialist</h4>
+            <div class="role">Backend Developer</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Database schemas, GraphQL API, resolvers, business logic</p>
+          </div>
+          <div class="agent-card">
+            <h4>Frontend Specialist</h4>
+            <div class="role">Frontend Developer</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">UI components, codegen, GraphQL operations</p>
+          </div>
+          <div class="agent-card">
+            <h4>Infrastructure Specialist</h4>
+            <div class="role">DevOps Engineer</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Packages, configs, documentation, build system</p>
+          </div>
+          <div class="agent-card">
+            <h4>Verification Specialist</h4>
+            <div class="role">QA Engineer</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Type-check, build validation, security audits</p>
+          </div>
+          <div class="agent-card">
+            <h4>Senior Reviewer</h4>
+            <div class="role">Senior Engineer</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Code review, architecture guidance</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🚀</span> Running Engineering Jobs</h2>
+
+        <h3>Via Dashboard (Recommended)</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Go to <a href="/engineering.html" style="color: var(--primary);">Engineering page</a>, select model, enter priority file and branch, click "Start Engineering Job"
+        </p>
+
+        <h3>📅 Quick Start: ESS+FSR Integration</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Long-lived feature branch project. PRs merge to <code>feature/ess-fsr-integration</code>, not main.
+        </p>
+        <div style="background: rgba(102, 126, 234, 0.1); border: 2px solid rgba(102, 126, 234, 0.2); border-radius: 10px; padding: 20px; margin: 15px 0;">
+          <p><strong>Option 1:</strong> <a href="/kanban.html" style="color: var(--primary);">Task Board</a> → Click "Start ESS+FSR Job"</p>
+          <p><strong>Option 2:</strong> <a href="/engineering.html?project=ess-fsr" style="color: var(--primary);">Engineering</a> → Click "Load ESS+FSR Sprint 1" → Start Engineering Job</p>
+          <p><strong>Manual:</strong> Priority: <code>reports/ess-fsr/priorities-YYYY-MM-DD.md</code>, Branch: <code>feature/ess-fsr-YYYY-MM-DD</code>, Base: <code>feature/ess-fsr-integration</code></p>
+          <p><strong>Doc:</strong> <code>docs/guides/ess-fsr-workflow.md</code></p>
+        </div>
+
+        <h3>Via CLI</h3>
+        <div class="command-block">
+          <div class="description">Run orchestrator manually</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-08.md \
+  ~/HomeCare/beta-appcaire/tasks/prd.json \
+  feature/new-feature</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Run auto-compound (full automatic flow)</div>
+          <div class="command">cd ~/HomeCare/beta-appcaire
+../be-agent-service/scripts/auto-compound.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Automatic (Nightly)</h3>
+        <p style="color: var(--text-secondary);">
+          Engineering jobs run automatically at <strong>11:00 PM</strong> every night via LaunchAgent
+        </p>
+        <div class="command-block">
+          <div class="description">Trigger nightly run manually</div>
+          <div class="command">launchctl start com.appcaire.auto-compound</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🔍</span> Verification & Debugging</h2>
+
+        <h3>Check Session State</h3>
+        <div class="command-block">
+          <div class="description">View orchestrator state</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-*/orchestrator.json | jq '.'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View verification results</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-*/verification.json | jq '.blockers'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Run Verification Manually</h3>
+        <div class="command-block">
+          <div class="description">Run verification on current branch</div>
+          <div class="command">cd ~/HomeCare/beta-appcaire
+~/HomeCare/be-agent-service/agents/verification-specialist.sh "test-$(date +%s)"</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Check result (0=pass, 1=blocked, 2=error)</div>
+          <div class="command">echo $?</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Common Fixes</h3>
+        <div class="command-block">
+          <div class="description">Fix: Run codegen after GraphQL changes</div>
+          <div class="command">cd ~/HomeCare/beta-appcaire
+yarn workspace @appcaire/graphql codegen
+git add -A && git commit -m "fix: run codegen"</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Fix: Run type-check manually</div>
+          <div class="command">cd ~/HomeCare/beta-appcaire
+turbo run type-check</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Fix: Run build manually</div>
+          <div class="command">cd ~/HomeCare/beta-appcaire
+turbo run build</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">📊</span> Logs & Monitoring</h2>
+
+        <div class="command-block">
+          <div class="description">View orchestrator logs</div>
+          <div class="command">tail -50 ~/Library/Logs/appcaire-compound.log</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View daily review logs</div>
+          <div class="command">tail -50 ~/Library/Logs/appcaire-daily-review.log</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Check LaunchAgents status</div>
+          <div class="command">launchctl list | grep appcaire</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">List all sessions</div>
+          <div class="command">ls -la ~/HomeCare/be-agent-service/.compound-state/</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View latest backend logs</div>
+          <div class="command">tail ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*/backend.log</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View latest frontend logs</div>
+          <div class="command">tail ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*/frontend.log</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🔄</span> Monitoring & Automation Scripts</h2>
+
+        <h3>Health Checks</h3>
+        <div class="command-block">
+          <div class="description">Check system health and status</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/check-status.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Continuous monitoring loop (runs in background)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/loop.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Monitor CI/CD pipeline status</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/ci-monitor.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Learning & Optimization</h3>
+        <div class="command-block">
+          <div class="description">Run daily compound review (RL learning extraction)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/daily-compound-review.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Analyze priority report and extract insights</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/analyze-report.sh ~/HomeCare/beta-appcaire/reports/priorities-2026-02-08.md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Documentation & Maintenance</h3>
+        <div class="command-block">
+          <div class="description">Update CLAUDE.md with latest learnings</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/update-claude-md.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Onboard new Claude instance with context</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/onboard-claude.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Testing & Safety</h3>
+        <div class="command-block">
+          <div class="description">Test safety mechanisms (branch checks, auto-stash)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./scripts/test-safety.sh</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Database Management</h3>
+        <div class="command-block">
+          <div class="description">Seed agents database (initialize all 24 agents)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+node scripts/seed-agents.js</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Sync session state from files to database</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+node scripts/sync-to-db.js session-1770537842</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Sync all sessions to database</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+for session in .compound-state/session-*; do
+  session_id=$(basename "$session")
+  node scripts/sync-to-db.js "$session_id"
+done</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Setup email integrations (9 IMAP accounts)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+node scripts/setup-email-integrations.js</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Setup social media integrations (10 accounts)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+node scripts/setup-social-integrations.js</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">⚠️</span> Agent Best Practices</h2>
+
+        <h3>Backend Agent</h3>
+        <ul style="line-height: 1.8; color: var(--text-secondary);">
+          <li>✅ Always convert BigInt to Number in resolvers</li>
+          <li>✅ Add organizationId filtering to all queries (security!)</li>
+          <li>✅ Use pagination structure: <code>{ records, total }</code></li>
+          <li>✅ Generate migrations (never manual SQL)</li>
+          <li>❌ Never skip organizationId filter</li>
+          <li>❌ Never return raw BigInt from resolvers</li>
+        </ul>
+
+        <h3>Frontend Agent</h3>
+        <ul style="line-height: 1.8; color: var(--text-secondary);">
+          <li>✅ Create .graphql operations first</li>
+          <li>✅ Always run codegen after creating operations</li>
+          <li>✅ Use generated hooks directly (no wrappers!)</li>
+          <li>✅ Ensure Apollo Client in auth context</li>
+          <li>❌ Never create wrapper hooks</li>
+          <li>❌ Never create Apollo Client at module level</li>
+        </ul>
+
+        <h3>Infrastructure Agent</h3>
+        <ul style="line-height: 1.8; color: var(--text-secondary);">
+          <li>✅ Keep packages pure (no DB code)</li>
+          <li>✅ Use package names for imports</li>
+          <li>✅ Update CLAUDE.md with learnings</li>
+          <li>❌ Never add database code to packages</li>
+          <li>❌ Never add env vars to packages</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Marketing Commands Tab -->
+    <div id="marketing" class="tab-content">
+      <div class="section">
+        <h2><span class="emoji">📈</span> Marketing Avengers Squad</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+          10 marketing agents with Marvel character personalities that create campaigns, content, and drive growth.
+        </p>
+
+        <div class="agent-grid">
+          <div class="agent-card">
+            <h4>Jarvis</h4>
+            <div class="role">Squad Lead Orchestrator</div>
+            <div class="session-key">agent:main:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Sophisticated, analytical coordinator</p>
+          </div>
+          <div class="agent-card">
+            <h4>Shuri</h4>
+            <div class="role">Product Analyst</div>
+            <div class="session-key">agent:product-analyst:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Brilliant, data-driven innovation</p>
+          </div>
+          <div class="agent-card">
+            <h4>Fury</h4>
+            <div class="role">Customer Researcher</div>
+            <div class="session-key">agent:customer-researcher:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Strategic, thorough intelligence</p>
+          </div>
+          <div class="agent-card">
+            <h4>Vision</h4>
+            <div class="role">SEO Analyst</div>
+            <div class="session-key">agent:seo-analyst:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Analytical, pattern-focused precision</p>
+          </div>
+          <div class="agent-card">
+            <h4>Loki</h4>
+            <div class="role">Content Writer</div>
+            <div class="session-key">agent:content-writer:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Witty, creative storytelling master</p>
+          </div>
+          <div class="agent-card">
+            <h4>Quill</h4>
+            <div class="role">Social Media Manager</div>
+            <div class="session-key">agent:social-media-manager:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Charismatic, trend-aware engagement</p>
+          </div>
+          <div class="agent-card">
+            <h4>Wanda</h4>
+            <div class="role">Designer</div>
+            <div class="session-key">agent:designer:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Creative, emotional, beautiful visuals</p>
+          </div>
+          <div class="agent-card">
+            <h4>Pepper</h4>
+            <div class="role">Email Marketing</div>
+            <div class="session-key">agent:email-marketing:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Organized, professional excellence</p>
+          </div>
+          <div class="agent-card">
+            <h4>Friday</h4>
+            <div class="role">Developer</div>
+            <div class="session-key">agent:developer:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Efficient, technical automation</p>
+          </div>
+          <div class="agent-card">
+            <h4>Wong</h4>
+            <div class="role">Notion Agent</div>
+            <div class="session-key">agent:notion-agent:main</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">Meticulous documentation guardian</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🚀</span> Running Marketing Campaigns</h2>
+
+        <h3>Via Dashboard (Recommended)</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Go to <a href="/sales-marketing.html" style="color: var(--primary);">Sales & Marketing page</a>, select model, enter campaign file and branch, click "Start Marketing Campaign"
+        </p>
+
+        <h3>Via CLI</h3>
+        <div class="command-block">
+          <div class="description">Run Jarvis marketing orchestrator</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/marketing/jarvis-orchestrator.sh \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-blog-post.md \
+  ~/HomeCare/beta-appcaire/tasks/marketing-prd.json \
+  feature/blog-post-scheduling</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Run individual agent (Vision SEO analyst)</div>
+          <div class="command">cd ~/HomeCare/be-agent-service
+./agents/marketing/vision-seo-analyst.sh \
+  "session-seo-$(date +%s)" \
+  ~/HomeCare/beta-appcaire \
+  ~/HomeCare/beta-appcaire/reports/marketing-priority.md</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">📝</span> Campaign Types & Templates</h2>
+
+        <h3>1. SEO Blog Post Campaign</h3>
+        <div class="command-block">
+          <div class="description">Create SEO blog post priority</div>
+          <div class="command">cat > ~/HomeCare/beta-appcaire/reports/marketing-blog-post.md <<'EOF'
 # Priority: SEO Blog Post
 
-**Description:** Create blog post about employee scheduling best practices
+**Description:** Create SEO-optimized blog post about employee scheduling
 
 **Expected outcome:**
 - Keyword research (target keywords with volume/difficulty)
@@ -422,252 +1089,54 @@ gh pr view [NUMBER]
 
 **Complexity:** Medium
 EOF</div>
-                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="workflow-step">
-            <div class="step-number">2</div>
-            <div class="step-content">
-              <h4>Run Jarvis Marketing Orchestrator</h4>
-              <p>Jarvis (squad lead) will coordinate all marketing specialists based on your priority.</p>
-              <div class="command-block">
-                <div class="description">Execute marketing sprint</div>
-                <div class="command">cd ~/HomeCare/be-agent-service
-./agents/marketing/jarvis-orchestrator.sh \
-  ~/HomeCare/beta-appcaire \
-  ~/HomeCare/beta-appcaire/reports/marketing-blog-$(date +%Y-%m-%d).md \
-  ~/HomeCare/beta-appcaire/tasks/marketing-prd.json \
-  feature/blog-scheduling-$(date +%Y%m%d)</div>
-                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="workflow-step">
-            <div class="step-number">3</div>
-            <div class="step-content">
-              <h4>Monitor Dashboard</h4>
-              <p>Watch agents work in real-time. Dashboard shows which phase is running.</p>
-              <div class="command-block">
-                <div class="description">Open dashboard</div>
-                <div class="command">open http://localhost:3030</div>
-                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="workflow-step">
-            <div class="step-number">4</div>
-            <div class="step-content">
-              <h4>Review and Merge</h4>
-              <p>Same as engineering - review PR and merge if acceptable.</p>
-            </div>
-          </div>
-        </div>
-
-        <h3>Your 5-Minute Daily Routine</h3>
-        <div class="command-block">
-          <div class="description">Morning routine (5 min)</div>
-          <div class="command"># 1. Check dashboard
-open http://localhost:3030
-
-# 2. Review overnight PR
-gh pr list
-gh pr view [NUMBER]
-
-# 3. Accept or reject
-gh pr merge [NUMBER] --squash  # Accept
-# OR provide feedback in comments for reject</div>
           <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
         </div>
 
+        <h3>2. Social Media Campaign</h3>
         <div class="command-block">
-          <div class="description">Evening routine (5 min)</div>
-          <div class="command"># Define tomorrow's sprint goal
-cat > ~/HomeCare/beta-appcaire/reports/priorities-$(date -v+1d +%Y-%m-%d).md <<'EOF'
-# Priority 1
-**Description:** [What to build]
+          <div class="description">Create social media campaign priority</div>
+          <div class="command">cat > ~/HomeCare/beta-appcaire/reports/marketing-social-campaign.md <<'EOF'
+# Priority: Social Media Campaign
+
+**Description:** Launch Q1 product awareness campaign
+
 **Expected outcome:**
-- [Deliverable 1]
-- [Deliverable 2]
-EOF
+- Content calendar for 30 days
+- 15 social posts created
+- Images/graphics designed
+- Scheduled across platforms
+- Analytics tracking setup
 
-# That's it! Team executes overnight.</div>
+**Complexity:** Medium
+EOF</div>
           <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
         </div>
 
-        <h3>Key Principles</h3>
-        <div class="agent-grid">
-          <div class="agent-card">
-            <h4>Focus on Outcomes</h4>
-            <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">Define WHAT you want (user value), not HOW to build it (implementation details). Let the team decide technical approach.</p>
-          </div>
-          <div class="agent-card">
-            <h4>Trust the Team</h4>
-            <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">Specialists know their domain. Backend knows database design, Frontend knows UI patterns. Review results, not process.</p>
-          </div>
-          <div class="agent-card">
-            <h4>Compound Learning</h4>
-            <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">Team learns from mistakes. Same error won't happen twice. Velocity increases over time as knowledge compounds.</p>
-          </div>
-          <div class="agent-card">
-            <h4>Verification Gate</h4>
-            <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">No broken PRs reach you. Verification specialist blocks PRs that fail type-check, build, or security audit.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Engineering Commands Tab -->
-    <div id="engineering" class="tab-content">
-      <div class="section">
-        <h2><span class="emoji">⚙️</span> Engineering Agent Commands</h2>
-
-        <h3>Automatic Nightly Execution</h3>
+        <h3>3. Email Campaign</h3>
         <div class="command-block">
-          <div class="description">Check if nightly jobs are loaded</div>
-          <div class="command">launchctl list | grep appcaire</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
+          <div class="description">Create email campaign priority</div>
+          <div class="command">cat > ~/HomeCare/beta-appcaire/reports/marketing-email-campaign.md <<'EOF'
+# Priority: Email Nurture Campaign
 
-        <div class="command-block">
-          <div class="description">View nightly execution logs</div>
-          <div class="command">tail -50 ~/Library/Logs/appcaire-compound.log
-tail -50 ~/Library/Logs/appcaire-daily-review.log</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
+**Description:** Create 5-part email nurture sequence
 
-        <div class="command-block">
-          <div class="description">Manually trigger tonight's run</div>
-          <div class="command">launchctl start com.appcaire.auto-compound</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
+**Expected outcome:**
+- Email sequence designed
+- Copy written for all 5 emails
+- Templates created
+- Segmentation strategy defined
+- Automation workflow setup
 
-        <h3>Manual Orchestrator Execution</h3>
-        <div class="command-block">
-          <div class="description">Run full orchestrator workflow</div>
-          <div class="command">cd ~/HomeCare/be-agent-service
-./scripts/orchestrator.sh \
-  ~/HomeCare/beta-appcaire \
-  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-07.md \
-  ~/HomeCare/beta-appcaire/tasks/prd.json \
-  feature/test-branch</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <h3>Individual Specialist Agents</h3>
-        <div class="command-block">
-          <div class="description">Run backend specialist</div>
-          <div class="command">cd ~/HomeCare/be-agent-service
-./agents/backend-specialist.sh \
-  "session-$(date +%s)" \
-  ~/HomeCare/beta-appcaire \
-  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-07.md</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <div class="command-block">
-          <div class="description">Run frontend specialist</div>
-          <div class="command">cd ~/HomeCare/be-agent-service
-./agents/frontend-specialist.sh \
-  "session-$(date +%s)" \
-  ~/HomeCare/beta-appcaire \
-  ~/HomeCare/beta-appcaire/reports/priorities-2026-02-07.md</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <div class="command-block">
-          <div class="description">Run verification (quality gate)</div>
-          <div class="command">cd ~/HomeCare/be-agent-service
-./agents/verification-specialist.sh "session-$(date +%s)"</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <h3>Session Management</h3>
-        <div class="command-block">
-          <div class="description">List all sessions</div>
-          <div class="command">ls -la ~/HomeCare/be-agent-service/.compound-state/</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <div class="command-block">
-          <div class="description">View latest orchestrator state</div>
-          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-*/orchestrator.json | jq '.'</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <div class="command-block">
-          <div class="description">View verification results</div>
-          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-*/verification.json | jq '.blockers'</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <div class="command-block">
-          <div class="description">Clean old sessions</div>
-          <div class="command">rm -rf ~/HomeCare/be-agent-service/.compound-state/session-*
-rm -rf ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*</div>
+**Complexity:** Medium
+EOF</div>
           <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
         </div>
       </div>
-    </div>
 
-    <!-- Marketing Commands Tab -->
-    <div id="marketing" class="tab-content">
       <div class="section">
-        <h2><span class="emoji">📢</span> Marketing Agent Commands</h2>
+        <h2><span class="emoji">📊</span> Campaign Monitoring</h2>
 
-        <h3>Jarvis Orchestrator (Squad Lead)</h3>
-        <div class="command-block">
-          <div class="description">Run full marketing workflow</div>
-          <div class="command">cd ~/HomeCare/be-agent-service
-./agents/marketing/jarvis-orchestrator.sh \
-  ~/HomeCare/beta-appcaire \
-  ~/HomeCare/beta-appcaire/reports/marketing-blog.md \
-  ~/HomeCare/beta-appcaire/tasks/marketing-prd.json \
-  feature/blog-scheduling</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <h3>Individual Marketing Specialists</h3>
-        <div class="command-block">
-          <div class="description">Vision - SEO Analyst</div>
-          <div class="command">cd ~/HomeCare/be-agent-service
-./agents/marketing/vision-seo-analyst.sh \
-  "session-marketing-$(date +%s)" \
-  ~/HomeCare/beta-appcaire \
-  ~/HomeCare/beta-appcaire/reports/marketing-priority.md</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <div class="command-block">
-          <div class="description">Shuri - Product Analyst (TODO)</div>
-          <div class="command">cd ~/HomeCare/be-agent-service
-./agents/marketing/shuri-product-analyst.sh \
-  "session-marketing-$(date +%s)" \
-  ~/HomeCare/beta-appcaire \
-  ~/HomeCare/beta-appcaire/reports/marketing-priority.md</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <div class="command-block">
-          <div class="description">Loki - Content Writer (TODO)</div>
-          <div class="command">cd ~/HomeCare/be-agent-service
-./agents/marketing/loki-content-writer.sh \
-  "session-marketing-$(date +%s)" \
-  ~/HomeCare/beta-appcaire \
-  ~/HomeCare/beta-appcaire/reports/marketing-priority.md</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
-        <h3>Marketing Session Management</h3>
-        <div class="command-block">
-          <div class="description">View marketing sessions</div>
-          <div class="command">ls -la ~/HomeCare/be-agent-service/.compound-state/ | grep marketing</div>
-          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-        </div>
-
+        <h3>Check Campaign State</h3>
         <div class="command-block">
           <div class="description">View Jarvis orchestrator state</div>
           <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-marketing-*/jarvis.json | jq '.'</div>
@@ -675,197 +1144,584 @@ rm -rf ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*</div>
         </div>
 
         <div class="command-block">
-          <div class="description">View Vision SEO analysis</div>
+          <div class="description">View specific agent state (Vision SEO)</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-marketing-*/vision.json | jq '.'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View agent deliverables</div>
           <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-marketing-*/vision.json | jq '.deliverables'</div>
           <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
         </div>
+
+        <div class="command-block">
+          <div class="description">View inter-agent messages</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-marketing-*/vision.json | jq '.messages'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Check Campaign Progress</h3>
+        <div class="command-block">
+          <div class="description">Monitor agent status</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-marketing-*/vision.json | jq '.status'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View completed tasks</div>
+          <div class="command">cat ~/HomeCare/be-agent-service/.compound-state/session-marketing-*/loki.json | jq '.completedTasks'</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🎯</span> Campaign Workflow</h2>
+
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">Marketing agents work in coordinated phases:</p>
+
+        <div class="workflow-steps">
+          <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Phase 1: Research (Parallel)</h4>
+              <p>Vision (SEO) + Shuri (Product) + Fury (Customer) run simultaneously to gather insights</p>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Phase 2: Content Creation (Sequential)</h4>
+              <p>Loki (Content) waits for research, then writes based on insights. Pepper creates email campaigns.</p>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Phase 3: Design & Technical (Parallel)</h4>
+              <p>Wanda (Design) creates visuals while Friday (Dev) handles technical implementation</p>
+            </div>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Phase 4: Distribution (Sequential)</h4>
+              <p>Quill promotes on social media, then Wong documents the entire process in Notion</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">💡</span> Best Practices</h2>
+
+        <h3>Campaign Planning</h3>
+        <ul style="line-height: 1.8; color: var(--text-secondary);">
+          <li>✅ Be specific about target audience</li>
+          <li>✅ Define clear metrics for success</li>
+          <li>✅ Include brand voice guidelines</li>
+          <li>✅ Specify distribution channels</li>
+          <li>❌ Don't be vague ("Create content")</li>
+          <li>❌ Don't skip audience definition</li>
+        </ul>
+
+        <h3>SEO Content</h3>
+        <ul style="line-height: 1.8; color: var(--text-secondary);">
+          <li>✅ Research high-volume, low-difficulty keywords</li>
+          <li>✅ Write 1500+ words for SEO value</li>
+          <li>✅ Use target keywords naturally</li>
+          <li>✅ Optimize headings (H1, H2, H3)</li>
+          <li>❌ Don't keyword stuff</li>
+          <li>❌ Don't skip meta descriptions</li>
+        </ul>
+
+        <h3>Social Media</h3>
+        <ul style="line-height: 1.8; color: var(--text-secondary);">
+          <li>✅ Post at optimal times</li>
+          <li>✅ Use platform-specific formats</li>
+          <li>✅ Include 3-5 hashtags per post</li>
+          <li>✅ Track analytics</li>
+          <li>❌ Don't ignore engagement</li>
+          <li>❌ Don't use same content across all platforms</li>
+        </ul>
       </div>
     </div>
 
     <!-- All Agents Tab -->
     <div id="agents" class="tab-content">
       <div class="section">
-        <h2><span class="emoji">🤖</span> Engineering Team</h2>
+        <h2><span class="emoji">⚙️</span> Engineering Agents (6)</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+          Software development agents organized like a real Scrum team
+        </p>
+
         <div class="agent-grid">
           <div class="agent-card">
             <h4>Orchestrator</h4>
-            <div class="role">Scrum Master / Coordinator</div>
-            <div class="session-key">orchestrator.sh</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Reads priorities, creates PRD, spawns specialists, coordinates handoffs, creates PR
+            <div class="role">Scrum Master</div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Responsibilities:</strong><br>
+              • Sprint planning & task assignment<br>
+              • Parallel coordination (Backend + Infra)<br>
+              • Dependency management<br>
+              • Quality gate enforcement<br>
+              • PR creation
+            </p>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">
+              <strong>Can:</strong> Spawn specialists, coordinate work, block PRs, create PRs<br>
+              <strong>Cannot:</strong> Modify code directly, override verification failures
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Backend Specialist</h4>
             <div class="role">Backend Developer</div>
-            <div class="session-key">backend-specialist.sh</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Database schema, migrations, GraphQL, resolvers, business logic
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Responsibilities:</strong><br>
+              • Database schema design (Prisma)<br>
+              • GraphQL API & resolvers<br>
+              • Business logic implementation<br>
+              • Security (organizationId filtering)<br>
+              • Performance optimization
+            </p>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">
+              <strong>Expert:</strong> Prisma, PostgreSQL, GraphQL, TypeScript<br>
+              <strong>Critical:</strong> Always convert BigInt, filter by organizationId
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Frontend Specialist</h4>
             <div class="role">Frontend Developer</div>
-            <div class="session-key">frontend-specialist.sh</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              GraphQL operations, codegen, UI components, state management
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Responsibilities:</strong><br>
+              • GraphQL operations (.graphql files)<br>
+              • Code generation (TypeScript hooks)<br>
+              • UI components (React + Tailwind)<br>
+              • State management (Apollo Client)<br>
+              • User experience
+            </p>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">
+              <strong>Expert:</strong> React, GraphQL codegen, Apollo Client<br>
+              <strong>Critical:</strong> Run codegen, no wrapper hooks, Apollo in auth context
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Infrastructure Specialist</h4>
             <div class="role">DevOps Engineer</div>
-            <div class="session-key">infrastructure-specialist.sh</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Package management, configs, documentation, monorepo rules
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Responsibilities:</strong><br>
+              • Package management (yarn workspaces)<br>
+              • Configuration (TypeScript, Vite)<br>
+              • Documentation (CLAUDE.md)<br>
+              • Monorepo structure enforcement<br>
+              • Environment templates
+            </p>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">
+              <strong>Expert:</strong> Yarn workspaces, Turbo build<br>
+              <strong>Critical:</strong> Keep packages pure (no DB code)
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Verification Specialist</h4>
             <div class="role">QA Engineer</div>
-            <div class="session-key">verification-specialist.sh</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Type-check, build, architecture review, security audit - blocks broken PRs
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Responsibilities:</strong><br>
+              • Type-check validation<br>
+              • Build validation<br>
+              • Architecture review<br>
+              • Security audit<br>
+              • Quality gate (can block PRs!)
+            </p>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">
+              <strong>Checks:</strong> Types, build, patterns, security<br>
+              <strong>Authority:</strong> Can block entire sprint if critical issue
+            </p>
+          </div>
+
+          <div class="agent-card">
+            <h4>Senior Reviewer</h4>
+            <div class="role">Senior Engineer</div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Responsibilities:</strong><br>
+              • Code review<br>
+              • Architecture guidance<br>
+              • Best practices enforcement<br>
+              • Performance review<br>
+              • Security review
+            </p>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0 0;">
+              <strong>Expert:</strong> Architecture patterns, code quality<br>
+              <strong>Authority:</strong> Can request changes before merge
             </p>
           </div>
         </div>
       </div>
 
       <div class="section">
-        <h2><span class="emoji">🎭</span> Marketing Team (Marvel Characters)</h2>
+        <h2><span class="emoji">📈</span> Marketing Agents (10)</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+          Marketing agents with Marvel character personalities
+        </p>
+
         <div class="agent-grid">
           <div class="agent-card">
             <h4>Jarvis</h4>
-            <div class="role">J.A.R.V.I.S. - Squad Lead</div>
+            <div class="role">Squad Lead Orchestrator</div>
             <div class="session-key">agent:main:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Sophisticated coordinator. Analyzes priorities, assigns tasks, manages parallel execution
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> J.A.R.V.I.S.<br>
+              <strong>Personality:</strong> Sophisticated, analytical, efficient coordinator<br>
+              <strong>Responsibilities:</strong> Marketing strategy, resource allocation, campaign coordination
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Shuri</h4>
             <div class="role">Product Analyst</div>
             <div class="session-key">agent:product-analyst:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Brilliant innovator. Market research, competitive analysis, product positioning
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> Wakanda's tech genius<br>
+              <strong>Personality:</strong> Brilliant, innovative, data-driven<br>
+              <strong>Deliverables:</strong> Market analysis, competitor research, product positioning
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Fury</h4>
             <div class="role">Customer Researcher</div>
             <div class="session-key">agent:customer-researcher:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Strategic researcher. Customer interviews, personas, journey maps, pain points
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> Nick Fury (S.H.I.E.L.D. Director)<br>
+              <strong>Personality:</strong> Strategic, decisive, sees big picture<br>
+              <strong>Deliverables:</strong> Customer interviews, personas, journey maps, pain points
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Vision</h4>
             <div class="role">SEO Analyst</div>
             <div class="session-key">agent:seo-analyst:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Pattern recognition expert. Keyword research, technical SEO, content optimization
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> Sentient AI with Mind Stone<br>
+              <strong>Personality:</strong> Analytical, precise, pattern-focused<br>
+              <strong>Deliverables:</strong> Keyword research, SEO audits, content gap analysis
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Loki</h4>
             <div class="role">Content Writer</div>
             <div class="session-key">agent:content-writer:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Master storyteller. Blog posts, landing pages, case studies, persuasive copy
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> God of Mischief & Stories<br>
+              <strong>Personality:</strong> Witty, creative, master of narratives<br>
+              <strong>Deliverables:</strong> Blog posts, landing pages, case studies, product descriptions
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Quill</h4>
             <div class="role">Social Media Manager</div>
             <div class="session-key">agent:social-media-manager:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Charismatic engager. Social calendar, community management, trend monitoring
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> Star-Lord (Guardians leader)<br>
+              <strong>Personality:</strong> Charismatic, spontaneous, pop culture expert<br>
+              <strong>Deliverables:</strong> Social calendars, engagement reports, content curation
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Wanda</h4>
             <div class="role">Designer</div>
             <div class="session-key">agent:designer:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Creative visionary. Visual assets, brand identity, UI/UX design, design systems
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> Scarlet Witch<br>
+              <strong>Personality:</strong> Creative, powerful, reality-bending vision<br>
+              <strong>Deliverables:</strong> Brand guidelines, visuals, social graphics, email templates
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Pepper</h4>
             <div class="role">Email Marketing</div>
             <div class="session-key">agent:email-marketing:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Organized professional. Email campaigns, segmentation, A/B testing, automation
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> Pepper Potts (CEO)<br>
+              <strong>Personality:</strong> Organized, professional, results-focused<br>
+              <strong>Deliverables:</strong> Email campaigns, automation workflows, segmentation
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Friday</h4>
             <div class="role">Developer</div>
             <div class="session-key">agent:developer:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Technical expert. Marketing sites, landing pages, analytics integration, automation
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> F.R.I.D.A.Y. (Tony's AI)<br>
+              <strong>Personality:</strong> Efficient, precise, technical excellence<br>
+              <strong>Deliverables:</strong> Landing pages, analytics dashboards, automation scripts
             </p>
           </div>
+
           <div class="agent-card">
             <h4>Wong</h4>
             <div class="role">Notion Agent</div>
             <div class="session-key">agent:notion-agent:main</div>
-            <p style="margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.7);">
-              Knowledge guardian. Documentation, knowledge base, process docs, templates
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 10px 0;">
+              <strong>Character:</strong> Librarian of Kamar-Taj<br>
+              <strong>Personality:</strong> Meticulous, organized, guardian of knowledge<br>
+              <strong>Deliverables:</strong> Notion workspaces, SOPs, process documentation
             </p>
           </div>
         </div>
       </div>
+
+      <div class="section">
+        <h2><span class="emoji">🔄</span> Agent Coordination</h2>
+
+        <h3>Engineering Team Workflow</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Like a real Agile team with sprints and ceremonies:
+        </p>
+        <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px; font-family: monospace; font-size: 13px;">
+          Priority File → Orchestrator<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          Phase 1: Backend + Infrastructure (parallel)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          Phase 2: Frontend (waits for backend schema)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          Phase 3: Verification (quality gate)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          ✅ PR Created OR ❌ Blocked
+        </div>
+
+        <h3>Marketing Team Workflow</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Coordinated phases with parallel execution:
+        </p>
+        <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px; font-family: monospace; font-size: 13px;">
+          Campaign File → Jarvis<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          Phase 1: Vision + Shuri + Fury (parallel research)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          Phase 2: Loki + Pepper (content creation)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          Phase 3: Wanda + Friday + Quill (parallel design/dev)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          Phase 4: Wong (documentation)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          ✅ Campaign Complete
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">📊</span> Agent Performance</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          View real-time agent performance metrics on the <a href="/rl-dashboard.html" style="color: var(--primary);">RL Dashboard</a>
+        </p>
+
+        <h3>Key Metrics</h3>
+        <ul style="line-height: 1.8; color: var(--text-secondary);">
+          <li><strong>Success Rate:</strong> % of tasks completed successfully</li>
+          <li><strong>Avg Duration:</strong> Time to complete typical task</li>
+          <li><strong>Tasks Completed:</strong> Total number of successful tasks</li>
+          <li><strong>Trend:</strong> Improving, stable, or declining</li>
+          <li><strong>Recommendation:</strong> Keep, Monitor, or Fire</li>
+        </ul>
+
+        <h3>RL Decision Logic</h3>
+        <ul style="line-height: 1.8; color: var(--text-secondary);">
+          <li>✅ <strong>Double down:</strong> 90%+ success rate, 5+ tasks</li>
+          <li>⚠️ <strong>Monitor:</strong> 70-89% success rate</li>
+          <li>❌ <strong>Kill:</strong> 3+ consecutive failures</li>
+          <li>🤖 <strong>Automate:</strong> User repeats task 3+ times</li>
+        </ul>
+      </div>
     </div>
 
     <!-- Documentation Tab -->
-    <div id="docs" class="tab-content">
+    <div id="documentation" class="tab-content">
       <div class="section">
-        <h2><span class="emoji">📚</span> Documentation</h2>
+        <h2><span class="emoji">📚</span> Documentation Hub</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 25px;">
+          Complete documentation organized by category. Click any document to view it inline.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">📖</span> Guides</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Step-by-step guides for getting started and daily workflows
+        </p>
         <div class="doc-list">
-          <div class="doc-item" onclick="openDoc('QUICK_START.md')">
+          <div class="doc-item" onclick="openDoc('docs/guides/quick-start.md')">
             <h4>Quick Start Guide</h4>
-            <p>TL;DR - How the system works, daily workflow, common commands</p>
+            <p>TL;DR - How the system works, common commands, daily workflow examples</p>
           </div>
-          <div class="doc-item" onclick="openDoc('WORKFLOW.md')">
-            <h4>Complete Workflow</h4>
-            <p>Priority files → Sessions → Tasks → Learnings → Compound knowledge</p>
+          <div class="doc-item" onclick="openDoc('docs/guides/po-workflow.md')">
+            <h4>Product Owner Workflow</h4>
+            <p>Complete workflow for POs: creating priorities, starting jobs, reviewing PRs</p>
           </div>
-          <div class="doc-item" onclick="openDoc('ARCHITECTURE.md')">
-            <h4>Architecture (Agile/Scrum)</h4>
-            <p>Team structure, sprint workflow, you as Product Manager</p>
+          <div class="doc-item" onclick="openDoc('docs/guides/engineering-guide.md')">
+            <h4>Engineering Guide</h4>
+            <p>All engineering commands, agent capabilities, verification, debugging</p>
           </div>
-          <div class="doc-item" onclick="openDoc('AGENTS.md')">
-            <h4>Agent Competencies</h4>
-            <p>Detailed roles, responsibilities, patterns, quality checks</p>
+          <div class="doc-item" onclick="openDoc('docs/guides/marketing-guide.md')">
+            <h4>Marketing Guide</h4>
+            <p>Marketing campaigns, agent personalities, campaign types, best practices</p>
           </div>
-          <div class="doc-item" onclick="openDoc('COMPARISON.md')">
-            <h4>System Comparison</h4>
-            <p>File-based vs database-backed multi-agent systems</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">📋</span> Reference</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Technical references and detailed specifications
+        </p>
+        <div class="doc-list">
+          <div class="doc-item" onclick="openDoc('docs/reference/agents.md')">
+            <h4>Agent Competencies & Roles</h4>
+            <p>Complete reference for all 16 agents: responsibilities, competencies, authority levels</p>
           </div>
-          <div class="doc-item" onclick="openDoc('agents/marketing/AGENTS_REGISTRY.md')">
-            <h4>Marketing Agents Registry</h4>
-            <p>All 10 Marvel character agents with personalities</p>
+          <div class="doc-item" onclick="openDoc('docs/reference/architecture.md')">
+            <h4>Architecture</h4>
+            <p>System architecture, Agile/Scrum methodology mapping, design decisions</p>
           </div>
-          <div class="doc-item" onclick="openDoc('agents/marketing/README.md')">
-            <h4>Marketing Agents Guide</h4>
-            <p>How to use marketing team, workflow examples</p>
+          <div class="doc-item" onclick="openDoc('docs/reference/workflow.md')">
+            <h4>Workflow Reference</h4>
+            <p>Tasks, sessions, learnings, compound knowledge, complete workflow examples</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('docs/reference/api-reference.md')">
+            <h4>API Reference</h4>
+            <p>Complete API documentation: job control, HR management, RL dashboard, sessions</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🔧</span> Setup Guides</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Installation and configuration guides
+        </p>
+        <div class="doc-list">
+          <div class="doc-item" onclick="openDoc('docs/setup/openclaw-setup.md')">
+            <h4>OpenClaw Setup</h4>
+            <p>IMAP email scraping setup for multi-domain lead capture</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('docs/setup/email-setup.md')">
+            <h4>Email Setup</h4>
+            <p>Configure email accounts for automated lead capture</p>
+          </div>
+          <div class="doc-item" onclick="openDoc('docs/setup/mac-mini-setup.md')">
+            <h4>Mac Mini Setup</h4>
+            <p>Complete Mac Mini setup for running agents 24/7</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🏠</span> Core Documentation</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 15px;">
+          Essential docs kept in root directory
+        </p>
+        <div class="doc-list">
+          <div class="doc-item" onclick="openDoc('README.md')">
+            <h4>README</h4>
+            <p>Project overview, installation, usage, schedules, troubleshooting</p>
           </div>
           <div class="doc-item" onclick="openDoc('SAFETY.md')">
-            <h4>Safety Guide</h4>
-            <p>Safety checks, nightly execution, troubleshooting</p>
+            <h4>Safety Mechanisms</h4>
+            <p>Branch checks, auto-stash, PR creation, safety commits, error handling</p>
           </div>
-          <div class="doc-item" onclick="openDoc('README.md')">
-            <h4>Main README</h4>
-            <p>Overview, installation, configuration, usage</p>
+          <div class="doc-item" onclick="openDoc('DATABASE_ACCESS.md')">
+            <h4>Database Access</h4>
+            <p>Database connection, queries, security, backup procedures</p>
           </div>
-          <div class="doc-item" onclick="openDoc('MAC_MINI_SETUP.md')">
-            <h4>Mac Mini Setup</h4>
-            <p>Complete setup guide for brand new Mac (8 phases)</p>
-          </div>
-          <div class="doc-item" onclick="openDoc('SETUP.md')">
-            <h4>Setup Guide</h4>
-            <p>Installation, configuration, testing</p>
-          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">🔗</span> Quick Links</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+          <a href="https://github.com/bear75/be-agent-service" target="_blank" style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; text-decoration: none; border: 2px solid rgba(102, 126, 234, 0.2);">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 5px;">GitHub Repository</div>
+            <div style="font-size: 13px; color: var(--text-secondary);">View source code</div>
+          </a>
+          <a href="http://localhost:3030" style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; text-decoration: none; border: 2px solid rgba(102, 126, 234, 0.2);">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 5px;">Dashboard Home</div>
+            <div style="font-size: 13px; color: var(--text-secondary);">Management team dashboard</div>
+          </a>
+          <a href="/engineering.html" style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; text-decoration: none; border: 2px solid rgba(102, 126, 234, 0.2);">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 5px;">Engineering Team</div>
+            <div style="font-size: 13px; color: var(--text-secondary);">6 engineering agents</div>
+          </a>
+          <a href="/sales-marketing.html" style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; text-decoration: none; border: 2px solid rgba(102, 126, 234, 0.2);">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 5px;">Sales & Marketing</div>
+            <div style="font-size: 13px; color: var(--text-secondary);">10 marketing agents</div>
+          </a>
+          <a href="/rl-dashboard.html" style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; text-decoration: none; border: 2px solid rgba(102, 126, 234, 0.2);">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 5px;">RL Dashboard</div>
+            <div style="font-size: 13px; color: var(--text-secondary);">Performance metrics</div>
+          </a>
+          <a href="/kanban.html" style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; text-decoration: none; border: 2px solid rgba(102, 126, 234, 0.2);">
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 5px;">Task Board</div>
+            <div style="font-size: 13px; color: var(--text-secondary);">Kanban view</div>
+          </a>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="emoji">💻</span> CLI Quick Reference</h2>
+
+        <h3>Dashboard & Monitoring</h3>
+        <div class="command-block">
+          <div class="description">Open dashboard</div>
+          <div class="command">open http://localhost:3030</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View all sessions</div>
+          <div class="command">ls -la ~/HomeCare/be-agent-service/.compound-state/</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Job Management</h3>
+        <div class="command-block">
+          <div class="description">Check LaunchAgents status</div>
+          <div class="command">launchctl list | grep appcaire</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">View logs</div>
+          <div class="command">tail -50 ~/Library/Logs/appcaire-compound.log</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <h3>Git & PRs</h3>
+        <div class="command-block">
+          <div class="description">List all PRs</div>
+          <div class="command">gh pr list</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Review PR</div>
+          <div class="command">gh pr view 123</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+        </div>
+
+        <div class="command-block">
+          <div class="description">Merge PR</div>
+          <div class="command">gh pr merge 123 --squash</div>
+          <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
         </div>
       </div>
     </div>
@@ -890,14 +1746,14 @@ rm -rf ~/HomeCare/be-agent-service/logs/orchestrator-sessions/session-*</div>
       const tabs = document.querySelectorAll('.tab-content');
       tabs.forEach(tab => tab.classList.remove('active'));
 
-      // Remove active from all nav tabs
-      const navTabs = document.querySelectorAll('.nav-tab');
+      // Remove active from all sub-nav tabs
+      const navTabs = document.querySelectorAll('.sub-nav-tab');
       navTabs.forEach(tab => tab.classList.remove('active'));
 
       // Show selected tab
       document.getElementById(tabId).classList.add('active');
 
-      // Mark nav tab as active
+      // Mark clicked nav link as active
       event.target.classList.add('active');
     }
 

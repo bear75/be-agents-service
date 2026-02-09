@@ -11,7 +11,11 @@ Complete reference for all agents in the multi-agent development team.
 3. [Frontend Specialist (Frontend Developer)](#frontend-specialist-frontend-developer)
 4. [Infrastructure Specialist (DevOps Engineer)](#infrastructure-specialist-devops-engineer)
 5. [Verification Specialist (QA Engineer)](#verification-specialist-qa-engineer)
-6. [Future: Local LLM Specialist (Simple Tasks)](#future-local-llm-specialist-simple-tasks)
+6. [DB Architect Specialist](#db-architect-specialist)
+7. [UX Designer Specialist](#ux-designer-specialist)
+8. [Documentation Expert](#documentation-expert)
+9. [Agent Levelup (Gamification Specialist)](#agent-levelup-gamification-specialist)
+10. [Future: Local LLM Specialist (Simple Tasks)](#future-local-llm-specialist-simple-tasks)
 
 ---
 
@@ -632,6 +636,86 @@ Escalate to PM (requiresHuman: true)
 
 ---
 
+## DB Architect Specialist
+
+**Location:** `agents/db-architect-specialist.sh`
+**Prompt:** `.claude/prompts/db-architect-specialist.md` (in target repo, optional)
+**Model:** Claude Sonnet 4.5 (via loop.sh)
+
+### Role
+
+Acts as **Database Architect** - database design, Prisma schema, Apollo GraphQL, PostgreSQL optimization, query performance.
+
+### When Spawned
+
+Keywords: schema design, database design, prisma design, migration design
+
+### Runs In
+
+Phase 1 parallel (with backend and infrastructure)
+
+---
+
+## UX Designer Specialist
+
+**Location:** `agents/ux-designer-specialist.sh`
+**Prompt:** `.claude/prompts/ux-designer-specialist.md` (in target repo, optional)
+**Model:** Claude Sonnet 4.5 (via loop.sh)
+
+### Role
+
+Acts as **UX Designer** - modern UX 2026, responsive design, PWA, React Native, brand guidelines, accessibility, mobile-first.
+
+### When Spawned
+
+Keywords: ux, accessibility, responsive, design system, pwa, mobile-first
+
+### Runs In
+
+Phase 2b sequential (after frontend)
+
+---
+
+## Documentation Expert
+
+**Location:** `agents/documentation-expert.sh`
+**Prompt:** `.claude/prompts/documentation-expert.md` (in target repo, optional)
+**Model:** Claude Sonnet 4.5 (via loop.sh)
+
+### Role
+
+Acts as **Documentation Expert** - keep docs updated, archive obsolete docs, verify with team, publish to docs page, maintain accuracy.
+
+### When Spawned
+
+Keywords: documentation, docs, readme, archive doc
+
+### Runs In
+
+Phase 1 parallel (with backend and infrastructure)
+
+---
+
+## Agent Levelup (Gamification Specialist)
+
+**Location:** `agents/levelup-specialist.sh`
+**Prompt:** `.claude/prompts/levelup-specialist.md` (in target repo, optional)
+**Model:** Claude Sonnet 4.5 (via loop.sh)
+
+### Role
+
+Acts as **Gamification Expert** - XP systems, achievements, leaderboards, progression mechanics, engagement optimization.
+
+### When Spawned
+
+Keywords: gamification, xp, achievements, leaderboard
+
+### Runs In
+
+Phase 1 parallel (with backend and infrastructure)
+
+---
+
 ## Future: Local LLM Specialist (Simple Tasks)
 
 **Location:** TBD (agents/local-llm-specialist.sh)
@@ -687,12 +771,15 @@ Acts as **Assistant for Simple Tasks** - handles straightforward work using loca
 | Task Type | Complexity | Best Agent | Model |
 |-----------|------------|------------|-------|
 | Database schema | High | Backend | Claude API |
+| Schema design | High | DB Architect | Claude API |
 | GraphQL API | High | Backend | Claude API |
 | React components | High | Frontend | Claude API |
+| UX/accessibility | High | UX Designer | Claude API |
 | Architecture review | High | Verification | Shell script |
 | Package updates | Low | Infrastructure / Local LLM | Local or API |
-| Documentation | Low | Infrastructure / Local LLM | Local or API |
+| Documentation | Low | Documentation Expert / Infrastructure | Claude API |
 | Config updates | Medium | Infrastructure | Claude API |
+| Gamification | Medium | Agent Levelup | Claude API |
 | Log analysis | Low | Local LLM | Local |
 | Error summarization | Low | Local LLM | Local |
 
@@ -700,9 +787,9 @@ Acts as **Assistant for Simple Tasks** - handles straightforward work using loca
 
 ## Summary
 
-- **5 Current Agents**: Orchestrator, Backend, Frontend, Infrastructure, Verification
+- **10 Current Agents**: Orchestrator, Backend, Frontend, Infrastructure, Verification, DB Architect, UX Designer, Documentation Expert, Agent Levelup, Senior Reviewer
 - **1 Future Agent**: Local LLM for simple tasks
-- **Clear Roles**: Like real software team (Scrum Master, Backend Dev, Frontend Dev, DevOps, QA)
+- **Clear Roles**: Like real software team (Scrum Master, Backend, Frontend, DevOps, QA, DB Architect, UX, Docs, Gamification)
 - **Defined Authority**: Each knows what they can/can't do
 - **Quality Standards**: Patterns enforced, blockers escalated
 - **Communication Protocol**: JSON state files, structured feedback

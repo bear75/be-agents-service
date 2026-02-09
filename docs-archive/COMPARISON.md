@@ -2,73 +2,121 @@
 
 ## Overview
 
-This document compares our **file-based orchestration system** with **database-backed multi-agent collaboration systems** (like the one referenced from @pbteja1998).
+This document compares our **SQLite + JSON hybrid orchestration system** with **database-backed multi-agent collaboration systems** (like the one referenced from @pbteja1998).
+
+**Updated:** 2026-02-08 - We NOW use SQLite database + JSON hybrid architecture
 
 ---
 
 ## Quick Comparison Table
 
-| Feature | Our System | Database-Backed System |
-|---------|------------|------------------------|
-| **Storage** | File-based (JSON) | Database (Convex/PostgreSQL) |
-| **Agents** | 4 specialists + orchestrator | Named agents with personalities |
+| Feature | Our System (Updated 2026-02-08) | Database-Backed System |
+|---------|--------------------------------|------------------------|
+| **Storage** | SQLite + JSON (hybrid) | Database (Convex/PostgreSQL) |
+| **Agents** | 20 specialists (10 eng + 10 marketing) | Named agents with personalities |
+| **Agent Personalities** | ✅ Marvel characters (marketing team) | ✅ Named characters with "souls" |
 | **Scheduling** | ✅ LaunchAgents (10:30 PM, 11:00 PM) | Via cron or similar |
 | **Dashboard** | ✅ Real-time (3s refresh) | ✅ Real-time (websockets) |
+| **Agent Management** | ✅ Hire/Fire/Evaluate (HR system) | ✅ Agent CRUD |
+| **RL Learning** | ✅ Keep/Kill/Double-down (3+ failures → kill) | ❓ Not mentioned |
+| **Gamification** | ✅ XP, levels, achievements, streaks | ❓ Not mentioned |
 | **Inter-agent messaging** | ❌ State files only | ✅ Messages table |
-| **Task workflow** | Linear (pending → completed) | Full workflow (inbox → assigned → in_progress → review → done) |
-| **Audit trail** | Git commits + logs | Activities table |
-| **Deliverables** | Files in repo | Documents table |
+| **Task workflow** | Linear (pending → completed) + RL tracking | Full workflow (inbox → assigned → in_progress → review → done) |
+| **Audit trail** | ✅ Git commits + database metrics + rewards | ✅ Activities table |
+| **Deliverables** | Files in repo + database tracking | Documents table |
 | **Notifications** | ❌ None | ✅ Notifications table |
-| **Agent personalities** | ❌ None | ✅ Named characters with "souls" |
-| **Focus** | **Automation & execution** | **Collaboration & UI** |
-| **Complexity** | Low (no database) | Medium (requires DB) |
-| **Deployment** | Simple (files + Node.js) | Complex (DB + migrations) |
-| **Cost** | Low (local files) | Medium (DB hosting) |
+| **Focus** | **Automation & RL Learning** | **Collaboration & UI** |
+| **Complexity** | Medium (SQLite + JSON) | Medium (requires DB) |
+| **Deployment** | Simple (SQLite file + Node.js) | Complex (DB + migrations) |
+| **Cost** | Low (local SQLite) | Medium (DB hosting) |
 
 ---
 
-## Our System (File-Based Orchestration)
+## Our System (SQLite + JSON Hybrid)
 
-### Architecture
+### Architecture (Updated 2026-02-08)
 
 ```
+┌─────────────────────────────────────────────────────────┐
+│               SQLite Database (Primary)                  │
+│                                                          │
+│  • 16 core tables (teams, agents, sessions, tasks, etc.) │
+│  • 8 gamification tables (XP, levels, achievements)      │
+│  • 4 views (performance, leaderboard, etc.)              │
+│  • RL learning (experiments, patterns, metrics, rewards) │
+│  • Agent management (hire, fire, evaluate)               │
+└─────────────────────────────────────────────────────────┘
+                          ↓
 ┌─────────────────────────────────────────────────────────┐
 │                   Orchestrator                           │
 │               (Scrum Master Agent)                       │
 │                                                          │
 │  • Reads priority files (product backlog)                │
-│  • Creates PRD and tasks                                 │
+│  • Creates PRD and tasks in database                     │
 │  • Spawns specialists in parallel                        │
-│  • Coordinates handoffs via JSON state files             │
+│  • Coordinates via JSON state + database                 │
+│  • Tracks performance in database                        │
 │  • Runs verification before PR                           │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│              Specialist Agents (4)                       │
+│          Engineering Team (10 specialists)               │
 │                                                          │
+│  • Orchestrator: Coordinates workflow                    │
 │  • Backend: Schema, migrations, GraphQL, resolvers       │
 │  • Frontend: Operations, codegen, UI components          │
 │  • Infrastructure: Packages, configs, docs               │
 │  • Verification: Type-check, build, security             │
+│  • Senior Reviewer: Code review, architecture            │
+│  • DB Architect: Prisma, Apollo, PostgreSQL              │
+│  • UX Designer: Modern UX 2026, PWA, responsive          │
+│  • Documentation Expert: Docs maintenance, archive       │
+│  • Agent Levelup: Gamification expert (XP, achievements) │
 │                                                          │
-│  Each writes state to: .compound-state/session-X/        │
+│  Each writes state to database + JSON session files      │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│                Dashboard (Node.js)                       │
+│         Marketing Team (10 Marvel characters)            │
 │                                                          │
-│  • Reads JSON state files every 3 seconds                │
+│  • Jarvis (Lead): Campaign orchestration                 │
+│  • Shuri: Content innovation                             │
+│  • Fury: Campaign strategy                               │
+│  • Vision: SEO specialist                                │
+│  • Loki: Content strategist                              │
+│  • Wanda: Social media manager                           │
+│  • Quill: Social media content                           │
+│  • Pepper: Email marketing                               │
+│  • Friday: Analytics & reporting                         │
+│  • Wong: Lead management                                 │
+│                                                          │
+│  Agent personalities defined in database                 │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│             Dashboard (Node.js + SQLite)                 │
+│                                                          │
+│  • 5-page structure (Management, Eng, Marketing, RL, Docs)│
+│  • Reads from SQLite + JSON state files                  │
+│  • HR management (hire/fire/evaluate agents)             │
+│  • RL dashboard (keep/kill/double-down decisions)        │
+│  • Gamification leaderboard (XP, achievements, streaks)  │
 │  • Shows session status, logs, statistics                │
-│  • No database needed                                    │
 │  • Runs at http://localhost:3030                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
-### Storage Structure
+### Storage Structure (Hybrid)
 
 ```
 .compound-state/
-└── session-1770451234/
+├── agent-service.db          # SQLite DATABASE (PRIMARY)
+│                             # - Teams, agents, sessions, tasks
+│                             # - XP, levels, achievements, streaks
+│                             # - Experiments, patterns, metrics, rewards
+│                             # - User commands, automation candidates
+│                             # - Campaigns, leads, content
+└── session-1770451234/       # JSON SESSION STATE (execution details)
     ├── session.json          # Session metadata
     ├── orchestrator.json     # Orchestrator state
     ├── backend.json          # Backend specialist state
@@ -120,25 +168,33 @@ com.appcaire.dashboard.plist
 2. **11:00 PM** - Auto-compound reads priority file, runs orchestrator, creates PR
 3. **Next morning** - You review PR, merge or request changes
 
-### Strengths
+### Strengths (Updated 2026-02-08)
 
-✅ **Simple deployment** - No database setup, just files + Node.js
-✅ **Low cost** - No database hosting fees
-✅ **Git-native** - All state committed to repo (audit trail)
-✅ **Fast to implement** - Built in ~2 days
+✅ **SQLite database** - Queryable data with SQL, no hosting fees
+✅ **RL learning system** - Automatic keep/kill/double-down (3+ failures → kill)
+✅ **Gamification** - XP, levels (1-12), achievements, streaks, leaderboards
+✅ **Agent management** - HR system: hire, fire, evaluate with RL recommendations
+✅ **20 specialized agents** - 10 engineering + 10 marketing (Marvel characters)
+✅ **Simple deployment** - SQLite file + Node.js, no hosting
+✅ **Low cost** - No database hosting fees (local SQLite)
+✅ **Git-native** - JSON state committed to repo (audit trail)
+✅ **Fast to implement** - Database added in 1 week
 ✅ **Automated workflow** - Fully hands-off overnight execution
 ✅ **Verification layer** - Prevents broken PRs
 ✅ **Multi-repo support** - One orchestrator works on any repo
-✅ **Real-time dashboard** - 3-second refresh shows live progress
+✅ **Real-time dashboard** - 5-page structure with 3-second refresh
+✅ **Performance tracking** - Success rates, task counts, avg duration per agent
+✅ **Automatic experimentation** - Kill failing patterns, double down on success
+✅ **Automation candidate detection** - 3+ user repetitions → propose new agent
 
 ### Limitations
 
-❌ **No inter-agent messaging** - Agents communicate via state files only
-❌ **No agent personalities** - Functional agents, not characters
+❌ **No inter-agent messaging** - Agents communicate via state files only (no chat)
+❌ **No real-time websockets** - Dashboard polls every 3 seconds instead
 ❌ **Simple task workflow** - Pending → In Progress → Completed (no review/inbox states)
 ❌ **No notifications** - No mention system for agents
-❌ **No deliverables table** - Files tracked in git, not database
-❌ **Limited audit trail** - Git commits + logs, no activities table
+❌ **No advanced deliverables table** - Files tracked in git + basic database tracking
+❌ **Single-user focused** - Not designed for multi-user collaboration
 
 ---
 
@@ -267,22 +323,25 @@ souls: {
 
 ---
 
-## Hybrid Approach: Best of Both Worlds?
+## Hybrid Approach: Best of Both Worlds! ✅ IMPLEMENTED
 
-We can enhance our system with database-like features while keeping file-based simplicity:
+We successfully implemented a hybrid SQLite + JSON architecture that combines database power with file-based simplicity:
 
-### Option 1: Add SQLite (Local DB)
+### SQLite Hybrid (✅ Implemented 2026-02-08)
 
 **Pros:**
-- No hosting costs (local file)
-- SQL queries for complex analytics
-- Maintains simplicity (single file)
-- Can still commit to git (small size)
+- ✅ No hosting costs (local file)
+- ✅ SQL queries for complex analytics
+- ✅ Maintains simplicity (single .db file)
+- ✅ Git-friendly (small size, ~500KB)
+- ✅ ACID transactions
+- ✅ Foreign key relationships
+- ✅ Views for complex aggregations
+- ✅ Zero network latency
 
 **Cons:**
-- Adds dependency (SQLite)
-- Concurrent writes need locking
-- Migration complexity
+- ✅ Solved: better-sqlite3 handles concurrent writes
+- ✅ Solved: Schema in schema.sql + gamification-schema.sql
 
 ### Option 2: Enhance JSON State Files
 
@@ -416,45 +475,72 @@ agents/
 
 ---
 
-## Current Capabilities
+## Current Capabilities (Updated 2026-02-08)
 
 ### ✅ What We Have
+
+**Database:**
+- SQLite with 16 core tables + 8 gamification tables
+- 4 views (performance, leaderboard, experiments, user patterns)
+- Full SQL queries for analytics
+- ACID transactions
 
 **Scheduling:**
 - Daily review at 10:30 PM
 - Auto-compound at 11:00 PM
 - Dashboard auto-starts on boot
 
-**Agents:**
-- Orchestrator (Scrum Master)
-- Backend Specialist
-- Frontend Specialist
-- Infrastructure Specialist
-- Verification Specialist
+**Agents (20 total):**
+- **Engineering (10):** Orchestrator, Backend, Frontend, Infrastructure, Verification, Senior Reviewer, DB Architect, UX Designer, Documentation Expert, Agent Levelup
+- **Marketing (10 Marvel characters):** Jarvis, Shuri, Fury, Vision, Loki, Wanda, Quill, Pepper, Friday, Wong
 
-**Dashboard:**
-- Real-time session monitoring (3s refresh)
-- System statistics
-- Session logs
-- Agent status
+**Dashboard (5 pages):**
+- Management Team: CEO, CPO/CTO, CMO/CSO, HR (hire/fire/evaluate)
+- Engineering: 10 agents, job control, real-time status
+- Sales & Marketing: 10 agents, campaign management
+- RL Dashboard: Experiments, patterns, automation candidates, metrics
+- Docs & Commands: Complete documentation
+
+**Agent Management (HR System):**
+- Hire new agents (create via API)
+- Fire agents (deactivate)
+- Rehire agents (reactivate)
+- RL evaluation (monitor/continue/double_down/investigate/consider_firing)
+- Performance tracking (success rate, tasks completed, avg duration)
+
+**RL Learning System:**
+- Keep/Kill/Double-down decisions
+- 3+ consecutive failures → automatic kill
+- 90%+ success rate → double down
+- 3+ user repetitions → automation candidate (propose new agent)
+- Metrics tracking (task, session, agent, experiment)
+- Reward system (+10 success, -5 fail, +25 session, +50 PR merged)
+
+**Gamification:**
+- XP earning from task completions
+- 12 levels (Rookie → Divine)
+- 15+ achievements (First Steps, Excellence, Speed Demon, etc.)
+- Streak tracking (consecutive days)
+- Leaderboards (XP, tasks, success rate)
+- Managed by HR Agent using Agent Levelup expert
 
 **Workflow:**
 - Priority files → PRD → Tasks → Implementation → Verification → PR
+- Performance tracking in database
+- RL analysis after each session
 
 **Multi-repo:**
 - Works on any target repo
-- Coordination via state files
+- Coordination via state files + database
 
 ### ❌ What We Don't Have (vs Database System)
 
-- Inter-agent messaging
-- Agent personalities ("souls")
-- Rich task workflow (inbox/review states)
-- Notifications system
-- Documents table
-- Activities audit trail
-- Real-time websockets
-- Complex analytics queries
+- Inter-agent real-time messaging/chat
+- Real-time websockets (we use 3s polling)
+- Rich task workflow (inbox/review states) - we use simple pending/in_progress/completed
+- Notifications system for agent mentions
+- Advanced documents table (we track in git)
+- Real-time collaboration features
 
 ---
 
@@ -478,14 +564,20 @@ agents/
 
 ---
 
-## Summary
+## Summary (Updated 2026-02-08)
 
-**Our system** is **more comprehensive for automation**, but **less comprehensive for collaboration**.
+**Our system** is **comprehensive for automation + RL learning + gamification**.
 
-**Their system** is **more comprehensive for collaboration**, but **requires database complexity**.
+**Their system** is **comprehensive for real-time collaboration**.
 
-**Best approach**: Enhance our file-based system with personalities, messaging, and task workflow states. Only migrate to database if collaboration needs grow beyond what files can handle.
+**What we achieved**: SQLite + JSON hybrid that combines:
+- ✅ Database power (SQL queries, relationships, views)
+- ✅ File simplicity (no hosting, git-friendly, zero latency)
+- ✅ RL learning (automatic experimentation, keep/kill/double-down)
+- ✅ Gamification (XP, levels, achievements, motivation)
+- ✅ Agent management (hire/fire/evaluate with RL recommendations)
+- ✅ 20 specialized agents (engineering + marketing)
 
-**Key insight**: File-based works great when agents operate autonomously overnight. Database shines when agents (or humans) collaborate in real-time during the day.
+**Key insight**: SQLite + JSON hybrid works perfectly for single-user automation with intelligent learning. Full database systems (PostgreSQL/Convex) shine for multi-user real-time collaboration.
 
-We can have both by using file-based for nightly automation and adding database for daytime collaboration if needed!
+**Migration path**: If we need multi-user collaboration later, we can migrate SQLite → PostgreSQL while keeping the same architecture.

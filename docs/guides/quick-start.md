@@ -309,17 +309,15 @@ cd ~/HomeCare/be-agent-service
 ```
 Priority File (reports/priorities-*.md)
          ↓
-   Orchestrator (scripts/orchestrator.sh)
+   Orchestrator (scripts/orchestrator.sh) - keyword detection
          ↓
-    ┌────┴────┐
-    ↓         ↓
-Backend    Infrastructure  (parallel)
-    ↓         ↓
-    └────┬────┘
+   Phase 1 (parallel): Backend, Infra, DB Architect, Docs Expert, Levelup
          ↓
-      Frontend  (waits for backend)
+   Phase 2: Frontend (waits for backend)
          ↓
-   Verification  (quality gate)
+   Phase 2b: UX Designer (when UX keywords detected)
+         ↓
+   Verification (quality gate)
          ↓
   ✅ PR Created  OR  ❌ Blocked
 ```

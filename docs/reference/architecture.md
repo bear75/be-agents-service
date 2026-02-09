@@ -37,28 +37,17 @@ This multi-agent orchestrator system is designed as an **Agile development team*
                           ↓
 ┌─────────────────────────────────────────────────────────┐
 │                Development Team                          │
-│              (Specialist Agents)                         │
+│              (10 Specialist Agents)                      │
 │                                                          │
 │  Backend Developer (backend-specialist)                  │
-│  • Database schema design                                │
-│  • API development (GraphQL)                             │
-│  • Business logic                                        │
-│                                                          │
+│  DB Architect (db-architect-specialist)                  │
 │  Frontend Developer (frontend-specialist)                │
-│  • UI components                                         │
-│  • State management                                      │
-│  • User experience                                       │
-│                                                          │
+│  UX Designer (ux-designer-specialist)                    │
 │  DevOps Engineer (infrastructure-specialist)             │
-│  • Package management                                    │
-│  • Configuration                                         │
-│  • Documentation                                         │
-│                                                          │
+│  Documentation Expert (documentation-expert)             │
+│  Agent Levelup (levelup-specialist) - Gamification        │
 │  QA Engineer (verification-specialist)                   │
-│  • Quality gates                                         │
-│  • Architecture review                                   │
-│  • Security audit                                        │
-│  • Performance checks                                    │
+│  Senior Reviewer (senior-code-reviewer)                   │
 └─────────────────────────────────────────────────────────┘
 ```
 

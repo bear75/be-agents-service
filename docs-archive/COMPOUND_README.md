@@ -34,7 +34,7 @@ Every night:
 
 ## Quick Start
 
-See the main setup guide: `../../COMPOUND_SETUP_GUIDE.md`
+See the main setup guide: `SETUP.md` or `QUICK_START.md`
 
 ## File Dependencies
 
@@ -78,9 +78,10 @@ Runs via launchd (macOS):
 
 ## Documentation
 
-- **Setup Guide**: `../../COMPOUND_SETUP_GUIDE.md` - Quick 5-minute setup
-- **Full Docs**: `../../docs/COMPOUND_WORKFLOW.md` - Comprehensive guide
-- **Dashboard Integration**: `../../docs/COMPOUND_DASHBOARD_INTEGRATION.md` - UI monitoring proposal
+- **Setup Guide**: `SETUP.md` - Installation and configuration
+- **Quick Start**: `QUICK_START.md` - Daily workflow and commands
+- **Full Workflow**: `WORKFLOW.md` - Priorities, sessions, tasks, learnings
+- **Dashboard**: http://localhost:3030 - Real-time monitoring
 
 ## Troubleshooting
 

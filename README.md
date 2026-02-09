@@ -359,7 +359,6 @@ launchctl load ~/Library/LaunchAgents/com.appcaire.auto-compound.plist
 
 - **beta-appcaire**: Main application repository
   - https://github.com/[org]/beta-appcaire
->>>>>>> feature/dashboard-design-system
 
 ## License
 
