@@ -113,6 +113,39 @@ export interface FollowUp {
   tags?: string[];
 }
 
+/** A plan/PRD document from docs/ */
+export interface PlanDocument {
+  slug: string;
+  filename: string;
+  title: string;
+  priority?: number;
+  status: 'planning' | 'in-progress' | 'blocked' | 'done' | 'docs-only';
+  summary?: string;
+  limitations?: string[];
+  content: string;
+  lastModified: string;
+}
+
+/** Setup readiness status for the workspace */
+export interface SetupStatus {
+  workspace: {
+    configured: boolean;
+    exists: boolean;
+    path?: string;
+  };
+  openclaw: {
+    configured: boolean;
+    configPath?: string;
+  };
+  telegram: {
+    configured: boolean;
+  };
+  launchd: {
+    morningBriefing: boolean;
+    weeklyReview: boolean;
+  };
+}
+
 /** Combined overview of the entire workspace */
 export interface WorkspaceOverview {
   inbox: {

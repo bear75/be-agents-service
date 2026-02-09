@@ -3,7 +3,7 @@
  * Displays agent status, workspace overview, and logs for selected repository
  */
 import { useState } from 'react';
-import { Bot, Layers, Settings } from 'lucide-react';
+import { Bot, Layers, Settings, Map } from 'lucide-react';
 import { RepoSelector } from '../components/RepoSelector';
 import { AgentStatusCard } from '../components/AgentStatusCard';
 import { PriorityBoard } from '../components/PriorityBoard';
@@ -12,8 +12,10 @@ import { WorkspaceOverview } from '../components/WorkspaceOverview';
 import { InboxView } from '../components/InboxView';
 import { CheckInTimeline } from '../components/CheckInTimeline';
 import { MemoryViewer } from '../components/MemoryViewer';
+import { PlansBoard } from '../components/PlansBoard';
+import { SetupStatus } from '../components/SetupStatus';
 
-type Tab = 'agents' | 'workspace';
+type Tab = 'workspace' | 'plans' | 'agents';
 
 export function DashboardPage() {
   const [selectedRepo, setSelectedRepo] = useState<string>('');
@@ -40,28 +42,24 @@ export function DashboardPage() {
           {/* Tab navigation */}
           {selectedRepo && (
             <div className="flex mt-4 -mb-px">
-              <button
-                onClick={() => setActiveTab('workspace')}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'workspace'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <Layers className="w-4 h-4" />
-                Workspace
-              </button>
-              <button
-                onClick={() => setActiveTab('agents')}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'agents'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <Settings className="w-4 h-4" />
-                Agents & Logs
-              </button>
+              {([
+                { id: 'workspace' as Tab, label: 'Workspace', icon: <Layers className="w-4 h-4" /> },
+                { id: 'plans' as Tab, label: 'Plans & Roadmap', icon: <Map className="w-4 h-4" /> },
+                { id: 'agents' as Tab, label: 'Agents & Logs', icon: <Settings className="w-4 h-4" /> },
+              ]).map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -93,6 +91,14 @@ export function DashboardPage() {
               <PriorityBoard repoName={selectedRepo} />
               <MemoryViewer repoName={selectedRepo} />
             </div>
+          </div>
+        ) : activeTab === 'plans' ? (
+          <div className="space-y-6">
+            {/* Setup Readiness */}
+            <SetupStatus repoName={selectedRepo} />
+
+            {/* Plans & PRDs */}
+            <PlansBoard />
           </div>
         ) : (
           <div className="space-y-6">

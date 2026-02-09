@@ -94,6 +94,37 @@ export interface FollowUp {
   tags?: string[];
 }
 
+export interface PlanDocument {
+  slug: string;
+  filename: string;
+  title: string;
+  priority?: number;
+  status: 'planning' | 'in-progress' | 'blocked' | 'done' | 'docs-only';
+  summary?: string;
+  limitations?: string[];
+  content?: string;
+  lastModified: string;
+}
+
+export interface SetupStatus {
+  workspace: {
+    configured: boolean;
+    exists: boolean;
+    path?: string;
+  };
+  openclaw: {
+    configured: boolean;
+    configPath?: string;
+  };
+  telegram: {
+    configured: boolean;
+  };
+  launchd: {
+    morningBriefing: boolean;
+    weeklyReview: boolean;
+  };
+}
+
 export interface WorkspaceOverview {
   inbox: {
     total: number;
