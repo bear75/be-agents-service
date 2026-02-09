@@ -5,6 +5,17 @@
 
 set -e
 
+# Trap errors to record failed sessions in DB
+trap 'on_error $? $LINENO' ERR
+on_error() {
+  local exit_code=$1
+  local line_no=$2
+  if type db_api_available &>/dev/null && db_api_available 2>/dev/null; then
+    db_update_session "${SESSION_ID:-unknown}" "failed" "" "$exit_code"
+    echo "📊 Session failed in DB (line $line_no, exit $exit_code)"
+  fi
+}
+
 # Config-driven approach: Accept repo name as argument
 REPO_NAME="${1:-beta-appcaire}"
 
@@ -34,9 +45,20 @@ if [ ! -d "$REPO_PATH" ]; then
   exit 1
 fi
 
+# ─── Source DB API helper (writes sessions/tasks to SQLite via API) ──────────
+DB_API_SCRIPT="$SCRIPT_DIR/../db-api.sh"
+if [ -f "$DB_API_SCRIPT" ]; then
+  source "$DB_API_SCRIPT"
+fi
+
+# Generate a unique session ID for this run
+SESSION_ID="session-$(date +%s)-$$"
+SESSION_TEAM="team-engineering"  # Default team; orchestrator can override
+
 echo "🤖 Agent Service: Auto-Compound"
 echo "Repository: $REPO_NAME"
 echo "Path: $REPO_PATH"
+echo "Session: $SESSION_ID"
 echo ""
 
 cd "$REPO_PATH"
@@ -92,11 +114,30 @@ echo "✓ Safety checks passed - updating main branch"
 git fetch origin main
 git reset --hard origin/main
 
-# Find the latest prioritized report
-LATEST_REPORT=$(ls -t reports/*.md 2>/dev/null | head -1)
+# ─── Find priorities: workspace first, then reports/ ─────────────────────────
+# Source workspace resolver to check for shared markdown workspace
+WORKSPACE_SCRIPT="$SCRIPT_DIR/../workspace/resolve-workspace.sh"
+WORKSPACE_PATH=""
+if [ -f "$WORKSPACE_SCRIPT" ]; then
+  source "$WORKSPACE_SCRIPT"
+  WORKSPACE_PATH=$(get_workspace_path "$REPO_NAME" 2>/dev/null || echo "")
+fi
+
+LATEST_REPORT=""
+
+# Check workspace priorities first
+if [ -n "$WORKSPACE_PATH" ] && [ -f "$WORKSPACE_PATH/priorities.md" ]; then
+  LATEST_REPORT="$WORKSPACE_PATH/priorities.md"
+  echo "Using workspace priorities: $LATEST_REPORT"
+fi
+
+# Fall back to reports/ in target repo
+if [ -z "$LATEST_REPORT" ]; then
+  LATEST_REPORT=$(ls -t reports/*.md 2>/dev/null | head -1)
+fi
 
 if [ -z "$LATEST_REPORT" ]; then
-  echo "No reports found in reports/ directory. Exiting."
+  echo "No priorities found (checked workspace and reports/ directory). Exiting."
   exit 0
 fi
 
@@ -114,6 +155,12 @@ fi
 
 echo "Priority: $PRIORITY_ITEM"
 echo "Branch: $BRANCH_NAME"
+
+# ─── Record session in DB ────────────────────────────────────────────────────
+if type db_api_available &>/dev/null && db_api_available; then
+  db_create_session "$SESSION_ID" "$SESSION_TEAM" "$REPO_NAME" "$LATEST_REPORT" "$BRANCH_NAME"
+  echo "📊 Session recorded in DB: $SESSION_ID"
+fi
 
 # Create feature branch
 git checkout -b "$BRANCH_NAME"
@@ -172,6 +219,22 @@ gh pr create --draft --title "Compound: $PRIORITY_ITEM" --body "Auto-generated P
 **PRD:** See $PRD_FILE
 
 **Generated:** $(date)" --base main
+
+# ─── Update session status in DB ─────────────────────────────────────────────
+PR_URL=$(gh pr view --json url -q '.url' 2>/dev/null || echo "")
+if type db_api_available &>/dev/null && db_api_available; then
+  db_update_session "$SESSION_ID" "completed" "$PR_URL" "0"
+  db_record_metric "session" "$SESSION_ID" "duration_seconds" "$(( $(date +%s) - ${SESSION_ID##*-} ))"
+  echo "📊 Session completed in DB: $SESSION_ID"
+fi
+
+# ─── Sync to workspace ──────────────────────────────────────────────────────
+# Write session summary to shared markdown workspace (if configured)
+SYNC_SCRIPT="$SCRIPT_DIR/../workspace/sync-to-workspace.sh"
+if [ -f "$SYNC_SCRIPT" ]; then
+  echo "📝 Syncing session to workspace..."
+  "$SYNC_SCRIPT" "$REPO_NAME" 2>/dev/null || echo "⚠️  Workspace sync failed (non-fatal)"
+fi
 
 # RESTORE STASH: If we stashed changes at the beginning, restore them now
 # Note: We're still on the feature branch, so switch back to main first

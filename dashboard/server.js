@@ -948,6 +948,8 @@ function handleRequest(req, res) {
 
     // Security: Only allow reading from specific directories
     const allowedPaths = [
+      '/Users/be-agent-service/HomeCare/be-agents-service',
+      '/Users/be-agent-service/HomeCare/beta-appcaire',
       '/Users/bjornevers_MacPro/HomeCare/be-agent-service',
       '/Users/bjornevers_MacPro/HomeCare/beta-appcaire'
     ];

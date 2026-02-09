@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.appcaire.weekly-review</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>-c</string>
+		<string>cd ~/HomeCare/be-agents-service && ./scripts/notifications/weekly-review.sh beta-appcaire</string>
+	</array>
+	<key>StartCalendarInterval</key>
+	<dict>
+		<!-- Monday at 8:00 AM -->
+		<key>Weekday</key>
+		<integer>1</integer>
+		<key>Hour</key>
+		<integer>8</integer>
+		<key>Minute</key>
+		<integer>0</integer>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>/tmp/weekly-review.log</string>
+	<key>StandardErrorPath</key>
+	<string>/tmp/weekly-review-error.log</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+		<key>HOME</key>
+		<string>/Users/be-agent-service</string>
+	</dict>
+</dict>
+</plist>

@@ -7,11 +7,14 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service/dashboard/start.sh</string>
+        <string>/opt/homebrew/opt/node@22/bin/npx</string>
+        <string>vite</string>
+        <string>--port</string>
+        <string>3010</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service/dashboard</string>
+    <string>/Users/be-agent-service/HomeCare/be-agents-service/apps/dashboard</string>
 
     <key>RunAtLoad</key>
     <true/>
@@ -20,15 +23,15 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/Users/bjornevers_MacPro/Library/Logs/appcaire-dashboard.log</string>
+    <string>/Users/be-agent-service/Library/Logs/appcaire-dashboard.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/bjornevers_MacPro/Library/Logs/appcaire-dashboard-error.log</string>
+    <string>/Users/be-agent-service/Library/Logs/appcaire-dashboard-error.log</string>
 
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
-        <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <string>/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
     </dict>
 </dict>
 </plist>
