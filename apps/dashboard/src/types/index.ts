@@ -146,106 +146,76 @@ export interface WorkspaceOverview {
   agentReport?: string;
 }
 
-// ─── DB types (sessions, tasks, agents, etc.) ───────────────────────────────
+// ─── SQLite Database Types (from API server) ─────────────────────────────────
 
-export interface DbSession {
+export interface Team {
   id: string;
-  team_id: string;
-  status: string;
-  target_repo?: string;
-  branch_name?: string;
-  pr_url?: string;
-  started_at?: string;
-  completed_at?: string;
-  team_name?: string;
+  name: string;
+  domain: 'engineering' | 'marketing' | 'management';
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  agents?: Agent[];
 }
 
-export interface DbSessionWithTasks extends DbSession {
-  tasks: DbTask[];
-}
-
-export interface DbTask {
-  id: string;
-  agent_id: string;
-  session_id: string;
-  status: string;
-  description?: string;
-  priority?: string;
-  llm_model?: string;
-  started_at?: string;
-  completed_at?: string;
-  duration_seconds?: number;
-  agent_name?: string;
-  team_name?: string;
-  emoji?: string;
-}
-
-export interface JobInfo {
-  jobId: string;
-  type: string;
-  model?: string;
-  priorityFile?: string;
-  branchName?: string;
-  status: string;
-  startTime?: string;
-  endTime?: string;
-  pid?: number;
-  exitCode?: number;
-}
-
-export interface DbAgent {
+export interface Agent {
   id: string;
   team_id: string;
   name: string;
   role: string;
-  emoji?: string;
-  llm_preference?: string;
-  is_active?: boolean;
+  emoji: string | null;
+  llm_preference: string;
+  success_rate: number;
+  total_tasks_completed: number;
+  total_tasks_failed: number;
+  avg_duration_seconds: number;
+  is_active: number;
+  team_name?: string;
+  team_domain?: string;
+}
+
+export interface Session {
+  id: string;
+  team_id: string;
+  team_name?: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'failed' | 'blocked';
+  target_repo: string;
+  priority_file: string | null;
+  branch_name: string | null;
+  pr_url: string | null;
+  iteration_count: number;
+  started_at: string;
+  completed_at: string | null;
+  duration_seconds: number | null;
+  exit_code: number | null;
+  tasks?: DbTask[];
+}
+
+export interface DbTask {
+  id: string;
+  session_id: string;
+  agent_id: string;
+  description: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'failed' | 'blocked';
+  priority: 'low' | 'medium' | 'high' | null;
+  llm_used: string | null;
+  started_at: string;
+  completed_at: string | null;
+  duration_seconds: number | null;
+  error_message: string | null;
+  agent_name?: string;
+  agent_emoji?: string;
   team_name?: string;
 }
 
-export interface DbTeam {
-  id: string;
-  name: string;
-  domain: 'engineering' | 'marketing' | 'management';
-  description?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface DbTeamWithDetails extends DbTeam {
-  agents: DbAgent[];
-  stats: {
-    total_tasks: number;
-    completed_tasks: number;
-    failed_tasks: number;
-    in_progress_tasks: number;
-    avg_duration_seconds: number;
-    success_rate: string;
-  };
-}
-
-export interface DbCampaign {
-  id: string;
-  name: string;
-  status?: string;
-  [key: string]: unknown;
-}
-
-export interface DbLead {
-  id: string;
-  source?: string;
-  [key: string]: unknown;
-}
-
-export interface DbIntegration {
-  id: string;
-  type: string;
-  name?: string;
-  [key: string]: unknown;
-}
-
-export interface DbExperiment {
-  id: string;
-  [key: string]: unknown;
+export interface DashboardStats {
+  totalSessions: number;
+  activeSessions: number | null;
+  totalTasks: number;
+  completedTasks: number | null;
+  failedTasks: number | null;
+  totalAgents: number;
+  activeAgents: number | null;
+  totalExperiments: number;
+  activeExperiments: number | null;
 }

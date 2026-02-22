@@ -20,11 +20,15 @@ export function loadReposConfig(): ReposConfig {
   const fileContents = readFileSync(configPath, 'utf8');
   const config = yaml.load(fileContents) as ReposConfig;
 
-  // Expand ~ in paths
+  // Expand ~ in paths (repo path + workspace path)
+  const home = process.env.HOME || '~';
   Object.keys(config.repos).forEach((repoName) => {
     const repo = config.repos[repoName];
     if (repo.path.startsWith('~')) {
-      repo.path = repo.path.replace('~', process.env.HOME || '~');
+      repo.path = repo.path.replace('~', home);
+    }
+    if (repo.workspace?.path?.startsWith('~')) {
+      repo.workspace.path = repo.workspace.path.replace('~', home);
     }
     // Expand ~ in workspace path
     if (repo.workspace?.path?.startsWith('~')) {

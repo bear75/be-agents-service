@@ -1,108 +1,39 @@
 /**
- * Teams API Routes
- *
- * RESTful endpoints for team management
+ * Teams & Agents API routes
+ * CRUD operations for teams and agents stored in SQLite.
  */
 
-import { Router, Request, Response } from 'express';
-import { db } from '../lib/services.js';
+import { Router } from 'express';
+import {
+  getAllTeams,
+  getTeamById,
+  createTeam,
+  getAgentsByTeam,
+  getAllAgents,
+  getAgentById,
+  createAgent,
+  updateAgent,
+  deactivateAgent,
+  reactivateAgent,
+  getAgentPerformance,
+} from '../lib/database.js';
 
 const router = Router();
 
-// Type definitions
-interface Team {
-  id: string;
-  name: string;
-  domain: 'engineering' | 'marketing' | 'management';
-  description?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface UpdateTeamRequest {
-  name?: string;
-  description?: string;
-}
+// ─── Teams ────────────────────────────────────────────────────────────────────
 
 /**
  * GET /api/teams
  * List all teams
  */
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', (_req, res) => {
   try {
-    const teams = db.getAllTeams();
-
-    res.json({
-      success: true,
-      teams,
-      count: teams.length
-    });
+    const teams = getAllTeams();
+    res.json({ success: true, data: teams });
   } catch (error) {
-    console.error('Error fetching teams:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch teams',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
-/**
- * GET /api/teams/:id
- * Get team by ID
- */
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    const team = db.getTeamById(id);
-
-    if (!team) {
-      return res.status(404).json({
-        success: false,
-        error: 'Team not found'
-      });
-    }
-
-    // Get team agents
-    const agents = db.getAgentsByTeam(id);
-
-    // Get team statistics
-    const stats = db.db.prepare(`
-      SELECT
-        COUNT(DISTINCT t.id) as total_tasks,
-        SUM(CASE WHEN t.status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
-        SUM(CASE WHEN t.status = 'failed' THEN 1 ELSE 0 END) as failed_tasks,
-        SUM(CASE WHEN t.status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_tasks,
-        AVG(CASE WHEN t.duration_seconds IS NOT NULL THEN t.duration_seconds ELSE 0 END) as avg_duration
-      FROM tasks t
-      JOIN agents a ON t.agent_id = a.id
-      WHERE a.team_id = ?
-    `).get(id);
-
-    res.json({
-      success: true,
-      team: {
-        ...team,
-        agents,
-        stats: {
-          total_tasks: stats.total_tasks || 0,
-          completed_tasks: stats.completed_tasks || 0,
-          failed_tasks: stats.failed_tasks || 0,
-          in_progress_tasks: stats.in_progress_tasks || 0,
-          avg_duration_seconds: stats.avg_duration || 0,
-          success_rate: stats.total_tasks > 0
-            ? ((stats.completed_tasks / stats.total_tasks) * 100).toFixed(1) + '%'
-            : '0%'
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching team:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch team',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -111,136 +42,183 @@ router.get('/:id', async (req: Request, res: Response) => {
  * POST /api/teams
  * Create a new team
  */
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', (req, res) => {
   try {
     const { id, name, domain, description } = req.body;
-
-    // Validation
     if (!id || !name || !domain) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: id, name, domain'
+        error: 'id, name, and domain are required',
       });
     }
-
-    if (!['engineering', 'marketing', 'management'].includes(domain)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid domain. Must be: engineering, marketing, or management'
-      });
-    }
-
-    // Check if team already exists
-    const existing = db.getTeamById(id);
-    if (existing) {
-      return res.status(409).json({
-        success: false,
-        error: 'Team with this ID already exists'
-      });
-    }
-
-    const team = db.createTeam({
-      id,
-      name,
-      domain,
-      description: description || null
-    });
-
-    res.status(201).json({
-      success: true,
-      team
-    });
+    const team = createTeam({ id, name, domain, description });
+    res.status(201).json({ success: true, data: team });
   } catch (error) {
-    console.error('Error creating team:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to create team',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// ─── All Agents (static routes BEFORE parametric /:id) ──────────────────────
+
+/**
+ * GET /api/teams/agents/all
+ * List all active agents across all teams
+ */
+router.get('/agents/all', (_req, res) => {
+  try {
+    const agents = getAllAgents();
+    res.json({ success: true, data: agents });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
 
 /**
- * PATCH /api/teams/:id
- * Update a team
+ * GET /api/teams/agents/performance
+ * Get agent performance view
  */
-router.patch('/:id', async (req: Request, res: Response) => {
+router.get('/agents/performance', (_req, res) => {
   try {
-    const { id } = req.params;
-    const updates: UpdateTeamRequest = req.body;
-
-    // Check if team exists
-    const existing = db.getTeamById(id);
-    if (!existing) {
-      return res.status(404).json({
-        success: false,
-        error: 'Team not found'
-      });
-    }
-
-    // Validate updates
-    if (Object.keys(updates).length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'No update fields provided'
-      });
-    }
-
-    const team = db.updateTeam(id, updates);
-
-    res.json({
-      success: true,
-      team
-    });
+    const performance = getAgentPerformance();
+    res.json({ success: true, data: performance });
   } catch (error) {
-    console.error('Error updating team:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to update team',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
 
 /**
- * DELETE /api/teams/:id
- * Delete a team (soft delete - deactivate all agents)
- *
- * Note: This doesn't actually delete the team from the database,
- * but deactivates all agents associated with it
+ * GET /api/teams/agents/:agentId
+ * Get single agent by ID
  */
-router.delete('/:id', async (req: Request, res: Response) => {
+router.get('/agents/:agentId', (req, res) => {
   try {
-    const { id } = req.params;
+    const agent = getAgentById(req.params.agentId);
+    if (!agent) {
+      return res.status(404).json({ success: false, error: 'Agent not found' });
+    }
+    res.json({ success: true, data: agent });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
 
-    // Check if team exists
-    const team = db.getTeamById(id);
+/**
+ * POST /api/teams/agents
+ * Create a new agent
+ */
+router.post('/agents', (req, res) => {
+  try {
+    const { id, teamId, name, role, llmPreference, emoji } = req.body;
+    if (!id || !teamId || !name || !role) {
+      return res.status(400).json({
+        success: false,
+        error: 'id, teamId, name, and role are required',
+      });
+    }
+    const agent = createAgent({ id, teamId, name, role, llmPreference, emoji });
+    res.status(201).json({ success: true, data: agent });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * PATCH /api/teams/agents/:agentId
+ * Update agent fields
+ */
+router.patch('/agents/:agentId', (req, res) => {
+  try {
+    const agent = updateAgent(req.params.agentId, req.body);
+    res.json({ success: true, data: agent });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * POST /api/teams/agents/:agentId/deactivate
+ * Soft-delete (fire) an agent
+ */
+router.post('/agents/:agentId/deactivate', (req, res) => {
+  try {
+    const result = deactivateAgent(req.params.agentId);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * POST /api/teams/agents/:agentId/reactivate
+ * Re-hire an agent
+ */
+router.post('/agents/:agentId/reactivate', (req, res) => {
+  try {
+    const agent = reactivateAgent(req.params.agentId);
+    res.json({ success: true, data: agent });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// ─── Parametric Team Routes (MUST come AFTER /agents/* routes) ───────────────
+
+/**
+ * GET /api/teams/:id
+ * Get team by ID with its agents
+ */
+router.get('/:id', (req, res) => {
+  try {
+    const team = getTeamById(req.params.id);
     if (!team) {
-      return res.status(404).json({
-        success: false,
-        error: 'Team not found'
-      });
+      return res.status(404).json({ success: false, error: 'Team not found' });
     }
-
-    // Get all agents for this team
-    const agents = db.getAgentsByTeam(id);
-
-    // Deactivate all agents (soft delete)
-    for (const agent of agents) {
-      db.deactivateAgent(agent.id);
-    }
-
-    res.json({
-      success: true,
-      message: `Team ${team.name} deactivated. ${agents.length} agent(s) deactivated.`,
-      deactivated_agents: agents.length
-    });
+    const agents = getAgentsByTeam(req.params.id);
+    res.json({ success: true, data: { ...team, agents } });
   } catch (error) {
-    console.error('Error deleting team:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to delete team',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * GET /api/teams/:id/agents
+ * List agents for a team
+ */
+router.get('/:id/agents', (req, res) => {
+  try {
+    const agents = getAgentsByTeam(req.params.id);
+    res.json({ success: true, data: agents });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });

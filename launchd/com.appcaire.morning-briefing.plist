@@ -2,42 +2,31 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key>
-    <string>com.appcaire.morning-briefing</string>
-
-    <key>ProgramArguments</key>
-    <array>
-        <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service/scripts/notifications/morning-briefing.sh</string>
-        <string>beta-appcaire</string>
-    </array>
-
-    <key>StartCalendarInterval</key>
-    <dict>
-        <key>Hour</key>
-        <integer>8</integer>
-        <key>Minute</key>
-        <integer>0</integer>
-    </dict>
-
-    <key>WorkingDirectory</key>
-    <string>/Users/bjornevers_MacPro/HomeCare/be-agent-service</string>
-
-    <key>StandardOutPath</key>
-    <string>/Users/bjornevers_MacPro/Library/Logs/morning-briefing.log</string>
-
-    <key>StandardErrorPath</key>
-    <string>/Users/bjornevers_MacPro/Library/Logs/morning-briefing-error.log</string>
-
-    <key>EnvironmentVariables</key>
-    <dict>
-        <key>PATH</key>
-        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
-    </dict>
-
-    <key>RunAtLoad</key>
-    <false/>
-
-    <key>KeepAlive</key>
-    <false/>
+	<key>Label</key>
+	<string>com.appcaire.morning-briefing</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>-c</string>
+		<string>cd ~/HomeCare/be-agents-service && ./scripts/notifications/morning-briefing.sh beta-appcaire</string>
+	</array>
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Hour</key>
+		<integer>8</integer>
+		<key>Minute</key>
+		<integer>0</integer>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>/tmp/morning-briefing.log</string>
+	<key>StandardErrorPath</key>
+	<string>/tmp/morning-briefing-error.log</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+		<key>HOME</key>
+		<string>/Users/be-agent-service</string>
+	</dict>
 </dict>
 </plist>

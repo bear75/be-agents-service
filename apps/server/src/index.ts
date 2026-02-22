@@ -16,21 +16,14 @@ import { config } from 'dotenv';
 
 import reposRouter from './routes/repos.js';
 import agentsRouter from './routes/agents.js';
-import teamsRouter from './routes/teams.js';
 import workspaceRouter from './routes/workspace.js';
 import plansRouter from './routes/plans.js';
 import sessionsRouter from './routes/sessions.js';
-import logsRouter from './routes/logs.js';
-import statsRouter from './routes/stats.js';
-import jobsRouter from './routes/jobs.js';
+import teamsRouter from './routes/teams.js';
 import commandsRouter from './routes/commands.js';
-import dataRouter from './routes/data.js';
-import rlRouter from './routes/rl.js';
-import repositoriesRouter from './routes/repositories.js';
-import tasksRouter from './routes/tasks.js';
-import integrationsRouter from './routes/integrations.js';
-import gamificationRouter from './routes/gamification.js';
-import fileRouter from './routes/file.js';
+import marketingRouter from './routes/marketing.js';
+import metricsRouter from './routes/metrics.js';
+import { closeDatabase } from './lib/database.js';
 
 config();
 
@@ -58,29 +51,24 @@ app.get('/health', (req, res) => {
   res.json({
     success: true,
     service: 'agent-service',
-    version: '1.0.0',
+    version: '2.0.0',
     timestamp: new Date().toISOString(),
+    features: ['workspace', 'sessions', 'teams', 'marketing', 'metrics'],
   });
 });
 
-// API routes
+// API Routes — file-based (workspace, repos)
 app.use('/api/repos', reposRouter);
 app.use('/api/agents', agentsRouter);
-app.use('/api/teams', teamsRouter);
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/plans', plansRouter);
+
+// API Routes — SQLite-backed (sessions, teams, commands, marketing, metrics)
 app.use('/api/sessions', sessionsRouter);
-app.use('/api/logs', logsRouter);
-app.use('/api/stats', statsRouter);
-app.use('/api/jobs', jobsRouter);
+app.use('/api/teams', teamsRouter);
 app.use('/api/commands', commandsRouter);
-app.use('/api/data', dataRouter);
-app.use('/api/rl', rlRouter);
-app.use('/api/repositories', repositoriesRouter);
-app.use('/api/tasks', tasksRouter);
-app.use('/api/integrations', integrationsRouter);
-app.use('/api/gamification', gamificationRouter);
-app.use('/api/file', fileRouter);
+app.use('/api/marketing', marketingRouter);
+app.use('/api/metrics', metricsRouter);
 
 // Static files (React build + classic HTML)
 app.use(express.static(STATIC_DIR));
@@ -120,12 +108,31 @@ const server = app.listen(PORT, () => {
   console.log('');
 });
 
-process.on('SIGTERM', () => {
-  console.log('Shutting down gracefully...');
-  server.close(() => process.exit(0));
+// Start server
+app.listen(PORT, () => {
+  console.log(`Agent Service API v2.0 running on http://localhost:${PORT}`);
+  console.log(`  Health:     http://localhost:${PORT}/health`);
+  console.log(`  Repos:      http://localhost:${PORT}/api/repos`);
+  console.log(`  Workspace:  http://localhost:${PORT}/api/workspace`);
+  console.log(`  Sessions:   http://localhost:${PORT}/api/sessions`);
+  console.log(`  Teams:      http://localhost:${PORT}/api/teams`);
+  console.log(`  Commands:   http://localhost:${PORT}/api/commands`);
+  console.log(`  Marketing:  http://localhost:${PORT}/api/marketing`);
+  console.log(`  Metrics:    http://localhost:${PORT}/api/metrics`);
+  console.log(`  Plans:      http://localhost:${PORT}/api/plans`);
 });
 
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down...');
-  server.close(() => process.exit(0));
-});
+// Graceful shutdown — close SQLite connection
+function shutdown(signal: string): void {
+  console.log(`${signal} received, shutting down gracefully...`);
+  try {
+    closeDatabase();
+    console.log('Database connection closed.');
+  } catch {
+    // DB may already be closed
+  }
+  process.exit(0);
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

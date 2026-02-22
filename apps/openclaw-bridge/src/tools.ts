@@ -577,35 +577,192 @@ export function registerWorkspaceTools(server: McpServer, workspacePath: string)
     }
   );
 
-  // ── trigger_agent ─────────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DB-BACKED TOOLS (via Agent Service API)
+  // These route through http://localhost:4010 to read structured data from SQLite
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const API_BASE = process.env.AGENT_API_URL || 'http://localhost:4010';
+
+  async function apiGet<T>(path: string): Promise<T | null> {
+    try {
+      const res = await fetch(`${API_BASE}${path}`);
+      const data = await res.json() as { success: boolean; data?: T };
+      return data.success ? (data.data ?? null) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function apiPost(path: string, body: Record<string, unknown>): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json() as { success: boolean };
+      return data.success;
+    } catch {
+      return false;
+    }
+  }
+
+  // ── get_teams ────────────────────────────────────────────────────────────
 
   server.tool(
-    'trigger_agent',
-    'Trigger the agent service to run now for the configured repository. Use this when the user wants to start the agent immediately instead of waiting for the scheduled 11 PM run.',
-    {
-      repo: z.string().optional().describe('Repository name (optional, uses default from config if not provided)'),
-    },
-    async ({ repo }) => {
-      try {
-        // Get repo name from environment if not provided
-        const repoName = repo || process.env.WORKSPACE_REPO || 'beta-appcaire';
-
-        // Call the agent service API
-        const response = await fetch(`http://localhost:3030/api/agents/trigger/${repoName}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ workflow: 'compound' }),
-        });
-
-        if (!response.ok) {
-          const error = await response.json().catch(() => ({ error: response.statusText }));
-          return { content: [{ type: 'text' as const, text: `❌ Failed to trigger agent: ${error.error || 'Unknown error'}` }] };
-        }
-
-        return { content: [{ type: 'text' as const, text: `✅ Agent triggered for ${repoName}! The agent will start working on Priority #1 now. Check the dashboard at http://localhost:3030 to monitor progress.` }] };
-      } catch (error) {
-        return { content: [{ type: 'text' as const, text: `❌ Error: ${error instanceof Error ? error.message : 'Failed to trigger agent'}` }] };
+    'get_teams',
+    'List all teams and their agent counts. Shows Engineering, Marketing, and Management teams.',
+    {},
+    async () => {
+      const teams = await apiGet<Array<{ id: string; name: string; domain: string; description: string }>>('/api/teams');
+      if (!teams || teams.length === 0) {
+        return { content: [{ type: 'text' as const, text: '⚠️ Could not fetch teams. Is the API server running?' }] };
       }
+
+      let text = '👥 **Teams**\n\n';
+      for (const t of teams) {
+        text += `• **${t.name}** (${t.domain}) — ${t.description || 'No description'}\n`;
+      }
+      return { content: [{ type: 'text' as const, text }] };
+    }
+  );
+
+  // ── get_agents ───────────────────────────────────────────────────────────
+
+  server.tool(
+    'get_agents',
+    'List agents for a specific team. Shows name, role, LLM preference, and performance stats.',
+    {
+      team_id: z.string().describe('Team ID (e.g. team-engineering, team-marketing, team-management)'),
+    },
+    async ({ team_id }) => {
+      const team = await apiGet<{
+        name: string;
+        agents: Array<{ name: string; emoji: string; role: string; llm_preference: string; success_rate: number; total_tasks_completed: number }>;
+      }>(`/api/teams/${team_id}`);
+      if (!team) {
+        return { content: [{ type: 'text' as const, text: `⚠️ Team "${team_id}" not found.` }] };
+      }
+
+      let text = `👥 **${team.name}** — ${team.agents?.length || 0} agents\n\n`;
+      if (team.agents) {
+        for (const a of team.agents) {
+          text += `${a.emoji || '🤖'} **${a.name}** — ${a.role} (${a.llm_preference}, ${(a.success_rate * 100).toFixed(0)}% success, ${a.total_tasks_completed} tasks)\n`;
+        }
+      }
+      return { content: [{ type: 'text' as const, text }] };
+    }
+  );
+
+  // ── get_sessions ─────────────────────────────────────────────────────────
+
+  server.tool(
+    'get_sessions',
+    'Show recent agent sessions. Includes status, team, repo, branch, and duration.',
+    {
+      limit: z.number().optional().describe('Number of sessions to show (default 5)'),
+    },
+    async ({ limit }) => {
+      const sessions = await apiGet<Array<{
+        id: string;
+        team_name: string;
+        status: string;
+        target_repo: string;
+        branch_name: string;
+        started_at: string;
+        duration_seconds: number | null;
+        pr_url: string | null;
+      }>>(`/api/sessions?limit=${limit || 5}`);
+
+      if (!sessions || sessions.length === 0) {
+        return { content: [{ type: 'text' as const, text: '📋 No sessions found yet.' }] };
+      }
+
+      let text = '📋 **Recent Sessions**\n\n';
+      for (const s of sessions) {
+        const dur = s.duration_seconds ? `${Math.round(s.duration_seconds / 60)}min` : 'running';
+        const pr = s.pr_url ? ` [PR](${s.pr_url})` : '';
+        text += `• **${s.team_name}** → ${s.target_repo} [${s.status}] ${dur}${pr}\n`;
+        if (s.branch_name) text += `  Branch: \`${s.branch_name}\`\n`;
+      }
+      return { content: [{ type: 'text' as const, text }] };
+    }
+  );
+
+  // ── get_stats ────────────────────────────────────────────────────────────
+
+  server.tool(
+    'get_stats',
+    'Show dashboard statistics: sessions, tasks, agents, and experiments counts.',
+    {},
+    async () => {
+      const stats = await apiGet<{
+        totalSessions: number;
+        activeSessions: number | null;
+        totalTasks: number;
+        completedTasks: number | null;
+        failedTasks: number | null;
+        totalAgents: number;
+        activeAgents: number | null;
+      }>('/api/metrics/stats');
+
+      if (!stats) {
+        return { content: [{ type: 'text' as const, text: '⚠️ Could not fetch stats.' }] };
+      }
+
+      const text = `📊 **Dashboard Stats**
+
+• Sessions: ${stats.totalSessions} total, ${stats.activeSessions ?? 0} active
+• Tasks: ${stats.totalTasks} total, ${stats.completedTasks ?? 0} completed, ${stats.failedTasks ?? 0} failed
+• Agents: ${stats.totalAgents} total, ${stats.activeAgents ?? 0} active`;
+
+      return { content: [{ type: 'text' as const, text }] };
+    }
+  );
+
+  // ── start_session ────────────────────────────────────────────────────────
+
+  server.tool(
+    'start_session',
+    'Start a new agent session for a team on a repository. Creates an entry in the database.',
+    {
+      team: z.enum(['team-engineering', 'team-marketing', 'team-management']).describe('Which team to assign'),
+      repo: z.string().describe('Target repository name (e.g. beta-appcaire)'),
+      branch: z.string().optional().describe('Optional branch name'),
+    },
+    async ({ team, repo, branch }) => {
+      const sessionId = `session-${Date.now()}`;
+      const ok = await apiPost('/api/sessions', {
+        sessionId,
+        teamId: team,
+        targetRepo: repo,
+        branchName: branch || undefined,
+      });
+
+      if (!ok) {
+        return { content: [{ type: 'text' as const, text: '❌ Failed to create session. Is the API server running?' }] };
+      }
+
+      return { content: [{ type: 'text' as const, text: `🚀 Session started: ${sessionId}\nTeam: ${team}\nRepo: ${repo}${branch ? `\nBranch: ${branch}` : ''}` }] };
+    }
+  );
+
+  // ── track_command ────────────────────────────────────────────────────────
+
+  server.tool(
+    'track_command',
+    'Track a user command for automation pattern detection. Helps identify repetitive tasks that could be automated.',
+    {
+      command: z.string().describe('The command or request text'),
+      intent: z.string().optional().describe('Normalized intent (e.g. "start_sprint", "check_status")'),
+    },
+    async ({ command, intent }) => {
+      await apiPost('/api/commands', {
+        commandText: command,
+        normalizedIntent: intent || undefined,
+      });
+      return { content: [{ type: 'text' as const, text: `✅ Command tracked: "${command}"` }] };
     }
   );
 }

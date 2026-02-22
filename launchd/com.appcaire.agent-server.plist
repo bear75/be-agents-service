@@ -7,28 +7,28 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/bjornevers_MacPro/.nvm/versions/node/v22.15.1/bin/yarn</string>
+        <string>/opt/homebrew/bin/yarn</string>
         <string>workspace</string>
         <string>server</string>
         <string>start</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/bjornevers_MacPro/HomeCare/be-agents-service</string>
+    <string>/Users/be-agent-service/HomeCare/be-agents-service</string>
 
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
-        <string>/Users/bjornevers_MacPro/.nvm/versions/node/v22.15.1/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <string>/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
         <key>PORT</key>
         <string>4010</string>
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/bjornevers_MacPro/Library/Logs/agent-server.log</string>
+    <string>/Users/be-agent-service/Library/Logs/agent-server.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/bjornevers_MacPro/Library/Logs/agent-server-error.log</string>
+    <string>/Users/be-agent-service/Library/Logs/agent-server-error.log</string>
 
     <key>KeepAlive</key>
     <true/>

@@ -22,7 +22,7 @@
 		<key>PATH</key>
 		<string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
 		<key>HOME</key>
-		<string>/Users/bjornevers_MacPro</string>
+		<string>/Users/be-agent-service</string>
 	</dict>
 </dict>
 </plist>

@@ -227,6 +227,26 @@ CREATE TABLE IF NOT EXISTS content (
 );
 
 -- ============================================
+-- INTEGRATIONS & SETTINGS
+-- ============================================
+
+-- Integrations (messaging, email, social, API keys, tools)
+CREATE TABLE IF NOT EXISTS integrations (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL CHECK(type IN ('messaging', 'email', 'social', 'api', 'tool')),
+    platform TEXT NOT NULL,
+    name TEXT NOT NULL,
+    brand TEXT,
+    is_active BOOLEAN DEFAULT FALSE,
+    credentials TEXT, -- JSON (encrypted API keys, tokens)
+    config TEXT, -- JSON (platform-specific config)
+    managed_by TEXT REFERENCES agents(id),
+    last_connected_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================
 -- REPOSITORY MANAGEMENT
 -- ============================================
 
@@ -299,7 +319,54 @@ INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VA
     ('agent-ceo', 'team-management', 'CEO', 'Strategic Direction', '👔', 'opus-4.6'),
     ('agent-cpo-cto', 'team-management', 'CPO/CTO', 'Engineering Lead', '🎯', 'opus'),
     ('agent-cmo-cso', 'team-management', 'CMO/CSO', 'Marketing Lead', '📊', 'opus'),
-    ('agent-hr-lead', 'team-management', 'HR Agent Lead', 'Agent Development', '👥', 'sonnet');
+    ('agent-hr-lead', 'team-management', 'HR Agent Lead', 'Agent Development', '👥', 'sonnet'),
+    ('agent-interface', 'team-management', 'Interface Agent', 'Human-Agent Interface via WhatsApp/Telegram/Workspace', '🔗', 'sonnet');
+
+-- Seed integrations — Messaging
+INSERT OR IGNORE INTO integrations (id, type, platform, name, brand, is_active, config, managed_by) VALUES
+    ('int-telegram', 'messaging', 'telegram', 'Telegram Bot (OpenClaw)', NULL, TRUE, '{"botToken":"configured","setupCmd":"openclaw channels add telegram --token YOUR_TOKEN"}', 'agent-interface'),
+    ('int-whatsapp', 'messaging', 'whatsapp', 'WhatsApp (OpenClaw)', NULL, TRUE, '{"setupCmd":"openclaw channels login then scan QR code"}', 'agent-interface');
+
+-- Seed integrations — Email
+INSERT OR IGNORE INTO integrations (id, type, platform, name, brand, is_active, config) VALUES
+    ('int-email-sales-caire', 'email', 'gmail', 'Sales @ caire.se', 'CAIRE', FALSE, '{"email":"sales@caire.se","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_1_USER","envPass":"EMAIL_1_PASSWORD"}'),
+    ('int-email-info-caire', 'email', 'gmail', 'Info @ caire.se', 'CAIRE', FALSE, '{"email":"info@caire.se","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_2_USER","envPass":"EMAIL_2_PASSWORD"}'),
+    ('int-email-bjorn-caire', 'email', 'gmail', 'Bjorn @ caire.se', 'CAIRE', FALSE, '{"email":"bjorn@caire.se","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_3_USER","envPass":"EMAIL_3_PASSWORD"}'),
+    ('int-email-sales-eirtech', 'email', 'gmail', 'Sales @ eirtech.ai', 'EIRTECH', FALSE, '{"email":"sales@eirtech.ai","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_4_USER","envPass":"EMAIL_4_PASSWORD"}'),
+    ('int-email-info-eirtech', 'email', 'gmail', 'Info @ eirtech.ai', 'EIRTECH', FALSE, '{"email":"info@eirtech.ai","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_5_USER","envPass":"EMAIL_5_PASSWORD"}'),
+    ('int-email-bjorn-eirtech', 'email', 'gmail', 'Bjorn @ eirtech.ai', 'EIRTECH', FALSE, '{"email":"bjorn@eirtech.ai","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_6_USER","envPass":"EMAIL_6_PASSWORD"}'),
+    ('int-email-sales-nacka', 'email', 'gmail', 'Sales @ nackahemtjanst.se', 'NACKA', FALSE, '{"email":"sales@nackahemtjanst.se","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_7_USER","envPass":"EMAIL_7_PASSWORD"}'),
+    ('int-email-info-nacka', 'email', 'gmail', 'Info @ nackahemtjanst.se', 'NACKA', FALSE, '{"email":"info@nackahemtjanst.se","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_8_USER","envPass":"EMAIL_8_PASSWORD"}'),
+    ('int-email-bjorn-nacka', 'email', 'gmail', 'Bjorn @ nackahemtjanst.se', 'NACKA', FALSE, '{"email":"bjorn@nackahemtjanst.se","imapHost":"imap.gmail.com","imapPort":993,"envUser":"EMAIL_9_USER","envPass":"EMAIL_9_PASSWORD"}'),
+    ('int-smtp', 'email', 'smtp', 'Email SMTP Server', NULL, FALSE, '{"host":"smtp.gmail.com","port":587}');
+
+-- Seed integrations — Social Media
+INSERT OR IGNORE INTO integrations (id, type, platform, name, brand, is_active, config, managed_by) VALUES
+    ('int-fb-caire', 'social', 'facebook', 'Facebook Page - Caire', 'CAIRE', FALSE, '{"description":"Community engagement, events, customer testimonials"}', 'agent-quill'),
+    ('int-ig-caire', 'social', 'instagram', 'Instagram - @caire.se', 'CAIRE', FALSE, '{"handle":"@caire.se","description":"Visual storytelling, customer success stories, behind-the-scenes"}', 'agent-wanda'),
+    ('int-ig-eirtech', 'social', 'instagram', 'Instagram - @eirtech.ai', 'EIRTECH', FALSE, '{"handle":"@eirtech.ai","description":"EU customer stories, Dublin office culture, tech insights"}', 'agent-wanda'),
+    ('int-ig-bjorn', 'social', 'instagram', 'Instagram - @bjornevers', 'BJORN EVERS', FALSE, '{"handle":"@bjornevers","description":"Personal life, work-life balance, travel, product screenshots"}', 'agent-wanda'),
+    ('int-li-caire', 'social', 'linkedin', 'LinkedIn - Caire', 'CAIRE', FALSE, '{"page":"https://linkedin.com/company/caire","description":"B2B marketing, thought leadership, product updates"}', 'agent-vision'),
+    ('int-li-eirtech', 'social', 'linkedin', 'LinkedIn - Eirtech.ai', 'EIRTECH', FALSE, '{"page":"https://linkedin.com/company/eirtech-ai","description":"EU market B2B, GDPR compliance messaging, partnerships"}', 'agent-vision'),
+    ('int-li-bjorn', 'social', 'linkedin', 'LinkedIn - Bjorn Evers (Personal)', 'BJORN EVERS', FALSE, '{"page":"https://linkedin.com/in/bjornevers","description":"Thought leadership, founder journey, AI insights, hiring"}', 'agent-vision'),
+    ('int-x-caire', 'social', 'twitter', 'X (Twitter) - @caire_se', 'CAIRE', FALSE, '{"handle":"@caire_se","description":"Product announcements, customer support, industry news"}', 'agent-quill'),
+    ('int-x-eirtech', 'social', 'twitter', 'X (Twitter) - @eirtech_ai', 'EIRTECH', FALSE, '{"handle":"@eirtech_ai","description":"EU tech community, AI insights, product updates"}', 'agent-quill'),
+    ('int-x-bjorn', 'social', 'twitter', 'X (Twitter) - @bjornevers', 'BJORN EVERS', FALSE, '{"handle":"@bjornevers","description":"Founder insights, tech commentary, product building, AI/startup thoughts"}', 'agent-quill');
+
+-- Seed integrations — API Keys
+INSERT OR IGNORE INTO integrations (id, type, platform, name, brand, is_active, config) VALUES
+    ('int-anthropic', 'api', 'anthropic', 'Anthropic API', NULL, TRUE, '{"model":"claude-sonnet-4-5"}'),
+    ('int-openai', 'api', 'openai', 'OpenAI API', NULL, FALSE, '{}');
+
+-- Seed integrations — Tools & Platforms
+INSERT OR IGNORE INTO integrations (id, type, platform, name, brand, is_active, config) VALUES
+    ('int-confluence', 'tool', 'confluence', 'Confluence Documentation', NULL, FALSE, '{"baseUrl":"https://caire.atlassian.net/wiki","spaceKey":"TWC","parentPageId":"393372"}'),
+    ('int-figma', 'tool', 'figma', 'Figma Design', NULL, FALSE, '{}'),
+    ('int-github', 'tool', 'github', 'GitHub Organization', NULL, TRUE, '{}'),
+    ('int-hubspot', 'tool', 'hubspot', 'HubSpot CRM', NULL, FALSE, '{}'),
+    ('int-jira', 'tool', 'jira', 'Jira Project Management', NULL, FALSE, '{"baseUrl":"https://caire.atlassian.net","projectKey":"CAIRE"}'),
+    ('int-miro', 'tool', 'miro', 'Miro Workshops', NULL, FALSE, '{}'),
+    ('int-notion', 'tool', 'notion', 'Notion Workspace', NULL, FALSE, '{}');
 
 -- ============================================
 -- INDEXES FOR PERFORMANCE
@@ -332,6 +399,8 @@ CREATE INDEX IF NOT EXISTS idx_campaigns_owner ON campaigns(owner);
 CREATE INDEX IF NOT EXISTS idx_content_type ON content(type);
 CREATE INDEX IF NOT EXISTS idx_content_status ON content(status);
 CREATE INDEX IF NOT EXISTS idx_repos_active ON repositories(is_active);
+CREATE INDEX IF NOT EXISTS idx_integrations_type ON integrations(type);
+CREATE INDEX IF NOT EXISTS idx_integrations_platform ON integrations(platform);
 CREATE INDEX IF NOT EXISTS idx_llm_model ON llm_usage(model);
 CREATE INDEX IF NOT EXISTS idx_llm_task ON llm_usage(task_id);
 

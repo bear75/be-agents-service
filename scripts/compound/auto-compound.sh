@@ -5,6 +5,17 @@
 
 set -e
 
+# Trap errors to record failed sessions in DB
+trap 'on_error $? $LINENO' ERR
+on_error() {
+  local exit_code=$1
+  local line_no=$2
+  if type db_api_available &>/dev/null && db_api_available 2>/dev/null; then
+    db_update_session "${SESSION_ID:-unknown}" "failed" "" "$exit_code"
+    echo "📊 Session failed in DB (line $line_no, exit $exit_code)"
+  fi
+}
+
 # Config-driven approach: Accept repo name as argument
 REPO_NAME="${1:-beta-appcaire}"
 
@@ -34,9 +45,20 @@ if [ ! -d "$REPO_PATH" ]; then
   exit 1
 fi
 
+# ─── Source DB API helper (writes sessions/tasks to SQLite via API) ──────────
+DB_API_SCRIPT="$SCRIPT_DIR/../db-api.sh"
+if [ -f "$DB_API_SCRIPT" ]; then
+  source "$DB_API_SCRIPT"
+fi
+
+# Generate a unique session ID for this run
+SESSION_ID="session-$(date +%s)-$$"
+SESSION_TEAM="team-engineering"  # Default team; orchestrator can override
+
 echo "🤖 Agent Service: Auto-Compound"
 echo "Repository: $REPO_NAME"
 echo "Path: $REPO_PATH"
+echo "Session: $SESSION_ID"
 echo ""
 
 cd "$REPO_PATH"
@@ -134,6 +156,12 @@ fi
 echo "Priority: $PRIORITY_ITEM"
 echo "Branch: $BRANCH_NAME"
 
+# ─── Record session in DB ────────────────────────────────────────────────────
+if type db_api_available &>/dev/null && db_api_available; then
+  db_create_session "$SESSION_ID" "$SESSION_TEAM" "$REPO_NAME" "$LATEST_REPORT" "$BRANCH_NAME"
+  echo "📊 Session recorded in DB: $SESSION_ID"
+fi
+
 # Create feature branch
 git checkout -b "$BRANCH_NAME"
 
@@ -208,6 +236,22 @@ NOTIFICATION_SCRIPT="$SCRIPT_DIR/../notifications/session-complete.sh"
 if [ -f "$NOTIFICATION_SCRIPT" ]; then
   echo "📱 Sending completion notification..."
   "$NOTIFICATION_SCRIPT" "$REPO_NAME" "completed" "$PR_URL" 2>/dev/null || echo "⚠️  Notification failed (non-fatal)"
+fi
+
+# ─── Update session status in DB ─────────────────────────────────────────────
+PR_URL=$(gh pr view --json url -q '.url' 2>/dev/null || echo "")
+if type db_api_available &>/dev/null && db_api_available; then
+  db_update_session "$SESSION_ID" "completed" "$PR_URL" "0"
+  db_record_metric "session" "$SESSION_ID" "duration_seconds" "$(( $(date +%s) - ${SESSION_ID##*-} ))"
+  echo "📊 Session completed in DB: $SESSION_ID"
+fi
+
+# ─── Sync to workspace ──────────────────────────────────────────────────────
+# Write session summary to shared markdown workspace (if configured)
+SYNC_SCRIPT="$SCRIPT_DIR/../workspace/sync-to-workspace.sh"
+if [ -f "$SYNC_SCRIPT" ]; then
+  echo "📝 Syncing session to workspace..."
+  "$SYNC_SCRIPT" "$REPO_NAME" 2>/dev/null || echo "⚠️  Workspace sync failed (non-fatal)"
 fi
 
 # RESTORE STASH: If we stashed changes at the beginning, restore them now
