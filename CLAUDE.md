@@ -43,6 +43,12 @@ The agent service orchestrates Claude Code automation workflows across multiple 
 - Scripts read configuration from `config/repos.yaml`
 - No data duplication - target repos are source of truth
 
+### LLM Routing (Ollama vs Claude)
+
+Simple tasks (analyze, triage, convert) → **Ollama** (local phi model, free)
+Complex tasks (PRD, implement, review) → **Claude** (paid API)
+When uncertain → ask user or default to Claude. See `docs/LLM_ROUTING.md`.
+
 ---
 
 ## Architecture

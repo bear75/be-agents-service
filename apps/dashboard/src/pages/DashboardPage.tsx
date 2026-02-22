@@ -39,14 +39,6 @@ import { SetupStatus } from '../components/SetupStatus';
 import { SettingsPanel } from '../components/SettingsPanel';
 import { AgentStatusCard } from '../components/AgentStatusCard';
 import { LogViewer } from '../components/LogViewer';
-import { WorkspaceOverview } from '../components/WorkspaceOverview';
-import { InboxView } from '../components/InboxView';
-import { CheckInTimeline } from '../components/CheckInTimeline';
-import { MemoryViewer } from '../components/MemoryViewer';
-import { PlansBoard } from '../components/PlansBoard';
-import { SetupStatus } from '../components/SetupStatus';
-
-type Tab = 'workspace' | 'plans' | 'agents';
 
 type Tab =
   | 'workspace'

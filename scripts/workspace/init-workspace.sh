@@ -85,6 +85,8 @@ log_step "Creating directory structure..."
 
 DIRS=(
   "$WORKSPACE_PATH"
+  "$WORKSPACE_PATH/input"
+  "$WORKSPACE_PATH/input/read"
   "$WORKSPACE_PATH/check-ins"
   "$WORKSPACE_PATH/check-ins/daily"
   "$WORKSPACE_PATH/check-ins/weekly"
@@ -132,6 +134,9 @@ copy_template "$TEMPLATES_DIR/decisions.md"   "$WORKSPACE_PATH/memory/decisions.
 copy_template "$TEMPLATES_DIR/learnings.md"   "$WORKSPACE_PATH/memory/learnings.md"
 copy_template "$TEMPLATES_DIR/context.md"     "$WORKSPACE_PATH/memory/context.md"
 
+# Input folder (drop zone for docs)
+copy_template "$TEMPLATES_DIR/input-readme.md" "$WORKSPACE_PATH/input/README.md"
+
 echo ""
 
 # ─── Create today's daily check-in ──────────────────────────────────────────
@@ -166,6 +171,8 @@ echo "  ├── check-ins/"
 echo "  │   ├── daily/            ← Daily notes"
 echo "  │   ├── weekly/           ← Weekly reviews"
 echo "  │   └── monthly/          ← Monthly planning"
+echo "  ├── input/                ← Drop .md docs (ideas, features, tasks); agent converts → inbox/priorities/tasks"
+echo "  │   └── read/             ← Processed docs (handled)"
 echo "  ├── memory/"
 echo "  │   ├── decisions.md      ← Key decisions"
 echo "  │   ├── learnings.md      ← Accumulated learnings"

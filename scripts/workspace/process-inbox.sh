@@ -113,7 +113,13 @@ Output a JSON array of decisions. Each item should have:
 
 Output ONLY the JSON array, no other text."
 
-TRIAGE_RESULT=$(claude -p "$TRIAGE_PROMPT" --dangerously-skip-permissions 2>/dev/null || echo "")
+# Use Ollama (local) for triage when available, else Claude. See docs/LLM_ROUTING.md
+LLM_INVOKE="$SERVICE_ROOT/scripts/compound/llm-invoke.sh"
+if [[ -f "$LLM_INVOKE" ]]; then
+  TRIAGE_RESULT=$(echo "$TRIAGE_PROMPT" | "$LLM_INVOKE" triage "" 2>/dev/null || echo "")
+else
+  TRIAGE_RESULT=$(claude -p "$TRIAGE_PROMPT" --dangerously-skip-permissions 2>/dev/null || echo "")
+fi
 
 if [[ -z "$TRIAGE_RESULT" ]]; then
   log_warn "Claude returned empty response. Skipping triage."

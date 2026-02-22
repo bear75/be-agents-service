@@ -99,6 +99,34 @@ node dist/index.js
 
 ---
 
+## Step 4b: Install Ollama for Local LLM (5 min, optional)
+
+Ollama runs a local LLM (phi) for simple tasks (priority analysis, inbox triage) — saves API costs.
+
+```bash
+# Install Ollama
+brew install ollama
+ollama pull phi
+
+# macOS 26+ fix: MLX library may fail — use our plist instead of brew services
+brew services stop ollama
+cp launchd/com.appcaire.ollama.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.appcaire.ollama.plist
+
+# Or run the fix script
+./scripts/setup-ollama-macos-fix.sh
+
+# Verify
+ollama list
+echo 'Say hi' | ollama run phi
+```
+
+**If Ollama fails with "MLX dynamic library not available" or 500 error:** use `com.appcaire.ollama.plist` (sets OLLAMA_LLM_LIBRARY=cpu_avx2) instead of brew services. See `scripts/setup-ollama-macos-fix.sh`.
+
+Routing rules: `scripts/compound/llm-invoke.sh` uses Ollama for analyze/convert/triage; Claude for PRD/implement/review. See `docs/LLM_ROUTING.md`.
+
+---
+
 ## Step 5: Set Up Telegram Bot (5 min)
 
 ### 5a: Create the bot

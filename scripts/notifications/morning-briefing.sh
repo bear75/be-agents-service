@@ -48,10 +48,11 @@ fi
 
 # ─── Gather data ─────────────────────────────────────────────────────────────
 
-# Count inbox items
+# Count inbox items (grep -c exits 1 when no matches; use || true to avoid pipefail exit)
 INBOX_PENDING=0
 if [[ -f "$WORKSPACE_PATH/inbox.md" ]]; then
-  INBOX_PENDING=$(grep -c '^\- \[ \]' "$WORKSPACE_PATH/inbox.md" 2>/dev/null || echo "0")
+  INBOX_PENDING=$(grep -c '^\- \[ \]' "$WORKSPACE_PATH/inbox.md" 2>/dev/null | head -1) || true
+  INBOX_PENDING=${INBOX_PENDING:-0}
 fi
 
 # Get priority #1
@@ -84,10 +85,11 @@ if [[ -f "$REPORT_FILE" ]]; then
   fi
 fi
 
-# Count follow-ups
+# Count follow-ups (grep -c exits 1 when no matches; use || true to avoid pipefail exit)
 FOLLOWUP_PENDING=0
 if [[ -f "$WORKSPACE_PATH/follow-ups.md" ]]; then
-  FOLLOWUP_PENDING=$(grep -c '^\- \[ \]' "$WORKSPACE_PATH/follow-ups.md" 2>/dev/null || echo "0")
+  FOLLOWUP_PENDING=$(grep -c '^\- \[ \]' "$WORKSPACE_PATH/follow-ups.md" 2>/dev/null | head -1) || true
+  FOLLOWUP_PENDING=${FOLLOWUP_PENDING:-0}
 fi
 
 # ─── Build message ───────────────────────────────────────────────────────────
