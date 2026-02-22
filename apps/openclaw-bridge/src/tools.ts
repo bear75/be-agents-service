@@ -665,7 +665,7 @@ export function registerWorkspaceTools(server: McpServer, workspacePath: string)
 
   server.tool(
     'get_memory',
-    'Read a memory file (decisions, learnings, or context). These contain persistent project knowledge.',
+    'Read a memory file (decisions, learnings, or context). These contain persistent project knowledge. Call get_memory(context) at the start of conversations to load user context.',
     {
       name: z.enum(['decisions', 'learnings', 'context']).describe('Which memory file to read'),
     },
@@ -678,6 +678,27 @@ export function registerWorkspaceTools(server: McpServer, workspacePath: string)
       }
 
       return { content: [{ type: 'text' as const, text: `📚 **${name.charAt(0).toUpperCase() + name.slice(1)}**\n\n${content}` }] };
+    }
+  );
+
+  // ── add_to_memory ────────────────────────────────────────────────────────
+
+  server.tool(
+    'add_to_memory',
+    'Add an entry to a memory file. Use when user says "remember X", "don\'t forget X", or shares info they want stored long-term. context = preferences, facts, projects; learnings = accumulated knowledge; decisions = one-off choices.',
+    {
+      name: z.enum(['decisions', 'learnings', 'context']).describe('Which memory file to write to'),
+      content: z.string().describe('The content to append (one or a few sentences)'),
+    },
+    async ({ name, content }) => {
+      const filePath = join(workspacePath, 'memory', `${name}.md`);
+      let existing = safeReadFile(filePath);
+      const dateStamp = `[${today()}]`;
+      const entry = `- ${dateStamp} ${content}\n`;
+      const sep = existing.trimEnd() ? '\n' : '';
+      existing = (existing.trimEnd() || `# ${name.charAt(0).toUpperCase() + name.slice(1)}\n`) + sep + entry;
+      atomicWrite(filePath, existing);
+      return { content: [{ type: 'text' as const, text: `✅ Added to ${name}: ${content}` }] };
     }
   );
 
