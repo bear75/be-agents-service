@@ -84,11 +84,30 @@ openclaw start
 
 Or use launchd for auto-start (see config/openclaw/README.md).
 
+## Shared Gateway (Parent Runs OpenClaw)
+
+Hannes och du har **samma modell**: skriv till sitt eget nummer i WhatsApp ("Message yourself") för att nå sin agent.
+
+- **default** (parent): +46734177166 → Main agent. Du skriver till ditt eget nummer.
+- **hannes**: +46721588444 → Hannes agent (Darwin). Hannes skriver till sitt eget nummer.
+
+**Setup:** Hannes länkar sitt WhatsApp (när han är här):
+```bash
+openclaw channels login --channel whatsapp --account hannes
+```
+Hannes skannar QR-koden. Sen använder han "Message yourself" i WhatsApp för att prata med Darwin.
+
+**Compound:** Hannes kan säga "run compound" — Darwin kör **endast** på `hannes-projects`. Se `config/repos.yaml`.
+
+**Restart efter ändringar:** `openclaw gateway restart`
+
 ## Config Template Reference
 
 See [config/openclaw/sandbox-openclaw.json](../config/openclaw/sandbox-openclaw.json).
 
 **Important:** Use `WORKSPACE_PATH` only. Omit `WORKSPACE_CONFIG`, `WORKSPACE_REPO`, and `AGENT_API_URL`. That isolates the sandbox from the main setup.
+
+For compound access to Hannes's own repos, add `WORKSPACE_ALLOWED_REPOS` (comma-separated repo names). The bridge restricts `trigger_compound` to those repos only.
 
 ## GitHub (optional)
 

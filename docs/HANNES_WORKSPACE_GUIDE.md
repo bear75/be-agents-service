@@ -7,32 +7,26 @@ A short guide for using your personal workspace bot on Telegram/WhatsApp.
 ## What You Have
 
 - **Your workspace:** `hannes-space` in shared iCloud (inbox, priorities, tasks, follow-ups, check-ins)
-- **Your bot:** A Telegram bot you'll create (see below)
-- **Access:** iPhone (Telegram, Files app), PC (iCloud for Windows, icloud.com)
+- **Your assistant:** Use **"Message yourself"** in WhatsApp on your phone (+46721588444) — same as pappa does with his number
+- **Access:** iPhone (WhatsApp, Files app), PC (iCloud for Windows, icloud.com)
 
-Your workspace syncs via iCloud, so you can see and edit your files from any device.
+Your workspace syncs via iCloud, so you can see and edit your files from any device. You use **"Message yourself"** in WhatsApp to reach Darwin — just like pappa does with his number.
 
 ---
 
-## Setup: What You Need to Do
+## First-Time Setup: Link Your WhatsApp
 
-### 1. Create Your Telegram Bot
-
-1. Open Telegram (phone or PC)
-2. Search for **@BotFather**
-3. Send: `/newbot`
-4. Give it a name (e.g. "Hannes Workspace Bot")
-5. Copy the **bot token** (looks like `123456:ABC-DEF-...`)
-6. Search for **@userinfobot**
-7. Send any message and copy your **numeric user ID** (e.g. `987654321`)
-
-Send your bot token and user ID to your parent so they can finish the setup.
+**Parent runs once (when Hannes is here):**
+```bash
+openclaw channels login --channel whatsapp --account hannes
+```
+Hannes scans the QR code with his phone. After that, Hannes uses "Message yourself" in WhatsApp to talk to Darwin.
 
 ---
 
 ## What You Can Do
 
-| Say to your bot | What happens |
+| Say in WhatsApp | What happens |
 |-----------------|--------------|
 | "Add X to inbox" | Adds X to your inbox |
 | "What's in my inbox?" | Shows your inbox items |
@@ -42,12 +36,13 @@ Send your bot token and user ID to your parent so they can finish the setup.
 | "Create a doc about X" | Creates a markdown doc in input/ |
 | "Process my input docs" | Converts input docs to inbox/priorities/tasks |
 | "Add notes to today" | Adds notes to today's check-in |
-| "Remember X" | Adds X to memory — bot remembers across sessions |
+| "Remember X" | Adds X to memory — Darwin remembers across sessions |
+| "Run compound" / "Implement" | Triggers compound: picks Priority #1, creates PR in your repo `hannes-projects` (only your own repo) |
 | General questions | Answered from knowledge (loads memory first if relevant) |
 
 ---
 
-## Memory: What the Bot Remembers
+## Memory: What Darwin Remembers
 
 - **Within a chat:** Yes — remembers the current conversation
 - **Across chats:** Yes — via `memory/context.md`, `memory/learnings.md`, `memory/decisions.md`
@@ -56,22 +51,22 @@ Send your bot token and user ID to your parent so they can finish the setup.
 
 ---
 
-## What You Can't Do (Yet)
+## What You Can't Do
 
-- **Run compound / build apps:** Your bot can't create PRs or run code agents. It's for planning and ideas.
+- **Trigger compound on other repos:** Darwin can **only** run compound on `hannes-projects` — never on parent's repos (beta-appcaire, etc.).
 - **See parent's dashboard:** Your actions don't appear there. Your workspace is separate.
 
 ---
 
-## Building Apps with GitHub
+## Compound: Build Apps with Darwin
 
-Right now the bot is for **planning and ideas** (inbox, priorities, tasks, follow-ups). To actually build apps:
+Darwin can run compound **only** on your repo `hannes-projects`. Before it works:
 
-1. Use the bot for planning (ideas, priorities, tasks)
-2. Code on your PC in your own GitHub repo
-3. Push manually via GitHub Desktop, VS Code, or `git push`
+1. **Create the repo** (with parent): `~/HomeCare/hannes-projects`, init git, push to GitHub
+2. **Add priorities** in your workspace (`priorities.md`) — compound picks Priority #1
+3. Say **"run compound"** or **"implement"** — Darwin creates a PR in your repo
 
-If you later get compound/agent access, you could say things like "implement X" and the agent would create PRs in your repo. That would need extra setup.
+You can still code manually on your PC and push via GitHub Desktop or VS Code.
 
 ---
 
@@ -98,7 +93,7 @@ AgentWorkspace/hannes-space/
 ## Tips
 
 - Add ideas quickly with "add X to inbox"
-- Say "remember X" to store things long-term — bot loads memory at start of chats
+- Say "remember X" to store things long-term — Darwin loads memory at start of chats
 - Use "process my input docs" after dropping .md files in input/
 - Check "status" or "overview" for a quick summary
 - Edit memory/context.md with interests and preferences for personalized responses

@@ -46,3 +46,21 @@ repos:
     #   morning_briefing: "08:00"
     #   session_complete: true
     #   weekly_review: "monday 08:00"
+
+  # Hannes sandbox — compound only to this repo (WORKSPACE_ALLOWED_REPOS=hannes-projects)
+  hannes-projects:
+    path: ~/HomeCare/hannes-projects
+    workspace:
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/hannes-space
+      enabled: true
+    schedule:
+      review: "22:30"
+      compound: "23:00"
+    priorities_dir: reports/
+    logs_dir: logs/
+    tasks_dir: tasks/
+    enabled: true
+    github:
+      owner: bear75
+      repo: hannes-projects
+      default_branch: main

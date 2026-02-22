@@ -855,6 +855,19 @@ export function registerWorkspaceTools(server: McpServer, workspacePath: string)
       repo: z.string().default('beta-appcaire').describe('Target repository (default: beta-appcaire)'),
     },
     async ({ repo }) => {
+      const allowedRepos = process.env.WORKSPACE_ALLOWED_REPOS;
+      if (allowedRepos) {
+        const list = allowedRepos.split(',').map((s) => s.trim()).filter(Boolean);
+        if (list.length > 0 && !list.includes(repo)) {
+          return {
+            content: [{
+              type: 'text' as const,
+              text: `⚠️ You can only trigger compound on your own repos: ${list.join(', ')}. Requested: ${repo}.`,
+            }],
+          };
+        }
+      }
+
       const __filename = fileURLToPath(import.meta.url);
       const serviceRoot = join(dirname(__filename), '..', '..', '..');
       const scriptPath = join(serviceRoot, 'scripts', 'compound', 'auto-compound.sh');

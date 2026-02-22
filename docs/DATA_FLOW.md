@@ -128,8 +128,11 @@ Darwin uses **two systems** that choose models differently:
 
 ### 2. OpenClaw (Telegram/Darwin chat)
 
-- **~/.openclaw/openclaw.json** → `agents.defaults.model` (e.g. claude-sonnet-4, claude-opus)
-- OpenClaw talks to Anthropic directly; no Ollama routing for chat
+- **~/.openclaw/openclaw.json** → `agents.defaults.model.primary` (default: `ollama/qwen2.5:14b`), `fallbacks` (Claude Sonnet, Opus)
+- Primary: Qwen via Ollama (local, free). Fallbacks: Claude Sonnet → Opus when Qwen can't handle it.
+- **User override:** `/model claude` or "use Claude" → force Claude for that request/session
+- **When unsure:** Darwin asks: "This might need Claude — use Claude, or try Qwen first?"
+- **PRD/implement/review (compound):** Always use Claude — controlled by llm-invoke.sh, not Darwin
 
 ### Override
 
