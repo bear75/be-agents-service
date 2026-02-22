@@ -12,7 +12,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
-import { join, basename } from 'path';
+import { join, basename, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { execSync, spawn } from 'child_process';
 import { createHash } from 'crypto';
 import { getTemplatesDir } from './workspace-bridge.js';
 
@@ -557,6 +559,108 @@ export function registerWorkspaceTools(server: McpServer, workspacePath: string)
     }
   );
 
+  // ── get_input_docs ────────────────────────────────────────────────────────
+
+  server.tool(
+    'get_input_docs',
+    'List docs in the input folder. Unread docs (in input/) are pending; handled docs (in input/read/) are done. Drop .md files in input/ with ideas, features, tasks, marketing jobs — then run process_input_docs to convert to inbox/priorities/tasks.',
+    {},
+    async () => {
+      const inputDir = join(workspacePath, 'input');
+      const readDir = join(workspacePath, 'input', 'read');
+
+      if (!existsSync(inputDir) || !statSync(inputDir).isDirectory()) {
+        return { content: [{ type: 'text' as const, text: '📁 No input folder. Run init-workspace.sh first.' }] };
+      }
+
+      const unread = readdirSync(inputDir)
+        .filter(f => f.endsWith('.md') && f !== 'README.md' && !f.startsWith('.'))
+        .sort();
+
+      const read = existsSync(readDir) && statSync(readDir).isDirectory()
+        ? readdirSync(readDir).filter(f => f.endsWith('.md') && !f.startsWith('.')).sort()
+        : [];
+
+      let text = '📁 **Input Docs**\n\n';
+      text += `**Unread** (${unread.length}): ${unread.length > 0 ? unread.join(', ') : 'none'}\n\n`;
+      text += `**Handled** (${read.length}): ${read.length > 0 ? read.slice(0, 10).join(', ') : 'none'}`;
+      if (read.length > 10) text += ` +${read.length - 10} more`;
+
+      return { content: [{ type: 'text' as const, text }] };
+    }
+  );
+
+  // ── process_input_docs ────────────────────────────────────────────────────
+
+  server.tool(
+    'process_input_docs',
+    'Process unread .md docs in input/. Converts content to inbox, priorities, and tasks. Moves handled docs to input/read/.',
+    {},
+    async () => {
+      const __filename = fileURLToPath(import.meta.url);
+      const serviceRoot = join(dirname(__filename), '..', '..', '..');
+      const scriptPath = join(serviceRoot, 'scripts', 'workspace', 'process-input-docs.sh');
+      // Pass WORKSPACE_PATH so script uses current workspace (enables sandbox mode without repos.yaml)
+      const repo = process.env.WORKSPACE_REPO || 'beta-appcaire';
+      const execEnv = { ...process.env, WORKSPACE_PATH: workspacePath };
+
+      if (!existsSync(scriptPath)) {
+        return { content: [{ type: 'text' as const, text: '⚠️ process-input-docs.sh not found.' }] };
+      }
+
+      try {
+        const out = execSync(`"${scriptPath}" "${repo}"`, {
+          encoding: 'utf8',
+          cwd: serviceRoot,
+          timeout: 120000,
+          env: execEnv,
+        });
+        return { content: [{ type: 'text' as const, text: `✅ Processed input docs:\n\n${out}` }] };
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        const stdout = (err as { stdout?: string })?.stdout;
+        const stderr = (err as { stderr?: string })?.stderr;
+        let text = `⚠️ Processing failed: ${msg}\n`;
+        if (stdout) text += `\nOutput:\n${stdout}`;
+        if (stderr) text += `\nError:\n${stderr}`;
+        return { content: [{ type: 'text' as const, text }] };
+      }
+    }
+  );
+
+  // ── create_input_doc ─────────────────────────────────────────────────────
+
+  server.tool(
+    'create_input_doc',
+    'Create a new markdown doc in workspace/input/. Use when user says "create a PRD for X", "create a spec for X", or "add a doc about X". The doc will appear in input/; user can then say "process my input docs" to convert to inbox/priorities/tasks.',
+    {
+      title: z.string().describe('Document title (e.g. "Feature: User Auth")'),
+      description: z.string().describe('Main content or description of the doc'),
+    },
+    async ({ title, description }) => {
+      const slug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || 'doc-' + Date.now();
+      const inputDir = join(workspacePath, 'input');
+      const filePath = join(inputDir, `${slug}.md`);
+
+      if (!existsSync(inputDir)) {
+        mkdirSync(inputDir, { recursive: true });
+      }
+
+      const content = `# ${title}\n\n${description}\n\n---\n_Created by Darwin_`;
+      atomicWrite(filePath, content);
+
+      return {
+        content: [{
+          type: 'text' as const,
+          text: `✅ Created **${title}** in input/\n\nFile: \`input/${slug}.md\`\n\nSay "process my input docs" when ready to convert to priorities and tasks.`,
+        }],
+      };
+    }
+  );
+
   // ── get_memory ────────────────────────────────────────────────────────────
 
   server.tool(
@@ -578,11 +682,11 @@ export function registerWorkspaceTools(server: McpServer, workspacePath: string)
   );
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // DB-BACKED TOOLS (via Agent Service API)
+  // DB-BACKED TOOLS (via Darwin API)
   // These route through http://localhost:4010 to read structured data from SQLite
   // ═══════════════════════════════════════════════════════════════════════════
 
-  const API_BASE = process.env.AGENT_API_URL || 'http://localhost:4010';
+  const API_BASE = process.env.AGENT_API_URL || 'http://localhost:3030';
 
   async function apiGet<T>(path: string): Promise<T | null> {
     try {
@@ -718,6 +822,44 @@ export function registerWorkspaceTools(server: McpServer, workspacePath: string)
 • Agents: ${stats.totalAgents} total, ${stats.activeAgents ?? 0} active`;
 
       return { content: [{ type: 'text' as const, text }] };
+    }
+  );
+
+  // ── trigger_compound ─────────────────────────────────────────────────────
+
+  server.tool(
+    'trigger_compound',
+    'Run the compound workflow: picks Priority #1 from workspace, creates PRD, implements, opens PR. Use when user says "run compound", "start agents", "implement priority", or "run the agents". Reads priorities from workspace/priorities.md. Runs in background.',
+    {
+      repo: z.string().default('beta-appcaire').describe('Target repository (default: beta-appcaire)'),
+    },
+    async ({ repo }) => {
+      const __filename = fileURLToPath(import.meta.url);
+      const serviceRoot = join(dirname(__filename), '..', '..', '..');
+      const scriptPath = join(serviceRoot, 'scripts', 'compound', 'auto-compound.sh');
+
+      if (!existsSync(scriptPath)) {
+        return { content: [{ type: 'text' as const, text: '⚠️ auto-compound.sh not found.' }] };
+      }
+
+      try {
+        const child = spawn('bash', [scriptPath, repo], {
+          cwd: serviceRoot,
+          detached: true,
+          stdio: 'ignore',
+          env: { ...process.env, PATH: process.env.PATH || '/usr/local/bin:/usr/bin:/bin' },
+        });
+        child.unref();
+        return {
+          content: [{
+            type: 'text' as const,
+            text: `🚀 **Compound started**\n\nReading Priority #1 from workspace → creating PRD → implementing → PR.\n\nRepo: ${repo}\nCheck dashboard (http://localhost:3030) for progress.`,
+          }],
+        };
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { content: [{ type: 'text' as const, text: `⚠️ Failed to start compound: ${msg}` }] };
+      }
     }
   );
 

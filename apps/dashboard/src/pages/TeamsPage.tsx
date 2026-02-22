@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
+import { StatsBar } from '../components/StatsBar';
 import { getTeams, getTeam } from '../lib/api';
 import type { DbTeam, DbTeamWithDetails } from '../types';
 
@@ -55,6 +56,7 @@ export function TeamsPage() {
 
   return (
     <div className="space-y-6">
+      <StatsBar />
       {/* Header */}
       <div className="flex items-center gap-2">
         <Users className="w-6 h-6 text-blue-600" />

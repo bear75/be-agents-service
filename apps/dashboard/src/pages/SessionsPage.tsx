@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from 'react';
 import { LayoutDashboard, ExternalLink, Clock } from 'lucide-react';
+import { StatsBar } from '../components/StatsBar';
 import { getSessions } from '../lib/api';
 import type { DbSession } from '../types';
 
@@ -53,6 +54,7 @@ export function SessionsPage() {
 
   return (
     <div className="space-y-6">
+      <StatsBar />
       <div className="flex items-center gap-2">
         <LayoutDashboard className="w-6 h-6 text-blue-600" />
         <h2 className="text-xl font-semibold text-gray-900">Sessions</h2>

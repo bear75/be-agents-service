@@ -34,7 +34,7 @@ if [ ! -d "$REPO_PATH" ]; then
   exit 1
 fi
 
-echo "🤖 Agent Service: Daily Compound Review"
+echo "🤖 Darwin: Daily Compound Review"
 echo "Repository: $REPO_NAME"
 echo "Path: $REPO_PATH"
 echo ""

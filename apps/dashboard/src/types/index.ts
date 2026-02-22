@@ -219,3 +219,30 @@ export interface DashboardStats {
   totalExperiments: number;
   activeExperiments: number | null;
 }
+
+/** Agent from database (alias for Agent) */
+export type DbAgent = Agent;
+
+/** Job info from job executor */
+export interface JobInfo {
+  id: string;
+  team?: string;
+  status?: string;
+  priorityFile?: string;
+  branchName?: string;
+  targetRepo?: string;
+  startedAt?: string;
+  [key: string]: unknown;
+}
+
+/** Integration from database (settings) */
+export interface DbIntegration {
+  id: string;
+  type?: string;
+  platform?: string;
+  name?: string;
+  is_active?: number;
+  credentials?: unknown;
+  config?: unknown;
+  [key: string]: unknown;
+}

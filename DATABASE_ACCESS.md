@@ -2,16 +2,26 @@
 
 ## Quick Answer
 
-**Database Location:** `data/agent-service.db` (relative to repo root)
+**Is the DB running?** There is no separate database process. SQLite is file-based. When you run `yarn workspace server start`, the Node server opens the DB file and keeps it in use.
+
+**Database Locations** (two SQLite files):
+
+| Used by | Path |
+|---------|------|
+| apps/server (sessions, teams, metrics, marketing, commands) | `data/agent-service.db` |
+| lib/ (agents, integrations, gamification, tasks) | `.compound-state/agent-service.db` |
 
 ```bash
-cd ~/HomeCare/be-agent-service
-# Path: ./data/agent-service.db
+cd ~/HomeCare/be-agents-service
+# apps/server DB:
+ls -la data/agent-service.db
+# lib/ DB:
+ls -la .compound-state/agent-service.db
 ```
 
 **Type:** SQLite3
 
-**Dashboard URL:** http://localhost:3030
+**Dashboard URL:** http://localhost:3030 (or PORT/DASHBOARD_PORT env)
 
 ---
 

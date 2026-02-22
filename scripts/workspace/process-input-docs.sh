@@ -13,6 +13,9 @@
 #   ./scripts/workspace/process-input-docs.sh <repo-name>
 #   ./scripts/workspace/process-input-docs.sh beta-appcaire
 #
+# Sandbox mode (no repos.yaml entry needed):
+#   WORKSPACE_PATH=/path/to/workspace ./scripts/workspace/process-input-docs.sh sandbox
+#
 # Can be run:
 #   - Manually when you drop new docs
 #   - Via OpenClaw ("process my input docs")
@@ -47,10 +50,16 @@ fi
 
 # ─── Resolve workspace path ──────────────────────────────────────────────────
 
-WORKSPACE_PATH=$(get_workspace_path "$REPO_NAME")
+# Allow WORKSPACE_PATH env override for sandbox mode (no repos.yaml entry needed)
+if [[ -z "${WORKSPACE_PATH:-}" ]]; then
+  WORKSPACE_PATH=$(get_workspace_path "$REPO_NAME")
+fi
+
+# Expand ~ in WORKSPACE_PATH if present
+WORKSPACE_PATH="${WORKSPACE_PATH/#\~/$HOME}"
 
 if [[ -z "$WORKSPACE_PATH" ]]; then
-  log_warn "No workspace configured for '$REPO_NAME'"
+  log_warn "No workspace configured for '$REPO_NAME'. Set WORKSPACE_PATH for sandbox mode."
   exit 1
 fi
 
@@ -165,17 +174,11 @@ Output ONLY the JSON, no other text."
     done <<< "$INBOX_ITEMS"
   fi
 
-  # Append to priorities
+  # Append to priorities (at end; user can reorder)
   echo "$JSON" | jq -r '.priorities[]? | "\(.level)|\(.text)"' 2>/dev/null | while IFS='|' read -r level text; do
     [[ -z "$text" ]] && continue
-    # Add under appropriate section
-    SECTION="## Medium Priority"
-    [[ "$level" == "high" ]] && SECTION="## High Priority"
-    [[ "$level" == "low" ]] && SECTION="## Low Priority"
-    # Find next number in section (simplified: append at end)
     echo "" >> "$PRIORITIES_FILE"
-    echo "<!-- from $FILENAME -->" >> "$PRIORITIES_FILE"
-    echo "1. **$text**" >> "$PRIORITIES_FILE"
+    echo "1. **$text** (from $FILENAME)" >> "$PRIORITIES_FILE"
     log_info "  → priority ($level): $text"
   done
 
@@ -193,13 +196,13 @@ Output ONLY the JSON, no other text."
     log_info "  → task: $title"
   done
 
-  # Move to input/read/ (mark handled)
+  # Copy to input/read/, then delete original (avoid confusion from duplicates)
   READ_PATH="$READ_DIR/$FILENAME"
   if [[ -f "$READ_PATH" ]]; then
     READ_PATH="$READ_DIR/$(date +%H%M%S)-$FILENAME"
   fi
-  mv "$FILE_PATH" "$READ_PATH"
-  log_info "  ✓ Moved to input/read/ (handled)"
+  cp "$FILE_PATH" "$READ_PATH" && rm -f "$FILE_PATH"
+  log_info "  ✓ Moved to input/read/ (original removed)"
 done
 
 log_info "Done. Processed ${#FILES[@]} doc(s)."

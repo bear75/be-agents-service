@@ -11,6 +11,8 @@ import { TeamsPage } from './pages/TeamsPage';
 import { MarketingPage } from './pages/MarketingPage';
 import { RLDashboardPage } from './pages/RLDashboardPage';
 import { ManagementPage } from './pages/ManagementPage';
+import { ControlPage } from './pages/ControlPage';
+import { PlansPage } from './pages/PlansPage';
 import './App.css';
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
           <Route index element={<DashboardPage />} />
           <Route path="management" element={<ManagementPage />} />
           <Route path="sessions" element={<SessionsPage />} />
+          <Route path="control" element={<ControlPage />} />
+          <Route path="plans" element={<PlansPage />} />
           <Route path="kanban" element={<KanbanPage />} />
           <Route path="engineering" element={<EngineeringPage />} />
           <Route path="agents" element={<AgentsPage />} />

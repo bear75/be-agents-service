@@ -17,6 +17,8 @@ import {
   getDashboardStats,
   getLessonsLearned,
   getAllTasks,
+  getTask,
+  updateTaskStatus,
 } from '../lib/database.js';
 
 const router = Router();
@@ -256,6 +258,50 @@ router.get('/tasks', (_req, res) => {
   try {
     const tasks = getAllTasks();
     res.json({ success: true, data: tasks });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * PATCH /api/metrics/tasks/:id/status
+ * Update a task's status (for Kanban drag & drop)
+ */
+router.patch('/tasks/:id/status', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, llmUsed, errorMessage } = req.body;
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required field: status',
+      });
+    }
+
+    const existing = getTask(id);
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        error: 'Task not found',
+      });
+    }
+
+    const validStatuses = ['pending', 'in_progress', 'completed', 'failed'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
+      });
+    }
+
+    updateTaskStatus(id, status, llmUsed ?? null, errorMessage ?? null);
+    const task = getTask(id);
+
+    res.json({ success: true, data: task });
   } catch (error) {
     res.status(500).json({
       success: false,

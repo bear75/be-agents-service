@@ -4,7 +4,7 @@
 # Helper functions for interacting with the Agent Service DB API.
 # Source this file from other scripts: source "$SCRIPT_DIR/../db-api.sh"
 
-API_BASE="${AGENT_API_URL:-http://localhost:4010}"
+API_BASE="${AGENT_API_URL:-http://localhost:3030}"
 
 # ─── Session Operations ──────────────────────────────────────────────────────
 

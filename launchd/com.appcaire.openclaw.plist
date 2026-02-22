@@ -6,9 +6,9 @@
 	<string>com.appcaire.openclaw</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/opt/homebrew/bin/openclaw</string>
-		<string>daemon</string>
-		<string>start</string>
+		<string>/bin/bash</string>
+		<string>-c</string>
+		<string>source /Users/be-agent-service/.config/caire/env 2>/dev/null; exec /opt/homebrew/bin/openclaw daemon start</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>

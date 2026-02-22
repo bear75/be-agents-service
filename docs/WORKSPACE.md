@@ -72,6 +72,8 @@ See `config/openclaw/README.md` for OpenClaw + Telegram setup.
 ~/iCloud/AgentWorkspace/beta-appcaire/
 ├── inbox.md              ← Quick-drop ideas, tasks, thoughts
 ├── priorities.md         ← Agent picks #1 nightly
+├── input/                ← Drop .md docs (ideas, features, tasks, marketing); agent converts → inbox/priorities/tasks
+│   └── read/             ← Processed docs (handled)
 ├── tasks.md              ← Active task tracking with status
 ├── follow-ups.md         ← Things to revisit later
 ├── check-ins/

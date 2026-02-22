@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Kanban, AlertCircle } from 'lucide-react';
+import { StatsBar } from '../components/StatsBar';
 import { getTasks, updateTaskStatus } from '../lib/api';
 import type { DbTask } from '../types';
 
@@ -113,7 +114,7 @@ export function KanbanPage() {
 
     try {
       // Update on server
-      await updateTaskStatus(draggedTaskId, newStatus as any);
+      await updateTaskStatus(draggedTaskId, newStatus);
       setUpdateError(null);
     } catch (error) {
       // Revert on error
@@ -156,6 +157,7 @@ export function KanbanPage() {
 
   return (
     <div className="space-y-6">
+      <StatsBar />
       <div className="flex items-center gap-2">
         <Kanban className="w-6 h-6 text-blue-600" />
         <h2 className="text-xl font-semibold text-gray-900">Task Board</h2>

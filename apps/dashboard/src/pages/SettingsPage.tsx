@@ -1,12 +1,15 @@
 /**
- * Settings - integrations config with full CRUD
+ * Settings - setup status, integrations config with full CRUD
  */
 import { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { Sliders, Power, Edit2, Trash2, Plus } from 'lucide-react';
 import { getIntegrations, updateIntegration } from '../lib/api';
 import type { DbIntegration } from '../types';
+import { SetupStatus } from '../components/SetupStatus';
 
 export function SettingsPage() {
+  const { selectedRepo = '' } = useOutletContext<{ selectedRepo?: string }>() ?? {};
   const [integrations, setIntegrations] = useState<DbIntegration[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +70,9 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Setup Status */}
+      {selectedRepo && <SetupStatus repoName={selectedRepo} />}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

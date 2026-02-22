@@ -83,8 +83,20 @@ router.get('/agent-performance', (req, res) => {
 
 router.get('/llm-stats', (req, res) => {
   try {
-    const stats = llmRouter.getLLMStats(7);
+    const days = parseInt(req.query.days as string) || 7;
+    const stats = llmRouter.getLLMStats(days);
     res.json(stats);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+router.get('/llm-usage', (req, res) => {
+  try {
+    const days = parseInt(req.query.days as string) || 7;
+    const limit = parseInt(req.query.limit as string) || 200;
+    const records = llmRouter.getLLMUsageRecent(days, limit);
+    res.json(records);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }

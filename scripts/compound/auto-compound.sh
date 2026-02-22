@@ -55,7 +55,7 @@ fi
 SESSION_ID="session-$(date +%s)-$$"
 SESSION_TEAM="team-engineering"  # Default team; orchestrator can override
 
-echo "🤖 Agent Service: Auto-Compound"
+echo "🤖 Darwin: Auto-Compound"
 echo "Repository: $REPO_NAME"
 echo "Path: $REPO_PATH"
 echo "Session: $SESSION_ID"

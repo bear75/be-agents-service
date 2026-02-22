@@ -17,6 +17,8 @@ import type {
   Session,
   DbTask,
   DashboardStats,
+  JobInfo,
+  DbIntegration,
 } from '../types';
 
 const API_BASE = '/api';
@@ -30,7 +32,25 @@ async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
     ...options,
   });
 
-  const data: ApiResponse<T> = await response.json();
+  const text = await response.text();
+  if (!text || !text.trim()) {
+    throw new Error(
+      response.ok
+        ? 'Empty response from server'
+        : `Server error ${response.status}: ${response.statusText}`
+    );
+  }
+
+  let data: ApiResponse<T>;
+  try {
+    data = JSON.parse(text) as ApiResponse<T>;
+  } catch {
+    throw new Error(
+      response.ok
+        ? 'Invalid JSON response'
+        : `Server error ${response.status}: ${response.statusText}`
+    );
+  }
 
   if (!data.success) {
     throw new Error(data.error || 'API request failed');
@@ -55,6 +75,16 @@ async function fetchRaw<T>(url: string, options?: RequestInit): Promise<T> {
   }
 
   return response.json() as Promise<T>;
+}
+
+/** Fetch text from endpoints that return text/plain */
+async function fetchText(url: string): Promise<string> {
+  const response = await fetch(`${API_BASE}${url}`);
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error((err as { error?: string }).error || 'Request failed');
+  }
+  return response.text();
 }
 
 // Repository API
@@ -187,8 +217,90 @@ export async function getTeamAgents(teamId: string): Promise<Agent[]> {
   return fetchApi<Agent[]>(`/teams/${teamId}/agents`);
 }
 
+/** Create a new agent */
+export async function createAgent(params: {
+  teamId: string;
+  name: string;
+  role: string;
+  llmPreference?: string;
+  emoji?: string;
+  id?: string;
+}): Promise<Agent> {
+  const id = params.id ?? `agent-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  const res = await fetchApi<Agent>('/teams/agents', {
+    method: 'POST',
+    body: JSON.stringify({
+      id,
+      teamId: params.teamId,
+      name: params.name,
+      role: params.role,
+      llmPreference: params.llmPreference ?? 'sonnet',
+      emoji: params.emoji ?? '🤖',
+    }),
+  });
+  return res;
+}
+
+/** Deactivate (fire) an agent */
+export async function fireAgent(agentId: string): Promise<void> {
+  await fetchApi<{ success: boolean }>(`/teams/agents/${agentId}/deactivate`, {
+    method: 'POST',
+  });
+}
+
+/** Reactivate (rehire) an agent */
+export async function rehireAgent(agentId: string): Promise<void> {
+  await fetchApi<Agent>(`/teams/agents/${agentId}/reactivate`, {
+    method: 'POST',
+  });
+}
+
 export async function getAllAgentsFromDb(): Promise<Agent[]> {
   return fetchApi<Agent[]>('/teams/agents/all');
+}
+
+/** Alias for Engineering page - all agents from database */
+export async function getHrAgents(): Promise<Agent[]> {
+  return getAllAgentsFromDb();
+}
+
+// ─── Jobs (Engineering) ─────────────────────────────────────────────────────
+
+/** Get all jobs from job executor */
+export async function getJobs(): Promise<JobInfo[]> {
+  const data = await fetchRaw<JobInfo[] | { jobs?: JobInfo[] }>('/jobs');
+  return Array.isArray(data) ? data : (data.jobs ?? []);
+}
+
+/** Start a job (engineering or marketing) */
+export async function startJob(params: {
+  team: string;
+  model?: string;
+  priorityFile: string;
+  branchName: string;
+  baseBranch?: string;
+  targetRepo?: string;
+}): Promise<JobInfo> {
+  return fetchRaw<JobInfo>('/jobs/start', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+/** Stop a job by ID */
+export async function stopJob(jobId: string): Promise<void> {
+  const data = await fetchRaw<{ success?: boolean; error?: string }>(
+    `/jobs/${jobId}/stop`,
+    { method: 'POST' }
+  );
+  if (data.success === false) {
+    throw new Error(data.error || 'Failed to stop job');
+  }
+}
+
+/** Get job logs as text */
+export async function getJobLogs(jobId: string): Promise<string> {
+  return fetchText(`/jobs/${jobId}/logs`);
 }
 
 // Sessions
@@ -227,6 +339,22 @@ export async function getAllDbTasks(): Promise<DbTask[]> {
   return fetchApi<DbTask[]>('/metrics/tasks');
 }
 
+/** Alias for Kanban - fetch all tasks */
+export async function getTasks(): Promise<DbTask[]> {
+  return getAllDbTasks();
+}
+
+/** Update task status (for Kanban drag & drop) */
+export async function updateTaskStatus(
+  taskId: string,
+  status: string,
+): Promise<void> {
+  await fetchApi<void>(`/metrics/tasks/${taskId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+}
+
 // Marketing
 export async function getCampaigns(): Promise<unknown[]> {
   return fetchApi<unknown[]>('/marketing/campaigns');
@@ -238,4 +366,77 @@ export async function getLeads(): Promise<unknown[]> {
 
 export async function getContent(): Promise<unknown[]> {
   return fetchApi<unknown[]>('/marketing/content');
+}
+
+// ─── Integrations (Settings) ────────────────────────────────────────────────
+
+/** Get all integrations */
+export async function getIntegrations(): Promise<DbIntegration[]> {
+  const data = await fetchRaw<DbIntegration[] | { integrations?: DbIntegration[] }>(
+    '/integrations'
+  );
+  return Array.isArray(data) ? data : (data.integrations ?? []);
+}
+
+/** Update an integration */
+export async function updateIntegration(
+  id: string,
+  updates: Partial<DbIntegration>
+): Promise<void> {
+  await fetchRaw<{ success: boolean }>(`/integrations/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updates),
+  });
+}
+
+// ─── RL / Experiments & Patterns ────────────────────────────────────────────
+
+/** Get active experiments */
+export async function getExperiments(): Promise<unknown[]> {
+  return fetchApi<unknown[]>('/metrics/experiments/active');
+}
+
+/** Get patterns */
+export async function getPatterns(type?: string): Promise<unknown[]> {
+  const query = type ? `?type=${type}` : '';
+  return fetchApi<unknown[]>(`/metrics/patterns${query}`);
+}
+
+// ─── LLM Usage (Analytics) ───────────────────────────────────────────────────
+
+export interface LLMUsageRecord {
+  id: number;
+  taskId: string | null;
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+  costUsd: number;
+  durationMs: number | null;
+  usedAt: string;
+}
+
+export interface LLMStatsByModel {
+  model: string;
+  usageCount: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  totalCost: number;
+  avgDuration: string;
+  costPercentage: string;
+}
+
+export interface LLMStatsResponse {
+  period: string;
+  totalCost: string;
+  byModel: LLMStatsByModel[];
+}
+
+/** Get LLM usage stats (aggregates by model) */
+export async function getLLMStats(days = 7): Promise<LLMStatsResponse> {
+  return fetchRaw<LLMStatsResponse>(`/rl/llm-stats?days=${days}`);
+}
+
+/** Get raw LLM usage records (for timeline) */
+export async function getLLMUsage(days = 7, limit = 200): Promise<LLMUsageRecord[]> {
+  return fetchRaw<LLMUsageRecord[]>(`/rl/llm-usage?days=${days}&limit=${limit}`);
 }

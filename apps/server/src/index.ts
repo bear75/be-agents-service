@@ -1,5 +1,5 @@
 /**
- * Agent Service - Unified Dashboard & API
+ * Darwin - Unified Dashboard & API
  *
  * Single server on port 3030:
  * - Serves React app (/) as SPA
@@ -23,6 +23,10 @@ import teamsRouter from './routes/teams.js';
 import commandsRouter from './routes/commands.js';
 import marketingRouter from './routes/marketing.js';
 import metricsRouter from './routes/metrics.js';
+import jobsRouter from './routes/jobs.js';
+import integrationsRouter from './routes/integrations.js';
+import gamificationRouter from './routes/gamification.js';
+import rlRouter from './routes/rl.js';
 import { closeDatabase } from './lib/database.js';
 
 config();
@@ -69,6 +73,10 @@ app.use('/api/teams', teamsRouter);
 app.use('/api/commands', commandsRouter);
 app.use('/api/marketing', marketingRouter);
 app.use('/api/metrics', metricsRouter);
+app.use('/api/jobs', jobsRouter);
+app.use('/api/integrations', integrationsRouter);
+app.use('/api/gamification', gamificationRouter);
+app.use('/api/rl', rlRouter);
 
 // Static files (React build + classic HTML)
 app.use(express.static(STATIC_DIR));
@@ -96,30 +104,16 @@ app.use(
   }
 );
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log('');
   console.log('════════════════════════════════════════');
-  console.log('  Agent Service — Unified Dashboard');
+  console.log('  Darwin — Unified Dashboard');
   console.log('════════════════════════════════════════');
   console.log(`  Dashboard:  http://localhost:${PORT}/`);
   console.log(`  API:        http://localhost:${PORT}/api/`);
   console.log(`  Health:     http://localhost:${PORT}/health`);
   console.log('════════════════════════════════════════');
   console.log('');
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Agent Service API v2.0 running on http://localhost:${PORT}`);
-  console.log(`  Health:     http://localhost:${PORT}/health`);
-  console.log(`  Repos:      http://localhost:${PORT}/api/repos`);
-  console.log(`  Workspace:  http://localhost:${PORT}/api/workspace`);
-  console.log(`  Sessions:   http://localhost:${PORT}/api/sessions`);
-  console.log(`  Teams:      http://localhost:${PORT}/api/teams`);
-  console.log(`  Commands:   http://localhost:${PORT}/api/commands`);
-  console.log(`  Marketing:  http://localhost:${PORT}/api/marketing`);
-  console.log(`  Metrics:    http://localhost:${PORT}/api/metrics`);
-  console.log(`  Plans:      http://localhost:${PORT}/api/plans`);
 });
 
 // Graceful shutdown — close SQLite connection
