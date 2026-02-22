@@ -112,6 +112,35 @@ Data flows in **one direction**: Files → Database → UI
 
 ---
 
+## LLM Model Selection (Cost vs Performance)
+
+Darwin uses **two systems** that choose models differently:
+
+### 1. Agent Service (llm-invoke.sh, compound scripts)
+
+| Task Type | Model | Cost | When |
+|-----------|-------|------|------|
+| **analyze, convert, triage** | Ollama (qwen2.5:14b) | $0 | Short text, JSON, inbox triage |
+| **prd, implement, review** | Claude (Sonnet/Opus) | Paid | Long docs, code, complex work |
+
+- **OLLAMA_MODEL** env var (default: `qwen2.5:14b`) — set in `~/.config/caire/env`
+- **llm-router.js** — logical names: opus, sonnet, haiku, pi (pi = local/free)
+
+### 2. OpenClaw (Telegram/Darwin chat)
+
+- **~/.openclaw/openclaw.json** → `agents.defaults.model` (e.g. claude-sonnet-4, claude-opus)
+- OpenClaw talks to Anthropic directly; no Ollama routing for chat
+
+### Override
+
+```bash
+# Use a different Ollama model
+export OLLAMA_MODEL=qwen2.5:14b
+./scripts/compound/llm-invoke.sh analyze "Extract priority from: ..."
+```
+
+---
+
 ## Detailed Data Flow Examples
 
 ### Example 1: Engineering Job Execution

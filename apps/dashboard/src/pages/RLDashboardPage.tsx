@@ -24,7 +24,7 @@ interface Pattern {
 /** Categorize model as Ollama (local) vs Claude */
 function getModelCategory(model: string): 'ollama' | 'claude' | 'other' {
   const m = model.toLowerCase();
-  if (m.includes('ollama') || m.includes('pi') || m.includes('pi-mono') || m.includes('local')) {
+  if (m.includes('ollama') || m.includes('pi') || m.includes('qwen') || m.includes('local')) {
     return 'ollama';
   }
   if (m.includes('claude') || m.includes('opus') || m.includes('sonnet') || m.includes('haiku')) {

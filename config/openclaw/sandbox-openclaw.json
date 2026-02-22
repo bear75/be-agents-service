@@ -12,7 +12,7 @@
       "allowFrom": ["REPLACE_WITH_TELEGRAM_USER_ID"]
     },
     "whatsapp": {
-      "allowFrom": ["REPLACE_WITH_WHATSAPP_NUMBER"]
+      "allowFrom": ["+46721588444"]
     }
   },
   "mcpServers": {

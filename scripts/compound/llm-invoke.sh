@@ -9,9 +9,9 @@
 #   llm-invoke.sh uncertain "..."  # Prompts user to choose
 #
 # Task types and routing:
-#   analyze   → Ollama (phi) — short text, JSON extraction, triage
-#   convert   → Ollama (phi) — format conversion, structured extraction
-#   triage    → Ollama (phi) — inbox triage, categorization
+#   analyze   → Ollama (qwen2.5:14b) — short text, JSON extraction, triage
+#   convert   → Ollama (qwen2.5:14b) — format conversion, structured extraction
+#   triage    → Ollama (qwen2.5:14b) — inbox triage, categorization
 #   prd       → Claude — long-form creative docs
 #   implement → Claude — code changes, implementation
 #   review    → Claude — learning extraction, complex analysis
@@ -32,8 +32,8 @@ SERVICE_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # Load environment
 [[ -f "$HOME/.config/caire/env" ]] && source "$HOME/.config/caire/env"
 
-# OLLAMA_MODEL: local model for simple tasks (default: phi)
-OLLAMA_MODEL="${OLLAMA_MODEL:-phi}"
+# OLLAMA_MODEL: local model for simple tasks (default: qwen2.5:14b)
+OLLAMA_MODEL="${OLLAMA_MODEL:-qwen2.5:14b}"
 OLLAMA_AVAILABLE=false
 if command -v ollama &>/dev/null; then
   if ollama list 2>/dev/null | grep -q "$OLLAMA_MODEL"; then
@@ -53,7 +53,7 @@ usage() {
   echo "  review    — Learning extraction, complex analysis → Claude"
   echo "  uncertain — Ask user which model to use"
   echo ""
-  echo "Environment: OLLAMA_MODEL (default: phi), OLLAMA_AVAILABLE auto-detected"
+  echo "Environment: OLLAMA_MODEL (default: qwen2.5:14b), OLLAMA_AVAILABLE auto-detected"
   exit 1
 }
 

@@ -101,12 +101,12 @@ node dist/index.js
 
 ## Step 4b: Install Ollama for Local LLM (5 min, optional)
 
-Ollama runs a local LLM (phi) for simple tasks (priority analysis, inbox triage) — saves API costs.
+Ollama runs a local LLM (qwen2.5:14b) for simple tasks (priority analysis, inbox triage) — saves API costs.
 
 ```bash
 # Install Ollama
 brew install ollama
-ollama pull phi
+ollama pull qwen2.5:14b
 
 # macOS 26+ fix: MLX library may fail — use our plist instead of brew services
 brew services stop ollama
@@ -118,7 +118,7 @@ launchctl load ~/Library/LaunchAgents/com.appcaire.ollama.plist
 
 # Verify
 ollama list
-echo 'Say hi' | ollama run phi
+echo 'Say hi' | ollama run qwen2.5:14b
 ```
 
 **If Ollama fails with "MLX dynamic library not available" or 500 error:** use `com.appcaire.ollama.plist` (sets OLLAMA_LLM_LIBRARY=cpu_avx2) instead of brew services. See `scripts/setup-ollama-macos-fix.sh`.

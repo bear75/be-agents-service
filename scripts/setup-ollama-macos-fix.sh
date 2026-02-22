@@ -22,7 +22,7 @@ if [[ ! -f "$PLIST_TEMPLATE" ]]; then
 fi
 
 if ! command -v ollama &>/dev/null; then
-  echo "❌ Ollama not found. Run: brew install ollama && ollama pull phi"
+  echo "❌ Ollama not found. Run: brew install ollama && ollama pull qwen2.5:14b"
   exit 1
 fi
 
@@ -51,4 +51,4 @@ launchctl load "$PLIST_DEST" 2>/dev/null || true
 
 sleep 3
 echo ""
-echo "✓ Done. Test with: echo 'Say hi' | ollama run phi"
+echo "✓ Done. Test with: echo 'Say hi' | ollama run qwen2.5:14b"
