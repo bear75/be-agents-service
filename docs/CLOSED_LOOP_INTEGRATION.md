@@ -1,6 +1,6 @@
 # Closed-Loop Human-AI Integration
 
-Complete documentation for the bi-directional Telegram ↔ Agent Service integration.
+Complete documentation for the bi-directional **Telegram only** ↔ Agent Service integration. **(WhatsApp bot removed — do not re-enable.)**
 
 ---
 
@@ -9,13 +9,13 @@ Complete documentation for the bi-directional Telegram ↔ Agent Service integra
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        YOU (Human)                          │
-│                 Telegram                         │
+│                      Telegram only                          │
 └────────────────────┬───────────────────▲────────────────────┘
                      │                   │
               [conversational]      [proactive notifications]
                      │                   │
 ┌────────────────────▼───────────────────┴────────────────────┐
-│              OpenClaw Gateway (Darwin)                      │
+│              Messaging Gateway (Darwin)                      │
 │        Messaging interface + MCP bridge                     │
 │  Tools: add_to_inbox, get_overview, trigger_agent, etc.   │
 └────────────────────┬───────────────────▲────────────────────┘
@@ -56,7 +56,7 @@ Darwin: "✅ Agent triggered! Check dashboard for progress."
 ```
 
 **Behind the scenes:**
-- OpenClaw receives message
+- Gateway receives message
 - Calls `add_to_inbox` MCP tool
 - Writes to `workspace/priorities.md` on iCloud
 - You choose "now" → OpenClaw calls `trigger_agent` tool
@@ -482,7 +482,7 @@ curl -X POST http://localhost:3030/api/agents/trigger/beta-appcaire \
 
 ### Why OpenClaw?
 
-- **Multi-channel** - Telegram
+- **Channel** - Telegram only (WhatsApp removed)
 - **MCP support** - Extensible with tools
 - **Conversational** - Natural language interface
 - **Daemon mode** - Runs 24/7 on Mac mini

@@ -1,6 +1,6 @@
 # BE Agent Service
 
-Multi-agent autonomous service for software development and marketing automation with closed-loop Telegram integration.
+Multi-agent autonomous service for software development and marketing automation.
 
 ## Quick Start
 
@@ -9,22 +9,13 @@ Multi-agent autonomous service for software development and marketing automation
 yarn start
 # or with hot reload:
 yarn dev
-
-# Start OpenClaw gateway (Telegram)
-openclaw gateway start      # Foreground (or use restart if launchd is configured)
-openclaw gateway restart    # Restart via launchd (when plist is loaded)
-openclaw gateway status     # Check if running
 ```
 
-**Dashboard:** http://localhost:3010  
-**OpenClaw gateway:** Port 18789 (receives Telegram → routes to agents)
-
-> **Note:** If chats stop responding, the OpenClaw daemon (`com.appcaire.openclaw`) may be conflicting with the gateway. Stop it: `launchctl bootout gui/501/com.appcaire.openclaw` and start the gateway via launchd instead.
+**Dashboard:** http://localhost:3010
 
 ## What This Repo Does
 
 - **Dashboard (port 3010):** Web UI for workspace, repos, plans, agents, logs
-- **OpenClaw integration:** Telegram → shared workspace → agents
 - **Agent orchestration:** 23 specialists (engineering, marketing, management)
 - **Compound automation:** Nightly learnings (10:30 PM), auto-implement (11:00 PM)
 
@@ -36,7 +27,6 @@ openclaw gateway status     # Check if running
 - **Management (4 executives):** CEO, CPO/CTO, CMO/CSO, HR Agent Lead
 
 **Human-AI Interface:**
-- **Telegram** → OpenClaw → Shared Workspace → Agent Service → Notifications back to you
 - **Dashboard:** http://localhost:3010
 
 **Automation:**
@@ -68,7 +58,6 @@ yarn dev            # Build + dev with hot reload
 |------|-----|
 | **Closed-loop integration** | [docs/CLOSED_LOOP_INTEGRATION.md](docs/CLOSED_LOOP_INTEGRATION.md) ⭐ |
 | **Workspace setup** | [docs/WORKSPACE.md](docs/WORKSPACE.md) |
-| **OpenClaw setup** | [config/openclaw/SIMPLE_SETUP.md](config/openclaw/SIMPLE_SETUP.md), [docs/SANDBOX_SETUP.md](docs/SANDBOX_SETUP.md) |
 | Quick commands | [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) — start commands, schedules |
 | Mac mini setup | [docs/FRESH_MAC_MINI_SETUP.md](docs/FRESH_MAC_MINI_SETUP.md) |
 | Mac mini recovery | [docs/MAC_MINI_RECOVERY.md](docs/MAC_MINI_RECOVERY.md) |
@@ -319,22 +308,6 @@ tail -f ~/Library/Logs/appcaire-*.log
 ```
 
 ## Troubleshooting
-
-### Telegram Chats Not Responding
-
-The gateway may be in a crash loop if the OpenClaw daemon conflicts with it:
-
-```bash
-# Stop the daemon (stops killing the gateway)
-launchctl bootout gui/501/com.appcaire.openclaw
-
-# Start the gateway via launchd
-launchctl bootstrap gui/501 ~/Library/LaunchAgents/ai.openclaw.gateway.plist
-
-# Verify it's running
-lsof -i :18789
-tail -20 ~/.openclaw/logs/gateway.log
-```
 
 ### Agent Not Running
 

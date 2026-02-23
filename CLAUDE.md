@@ -33,6 +33,8 @@ The agent service orchestrates Claude Code automation workflows across multiple 
 - **Web Dashboard**: Unified dashboard at http://localhost:3030 (React + classic HTML)
 - **Scheduled Automation**: LaunchD integration for nightly workflows
 
+**No WhatsApp.** The WhatsApp bot was removed. It sent error messages to everyone who messaged. Use **Telegram only**. Do not re-enable WhatsApp. Script `scripts/kill-all-claw.sh` disables WhatsApp only and leaves Telegram running.
+
 ### Key Principle: Separation of Concerns
 
 **Scripts live here** (be-agents-service)
@@ -118,17 +120,6 @@ be-agents-service/
 │       ├── morning-briefing.sh
 │       ├── session-complete.sh
 │       └── weekly-review.sh
-│
-├── apps/openclaw-bridge/      # MCP bridge for OpenClaw
-│   └── src/
-│       ├── index.ts           # MCP server entry
-│       ├── tools.ts           # 11 workspace tools
-│       └── workspace-bridge.ts
-│
-└── config/openclaw/           # OpenClaw configuration
-    ├── openclaw.json          # Template config
-    ├── system-prompt.md       # Bot personality
-    └── README.md              # Setup guide
 ```
 
 ---
@@ -143,7 +134,7 @@ The workspace is a **shared markdown directory** where both humans and agents re
 
 ### Three-Layer Architecture
 
-1. **Interaction Layer** — Telegram (via OpenClaw), Dashboard, direct file editing
+1. **Interaction Layer** — Dashboard, direct file editing
 2. **Storage Layer** — Flat markdown files on iCloud (human + agent shared surface)
 3. **Execution Layer** — Agent scripts consume and update workspace files
 
@@ -168,10 +159,6 @@ workspace/
 - `scripts/workspace/sync-to-workspace.sh` — Syncs agent state → markdown
 - `scripts/workspace/generate-checkin.sh` — Creates check-in from template
 - `scripts/workspace/process-inbox.sh` — Triages inbox with Claude
-
-### OpenClaw MCP Bridge
-
-`apps/openclaw-bridge/` is an MCP server that exposes workspace operations as tools. OpenClaw connects via stdio and can read/write inbox, priorities, tasks, etc.
 
 **See:** `docs/WORKSPACE.md` for complete documentation.
 

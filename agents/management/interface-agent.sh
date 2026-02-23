@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Interface Agent - Human-Agent Interface
-# Shared folder, Telegram, workspace sync
+# Shared folder, Telegram only, workspace sync (WhatsApp removed)
 #
 # Usage:
 #   ./interface-agent.sh [status]
@@ -20,7 +20,7 @@ case "$ACTION" in
     echo "[Interface] Human-Agent Interface"
     echo "[Interface] Gateway: check ai.openclaw.gateway (port 18789)"
     echo "[Interface] Workspace: workspace/ (inbox, priorities, tasks)"
-    echo "[Interface] Channels: Telegram"
+    echo "[Interface] Channels: Telegram only (WhatsApp removed)"
     lsof -i :18789 2>/dev/null && echo "[Interface] Gateway is running" || echo "[Interface] Gateway may not be running"
     exit 0
     ;;

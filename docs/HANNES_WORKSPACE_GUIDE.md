@@ -1,13 +1,13 @@
 # Hannes Workspace Guide
 
-A short guide for using your personal workspace bot on Telegram.
+A short guide for using your personal workspace bot on **Telegram only**. (WhatsApp bot has been removed — do not re-enable.)
 
 ---
 
 ## What You Have
 
 - **Your workspace:** `hannes-space` in shared iCloud (inbox, priorities, tasks, follow-ups, check-ins)
-- **Your assistant:** Telegram (@Appcaire_agent_bot) — same as pappa's setup
+- **Your assistant:** Telegram (@Appcaire_agent_bot) only
 - **Access:** iPhone (Telegram, Files app), PC (iCloud for Windows, icloud.com)
 
 Your workspace syncs via iCloud, so you can see and edit your files from any device.
@@ -16,7 +16,7 @@ Your workspace syncs via iCloud, so you can see and edit your files from any dev
 
 ## Setup: What You Need to Do
 
-### 1. Telegram (you can do this anytime)
+### Telegram (you can do this anytime)
 
 1. Open Telegram (phone or PC)
 2. Search for **@userinfobot**

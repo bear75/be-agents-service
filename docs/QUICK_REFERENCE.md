@@ -8,11 +8,6 @@ Commands, schedules, and one-pager for the agent service.
 # Dashboard (port 3010)
 yarn start          # Build + start
 yarn dev            # Dev with hot reload
-
-# OpenClaw gateway (Telegram)
-openclaw gateway start      # Foreground
-openclaw gateway restart    # Via launchd
-openclaw gateway status     # Check status
 ```
 
 ## Schedules

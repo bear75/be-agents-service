@@ -212,6 +212,7 @@ vim ~/.openclaw/openclaw.json
 **Replace these values:**
 - `${TELEGRAM_BOT_TOKEN}` → your bot token from Step 5
 - `YOUR_TELEGRAM_USER_ID` → your numeric ID from Step 5
+- Do not add WhatsApp (removed — causes error replies to contacts)
 - Verify the MCP server path points to your actual directory
 
 ### 6c: Start OpenClaw
@@ -298,6 +299,12 @@ open http://localhost:3030
 
 ---
 
+## WhatsApp — removed
+
+Do not add WhatsApp. It was removed because it sent error messages to everyone who messaged. Use Telegram only.
+
+---
+
 ## Schedule Summary
 
 | Time | What | Telegram? |
@@ -306,7 +313,7 @@ open http://localhost:3030
 | **Mon 8:00 AM** | Weekly review | ✅ Pushed to you |
 | **10:30 PM** | Daily review (extract learnings) | — |
 | **11:00 PM** | Auto-compound (implement P1) | ✅ Session complete notification |
-| **Always** | OpenClaw bot | ✅ You text anytime |
+| **Always** | Telegram bot | ✅ You text anytime (WhatsApp removed) |
 | **Always** | Caffeinate (keep awake) | — |
 | **Always** | API server (port 4010) | — |
 

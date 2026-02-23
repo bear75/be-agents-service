@@ -1,6 +1,6 @@
-# OpenClaw Sandbox Setup
+# Sandbox Setup (Telegram only)
 
-Guide for setting up an isolated OpenClaw + Telegram sandbox for someone who should **not** have access to the be-agents-service repo. Example: a family member (e.g. son) with their own workspace, bot, and iCloud/GitHub folder. Telegram only.
+Guide for setting up an isolated Telegram-only sandbox for someone who should **not** have access to the be-agents-service repo. **(WhatsApp removed — do not re-enable. It sent errors to everyone who messaged.)**
 
 ## Overview
 
@@ -65,7 +65,7 @@ Default destination: `~/Shared/agent-workspace-bridge`
 
 2. Edit `~/.openclaw/openclaw.json`:
    - Replace `REPLACE_WITH_TELEGRAM_USER_ID` with your numeric ID
-   - Remove any non-Telegram channel section if present (Telegram only)
+   - Do not add WhatsApp (removed)
    - Set `systemPromptFile` to full path of `config/openclaw/son-system-prompt.md`
    - Set `args` to the full path of the bridge: `["/full/path/to/Shared/agent-workspace-bridge/dist/index.js"]`
    - Set `WORKSPACE_PATH` to your sandbox workspace path
@@ -84,14 +84,12 @@ openclaw start
 
 Or use launchd for auto-start (see config/openclaw/README.md).
 
-## Shared Gateway (Parent Runs OpenClaw)
+## Shared Gateway (Telegram only)
 
-Parent uses **Telegram only**. Sandbox user (e.g. Hannes) uses Telegram:
+WhatsApp bot removed. Use **Telegram only** — do not re-enable WhatsApp (it sent error messages to contacts).
 
-- **default** (parent): Main agent via Telegram only.
-- **hannes**: Hannes agent (Darwin) via Telegram. Hannes talks to Darwin on his bot.
-
-**Compound:** Hannes kan säga "run compound" — Darwin kör **endast** på `hannes-projects`. Se `config/repos.yaml`.
+- **default** (parent): Main agent via Telegram.
+- **hannes**: Hannes agent (Darwin) via Telegram. Hannes says "run compound" — Darwin runs **only** on `hannes-projects`. See `config/repos.yaml`.
 
 **Restart efter ändringar:** `openclaw gateway restart`
 

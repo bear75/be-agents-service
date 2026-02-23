@@ -1,6 +1,6 @@
 # Mac Mini Branch Recovery
 
-**Context:** A local branch on the Mac Mini has full configuration (Telegram, Claude API, GitHub, shared folder) that was not pushed before losing access.
+**Context:** A local branch on the Mac Mini has full configuration (Telegram, Claude API, GitHub, shared folder) that was not pushed before losing access. (WhatsApp bot removed — do not re-enable.)
 
 ---
 
@@ -35,7 +35,6 @@
 ## What to Preserve
 
 - `config/repos.yaml` — repo paths, workspace paths
-- `config/openclaw/` — Telegram bot config
 - `.env` or `~/.config/caire/env` — API keys (Claude, GitHub)
 - Any plist or launchd config changes
 - Shared folder path configuration

@@ -11,7 +11,7 @@ Tasks are tracked here with status. Agents update this file after sessions.
 - **Agent:** Engineering Team
 - **Started:** 2026-02-08
 
-Software implementation complete. Pending Mac mini setup: initialize workspace on iCloud, install OpenClaw, configure Telegram, load LaunchD plists.
+Software implementation complete. Pending Mac mini setup: initialize workspace on iCloud, configure Telegram only (WhatsApp removed — do not re-enable), load LaunchD plists.
 
 ## Pending
 
