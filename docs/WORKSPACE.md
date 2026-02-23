@@ -9,7 +9,7 @@ A human-agent shared surface for unstructured data — tasks, priorities, check-
 ```
 ┌──────────────────────────────────────────────────┐
 │  INTERACTION LAYER                                │
-│  📱 Telegram/WhatsApp (via OpenClaw) — primary    │
+│  📱 Telegram (via OpenClaw) — primary    │
 │  🌐 Dashboard (http://localhost:3010) — visual    │
 │  📁 Direct file edit (iCloud) — flexible          │
 │  🔌 API (curl) — programmatic                     │
@@ -281,7 +281,7 @@ All endpoints: `GET/POST http://localhost:4010/api/workspace/:repo/...`
 | Weekly review | Monday 8:00 AM | Sends weekly stats via Telegram |
 | Daily review | Daily 10:30 PM | Extracts learnings → syncs workspace |
 | Auto-compound | Daily 11:00 PM | Implements priority #1 → syncs workspace |
-| OpenClaw | Always running | Telegram/WhatsApp bot daemon |
+| OpenClaw | Always running | Telegram bot daemon |
 
 ---
 
@@ -304,7 +304,7 @@ All endpoints: `GET/POST http://localhost:4010/api/workspace/:repo/...`
 1. **Mac mini**: Pull this branch, run `./scripts/workspace/init-workspace.sh beta-appcaire`
 2. **OpenClaw**: Follow `config/openclaw/README.md` for installation
 3. **Telegram**: Create bot via @BotFather, get token + chat ID
-4. **WhatsApp**: Configure in OpenClaw (optional, same config)
+4. **Telegram**: Configured in OpenClaw (see config/openclaw/)
 5. **iCloud**: Verify workspace syncs to your devices
 6. **LaunchD**: Copy plists, load jobs (see CLAUDE.md)
 7. **Email**: Set up notification fallback (optional)

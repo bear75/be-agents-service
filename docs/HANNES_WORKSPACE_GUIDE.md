@@ -1,14 +1,14 @@
 # Hannes Workspace Guide
 
-A short guide for using your personal workspace bot on Telegram/WhatsApp.
+A short guide for using your personal workspace bot on Telegram.
 
 ---
 
 ## What You Have
 
 - **Your workspace:** `hannes-space` in shared iCloud (inbox, priorities, tasks, follow-ups, check-ins)
-- **Your assistant:** WhatsApp ("Message yourself") + Telegram (@Appcaire_agent_bot) — same as pappa's setup
-- **Access:** iPhone (WhatsApp, Telegram, Files app), PC (iCloud for Windows, icloud.com)
+- **Your assistant:** Telegram (@Appcaire_agent_bot) — same as pappa's setup
+- **Access:** iPhone (Telegram, Files app), PC (iCloud for Windows, icloud.com)
 
 Your workspace syncs via iCloud, so you can see and edit your files from any device.
 
@@ -16,14 +16,7 @@ Your workspace syncs via iCloud, so you can see and edit your files from any dev
 
 ## Setup: What You Need to Do
 
-### 1. WhatsApp (when you're with pappa)
-
-Pappa runs: `openclaw channels login --channel whatsapp --account hannes`  
-You scan the QR code. Then use **"Message yourself"** in WhatsApp to reach Darwin.
-
-If you get "access not configured", pappa needs to add your number (+46721588444) to OpenClaw or approve the pairing code.
-
-### 2. Telegram (you can do this anytime)
+### 1. Telegram (you can do this anytime)
 
 1. Open Telegram (phone or PC)
 2. Search for **@userinfobot**
@@ -36,7 +29,7 @@ If you get "access not configured", pappa needs to add your number (+46721588444
 
 ## What You Can Do
 
-| Say in WhatsApp or Telegram | What happens |
+| Say in Telegram | What happens |
 |-----------------------------|--------------|
 | "Add X to inbox" | Adds X to your inbox |
 | "What's in my inbox?" | Shows your inbox items |

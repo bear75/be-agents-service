@@ -1,6 +1,6 @@
 # OpenClaw Sandbox Setup
 
-Guide for setting up an isolated OpenClaw + Telegram/WhatsApp sandbox for someone who should **not** have access to the be-agents-service repo. Example: a family member (e.g. son) with their own workspace, bot, and iCloud/GitHub folder.
+Guide for setting up an isolated OpenClaw + Telegram sandbox for someone who should **not** have access to the be-agents-service repo. Example: a family member (e.g. son) with their own workspace, bot, and iCloud/GitHub folder. Telegram only.
 
 ## Overview
 
@@ -65,7 +65,7 @@ Default destination: `~/Shared/agent-workspace-bridge`
 
 2. Edit `~/.openclaw/openclaw.json`:
    - Replace `REPLACE_WITH_TELEGRAM_USER_ID` with your numeric ID
-   - Replace `REPLACE_WITH_WHATSAPP_NUMBER` with your number (or remove whatsapp section)
+   - Remove any non-Telegram channel section if present (Telegram only)
    - Set `systemPromptFile` to full path of `config/openclaw/son-system-prompt.md`
    - Set `args` to the full path of the bridge: `["/full/path/to/Shared/agent-workspace-bridge/dist/index.js"]`
    - Set `WORKSPACE_PATH` to your sandbox workspace path
@@ -86,16 +86,10 @@ Or use launchd for auto-start (see config/openclaw/README.md).
 
 ## Shared Gateway (Parent Runs OpenClaw)
 
-Hannes och du har **samma modell**: skriv till sitt eget nummer i WhatsApp ("Message yourself") för att nå sin agent.
+Parent uses **Telegram only**. Sandbox user (e.g. Hannes) uses Telegram:
 
-- **default** (parent): +46734177166 → Main agent. Du skriver till ditt eget nummer.
-- **hannes**: +46721588444 → Hannes agent (Darwin). Hannes skriver till sitt eget nummer.
-
-**Setup:** Hannes länkar sitt WhatsApp (när han är här):
-```bash
-openclaw channels login --channel whatsapp --account hannes
-```
-Hannes skannar QR-koden. Sen använder han "Message yourself" i WhatsApp för att prata med Darwin.
+- **default** (parent): Main agent via Telegram only.
+- **hannes**: Hannes agent (Darwin) via Telegram. Hannes talks to Darwin on his bot.
 
 **Compound:** Hannes kan säga "run compound" — Darwin kör **endast** på `hannes-projects`. Se `config/repos.yaml`.
 

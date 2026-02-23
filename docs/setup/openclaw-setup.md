@@ -12,11 +12,11 @@
 
 **How it works:**
 - OpenClaw runs as a background service (daemon) on your Mac Mini
-- It connects to Telegram (WhatsApp is not used — see below)
+- It connects to Telegram
 - You chat with it like texting an assistant
 - It communicates with your be-agents-service via API calls
 
-**Why Telegram only:** WhatsApp is disabled. Using WhatsApp with a personal number sends bot/pairing messages to everyone who messages you. The config templates ship without WhatsApp; use Telegram only.
+**Why Telegram only:** The config templates ship with Telegram only.
 
 ---
 
@@ -279,7 +279,7 @@ Once configured, you can:
 
 2. **Pairing**: Always approve pairing requests manually (don't auto-approve)
 
-3. **WhatsApp**: WhatsApp is not used. Do not add a WhatsApp channel with a personal number (everyone who messages you would get bot/pairing messages).
+3. **Channels:** Telegram only. Do not add other channels.
 
 4. **Webhook Secret**: Use strong random string for webhook authentication
 

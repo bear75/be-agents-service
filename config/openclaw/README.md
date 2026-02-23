@@ -122,14 +122,90 @@ brctl monitor ~/Library/Mobile\ Documents/com~apple~CloudDocs/AgentWorkspace/
 
 ## Messaging: Telegram only
 
-OpenClaw is configured for **Telegram only**. WhatsApp is not enabled. Using WhatsApp with a personal number would send bot/pairing messages to everyone who messages you; do not add a WhatsApp channel unless you use a dedicated number and `dmPolicy: "allowlist"`.
+OpenClaw is configured for **Telegram only**.
 
-**If OpenClaw is already running** (e.g. on the Mac mini), remove WhatsApp from the live config so it never sends messages to your contacts:
+### Stop OpenClaw replying on WhatsApp
+
+If the gateway is still replying on WhatsApp ("OpenClaw: access not configured", pairing codes), remove WhatsApp from the live config and restart:
 
 ```bash
-# On the machine where OpenClaw runs (e.g. Mac mini)
-vim ~/.openclaw/openclaw.json
-# Delete the entire "whatsapp" key from "channels", then save.
+cd ~/HomeCare/be-agents-service
+git pull
+./scripts/openclaw-remove-whatsapp-channel.sh
+openclaw gateway restart
+```
 
+Use `OPENCLAW_HOME=/Users/bjornevers_MacPro` if the config lives in another user's home. After this, WhatsApp gets no reply.
+
+### Telegram not replying after removing WhatsApp
+
+If Telegram stopped replying after you ran the remove-WhatsApp steps:
+
+1. **Ensure the gateway uses `~/.openclaw` and that Telegram is in that config**
+   - If you ran `remove-clawdbot-agent-dir.sh`, the gateway now uses only `~/.openclaw`. Check:
+   ```bash
+   cat ~/.openclaw/openclaw.json | grep -A5 '"channels"'
+   ```
+   You should see a `"telegram"` block with `botToken` and `allowFrom`. If `channels` is missing or empty, restore from the template and add your Telegram bot token and user ID:
+   ```bash
+   cp ~/HomeCare/be-agents-service/config/openclaw/openclaw.json ~/.openclaw/openclaw.json
+   # Edit: set TELEGRAM_BOT_TOKEN / allowFrom (your user ID from @userinfobot)
+   ```
+
+2. **Ensure auth is in `~/.openclaw`** (so the bot can call Claude)
+   - After removing `~/.clawdbot`, the gateway uses only `~/.openclaw`. Auth must be in `~/.openclaw/agents/main/agent/` (e.g. `auth-profiles.json` or `auth.json`). If that directory is missing or empty, copy auth from your `.clawdbot` backup:
+   ```bash
+   mkdir -p ~/.openclaw/agents/main/agent
+   cp ~/.clawdbot.bak.*/agents/main/agent/auth-profiles.json ~/.openclaw/agents/main/agent/
+   # or auth.json if that's what you have
+   ```
+   If you never had auth under `~/.openclaw` and don't have a backup, set up the agent again (e.g. `openclaw agents add main` and add your API keys).
+
+3. **Restart the gateway** after any config or auth change:
+   ```bash
+   openclaw gateway restart
+   # If using launchd:
+   launchctl unload ~/Library/LaunchAgents/com.appcaire.openclaw.plist
+   launchctl load ~/Library/LaunchAgents/com.appcaire.openclaw.plist
+   ```
+
+4. **Check logs** for errors:
+   ```bash
+   openclaw logs
+   ```
+
+**If OpenClaw is managed by launchd** (e.g. `com.appcaire.openclaw.plist`), it has `KeepAlive true`, so killing the process just makes launchd restart it. To stop it and keep it stopped:
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.appcaire.openclaw.plist
+```
+
+Then run the scripts above (remove WhatsApp channel, remove `.clawdbot` if you want to stop the [clawdbot] error), then either leave it unloaded or start again with:
+
+```bash
+launchctl load ~/Library/LaunchAgents/com.appcaire.openclaw.plist
+```
+
+If you see **[clawdbot]** error replies (e.g. "No API key found"), the gateway may be using the legacy config under `~/.clawdbot/`. To make that channel dead (no reply, no error):
+
+**On the Mac mini**, as the user in the error path (or with `OPENCLAW_HOME=/Users/bjornevers_MacPro`):
+
+```bash
+cd ~/HomeCare/be-agents-service
+git pull
+./scripts/remove-clawdbot-agent-dir.sh
+openclaw gateway stop
+rm -rf ~/.openclaw/agents/main/agent/.channel-state 2>/dev/null
+openclaw gateway start
+```
+
+Use `OPENCLAW_HOME=/Users/bjornevers_MacPro` before the script if you're not logged in as that user.
+
+### Optional: fix the error and allow replies
+
+If you **want** the bot to reply, copy auth into `.clawdbot` instead of removing it:
+
+```bash
+OPENCLAW_HOME=/Users/bjornevers_MacPro ./scripts/sync-openclaw-auth-to-clawdbot.sh
 openclaw gateway restart
 ```

@@ -7,7 +7,7 @@ An autonomous AI agent system that learns from your work and ships features whil
 This workflow runs two automated jobs every night:
 
 1. **10:30 PM - Compound Review**: Reviews all work from the last 24 hours, extracts learnings, and updates CLAUDE.md files
-2. **11:00 PM - Auto-Compound**: Picks the #1 priority from your reports, implements it, and creates a PR
+2. **11:00 PM - Auto-Compound**: Picks the #1 priority from your reports, implements it via the **multi-agent orchestrator** (backend, frontend, verification, etc.), and creates a PR.
 
 The agent gets smarter every day by reading its own updated instructions before each implementation run.
 
@@ -29,8 +29,9 @@ The agent gets smarter every day by reading its own updated instructions before 
 │  ├── Analyze latest report → pick #1 priority               │
 │  ├── Create PRD for priority item                            │
 │  ├── Convert PRD to task list (JSON)                         │
-│  ├── Execute tasks iteratively (max 25 iterations)           │
-│  └── Create draft PR with implementation                     │
+│  ├── Run orchestrator (specialist agents: backend, frontend,  │
+│  │   verification, db-architect, etc.)                       │
+│  └── Create PR with implementation                            │
 │                                                               │
 └─────────────────────────────────────────────────────────────┘
 ```

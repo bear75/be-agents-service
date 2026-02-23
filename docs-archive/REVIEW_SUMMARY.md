@@ -7,7 +7,7 @@
 
 ## Overview
 
-Conducted comprehensive review of the agent-service dashboard and backend. Fixed all navigation inconsistencies, added missing API endpoints, implemented OpenClaw WhatsApp/Telegram integration, and created multiple social media account support for all brands (Caire, Eirtech.ai, Bjorn Evers).
+Conducted comprehensive review of the agent-service dashboard and backend. Fixed all navigation inconsistencies, added missing API endpoints, implemented OpenClaw Telegram integration, and created multiple social media account support for all brands (Caire, Eirtech.ai, Bjorn Evers).
 
 ---
 
@@ -79,7 +79,7 @@ POST /api/rl/automation-candidates/:id/dismiss
 
 ---
 
-## 3. OpenClaw WhatsApp/Telegram Integration
+## 3. OpenClaw Telegram Integration
 
 ### ✅ Complete Setup Documentation
 
@@ -87,7 +87,7 @@ POST /api/rl/automation-candidates/:id/dismiss
 
 **What is OpenClaw?**
 - Personal AI assistant that runs on Mac Mini
-- Connects to WhatsApp, Telegram, Discord, iMessage
+- Connects to Telegram
 - Allows CEO to chat with agent service from anywhere
 - Wake up to completed PRs, finished tasks, new leads
 - Multi-channel support (message from phone, laptop, etc.)
@@ -100,7 +100,7 @@ npm install -g openclaw@latest
 # 2. Onboard with daemon installation
 openclaw onboard --install-daemon
 
-# 3. Connect WhatsApp
+# 3. Connect Telegram
 openclaw channels login  # Scan QR code
 
 # 4. Add Telegram bot
@@ -111,7 +111,7 @@ Edit ~/.openclaw/openclaw.json
 ```
 
 **Features:**
-- ✅ WhatsApp integration (QR code login)
+- ✅ Telegram integration
 - ✅ Telegram bot integration (@BotFather)
 - ✅ Auto-start on boot (launchd)
 - ✅ Multi-channel conversations
@@ -121,12 +121,12 @@ Edit ~/.openclaw/openclaw.json
 ### ✅ Database Integrations Created
 
 **Added to Database:**
-- `int-messaging-whatsapp` - WhatsApp (OpenClaw)
+- `int-messaging-telegram` - Telegram (OpenClaw)
 - `int-messaging-telegram` - Telegram Bot (OpenClaw)
 
 **Settings UI Updated:**
 - New "💬 Messaging Platforms (OpenClaw)" section
-- WhatsApp: Shows setup instructions (scan QR code)
+- Telegram: Shows setup instructions
 - Telegram: Bot token configuration field
 - Links to `OPENCLAW_SETUP_GUIDE.md`
 
@@ -207,7 +207,7 @@ Edit ~/.openclaw/openclaw.json
 
 | Type | Count | Description |
 |------|-------|-------------|
-| **Messaging** | 2 | WhatsApp, Telegram (OpenClaw) |
+| **Messaging** | 1 | Telegram (OpenClaw) |
 | **Email** | 10 | 9 IMAP (EMAIL_1-9) + 1 SMTP |
 | **Social** | 14 | 10 brand-specific + 4 legacy |
 | **API** | 2 | Anthropic, OpenAI |
@@ -238,7 +238,7 @@ Bjorbevers:  LinkedIn, X, Instagram
 
 | File | Purpose |
 |------|---------|
-| `OPENCLAW_SETUP_GUIDE.md` | Complete WhatsApp/Telegram setup guide |
+| `OPENCLAW_SETUP_GUIDE.md` | Complete Telegram setup guide |
 | `REVIEW_SUMMARY.md` | This document |
 | `scripts/setup-email-integrations.js` | Create 9 IMAP email integrations |
 | `scripts/setup-social-integrations.js` | Create 10 social media integrations |
@@ -263,7 +263,7 @@ Bjorbevers:  LinkedIn, X, Instagram
    ```bash
    npm install -g openclaw@latest
    openclaw onboard --install-daemon
-   openclaw channels login  # WhatsApp
+   openclaw channels add telegram  # Telegram
    openclaw channels add telegram --token YOUR_TOKEN
    ```
 
@@ -287,7 +287,7 @@ Bjorbevers:  LinkedIn, X, Instagram
 
 ### Optional Enhancements
 
-4. **Enable WhatsApp/Telegram Notifications**
+4. **Enable Telegram Notifications**
    - Add to `.env`:
      ```bash
      CEO_PHONE_NUMBER="+46701234567"
@@ -296,7 +296,7 @@ Bjorbevers:  LinkedIn, X, Instagram
      ```
 
 5. **Test OpenClaw Integration**
-   - Send message to WhatsApp: "Start engineering job"
+   - Send message to Telegram: "Start engineering job"
    - Send message to Telegram bot: "Show top leads"
    - Verify bot responds with agent service data
 
@@ -355,7 +355,7 @@ Bjorbevers:  LinkedIn, X, Instagram
 ### ✅ OpenClaw Documentation
 - [x] Setup guide comprehensive
 - [x] Installation steps clear
-- [x] WhatsApp setup documented
+- [x] Telegram setup documented
 - [x] Telegram setup documented
 - [x] Integration with agent service explained
 
@@ -381,7 +381,7 @@ Bjorbevers:  LinkedIn, X, Instagram
 ## 12. Resources & Documentation
 
 ### Internal Docs
-- `OPENCLAW_SETUP_GUIDE.md` - WhatsApp/Telegram setup
+- `OPENCLAW_SETUP_GUIDE.md` - Telegram setup
 - `EMAIL_SETUP_GUIDE.md` - Email lead scraping setup
 - `README.md` - Main project documentation
 
@@ -403,7 +403,7 @@ Bjorbevers:  LinkedIn, X, Instagram
 - All pages use top-level horizontal navigation
 - No sidebars on any page
 - Documents page moved before Settings (last)
-- OpenClaw WhatsApp/Telegram integration documented
+- OpenClaw Telegram integration documented
 - 9 email accounts created (EMAIL_1 through EMAIL_9)
 - 10 social media accounts created (Caire, Eirtech.ai, Bjorn Evers)
 - Settings UI enhanced for multiple accounts
@@ -420,10 +420,10 @@ Bjorbevers:  LinkedIn, X, Instagram
 
 User can now:
 1. Install OpenClaw on Mac Mini
-2. Chat with agent service via WhatsApp/Telegram
+2. Chat with agent service via Telegram
 3. Configure all email accounts for lead scraping
 4. Configure all social media accounts for marketing automation
-5. Wake up to completed PRs, tasks done, and new leads in WhatsApp
+5. Wake up to completed PRs, tasks done, and new leads in Telegram
 
 ---
 

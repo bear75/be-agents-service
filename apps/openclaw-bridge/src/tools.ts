@@ -6,7 +6,7 @@
  *
  * Tools are designed for natural language interaction via OpenClaw:
  * - Input: simple strings/enums (easy for AI to generate)
- * - Output: formatted text (easy for AI to display in Telegram/WhatsApp)
+ * - Output: formatted text (easy for AI to display in Telegram)
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';

@@ -5,7 +5,7 @@ Edit this file to change what gets built next.
 
 ## High Priority
 
-1. **Shared Markdown Workspace Setup** — Set up the Mac mini: initialize workspace on iCloud, install OpenClaw, configure Telegram/WhatsApp bot, load LaunchD plists, test end-to-end messaging flow. See `config/openclaw/README.md`.
+1. **Shared Markdown Workspace Setup** — Set up the Mac mini: initialize workspace on iCloud, install OpenClaw, configure Telegram bot, load LaunchD plists, test end-to-end messaging flow. See `config/openclaw/README.md`.
 2. **Mobile Caregiver App — New Repository** — Create a separate repository for the React Native (or Expo) mobile app for caregivers. The current monorepo dashboard is desktop-only; caregivers need a dedicated mobile app with offline support, real-time schedule sync, visit check-in/check-out, and route navigation. See `docs/PRD-MOBILE-APP.md`.
 
 ## Medium Priority

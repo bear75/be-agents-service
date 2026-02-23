@@ -321,7 +321,6 @@ cp ~/HomeCare/be-agents-service/config/openclaw/openclaw.json ~/.openclaw/opencl
 Edit `~/.openclaw/openclaw.json` — replace:
 - `${TELEGRAM_BOT_TOKEN}` → your actual bot token
 - `YOUR_TELEGRAM_USER_ID` → your numeric Telegram ID
-- `+46XXXXXXXXX` → your WhatsApp number (or delete the whatsapp section)
 - Verify all file paths match your actual directories
 
 ### 8c: Start and test

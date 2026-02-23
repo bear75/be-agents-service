@@ -1,6 +1,6 @@
 # Mac Mini Branch Recovery
 
-**Context:** A local branch on the Mac Mini has full configuration (Telegram, WhatsApp, Claude API, GitHub, shared folder) that was not pushed before losing access.
+**Context:** A local branch on the Mac Mini has full configuration (Telegram, Claude API, GitHub, shared folder) that was not pushed before losing access.
 
 ---
 
@@ -18,7 +18,7 @@
    git checkout -b backup-mac-mini-config-$(date +%Y%m%d)
    git add -A
    git status  # Review what's being committed
-   git commit -m "chore: backup Mac Mini config (Telegram, WhatsApp, Claude, GitHub, shared folder)"
+   git commit -m "chore: backup Mac Mini config (Telegram, Claude, GitHub, shared folder)"
    git push origin backup-mac-mini-config-$(date +%Y%m%d)
    ```
 4. **Merge to main if desired:**
@@ -35,7 +35,7 @@
 ## What to Preserve
 
 - `config/repos.yaml` — repo paths, workspace paths
-- `config/openclaw/` — Telegram/WhatsApp bot config
+- `config/openclaw/` — Telegram bot config
 - `.env` or `~/.config/caire/env` — API keys (Claude, GitHub)
 - Any plist or launchd config changes
 - Shared folder path configuration

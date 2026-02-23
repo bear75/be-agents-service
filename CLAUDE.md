@@ -143,7 +143,7 @@ The workspace is a **shared markdown directory** where both humans and agents re
 
 ### Three-Layer Architecture
 
-1. **Interaction Layer** — Telegram/WhatsApp (via OpenClaw), Dashboard, direct file editing
+1. **Interaction Layer** — Telegram (via OpenClaw), Dashboard, direct file editing
 2. **Storage Layer** — Flat markdown files on iCloud (human + agent shared surface)
 3. **Execution Layer** — Agent scripts consume and update workspace files
 

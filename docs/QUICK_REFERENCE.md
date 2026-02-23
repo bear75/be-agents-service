@@ -9,7 +9,7 @@ Commands, schedules, and one-pager for the agent service.
 yarn start          # Build + start
 yarn dev            # Dev with hot reload
 
-# OpenClaw gateway (WhatsApp + Telegram)
+# OpenClaw gateway (Telegram)
 openclaw gateway start      # Foreground
 openclaw gateway restart    # Via launchd
 openclaw gateway status     # Check status

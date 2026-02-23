@@ -212,7 +212,6 @@ vim ~/.openclaw/openclaw.json
 **Replace these values:**
 - `${TELEGRAM_BOT_TOKEN}` → your bot token from Step 5
 - `YOUR_TELEGRAM_USER_ID` → your numeric ID from Step 5
-- `+46XXXXXXXXX` → your WhatsApp number (or remove whatsapp section)
 - Verify the MCP server path points to your actual directory
 
 ### 6c: Start OpenClaw
@@ -296,14 +295,6 @@ open http://localhost:3030
 ./scripts/workspace/sync-to-workspace.sh beta-appcaire
 # Check agent-reports/ in your workspace
 ```
-
----
-
-## Step 9: WhatsApp (Optional, later)
-
-WhatsApp requires additional phone number verification through OpenClaw. See:
-- OpenClaw docs: https://docs.clawd.bot/
-- Config template: `config/openclaw/openclaw.json` (whatsapp section)
 
 ---
 

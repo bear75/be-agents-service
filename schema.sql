@@ -320,12 +320,11 @@ INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VA
     ('agent-cpo-cto', 'team-management', 'CPO/CTO', 'Engineering Lead', '🎯', 'opus'),
     ('agent-cmo-cso', 'team-management', 'CMO/CSO', 'Marketing Lead', '📊', 'opus'),
     ('agent-hr-lead', 'team-management', 'HR Agent Lead', 'Agent Development', '👥', 'sonnet'),
-    ('agent-interface', 'team-management', 'Interface Agent', 'Human-Agent Interface via WhatsApp/Telegram/Workspace', '🔗', 'sonnet');
+    ('agent-interface', 'team-management', 'Interface Agent', 'Human-Agent Interface via Telegram/Workspace', '🔗', 'sonnet');
 
 -- Seed integrations — Messaging
 INSERT OR IGNORE INTO integrations (id, type, platform, name, brand, is_active, config, managed_by) VALUES
-    ('int-telegram', 'messaging', 'telegram', 'Telegram Bot (OpenClaw)', NULL, TRUE, '{"botToken":"configured","setupCmd":"openclaw channels add telegram --token YOUR_TOKEN"}', 'agent-interface'),
-    ('int-whatsapp', 'messaging', 'whatsapp', 'WhatsApp (OpenClaw)', NULL, TRUE, '{"setupCmd":"openclaw channels login then scan QR code"}', 'agent-interface');
+    ('int-telegram', 'messaging', 'telegram', 'Telegram Bot (OpenClaw)', NULL, TRUE, '{"botToken":"configured","setupCmd":"openclaw channels add telegram --token YOUR_TOKEN"}', 'agent-interface');
 
 -- Seed integrations — Email
 INSERT OR IGNORE INTO integrations (id, type, platform, name, brand, is_active, config) VALUES

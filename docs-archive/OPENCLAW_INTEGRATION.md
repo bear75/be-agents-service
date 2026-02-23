@@ -5,7 +5,7 @@ This document explains how OpenClaw/Telegram connects to the agent service and h
 ## Architecture
 
 ```
-Telegram/WhatsApp
+Telegram
        ↓
    OpenClaw (chat + LLM)
        ↓

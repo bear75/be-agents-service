@@ -26,7 +26,7 @@
 | [QUICK_REFERENCE.md](QUICK_REFERENCE.md) | Commands, schedules, one-pager |
 | [COMPOUND_SETUP_GUIDE.md](COMPOUND_SETUP_GUIDE.md) | Compound workflow setup |
 | [FRESH_MAC_MINI_SETUP.md](FRESH_MAC_MINI_SETUP.md) | New Mac mini: zero → running |
-| [setup/openclaw-setup.md](setup/openclaw-setup.md) | Telegram/WhatsApp bot via OpenClaw |
+| [setup/openclaw-setup.md](setup/openclaw-setup.md) | Telegram bot via OpenClaw |
 | [setup/email-setup.md](setup/email-setup.md) | Email integration |
 | [SANDBOX_SETUP.md](SANDBOX_SETUP.md) | Sandbox/Hannes setup |
 | [HANNES_WORKSPACE_GUIDE.md](HANNES_WORKSPACE_GUIDE.md) | Hannes workspace & channels |

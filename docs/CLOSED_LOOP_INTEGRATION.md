@@ -1,6 +1,6 @@
 # Closed-Loop Human-AI Integration
 
-Complete documentation for the bi-directional WhatsApp/Telegram ↔ Agent Service integration.
+Complete documentation for the bi-directional Telegram ↔ Agent Service integration.
 
 ---
 
@@ -9,7 +9,7 @@ Complete documentation for the bi-directional WhatsApp/Telegram ↔ Agent Servic
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        YOU (Human)                          │
-│                 Telegram / WhatsApp                         │
+│                 Telegram                         │
 └────────────────────┬───────────────────▲────────────────────┘
                      │                   │
               [conversational]      [proactive notifications]
@@ -482,7 +482,7 @@ curl -X POST http://localhost:3030/api/agents/trigger/beta-appcaire \
 
 ### Why OpenClaw?
 
-- **Multi-channel** - Telegram, WhatsApp, SMS
+- **Multi-channel** - Telegram
 - **MCP support** - Extensible with tools
 - **Conversational** - Natural language interface
 - **Daemon mode** - Runs 24/7 on Mac mini

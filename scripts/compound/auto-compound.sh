@@ -186,20 +186,44 @@ if [ -f "$PRD_JSON" ]; then
   node "$SERVICE_ROOT/scripts/compound/sync-prd-to-tasks.js" "$SESSION_ID" "$PRD_JSON" 2>/dev/null || echo "⚠️ Task sync failed (non-fatal)"
 fi
 
-# Run the execution loop
-if [ -f "$SCRIPT_DIR/loop.sh" ]; then
-  echo "Running execution loop..."
-  "$SCRIPT_DIR/loop.sh" 25
-  # Sync task statuses again (completed/blocked) to dashboard
-  if [ -f "$PRD_JSON" ]; then
-    node "$SERVICE_ROOT/scripts/compound/sync-prd-to-tasks.js" "$SESSION_ID" "$PRD_JSON" 2>/dev/null || echo "⚠️ Task sync (post-loop) failed (non-fatal)"
+# Run implementation via orchestrator (specialist agents) or fallback to loop
+# Set USE_ORCHESTRATOR_AGENTS=false to use the legacy loop (single generic agent per task)
+USE_ORCHESTRATOR_AGENTS="${USE_ORCHESTRATOR_AGENTS:-true}"
+ORCHESTRATOR_SCRIPT="$SERVICE_ROOT/scripts/orchestrator.sh"
+
+if [ "$USE_ORCHESTRATOR_AGENTS" = "true" ] && [ -f "$ORCHESTRATOR_SCRIPT" ]; then
+  echo "Running implementation via orchestrator (specialist agents)..."
+  PRIORITY_ABS="$LATEST_REPORT"
+  [ "${LATEST_REPORT#/}" = "$LATEST_REPORT" ] && PRIORITY_ABS="$REPO_PATH/$LATEST_REPORT"
+  PRD_ABS="$REPO_PATH/tasks/prd-$(basename $BRANCH_NAME).md"
+  if "$ORCHESTRATOR_SCRIPT" "$REPO_PATH" "$PRIORITY_ABS" "$PRD_ABS" "$BRANCH_NAME"; then
+    ORCHESTRATOR_SUCCEEDED=true
+  else
+    ORCHESTRATOR_SUCCEEDED=false
   fi
 else
-  echo "Warning: loop.sh not found. Implementing directly..."
-  claude -p "Implement all tasks from scripts/compound/prd.json. For each task: read the description, implement it, test it, and commit when complete. Continue until all tasks are done or you encounter a blocker." --dangerously-skip-permissions
+  ORCHESTRATOR_SUCCEEDED=false
+  if [ -f "$SCRIPT_DIR/loop.sh" ]; then
+    echo "Running execution loop (generic agent)..."
+    "$SCRIPT_DIR/loop.sh" 25
+    if [ -f "$PRD_JSON" ]; then
+      node "$SERVICE_ROOT/scripts/compound/sync-prd-to-tasks.js" "$SESSION_ID" "$PRD_JSON" 2>/dev/null || echo "⚠️ Task sync (post-loop) failed (non-fatal)"
+    fi
+  else
+    echo "Warning: loop.sh not found. Implementing directly..."
+    claude -p "Implement all tasks from scripts/compound/prd.json. For each task: read the description, implement it, test it, and commit when complete. Continue until all tasks are done or you encounter a blocker." --dangerously-skip-permissions
+  fi
 fi
 
-# Final safety net: Check for uncommitted changes before pushing
+if [ "$ORCHESTRATOR_SUCCEEDED" = "true" ]; then
+  echo "✓ Orchestrator completed (specialists + verification + PR)"
+  PR_URL=$(cd "$REPO_PATH" && gh pr view --json url -q '.url' 2>/dev/null || echo "")
+fi
+
+# Final safety net and PR (skip if orchestrator already did it)
+if [ "$ORCHESTRATOR_SUCCEEDED" = "true" ]; then
+  echo "Skipping safety commit and PR (orchestrator already created PR)."
+else
 echo "Checking for uncommitted changes..."
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "⚠️  Final safety check: uncommitted changes found!"
@@ -231,6 +255,7 @@ PR_URL=$(gh pr create --draft --title "Compound: $PRIORITY_ITEM" --body "Auto-ge
 **Generated:** $(date)" --base main)
 
 echo "✓ PR created: $PR_URL"
+fi
 
 # ─── Sync to workspace ──────────────────────────────────────────────────────
 # Write session summary to shared markdown workspace (if configured)
