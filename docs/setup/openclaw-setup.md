@@ -1,10 +1,10 @@
-# OpenClaw Setup Guide - WhatsApp & Telegram Integration
+# OpenClaw Setup Guide - Telegram Integration
 
 ## What is OpenClaw?
 
-**OpenClaw** is your personal AI assistant that runs on your Mac Mini and connects to messaging platforms like WhatsApp, Telegram, Discord, and iMessage. It allows you (as CEO/Product Owner) to:
+**OpenClaw** is your personal AI assistant that runs on your Mac Mini and connects to messaging platforms. This setup uses **Telegram only**. It allows you (as CEO/Product Owner) to:
 
-- Chat with your agent service from anywhere via WhatsApp or Telegram
+- Chat with your agent service from anywhere via Telegram
 - Wake up to completed PRs, finished tasks, and new leads
 - Issue commands to start jobs, check status, approve tasks
 - Receive real-time notifications about agent activities
@@ -12,10 +12,11 @@
 
 **How it works:**
 - OpenClaw runs as a background service (daemon) on your Mac Mini
-- It connects to your messaging apps (WhatsApp, Telegram, etc.)
+- It connects to Telegram (WhatsApp is not used — see below)
 - You chat with it like texting an assistant
 - It communicates with your be-agents-service via API calls
-- Multi-channel: message from WhatsApp on your phone, switch to Telegram on laptop
+
+**Why Telegram only:** WhatsApp is disabled. Using WhatsApp with a personal number sends bot/pairing messages to everyone who messages you. The config templates ship without WhatsApp; use Telegram only.
 
 ---
 
@@ -23,7 +24,6 @@
 
 - Mac Mini running macOS (Intel or Apple Silicon)
 - Node.js 22 or higher
-- WhatsApp account (for WhatsApp integration)
 - Telegram account (for Telegram integration)
 - Internet connection
 
@@ -75,66 +75,6 @@ open http://localhost:18789/
 ```
 
 You should see the OpenClaw dashboard running. This is your AI assistant's control center.
-
----
-
-## WhatsApp Integration
-
-### Step 1: Connect WhatsApp Account
-
-```bash
-# Start the channel login process
-openclaw channels login
-```
-
-A QR code will appear in your terminal.
-
-### Step 2: Scan QR Code
-
-On your iPhone:
-1. Open **WhatsApp**
-2. Go to **Settings**
-3. Tap **Linked Devices**
-4. Tap **Link a Device**
-5. Scan the QR code from your terminal
-
-Your WhatsApp will connect within seconds.
-
-### Step 3: Test the Connection
-
-Send a message to yourself on WhatsApp:
-```
-Hello OpenClaw! Start engineering job.
-```
-
-The bot should respond with available commands or confirmation.
-
-### Step 4: Configure Group Chats (Optional)
-
-If you want OpenClaw to work in WhatsApp groups (e.g., team channels):
-
-Edit `~/.openclaw/openclaw.json`:
-```json
-{
-  "channels": {
-    "whatsapp": {
-      "enabled": true,
-      "groups": {
-        "*": {
-          "requireMention": true
-        }
-      }
-    }
-  }
-}
-```
-
-This requires you to @mention the bot in groups to activate it.
-
-Restart the gateway:
-```bash
-openclaw gateway restart
-```
 
 ---
 
@@ -205,9 +145,6 @@ Edit `~/.openclaw/openclaw.json`:
     }
   },
   "channels": {
-    "whatsapp": {
-      "enabled": true
-    },
     "telegram": {
       "enabled": true,
       "botToken": "YOUR_TELEGRAM_BOT_TOKEN"
@@ -232,8 +169,8 @@ if (pathname === '/webhooks/openclaw' && req.method === 'POST') {
       // Forward to OpenClaw
       const openclawUrl = 'http://localhost:18789/api/send-message';
       const payload = {
-        channel: 'whatsapp', // or 'telegram'
-        userId: process.env.CEO_PHONE_NUMBER,
+        channel: 'telegram',
+        userId: process.env.CEO_TELEGRAM_ID,
         message: formatNotification(event)
       };
 
@@ -257,18 +194,17 @@ if (pathname === '/webhooks/openclaw' && req.method === 'POST') {
 
 ### Step 3: Add CEO Contact Info to .env
 
-Add your WhatsApp/Telegram info to `.env`:
+Add your Telegram info to `.env`:
 
 ```bash
-# CEO Contact for OpenClaw Notifications
-CEO_PHONE_NUMBER="+46701234567"  # Your WhatsApp number
+# CEO Contact for OpenClaw Notifications (Telegram only)
 CEO_TELEGRAM_ID="@bjornevers"     # Your Telegram username
 OPENCLAW_WEBHOOK_SECRET="generate-a-secure-random-string"
 ```
 
 ### Step 4: Enable Notifications
 
-Configure which events trigger WhatsApp/Telegram notifications:
+Configure which events trigger Telegram notifications:
 
 ```bash
 # In agent service .env
@@ -278,23 +214,6 @@ OPENCLAW_NOTIFY_EVENTS=job_completed,job_failed,pr_created,new_lead,agent_blocke
 ---
 
 ## Usage Examples
-
-### Via WhatsApp
-
-```
-You: Start engineering job for fixing auth bug
-Bot: ✅ Engineering job started (job-1770537842)
-     Specialists: Backend, Frontend, Infrastructure
-     Target: beta-appcaire
-     Tracking at: http://localhost:3030/engineering.html
-
-[10 minutes later]
-Bot: 🎉 Job completed! PR created:
-     https://github.com/eirtech-ai/beta-appcaire/pull/42
-     - Backend: Fixed auth token refresh
-     - Frontend: Updated login flow
-     - Infrastructure: Added Redis session store
-```
 
 ### Via Telegram
 
@@ -340,15 +259,14 @@ openclaw gateway logs
 
 ---
 
-## Multi-Channel Benefits
+## Telegram Benefits
 
 Once configured, you can:
 
-1. **Message from any platform** - Start a conversation on WhatsApp, continue on Telegram
-2. **Shared context** - OpenClaw remembers the conversation across channels
-3. **Mobile & Desktop** - Use WhatsApp on phone, Telegram on laptop
-4. **Always connected** - Mac Mini runs 24/7, you can message anytime
-5. **Proactive notifications** - Get alerts when jobs complete, leads arrive, agents need approval
+1. **Message from anywhere** - Use Telegram on phone or laptop
+2. **Shared context** - OpenClaw remembers the conversation
+3. **Always connected** - Mac Mini runs 24/7, you can message anytime
+4. **Proactive notifications** - Get alerts when jobs complete, leads arrive, agents need approval
 
 ---
 
@@ -361,11 +279,13 @@ Once configured, you can:
 
 2. **Pairing**: Always approve pairing requests manually (don't auto-approve)
 
-3. **Webhook Secret**: Use strong random string for webhook authentication
+3. **WhatsApp**: WhatsApp is not used. Do not add a WhatsApp channel with a personal number (everyone who messages you would get bot/pairing messages).
 
-4. **Firewall**: Keep ports 18789 (OpenClaw) and 3030 (Agent Service) local-only unless needed externally
+4. **Webhook Secret**: Use strong random string for webhook authentication
 
-5. **Backup Config**:
+5. **Firewall**: Keep ports 18789 (OpenClaw) and 3030 (Agent Service) local-only unless needed externally
+
+6. **Backup Config**:
    ```bash
    cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.backup
    ```
@@ -374,18 +294,13 @@ Once configured, you can:
 
 ## Troubleshooting
 
-### WhatsApp QR Code Not Scanning
-- Ensure WhatsApp is updated to latest version
-- Try `openclaw channels logout` then `openclaw channels login` again
-- Check firewall isn't blocking port 18789
-
 ### Telegram Bot Not Responding
 - Verify bot token: `openclaw channels list`
 - Check pairing status: `openclaw pairing list`
 - Restart gateway: `openclaw gateway restart`
 
 ### No Notifications Received
-- Check .env has correct `CEO_PHONE_NUMBER` or `CEO_TELEGRAM_ID`
+- Check .env has correct `CEO_TELEGRAM_ID`
 - Verify webhook is configured in agent-service
 - Check OpenClaw logs: `openclaw gateway logs`
 
@@ -413,19 +328,18 @@ OpenClaw can control all agent service features via chat:
 | `Create agent [role]` | HR agent creation |
 | `Fire agent [name]` | Deactivate agent |
 
-All commands work from WhatsApp or Telegram!
+All commands work from Telegram.
 
 ---
 
 ## Next Steps
 
 1. ✅ Install OpenClaw on Mac Mini
-2. ✅ Connect WhatsApp account
-3. ✅ Connect Telegram bot
-4. ✅ Configure agent service webhook
-5. ✅ Test with simple commands
-6. ✅ Enable auto-notifications
-7. 🎉 Wake up to completed PRs and new leads!
+2. ✅ Connect Telegram bot
+3. ✅ Configure agent service webhook
+4. ✅ Test with simple commands
+5. ✅ Enable auto-notifications
+6. 🎉 Wake up to completed PRs and new leads!
 
 ---
 

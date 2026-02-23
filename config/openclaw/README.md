@@ -46,7 +46,6 @@ vim ~/.openclaw/openclaw.json
 Update these values:
 - `TELEGRAM_BOT_TOKEN` → your bot token from Step 2
 - `YOUR_TELEGRAM_USER_ID` → your numeric user ID
-- `+46XXXXXXXXX` → your WhatsApp phone number (optional)
 - Verify all paths point to your actual directories
 
 ## Step 5: Set Environment Variables
@@ -121,18 +120,16 @@ cat ~/HomeCare/be-agents-service/config/repos.yaml | grep workspace
 brctl monitor ~/Library/Mobile\ Documents/com~apple~CloudDocs/AgentWorkspace/
 ```
 
-## Adding WhatsApp
+## Messaging: Telegram only
 
-WhatsApp requires additional setup (phone number registration). Add to your config:
+OpenClaw is configured for **Telegram only**. WhatsApp is not enabled. Using WhatsApp with a personal number would send bot/pairing messages to everyone who messages you; do not add a WhatsApp channel unless you use a dedicated number and `dmPolicy: "allowlist"`.
 
-```json
-{
-  "channels": {
-    "whatsapp": {
-      "allowFrom": ["+46XXXXXXXXX"]
-    }
-  }
-}
+**If OpenClaw is already running** (e.g. on the Mac mini), remove WhatsApp from the live config so it never sends messages to your contacts:
+
+```bash
+# On the machine where OpenClaw runs (e.g. Mac mini)
+vim ~/.openclaw/openclaw.json
+# Delete the entire "whatsapp" key from "channels", then save.
+
+openclaw gateway restart
 ```
-
-See OpenClaw docs for WhatsApp-specific setup: https://docs.clawd.bot/

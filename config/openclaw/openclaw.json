@@ -1,29 +1,31 @@
 {
-  "$schema": "https://docs.openclaw.ai/schema.json",
-  "_comment": "Copy to ~/.openclaw/openclaw.json and replace YOUR_TELEGRAM_USER_ID with your numeric ID from @userinfobot",
-  "agent": {
-    "workspace": "~/.openclaw/workspace",
-    "model": "claude-sonnet-4-20250514",
-    "systemPromptFile": "/Users/be-agent-service/HomeCare/be-agents-service/config/openclaw/system-prompt.md"
-  },
-  "channels": {
-    "telegram": {
-      "botToken": "${TELEGRAM_BOT_TOKEN}",
-      "allowFrom": ["YOUR_TELEGRAM_USER_ID"]
-    },
-    "whatsapp": {
-      "allowFrom": ["+46734177166"]
-    }
-  },
-  "mcpServers": {
-    "agent-workspace": {
-      "command": "npx",
-      "args": ["tsx", "/Users/be-agent-service/HomeCare/be-agents-service/apps/openclaw-bridge/src/index.ts"],
-      "env": {
-        "WORKSPACE_CONFIG": "/Users/be-agent-service/HomeCare/be-agents-service/config/repos.yaml",
-        "WORKSPACE_REPO": "beta-appcaire",
-        "AGENT_API_URL": "http://localhost:3030"
-      }
-    }
-  }
+"$schema": "https://docs.openclaw.ai/schema.json",
+"_comment": "Copy to ~/.openclaw/openclaw.json and replace YOUR_TELEGRAM_USER_ID with your numeric ID from @userinfobot",
+"agent": {
+"workspace": "~/.openclaw/workspace",
+"model": "claude-sonnet-4-20250514",
+"systemPromptFile": "/Users/be-agent-service/HomeCare/be-agents-service/config/openclaw/system-prompt.md"
+},
+"channels": {
+"telegram": {
+"botToken": "${TELEGRAM_BOT_TOKEN}",
+"allowFrom": [
+"YOUR_TELEGRAM_USER_ID"
+]
+}
+},
+"mcpServers": {
+"agent-workspace": {
+"command": "npx",
+"args": [
+"tsx",
+"/Users/be-agent-service/HomeCare/be-agents-service/apps/openclaw-bridge/src/index.ts"
+],
+"env": {
+"WORKSPACE_CONFIG": "/Users/be-agent-service/HomeCare/be-agents-service/config/repos.yaml",
+"WORKSPACE_REPO": "beta-appcaire",
+"AGENT_API_URL": "http://localhost:3030"
+}
+}
+}
 }
