@@ -23,9 +23,9 @@
   </dict>
 
   <key>StandardOutPath</key>
-  <string>/Users/bjornevers_MacPro/HomeCare/beta-appcaire/logs/caffeinate.log</string>
+  <string>/Users/be-agent-service/HomeCare/beta-appcaire/logs/caffeinate.log</string>
 
   <key>StandardErrorPath</key>
-  <string>/Users/bjornevers_MacPro/HomeCare/beta-appcaire/logs/caffeinate.log</string>
+  <string>/Users/be-agent-service/HomeCare/beta-appcaire/logs/caffeinate.log</string>
 </dict>
 </plist>

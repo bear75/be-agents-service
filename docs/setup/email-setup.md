@@ -144,7 +144,7 @@ brew install jq
 
 ### Manual Test
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # First-time setup: Copy and configure .env
 cp .env.template .env
@@ -172,7 +172,7 @@ vim .env  # Add your email app passwords
 
 **Install launchd job:**
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Copy plist to LaunchAgents
 cp com.appcaire.openclaw.plist ~/Library/LaunchAgents/

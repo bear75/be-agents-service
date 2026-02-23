@@ -1,8 +1,10 @@
 /**
  * Marketing Page - Campaigns & Leads
+ * Purpose: Marketing domain (no overlap)
  */
 import { useEffect, useState } from 'react';
 import { TrendingUp, Mail, Target } from 'lucide-react';
+import { PagePurpose } from '../components/PagePurpose';
 import { getCampaigns, getLeads } from '../lib/api';
 import type { DbCampaign, DbLead } from '../types';
 
@@ -46,10 +48,20 @@ export function MarketingPage() {
 
   return (
     <div className="space-y-6">
+      <PagePurpose
+        purpose="Marketing domain."
+        how="Campaigns and leads. View data, stats. Start marketing jobs from Roster or dedicated scripts."
+        tip="Domain-specific surface — only if you use marketing agents."
+      />
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <TrendingUp className="w-6 h-6 text-blue-600" />
-        <h2 className="text-xl font-semibold text-gray-900">Marketing Dashboard</h2>
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <TrendingUp className="w-6 h-6 text-blue-600" />
+          <h2 className="text-xl font-semibold text-gray-900">Marketing</h2>
+        </div>
+        <p className="text-sm text-gray-500">
+          Campaigns & leads. Marketing jobs are started from Engineering or marketing scripts. View data and stats here.
+        </p>
       </div>
 
       {error && (

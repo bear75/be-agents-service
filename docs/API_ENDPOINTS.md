@@ -732,6 +732,6 @@ Currently, no rate limiting is enforced.
 
 ## Related Documentation
 
-- [DASHBOARD_MIGRATION.md](./DASHBOARD_MIGRATION.md) - Dashboard migration guide
+- [docs-archive/DASHBOARD_MIGRATION.md](../docs-archive/DASHBOARD_MIGRATION.md) - Dashboard migration (archived)
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
 - [README.md](./README.md) - Documentation index

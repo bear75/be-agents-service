@@ -180,10 +180,20 @@ fi
 echo "Converting PRD to tasks..."
 claude -p "Read the PRD at $PRD_FILE and convert it into a structured JSON task list. Save to scripts/compound/prd.json with format: {\"tasks\": [{\"id\": 1, \"description\": \"...\", \"status\": \"pending\"}]}. Break down the implementation into 5-10 concrete, testable tasks." --dangerously-skip-permissions
 
+# Sync prd.json tasks to dashboard DB (so Work page shows them)
+PRD_JSON="$REPO_PATH/scripts/compound/prd.json"
+if [ -f "$PRD_JSON" ]; then
+  node "$SERVICE_ROOT/scripts/compound/sync-prd-to-tasks.js" "$SESSION_ID" "$PRD_JSON" 2>/dev/null || echo "⚠️ Task sync failed (non-fatal)"
+fi
+
 # Run the execution loop
 if [ -f "$SCRIPT_DIR/loop.sh" ]; then
   echo "Running execution loop..."
   "$SCRIPT_DIR/loop.sh" 25
+  # Sync task statuses again (completed/blocked) to dashboard
+  if [ -f "$PRD_JSON" ]; then
+    node "$SERVICE_ROOT/scripts/compound/sync-prd-to-tasks.js" "$SESSION_ID" "$PRD_JSON" 2>/dev/null || echo "⚠️ Task sync (post-loop) failed (non-fatal)"
+  fi
 else
   echo "Warning: loop.sh not found. Implementing directly..."
   claude -p "Implement all tasks from scripts/compound/prd.json. For each task: read the description, implement it, test it, and commit when complete. Continue until all tasks are done or you encounter a blocker." --dangerously-skip-permissions

@@ -25,10 +25,8 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
         const data = await listRepositories();
         setRepos(data);
 
-        // If no value set and repos loaded, select first one
-        if (!value && data.length > 0) {
-          onChange(data[0].name);
-        }
+        // If no value set and repos loaded, keep empty to show Overview first
+        // User can select a repo to see workspace
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load repositories');
       } finally {
@@ -75,7 +73,7 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
         <GitBranch className="w-5 h-5 text-gray-600" />
         <div className="flex flex-col items-start">
           <span className="text-sm font-medium text-gray-900">
-            {selectedRepo?.name || 'Select Repository'}
+            {selectedRepo ? selectedRepo.name : 'Overview'}
           </span>
           {selectedRepo && (
             <span className="text-xs text-gray-500">{selectedRepo.github.owner}/{selectedRepo.github.repo}</span>
@@ -92,7 +90,22 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
           <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
 
           {/* Dropdown */}
-          <div className="absolute top-full mt-2 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-64 overflow-y-auto">
+          <div className="absolute top-full mt-2 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-64 overflow-y-auto min-w-[200px]">
+            <button
+              onClick={() => {
+                onChange('');
+                setIsOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 ${
+                !value ? 'bg-blue-50' : ''
+              }`}
+            >
+              <GitBranch className={`w-5 h-5 shrink-0 ${!value ? 'text-blue-600' : 'text-gray-400'}`} />
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-medium ${!value ? 'text-blue-900' : 'text-gray-900'}`}>Overview</p>
+                <p className="text-xs text-gray-500">Quick start, how to get things done</p>
+              </div>
+            </button>
             {repos.map((repo) => (
               <button
                 key={repo.name}

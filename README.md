@@ -2,6 +2,32 @@
 
 Multi-agent autonomous service for software development and marketing automation with closed-loop WhatsApp/Telegram integration.
 
+## Quick Start
+
+```bash
+# Start the dashboard (API + UI on port 3010)
+yarn start
+# or with hot reload:
+yarn dev
+
+# Start OpenClaw gateway (WhatsApp + Telegram)
+openclaw gateway start      # Foreground (or use restart if launchd is configured)
+openclaw gateway restart    # Restart via launchd (when plist is loaded)
+openclaw gateway status     # Check if running
+```
+
+**Dashboard:** http://localhost:3010  
+**OpenClaw gateway:** Port 18789 (receives WhatsApp/Telegram → routes to agents)
+
+> **Note:** If chats stop responding, the OpenClaw daemon (`com.appcaire.openclaw`) may be conflicting with the gateway. Stop it: `launchctl bootout gui/501/com.appcaire.openclaw` and start the gateway via launchd instead.
+
+## What This Repo Does
+
+- **Dashboard (port 3010):** Web UI for workspace, repos, plans, agents, logs
+- **OpenClaw integration:** WhatsApp/Telegram → shared workspace → agents
+- **Agent orchestration:** 23 specialists (engineering, marketing, management)
+- **Compound automation:** Nightly learnings (10:30 PM), auto-implement (11:00 PM)
+
 ## Overview
 
 **Three agent teams (23 agents total):**
@@ -11,16 +37,16 @@ Multi-agent autonomous service for software development and marketing automation
 
 **Human-AI Interface:**
 - **WhatsApp/Telegram** → OpenClaw → Shared Workspace → Agent Service → Notifications back to you
-- **Dashboard:** http://localhost:3030
+- **Dashboard:** http://localhost:3010
 
 **Automation:**
 - **Nightly:** 10:30 PM learnings extraction, 11:00 PM auto-implementation
 - **On-demand:** Trigger via Telegram or dashboard
 - **Notifications:** Session complete, morning briefing (8 AM), weekly review (Monday 8 AM)
 
-## Unified Dashboard (port 3030)
+## Unified Dashboard (port 3010)
 
-Single entry point at **http://localhost:3030**:
+Single entry point at **http://localhost:3010**:
 
 | URL | Content |
 |-----|---------|
@@ -28,11 +54,11 @@ Single entry point at **http://localhost:3030**:
 
 **How to run:**
 ```bash
-yarn start          # Build + start (single server on 3030)
+yarn start          # Build + start (single server on 3010)
 yarn dev            # Build + dev with hot reload
 ```
 
-**Architecture:** One Express server (`apps/server`) on port 3030 serves API + static. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+**Architecture:** One Express server (`apps/server`) on port 3010 serves API + static. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Documentation
 
@@ -42,15 +68,14 @@ yarn dev            # Build + dev with hot reload
 |------|-----|
 | **Closed-loop integration** | [docs/CLOSED_LOOP_INTEGRATION.md](docs/CLOSED_LOOP_INTEGRATION.md) ⭐ |
 | **Workspace setup** | [docs/WORKSPACE.md](docs/WORKSPACE.md) |
-| **OpenClaw setup** | [config/openclaw/SIMPLE_SETUP.md](config/openclaw/SIMPLE_SETUP.md) |
-| Quick commands | [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) |
+| **OpenClaw setup** | [config/openclaw/SIMPLE_SETUP.md](config/openclaw/SIMPLE_SETUP.md), [docs/SANDBOX_SETUP.md](docs/SANDBOX_SETUP.md) |
+| Quick commands | [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) — start commands, schedules |
 | Mac mini setup | [docs/FRESH_MAC_MINI_SETUP.md](docs/FRESH_MAC_MINI_SETUP.md) |
 | Mac mini recovery | [docs/MAC_MINI_RECOVERY.md](docs/MAC_MINI_RECOVERY.md) |
 | Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Data flow | [docs/DATA_FLOW.md](docs/DATA_FLOW.md) |
 | Database access | [docs/DATABASE_ACCESS.md](docs/DATABASE_ACCESS.md) |
 | API reference | [docs/API_ENDPOINTS.md](docs/API_ENDPOINTS.md) |
-| Dashboard migration | [docs/DASHBOARD_MIGRATION.md](docs/DASHBOARD_MIGRATION.md) |
 
 ## Repository Structure
 
@@ -78,7 +103,7 @@ be-agents-service/
 │   ├── feedback-schema.json         # Agent communication schema
 │   └── parallel-executor.sh         # Parallel agent spawning
 ├── apps/
-│   ├── server/                      # Unified server (port 3030): API + static in public/
+│   ├── server/                      # Unified server (port 3010): API + static in public/
 │   └── dashboard/                   # React workspace UI (build → server/public)
 ├── scripts/
 │   └── start-dashboard.sh           # LaunchD: yarn workspace server start
@@ -160,7 +185,7 @@ vim ~/Library/LaunchAgents/com.appcaire.*.plist
 
 ## Dashboard
 
-**Real-time monitoring at http://localhost:3030**
+**Real-time monitoring at http://localhost:3010**
 
 ```bash
 # Start dashboard
@@ -200,10 +225,10 @@ cd ~/HomeCare/be-agents-service
   feature/test-branch
 
 # Check status
-../be-agent-service/scripts/check-status.sh
+../be-agents-service/scripts/check-status.sh
 
 # Test safety mechanisms
-../be-agent-service/scripts/test-safety.sh
+../be-agents-service/scripts/test-safety.sh
 ```
 
 ### Marketing Agents (Manual)
@@ -294,6 +319,22 @@ tail -f ~/Library/Logs/appcaire-*.log
 ```
 
 ## Troubleshooting
+
+### WhatsApp/Telegram Chats Not Responding
+
+The gateway may be in a crash loop if the OpenClaw daemon conflicts with it:
+
+```bash
+# Stop the daemon (stops killing the gateway)
+launchctl bootout gui/501/com.appcaire.openclaw
+
+# Start the gateway via launchd
+launchctl bootstrap gui/501 ~/Library/LaunchAgents/ai.openclaw.gateway.plist
+
+# Verify it's running
+lsof -i :18789
+tail -20 ~/.openclaw/logs/gateway.log
+```
 
 ### Agent Not Running
 

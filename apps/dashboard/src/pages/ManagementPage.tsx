@@ -88,6 +88,14 @@ export function ManagementPage() {
         </div>
       )}
 
+      {leaderboard.length === 0 && (
+        <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
+          <p className="font-medium">Leaderboard shows 0 agents</p>
+          <p>
+            Gamification reads from <code className="bg-amber-100 px-1 rounded">.compound-state/agent-service.db</code>. Ensure gamification-schema.sql is applied and agents earn XP via tasks. See <code className="bg-amber-100 px-1 rounded">docs/AGENT_DATA_SOURCES.md</code>.
+          </p>
+        </div>
+      )}
       {/* Executive Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg border border-gray-200 p-4">

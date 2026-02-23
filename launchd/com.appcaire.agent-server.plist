@@ -21,7 +21,7 @@
         <key>PATH</key>
         <string>/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
         <key>PORT</key>
-        <string>4010</string>
+        <string>3010</string>
     </dict>
 
     <key>StandardOutPath</key>

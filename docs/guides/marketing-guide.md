@@ -71,7 +71,7 @@ Each agent has a Marvel character personality that influences their behavior:
 ### Via CLI
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Run Jarvis marketing orchestrator
 ./agents/marketing/jarvis-orchestrator.sh \
@@ -84,7 +84,7 @@ cd ~/HomeCare/be-agent-service
 ### Run Individual Agent
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Run Vision (SEO analyst) only
 ./agents/marketing/vision-seo-analyst.sh \
@@ -159,7 +159,7 @@ EOF
 ### Session Management
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # List marketing sessions
 ls -la .compound-state/ | grep marketing
@@ -440,7 +440,7 @@ Wong documents process
 vim ~/HomeCare/beta-appcaire/reports/marketing-campaign.md
 
 # Run campaign
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 ./agents/marketing/jarvis-orchestrator.sh \
   ~/HomeCare/beta-appcaire \
   reports/marketing-campaign.md \
@@ -457,7 +457,7 @@ cat .compound-state/session-marketing-*/jarvis.json | jq '.deliverables'
 ### Individual Agent Commands
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # SEO analysis
 ./agents/marketing/vision-seo-analyst.sh "session-seo-$(date +%s)" \
@@ -530,7 +530,7 @@ EOF
 
 **Step 2: Run Campaign**
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 ./agents/marketing/jarvis-orchestrator.sh \
   ~/HomeCare/beta-appcaire \
   reports/marketing-blog-scheduling.md \

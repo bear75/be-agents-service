@@ -19,11 +19,11 @@ Add this `mcpServers` section (merge with existing config):
       "command": "npx",
       "args": [
         "tsx",
-        "/Users/bjornevers_MacPro/HomeCare/be-agent-service/apps/openclaw-bridge/src/index.ts"
+        "/Users/be-agent-service/HomeCare/be-agents-service/apps/openclaw-bridge/src/index.ts"
       ],
       "env": {
         "WORKSPACE_REPO": "beta-appcaire",
-        "WORKSPACE_CONFIG": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/config/repos.yaml"
+        "WORKSPACE_CONFIG": "/Users/be-agent-service/HomeCare/be-agents-service/config/repos.yaml"
       }
     }
   }

@@ -1,20 +1,34 @@
 /**
- * Commands & Docs - links to documentation
+ * Commands & Docs - formatted documentation viewer
  */
-import { Terminal, ExternalLink } from 'lucide-react';
+import { useState } from 'react';
+import { Terminal } from 'lucide-react';
+import { DocViewer } from '../components/DocViewer';
 
 const DOC_LINKS = [
+  { label: 'Docs Index', path: 'README.md' },
   { label: 'Quick Start', path: 'guides/quick-start.md' },
+  { label: 'Quick Reference', path: 'QUICK_REFERENCE.md' },
+  { label: 'Compound Setup', path: 'COMPOUND_SETUP_GUIDE.md' },
   { label: 'PO Workflow', path: 'guides/po-workflow.md' },
   { label: 'Engineering Guide', path: 'guides/engineering-guide.md' },
   { label: 'Marketing Guide', path: 'guides/marketing-guide.md' },
   { label: 'ESS-FSR Workflow', path: 'guides/ess-fsr-workflow.md' },
   { label: 'Architecture', path: 'ARCHITECTURE.md' },
+  { label: 'Architecture (reference)', path: 'reference/architecture.md' },
+  { label: 'Agents Reference', path: 'reference/agents.md' },
+  { label: 'Workflow Reference', path: 'reference/workflow.md' },
+  { label: 'API Reference', path: 'reference/api-reference.md' },
+  { label: 'Priority Integration', path: 'reference/priority-integration.md' },
   { label: 'Data Flow', path: 'DATA_FLOW.md' },
-  { label: 'Compound Setup', path: 'COMPOUND_SETUP_GUIDE.md' },
+  { label: 'Agents vs Human Docs', path: 'AGENT_VS_HUMAN_DOCS.md' },
 ];
 
 export function CommandsPage() {
+  const [selected, setSelected] = useState<typeof DOC_LINKS[0] | null>(
+    () => DOC_LINKS.find((d) => d.path === 'QUICK_REFERENCE.md') ?? null
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -22,38 +36,42 @@ export function CommandsPage() {
         <h2 className="text-xl font-semibold text-gray-900">Commands & Docs</h2>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <p className="text-gray-600 mb-6">
-          Documentation for the agent service. These files live in the <code className="bg-gray-100 px-1 rounded">docs/</code> directory.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {DOC_LINKS.map((doc) => (
-            <a
-              key={doc.path}
-              href={`/api/file/docs?path=${encodeURIComponent(doc.path)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-200 transition-colors"
-            >
-              <span className="font-medium text-gray-900">{doc.label}</span>
-              <ExternalLink className="w-4 h-4 text-gray-400" />
-            </a>
-          ))}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-4">
+            <p className="text-sm text-gray-600 mb-4">
+              Click a doc to view it formatted below. From <code className="bg-gray-100 px-1 rounded">docs/</code>.
+            </p>
+            <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+              {DOC_LINKS.map((doc) => {
+                const isActive = selected?.path === doc.path;
+                return (
+                  <button
+                    key={doc.path}
+                    type="button"
+                    onClick={() => setSelected(doc)}
+                    className={`w-full text-left px-3 py-2 rounded text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                        : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+                    }`}
+                  >
+                    {doc.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className="bg-gray-50 rounded-lg p-6">
-        <h3 className="font-medium text-gray-900 mb-2">Common Commands</h3>
-        <pre className="text-sm font-mono text-gray-700 overflow-x-auto">
-{`# Check status
-./scripts/compound/check-status.sh beta-appcaire
-
-# Trigger compound
-./scripts/compound/auto-compound.sh beta-appcaire
-
-# Trigger review
-./scripts/compound/daily-compound-review.sh beta-appcaire`}
-        </pre>
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 min-h-[400px] overflow-y-auto max-h-[calc(100vh-12rem)]">
+            {selected ? (
+              <DocViewer path={selected.path} label={selected.label} />
+            ) : (
+              <p className="text-gray-500">Select a doc to view.</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

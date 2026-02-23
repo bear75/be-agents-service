@@ -1,7 +1,7 @@
 /**
  * Darwin - Unified Dashboard & API
  *
- * Single server on port 3030:
+ * Single server on port 3010:
  * - Serves React app (/) as SPA
  * - All API routes consolidated (/api/*)
  *
@@ -27,6 +27,7 @@ import jobsRouter from './routes/jobs.js';
 import integrationsRouter from './routes/integrations.js';
 import gamificationRouter from './routes/gamification.js';
 import rlRouter from './routes/rl.js';
+import fileRouter, { handleDocsRequest } from './routes/file.js';
 import { closeDatabase } from './lib/database.js';
 
 config();
@@ -35,7 +36,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..', '..');
 const STATIC_DIR = path.join(__dirname, '..', 'public');
 
-const PORT = process.env.PORT || process.env.DASHBOARD_PORT || 3030;
+const PORT = process.env.PORT || process.env.DASHBOARD_PORT || 3010;
 
 const app = express();
 
@@ -77,6 +78,9 @@ app.use('/api/jobs', jobsRouter);
 app.use('/api/integrations', integrationsRouter);
 app.use('/api/gamification', gamificationRouter);
 app.use('/api/rl', rlRouter);
+// Direct route for /api/file/docs (mounted router can miss in some setups)
+app.get('/api/file/docs', handleDocsRequest);
+app.use('/api/file', fileRouter);
 
 // Static files (React build + classic HTML)
 app.use(express.static(STATIC_DIR));

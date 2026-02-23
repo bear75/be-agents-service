@@ -3,6 +3,7 @@
  * Start new sessions, select team & model, view running agents.
  */
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Rocket, RefreshCw } from 'lucide-react';
 import { getTeams, listRepositories, createSession, getActiveSessions } from '../lib/api';
 import type { Team, Session } from '../types';
@@ -56,9 +57,14 @@ export function ControlTower() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-        <Rocket className="w-5 h-5" /> Control Tower
-      </h2>
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <Rocket className="w-5 h-5" /> Control Tower
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Launch sessions (DB records). For compound, use <Link to="/run" className="text-blue-600 hover:underline">Compound</Link> or terminal: <code className="bg-gray-100 px-1 rounded text-xs">auto-compound.sh beta-appcaire</code>
+        </p>
+      </div>
 
       {/* Launch form */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">

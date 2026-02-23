@@ -531,7 +531,7 @@ Raw file contents
 
 **Example:**
 ```bash
-curl "http://localhost:3030/api/file?path=/Users/user/HomeCare/be-agent-service/AGENTS.md"
+curl "http://localhost:3030/api/file?path=/Users/user/HomeCare/be-agents-service/AGENTS.md"
 ```
 
 ---

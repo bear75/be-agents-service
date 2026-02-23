@@ -169,9 +169,10 @@ export interface Agent {
   total_tasks_completed: number;
   total_tasks_failed: number;
   avg_duration_seconds: number;
-  is_active: number;
+  is_active: number | boolean;
   team_name?: string;
   team_domain?: string;
+  created_at?: string;
 }
 
 export interface Session {

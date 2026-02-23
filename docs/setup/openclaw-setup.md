@@ -14,7 +14,7 @@
 - OpenClaw runs as a background service (daemon) on your Mac Mini
 - It connects to your messaging apps (WhatsApp, Telegram, etc.)
 - You chat with it like texting an assistant
-- It communicates with your be-agent-service via API calls
+- It communicates with your be-agents-service via API calls
 - Multi-channel: message from WhatsApp on your phone, switch to Telegram on laptop
 
 ---
@@ -184,7 +184,7 @@ The bot should respond with agent service status.
 
 ## Connecting OpenClaw to Agent Service
 
-OpenClaw needs to communicate with your be-agent-service API. Configure the integration:
+OpenClaw needs to communicate with your be-agents-service API. Configure the integration:
 
 ### Step 1: Edit OpenClaw Configuration
 
@@ -444,7 +444,7 @@ All commands work from WhatsApp or Telegram!
 ```bash
 openclaw gateway logs
 tail -f ~/.openclaw/logs/gateway.log
-tail -f ~/HomeCare/be-agent-service/logs/openclaw.log
+tail -f ~/HomeCare/be-agents-service/logs/openclaw.log
 ```
 
 Happy chatting with your AI assistant! 🦞

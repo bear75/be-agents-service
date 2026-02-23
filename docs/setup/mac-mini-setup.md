@@ -182,12 +182,12 @@ mkdir -p ~/HomeCare
 cd ~/HomeCare
 ```
 
-### 4.2 Clone be-agent-service
+### 4.2 Clone be-agents-service
 
 ```bash
 # Clone the multi-agent orchestrator repository
-git clone https://github.com/bear75/be-agent-service.git
-cd be-agent-service
+git clone https://github.com/bear75/be-agents-service.git
+cd be-agents-service
 
 # Verify structure
 ls -la
@@ -234,7 +234,7 @@ LaunchAgents run the automation scripts at scheduled times.
 ### 5.1 Copy LaunchAgent Files
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Copy all LaunchAgent plists to LaunchAgents directory
 cp launchd/*.plist ~/Library/LaunchAgents/
@@ -352,7 +352,7 @@ git checkout main
 git pull origin main
 
 # Run auto-compound manually with orchestrator enabled
-USE_ORCHESTRATOR=true ../be-agent-service/scripts/auto-compound.sh
+USE_ORCHESTRATOR=true ../be-agents-service/scripts/auto-compound.sh
 ```
 
 ### 7.3 Monitor Dashboard
@@ -367,10 +367,10 @@ USE_ORCHESTRATOR=true ../be-agent-service/scripts/auto-compound.sh
 
 ```bash
 # Check orchestrator logs
-ls -la ~/HomeCare/be-agent-service/logs/orchestrator-sessions/
+ls -la ~/HomeCare/be-agents-service/logs/orchestrator-sessions/
 
 # Check session state
-ls -la ~/HomeCare/be-agent-service/.compound-state/
+ls -la ~/HomeCare/be-agents-service/.compound-state/
 
 # Check if PR was created
 gh pr list
@@ -650,7 +650,7 @@ EOF
 - **Dashboard**: http://localhost:3030
 - **QUICK_START.md**: Daily reference guide
 - **SETUP.md**: Detailed setup and workflows
-- **GitHub Issues**: https://github.com/bear75/be-agent-service/issues
+- **GitHub Issues**: https://github.com/bear75/be-agents-service/issues
 
 ---
 

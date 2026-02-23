@@ -1,18 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { DashboardPage } from './pages/DashboardPage';
-import { SessionsPage } from './pages/SessionsPage';
-import { KanbanPage } from './pages/KanbanPage';
-import { EngineeringPage } from './pages/EngineeringPage';
-import { CommandsPage } from './pages/CommandsPage';
-import { SettingsPage } from './pages/SettingsPage';
-import { AgentsPage } from './pages/AgentsPage';
-import { TeamsPage } from './pages/TeamsPage';
-import { MarketingPage } from './pages/MarketingPage';
-import { RLDashboardPage } from './pages/RLDashboardPage';
-import { ManagementPage } from './pages/ManagementPage';
-import { ControlPage } from './pages/ControlPage';
+import { RunPage } from './pages/RunPage';
+import { WorkPage } from './pages/WorkPage';
+import { RosterPage } from './pages/RosterPage';
 import { PlansPage } from './pages/PlansPage';
+import { InsightsPage } from './pages/InsightsPage';
+import { MarketingPage } from './pages/MarketingPage';
+import { SettingsWithDocsPage } from './pages/SettingsWithDocsPage';
 import './App.css';
 
 function App() {
@@ -21,18 +16,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<DashboardPage />} />
-          <Route path="management" element={<ManagementPage />} />
-          <Route path="sessions" element={<SessionsPage />} />
-          <Route path="control" element={<ControlPage />} />
+          <Route path="run" element={<RunPage />} />
+          <Route path="work" element={<WorkPage />} />
+          <Route path="roster" element={<RosterPage />} />
           <Route path="plans" element={<PlansPage />} />
-          <Route path="kanban" element={<KanbanPage />} />
-          <Route path="engineering" element={<EngineeringPage />} />
-          <Route path="agents" element={<AgentsPage />} />
-          <Route path="teams" element={<TeamsPage />} />
+          <Route path="insights" element={<InsightsPage />} />
           <Route path="marketing" element={<MarketingPage />} />
-          <Route path="rl" element={<RLDashboardPage />} />
-          <Route path="commands" element={<CommandsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
+          <Route path="settings" element={<SettingsWithDocsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -299,7 +299,7 @@ If verification failed:
 
 ```bash
 # Check verification logs
-cat ~/HomeCare/be-agent-service/.compound-state/session-*/verification.json | jq '.blockers'
+cat ~/HomeCare/be-agents-service/.compound-state/session-*/verification.json | jq '.blockers'
 
 # Common issues:
 # - Type errors: Run codegen
@@ -398,7 +398,7 @@ tail -50 ~/Library/Logs/appcaire-compound.log
 | **Check PRs** | `gh pr list` |
 | **Review PR** | `gh pr view 123` |
 | **Merge PR** | `gh pr merge 123 --squash` |
-| **Check sessions** | `ls -la ~/HomeCare/be-agent-service/.compound-state/` |
+| **Check sessions** | `ls -la ~/HomeCare/be-agents-service/.compound-state/` |
 | **View logs** | `tail -50 ~/Library/Logs/appcaire-compound.log` |
 | **Trigger nightly** | `launchctl start com.appcaire.auto-compound` |
 

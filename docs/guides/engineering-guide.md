@@ -85,7 +85,7 @@ tail -f ~/Library/Logs/appcaire-compound.log
 ### Manual (CLI)
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Run orchestrator
 ./scripts/orchestrator.sh \
@@ -96,7 +96,7 @@ cd ~/HomeCare/be-agent-service
 
 # Or run auto-compound
 cd ~/HomeCare/beta-appcaire
-../be-agent-service/scripts/auto-compound.sh
+../be-agents-service/scripts/auto-compound.sh
 ```
 
 ---
@@ -119,7 +119,7 @@ tail -20 ~/Library/Logs/appcaire-daily-review.log
 ### Session Management
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # List all sessions
 ls -la .compound-state/
@@ -138,7 +138,7 @@ cat .compound-state/session-*/frontend.json | jq '.'
 ### Log Viewing
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Latest orchestrator session
 ls -t logs/orchestrator-sessions/ | head -1
@@ -162,7 +162,7 @@ tail logs/verification-sessions/session-*/verification.log
 cd ~/HomeCare/beta-appcaire
 
 # Run verification on current branch
-~/HomeCare/be-agent-service/agents/verification-specialist.sh "test-$(date +%s)"
+~/HomeCare/be-agents-service/agents/verification-specialist.sh "test-$(date +%s)"
 
 # Check result
 echo $?  # 0=pass, 1=blocked, 2=error
@@ -286,7 +286,7 @@ git add -A
 git commit -m "fix: run codegen"
 
 # Re-run verification
-~/HomeCare/be-agent-service/agents/verification-specialist.sh "manual-$(date +%s)"
+~/HomeCare/be-agents-service/agents/verification-specialist.sh "manual-$(date +%s)"
 ```
 
 ---
@@ -297,10 +297,10 @@ git commit -m "fix: run codegen"
 
 ```bash
 # Check orchestrator state
-cat ~/HomeCare/be-agent-service/.compound-state/session-*/orchestrator.json | jq '.status'
+cat ~/HomeCare/be-agents-service/.compound-state/session-*/orchestrator.json | jq '.status'
 
 # If "blocked", check verification
-cat ~/HomeCare/be-agent-service/.compound-state/session-*/verification.json | jq '.blockers'
+cat ~/HomeCare/be-agents-service/.compound-state/session-*/verification.json | jq '.blockers'
 
 # Common issues:
 # - Type-check failed: Missing codegen
@@ -337,8 +337,8 @@ git branch --show-current
 
 ```bash
 # Make scripts executable
-chmod +x ~/HomeCare/be-agent-service/scripts/*.sh
-chmod +x ~/HomeCare/be-agent-service/agents/*.sh
+chmod +x ~/HomeCare/be-agents-service/scripts/*.sh
+chmod +x ~/HomeCare/be-agents-service/agents/*.sh
 ```
 
 ---

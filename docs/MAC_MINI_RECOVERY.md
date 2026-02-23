@@ -9,7 +9,7 @@
 1. **SSH or physically access the Mac Mini**
 2. **Check current branch:**
    ```bash
-   cd ~/HomeCare/be-agent-service  # or your actual path
+   cd ~/HomeCare/be-agents-service  # or your actual path
    git status
    git branch
    ```

@@ -4,7 +4,7 @@
 # Helper functions for interacting with the Agent Service DB API.
 # Source this file from other scripts: source "$SCRIPT_DIR/../db-api.sh"
 
-API_BASE="${AGENT_API_URL:-http://localhost:3030}"
+API_BASE="${AGENT_API_URL:-http://localhost:3010}"
 
 # ─── Session Operations ──────────────────────────────────────────────────────
 
@@ -53,19 +53,22 @@ db_update_session() {
 # Create a task for a session
 # Usage: db_create_task <task_id> <session_id> <agent_id> <description> [priority]
 db_create_task() {
-  local task_id="$1"
+  local _task_id="$1"
   local session_id="$2"
   local agent_id="$3"
   local description="$4"
   local priority="${5:-medium}"
 
-  curl -s -X POST "$API_BASE/api/sessions" \
+  curl -s -X POST "$API_BASE/api/tasks" \
     -H "Content-Type: application/json" \
-    -d "{}" > /dev/null 2>&1
+    -d "{
+      \"sessionId\": \"$session_id\",
+      \"agentId\": \"$agent_id\",
+      \"description\": \"$(echo "$description" | sed 's/"/\\"/g')\",
+      \"priority\": \"$priority\"
+    }" > /dev/null 2>&1
 
-  # Tasks don't have a direct endpoint yet, so we use metrics/tasks endpoint
-  # For now, just log it
-  echo "Task $task_id created for session $session_id"
+  echo "Task $_task_id created for session $session_id"
 }
 
 # ─── Command Tracking ────────────────────────────────────────────────────────

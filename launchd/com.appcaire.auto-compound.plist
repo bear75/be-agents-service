@@ -7,12 +7,12 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/bjornevers_MacPro/HomeCare/be-agents-service/scripts/auto-compound.sh</string>
+    <string>/Users/be-agent-service/HomeCare/be-agents-service/scripts/compound/auto-compound.sh</string>
     <string>beta-appcaire</string>
   </array>
 
   <key>WorkingDirectory</key>
-  <string>/Users/bjornevers_MacPro/HomeCare/be-agents-service</string>
+  <string>/Users/be-agent-service/HomeCare/be-agents-service</string>
 
   <key>StartCalendarInterval</key>
   <dict>
@@ -23,10 +23,10 @@
   </dict>
 
   <key>StandardOutPath</key>
-  <string>/Users/bjornevers_MacPro/HomeCare/beta-appcaire/logs/auto-compound.log</string>
+  <string>/Users/be-agent-service/HomeCare/beta-appcaire/logs/auto-compound.log</string>
 
   <key>StandardErrorPath</key>
-  <string>/Users/bjornevers_MacPro/HomeCare/beta-appcaire/logs/auto-compound.log</string>
+  <string>/Users/be-agent-service/HomeCare/beta-appcaire/logs/auto-compound.log</string>
 
   <key>EnvironmentVariables</key>
   <dict>

@@ -17,7 +17,7 @@
     <string>/Users/be-agent-service/HomeCare/be-agents-service/apps/dashboard</string>
 
     <key>RunAtLoad</key>
-    <true/>
+    <false/>
 
     <key>KeepAlive</key>
     <true/>

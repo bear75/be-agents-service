@@ -83,7 +83,7 @@ How `beta-appcaire/reports/priorities-*.md` flows into the agent system and Kanb
 If a session was created before the trap was added:
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 node scripts/sync-to-db.js session-XXXXXXXX
 ```
 

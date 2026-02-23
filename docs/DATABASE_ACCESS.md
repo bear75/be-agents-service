@@ -5,7 +5,7 @@
 **Database Location:** `data/agent-service.db` (relative to repo root)
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 # Path: ./data/agent-service.db
 ```
 
@@ -23,7 +23,7 @@ cd ~/HomeCare/be-agent-service
 2. **Create New Connection** → Select **SQLite**
 3. **Configure Connection:**
    - **Name:** Agent Service DB
-   - **Database Path:** `{REPO_ROOT}/data/agent-service.db` (e.g. `~/HomeCare/be-agent-service/data/agent-service.db`)
+   - **Database Path:** `{REPO_ROOT}/data/agent-service.db` (e.g. `~/HomeCare/be-agents-service/data/agent-service.db`)
    - Click **Connect**
 
 **Features in TablePlus:**
@@ -40,7 +40,7 @@ cd ~/HomeCare/be-agent-service
 
 **Direct Access:**
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 sqlite3 data/agent-service.db
 ```
 
@@ -140,7 +140,7 @@ v_leaderboard            -- Global rankings
 
 ```bash
 # Navigate to project root
-cd /Users/bjornevers_MacPro/HomeCare/be-agent-service
+cd /Users/bjornevers_MacPro/HomeCare/be-agents-service
 
 # Copy template
 cp .env.template .env
@@ -369,7 +369,7 @@ sqlite3 .compound-state/agent-service.db < seed.sql
 **1. View Database in TablePlus:**
 ```
 File > New Connection > SQLite
-Path: /Users/bjornevers_MacPro/HomeCare/be-agent-service/.compound-state/agent-service.db
+Path: /Users/bjornevers_MacPro/HomeCare/be-agents-service/.compound-state/agent-service.db
 ```
 
 **2. View Dashboard:**
@@ -379,7 +379,7 @@ http://localhost:3030/management-team.html
 
 **3. Query via CLI:**
 ```bash
-cd /Users/bjornevers_MacPro/HomeCare/be-agent-service
+cd /Users/bjornevers_MacPro/HomeCare/be-agents-service
 sqlite3 .compound-state/agent-service.db "SELECT * FROM v_leaderboard LIMIT 5;"
 ```
 

@@ -237,7 +237,7 @@ launchctl list | grep appcaire
 ### Step 1: Initialize Workspace
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 ./scripts/workspace/init-workspace.sh beta-appcaire
 ```
 
@@ -274,11 +274,11 @@ Add MCP server configuration:
       "command": "npx",
       "args": [
         "tsx",
-        "/Users/bjornevers_MacPro/HomeCare/be-agent-service/apps/openclaw-bridge/src/index.ts"
+        "/Users/be-agent-service/HomeCare/be-agents-service/apps/openclaw-bridge/src/index.ts"
       ],
       "env": {
         "WORKSPACE_REPO": "beta-appcaire",
-        "WORKSPACE_CONFIG": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/config/repos.yaml"
+        "WORKSPACE_CONFIG": "/Users/be-agent-service/HomeCare/be-agents-service/config/repos.yaml"
       }
     }
   },
@@ -308,7 +308,7 @@ chmod 600 ~/.config/caire/env
 ### Step 4: Load LaunchD Jobs
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Copy plists
 cp launchd/*.plist ~/Library/LaunchAgents/
@@ -396,7 +396,7 @@ curl "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe"
 ls ~/Library/Mobile\ Documents/com~apple~CloudDocs/AgentWorkspace/beta-appcaire/
 
 # Check config
-cat ~/HomeCare/be-agent-service/config/repos.yaml | grep workspace
+cat ~/HomeCare/be-agents-service/config/repos.yaml | grep workspace
 
 # Reinitialize if needed
 ./scripts/workspace/init-workspace.sh beta-appcaire
@@ -409,7 +409,7 @@ cat ~/HomeCare/be-agent-service/config/repos.yaml | grep workspace
 curl http://localhost:3030/health
 
 # Rebuild dashboard
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 yarn build:unified
 
 # Restart server
@@ -538,7 +538,7 @@ curl -X POST http://localhost:3030/api/agents/trigger/beta-appcaire \
 
 - `CLAUDE.md` - Service overview and learnings
 - `docs/WORKSPACE.md` - Workspace structure and usage
-- `docs/DASHBOARD_MIGRATION.md` - Dashboard migration details
+- `docs-archive/DASHBOARD_MIGRATION.md` - Dashboard migration (archived)
 - `docs/API_ENDPOINTS.md` - Complete API reference
 - `config/openclaw/README.md` - OpenClaw setup guide
 - `config/openclaw/SIMPLE_SETUP.md` - Quick 2-step integration

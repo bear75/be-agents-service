@@ -303,6 +303,18 @@ export async function getJobLogs(jobId: string): Promise<string> {
   return fetchText(`/jobs/${jobId}/logs`);
 }
 
+/** Get agent script content (agents/*.sh) */
+export async function getAgentScript(agentId: string): Promise<string> {
+  return fetchText(`/file/agent-script?agentId=${encodeURIComponent(agentId)}`);
+}
+
+/** Get agent prompt content (target repo .claude/prompts/*.md) */
+export async function getAgentPrompt(agentId: string, repo = 'beta-appcaire'): Promise<string> {
+  return fetchText(
+    `/file/agent-prompt?agentId=${encodeURIComponent(agentId)}&repo=${encodeURIComponent(repo)}`
+  );
+}
+
 // Sessions
 export async function getSessions(limit = 50): Promise<Session[]> {
   return fetchApi<Session[]>(`/sessions?limit=${limit}`);

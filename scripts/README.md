@@ -82,9 +82,8 @@ Runs via launchd (macOS):
 
 ## Documentation
 
-- **Setup Guide**: `../../COMPOUND_SETUP_GUIDE.md` - Quick 5-minute setup
+- **Setup Guide**: `../../docs/COMPOUND_SETUP_GUIDE.md` - Quick 5-minute setup
 - **Full Docs**: `../../docs/COMPOUND_WORKFLOW.md` - Comprehensive guide
-- **Dashboard Integration**: `../../docs/COMPOUND_DASHBOARD_INTEGRATION.md` - UI monitoring proposal
 
 ## Troubleshooting
 

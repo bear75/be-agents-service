@@ -104,7 +104,6 @@ be-agents-service/
 ├── docs/               # Documentation
 │   ├── COMPOUND_WORKFLOW.md
 │   ├── COMPOUND_SETUP_GUIDE.md
-│   ├── PRODUCTIVITY_SYSTEM.md
 │   ├── QUICK_REFERENCE.md
 │   └── WORKSPACE.md           # Shared workspace documentation
 │
@@ -746,7 +745,6 @@ See target repository's `.claude/prompts/` for full documentation.
 
 - See `docs/COMPOUND_WORKFLOW.md` for detailed workflow documentation
 - See `docs/COMPOUND_SETUP_GUIDE.md` for setup instructions
-- See `docs/PRODUCTIVITY_SYSTEM.md` for Boris productivity patterns
-- See `docs/QUICK_REFERENCE.md` for command reference
+- See `docs/QUICK_REFERENCE.md` for commands and schedules
 - See target repository's `/CLAUDE.md` for repo-specific learnings
-- See target repository's `.claude/prompts/boris-workflow.md` for Boris patterns
+- See target repository's `.claude/prompts/boris-workflow.md` for Boris patterns (beta-appcaire)

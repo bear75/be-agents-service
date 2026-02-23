@@ -18,7 +18,7 @@ Run Jarvis orchestrator with marketing priority → Specialists execute → PR c
 ### Manual (Testing/Development)
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Test orchestrator
 ./scripts/orchestrator.sh \
@@ -29,7 +29,7 @@ cd ~/HomeCare/be-agent-service
 
 # Or run full auto-compound
 cd ~/HomeCare/beta-appcaire
-../be-agent-service/scripts/auto-compound.sh
+../be-agents-service/scripts/auto-compound.sh
 ```
 
 ## Daily Workflow
@@ -94,7 +94,7 @@ launchctl start com.appcaire.auto-compound
 cd ~/HomeCare/beta-appcaire
 
 # Run verification on current branch
-~/HomeCare/be-agent-service/agents/verification-specialist.sh "test-$(date +%s)"
+~/HomeCare/be-agents-service/agents/verification-specialist.sh "test-$(date +%s)"
 
 # Check result
 echo $?  # 0=pass, 1=blocked, 2=error
@@ -103,7 +103,7 @@ echo $?  # 0=pass, 1=blocked, 2=error
 ### Check Session State
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # List sessions
 ls -la .compound-state/
@@ -118,7 +118,7 @@ cat .compound-state/session-*/verification.json | jq '.blockers'
 ### View Logs
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Latest orchestrator session
 ls -t logs/orchestrator-sessions/ | head -1
@@ -194,10 +194,10 @@ tail logs/verification-sessions/session-*/verification.log
 
 ```bash
 # Check orchestrator state
-cat ~/HomeCare/be-agent-service/.compound-state/session-*/orchestrator.json | jq '.status'
+cat ~/HomeCare/be-agents-service/.compound-state/session-*/orchestrator.json | jq '.status'
 
 # If "blocked", check verification
-cat ~/HomeCare/be-agent-service/.compound-state/session-*/verification.json | jq '.blockers'
+cat ~/HomeCare/be-agents-service/.compound-state/session-*/verification.json | jq '.blockers'
 
 # Common issues:
 # - Type-check failed: Missing codegen
@@ -218,7 +218,7 @@ git add -A
 git commit -m "fix: run codegen"
 
 # Re-run verification
-~/HomeCare/be-agent-service/agents/verification-specialist.sh "manual-$(date +%s)"
+~/HomeCare/be-agents-service/agents/verification-specialist.sh "manual-$(date +%s)"
 ```
 
 ## Marketing Agents (Manual)
@@ -245,7 +245,7 @@ cat > ~/HomeCare/beta-appcaire/reports/marketing-blog-$(date +%Y-%m-%d).md <<'EO
 EOF
 
 # 2. Run Jarvis marketing orchestrator
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 ./agents/marketing/jarvis-orchestrator.sh \
   ~/HomeCare/beta-appcaire \
   ~/HomeCare/beta-appcaire/reports/marketing-blog-$(date +%Y-%m-%d).md \
@@ -265,7 +265,7 @@ gh pr merge [NUMBER] --squash
 
 ```bash
 # SEO analysis only
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 ./agents/marketing/vision-seo-analyst.sh \
   "session-seo-$(date +%s)" \
   ~/HomeCare/beta-appcaire \
@@ -280,7 +280,7 @@ cat .compound-state/session-seo-*/vision.json | jq '.deliverables'
 Work on other repos besides beta-appcaire:
 
 ```bash
-cd ~/HomeCare/be-agent-service
+cd ~/HomeCare/be-agents-service
 
 # Cowork repo
 ./scripts/orchestrator.sh \
@@ -349,14 +349,14 @@ tail -50 ~/Library/Logs/appcaire-compound.log
 
 **View session details:**
 ```bash
-cat ~/HomeCare/be-agent-service/.compound-state/session-*/orchestrator.json | jq '.'
+cat ~/HomeCare/be-agents-service/.compound-state/session-*/orchestrator.json | jq '.'
 ```
 
 **Manual debugging:**
 ```bash
 # Run auto-compound with verbose output
 cd ~/HomeCare/beta-appcaire
-../be-agent-service/scripts/auto-compound.sh 2>&1 | tee debug.log
+../be-agents-service/scripts/auto-compound.sh 2>&1 | tee debug.log
 ```
 
 ## Dashboard Command Center

@@ -1,20 +1,14 @@
 /**
- * Engineering - start jobs, view agents, sessions
+ * Compound - start jobs, no duplicate agents (Roster = single source)
  */
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Cpu, Play, Square, RefreshCw } from 'lucide-react';
-import {
-  getJobs,
-  startJob,
-  stopJob,
-  getJobLogs,
-  getHrAgents,
-} from '../lib/api';
-import type { JobInfo, DbAgent } from '../types';
+import { Cpu, Play, Square, RefreshCw, Users } from 'lucide-react';
+import { getJobs, startJob, stopJob, getJobLogs } from '../lib/api';
+import type { JobInfo } from '../types';
 
 export function EngineeringPage() {
   const [jobs, setJobs] = useState<JobInfo[]>([]);
-  const [agents, setAgents] = useState<DbAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
@@ -28,12 +22,9 @@ export function EngineeringPage() {
 
   const load = () => {
     setLoading(true);
-    Promise.all([getJobs(), getHrAgents()])
-      .then(([j, a]) => {
-        setJobs(Array.isArray(j) ? j : []);
-        setAgents((Array.isArray(a) ? a : []).filter((x) => x.team_id?.includes('engineering') || x.is_active !== false));
-      })
-      .catch((e) => setError(e.message))
+    getJobs()
+      .then((j) => setJobs(Array.isArray(j) ? j : []))
+      .catch((e) => setError(String(e.message)))
       .finally(() => setLoading(false));
   };
 
@@ -72,9 +63,14 @@ export function EngineeringPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-2">
-        <Cpu className="w-6 h-6 text-blue-600" />
-        <h2 className="text-xl font-semibold text-gray-900">Engineering</h2>
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <Cpu className="w-6 h-6 text-blue-600" />
+          <h2 className="text-xl font-semibold text-gray-900">Compound</h2>
+        </div>
+        <p className="text-sm text-gray-500">
+          Start auto-compound: picks priority #1 from workspace or reports, creates PRD, implements, opens PR. Runs nightly at 23:00 or start manually here or via terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh beta-appcaire</code>
+        </p>
       </div>
 
       {error && (
@@ -86,7 +82,7 @@ export function EngineeringPage() {
 
       {/* Start job form */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="font-medium text-gray-900 mb-4">Start Engineering Job</h3>
+        <h3 className="font-medium text-gray-900 mb-4">Start Compound Workflow</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label>
             <span className="block text-sm text-gray-600 mb-1">Priority file</span>
@@ -174,23 +170,15 @@ export function EngineeringPage() {
         </div>
       </div>
 
-      {/* Agents */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <h3 className="px-4 py-3 border-b font-medium text-gray-900">Agents</h3>
-        <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {agents.map((a) => (
-            <div key={a.id} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-              <span className="text-2xl">{a.emoji || '🤖'}</span>
-              <div>
-                <div className="font-medium text-sm">{a.name}</div>
-                <div className="text-xs text-gray-500">{a.role}</div>
-              </div>
-            </div>
-          ))}
-          {agents.length === 0 && (
-            <div className="col-span-full py-4 text-center text-gray-500 text-sm">No agents</div>
-          )}
-        </div>
+      {/* Agents: single source = Roster */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <Link
+          to="/roster"
+          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline"
+        >
+          <Users className="w-5 h-5" />
+          View agents & teams in Roster
+        </Link>
       </div>
 
       {/* Logs modal */}
