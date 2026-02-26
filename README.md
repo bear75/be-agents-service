@@ -66,6 +66,33 @@ yarn dev            # Build + dev with hot reload
 | Database access | [docs/DATABASE_ACCESS.md](docs/DATABASE_ACCESS.md) |
 | API reference | [docs/API_ENDPOINTS.md](docs/API_ENDPOINTS.md) |
 
+## Run latest agent code on the Mac mini
+
+On the Mac mini (where agents and OpenClaw run):
+
+1. **Pull latest main**
+   ```bash
+   cd ~/HomeCare/be-agents-service
+   git checkout main && git pull origin main
+   ```
+
+2. **If you changed server code** (`apps/server/`):
+   ```bash
+   cd apps/server && yarn build
+   ```
+   If the dashboard is run via launchd, unload/reload the server plist so it uses the new build.
+
+3. **If you changed launchd plists** (`launchd/*.plist`):
+   ```bash
+   cp launchd/*.plist ~/Library/LaunchAgents/
+   launchctl unload ~/Library/LaunchAgents/com.appcaire.<job>.plist
+   launchctl load ~/Library/LaunchAgents/com.appcaire.<job>.plist
+   ```
+   Repeat for each plist you changed (e.g. `com.appcaire.auto-compound`, `com.appcaire.daily-compound-review`, `com.appcaire.dashboard`).
+
+4. **If you only changed scripts or config** (e.g. `config/repos.yaml`, `scripts/`, `config/openclaw/`):
+   No restart needed — scripts and config are read on each run.
+
 ## Repository Structure
 
 ```

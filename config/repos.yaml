@@ -13,9 +13,10 @@ repos:
       enabled: true
 
     # Schedule for automated runs (24-hour format)
+    # Compound creates draft PRs only — you review and merge; never auto-merges to main.
     schedule:
       review: "22:30"     # Daily compound review
-      compound: "23:00"   # Auto-compound implementation
+      compound: "23:00"   # Auto-compound: branch + implement + draft PR
 
     # Directory paths within the repository
     priorities_dir: reports/
