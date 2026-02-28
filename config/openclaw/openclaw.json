@@ -1,0 +1,17 @@
+{
+  // Mac mini: use shared folder so all agent work is saved in the be-agents-service repo.
+  // On Mac mini (user be-agent-service): /Users/be-agent-service/.openclaw/workspace/be-agents-service
+  // On other machines: use your repo path, e.g. ~/HomeCare/be-agents-service
+  agent: {
+    workspace: "/Users/be-agent-service/.openclaw/workspace/be-agents-service",
+  },
+
+  // Telegram only — WhatsApp removed; do not re-enable.
+  channels: {
+    telegram: {
+      enabled: true,
+      botToken: "YOUR_TELEGRAM_BOT_TOKEN",
+      allowFrom: ["YOUR_TELEGRAM_USER_ID"],
+    },
+  },
+}

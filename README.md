@@ -61,6 +61,7 @@ yarn dev            # Build + dev with hot reload
 | Quick commands | [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) — start commands, schedules |
 | Mac mini setup | [docs/FRESH_MAC_MINI_SETUP.md](docs/FRESH_MAC_MINI_SETUP.md) |
 | Mac mini recovery | [docs/MAC_MINI_RECOVERY.md](docs/MAC_MINI_RECOVERY.md) |
+| OpenClaw (workspace + migration) | [config/openclaw/README.md](config/openclaw/README.md) |
 | Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Data flow | [docs/DATA_FLOW.md](docs/DATA_FLOW.md) |
 | Database access | [docs/DATABASE_ACCESS.md](docs/DATABASE_ACCESS.md) |
@@ -104,7 +105,12 @@ be-agents-service/
 ├── .compound-state/                 # Agent session states (JSON)
 ├── data/                            # SQLite database
 ├── docs/                            # All documentation
-└── config/repos.yaml                # Multi-repo config
+├── config/
+│   ├── repos.yaml                   # Multi-repo config
+│   └── openclaw/                    # OpenClaw template (Mac mini shared folder + Telegram)
+│       ├── openclaw.json            # Copy to ~/.openclaw/openclaw.json
+│       └── README.md                # Workspace path + migration steps
+└── scripts/openclaw-migrate-workspace.sh  # One-time: default workspace → shared folder
 ```
 
 ## Installation
