@@ -32,7 +32,9 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 # Parse repo configuration (simple YAML parsing)
-REPO_PATH=$(grep -A 20 "^  $REPO_NAME:" "$CONFIG_FILE" | grep "path:" | head -1 | sed 's/.*path: *//' | sed "s|~|$HOME|")
+REPO_BLOCK=$(grep -A 25 "^  $REPO_NAME:" "$CONFIG_FILE" | head -26)
+REPO_PATH=$(echo "$REPO_BLOCK" | grep "path:" | head -1 | sed 's/.*path: *//' | sed "s|~|$HOME|")
+PRIORITIES_DIR=$(echo "$REPO_BLOCK" | grep "priorities_dir:" | head -1 | sed 's/.*priorities_dir: *//' | tr -d '"' | tr -d "'")
 
 if [ -z "$REPO_PATH" ]; then
   echo "❌ Repository '$REPO_NAME' not found in config"
@@ -131,13 +133,20 @@ if [ -n "$WORKSPACE_PATH" ] && [ -f "$WORKSPACE_PATH/priorities.md" ]; then
   echo "Using workspace priorities: $LATEST_REPORT"
 fi
 
-# Fall back to reports/ in target repo
+# Fall back to repo: priorities_dir from config if set, else reports/
+if [ -z "$LATEST_REPORT" ]; then
+  if [ -n "$PRIORITIES_DIR" ]; then
+    REPORT_DIR="$REPO_PATH/$PRIORITIES_DIR"
+    LATEST_REPORT=$(ls -t "$REPORT_DIR"/*.md 2>/dev/null | head -1)
+    [ -n "$LATEST_REPORT" ] && echo "Using priorities_dir: $PRIORITIES_DIR"
+  fi
+fi
 if [ -z "$LATEST_REPORT" ]; then
   LATEST_REPORT=$(ls -t reports/*.md 2>/dev/null | head -1)
 fi
 
 if [ -z "$LATEST_REPORT" ]; then
-  echo "No priorities found (checked workspace and reports/ directory). Exiting."
+  echo "No priorities found (checked workspace, priorities_dir, and reports/). Exiting."
   exit 0
 fi
 

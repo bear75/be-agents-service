@@ -332,12 +332,19 @@ The service expects beta-appcaire at:
 
 Update plist files if location differs.
 
-### Priority Reports
+### Priority Reports – var agenterna plockar upp jobb
 
-Daily priorities should be in:
-```
-~/HomeCare/beta-appcaire/reports/priorities-YYYY-MM-DD.md
-```
+**Auto-compound (23:00)** läser prioriteringar i denna ordning:
+
+1. **Workspace (först):** `AgentWorkspace/DARWIN/priorities.md` (iCloud).
+2. **Fallback – repo:** Om repo har **priorities_dir** i `config/repos.yaml` används den katalogen, annars **reports/** i repo-roten (nyaste `*.md`).
+
+**För att agenterna ska plocka upp jobb:**
+
+| Repo | Plats för prio |
+|------|-----------------|
+| **appcaire** (caire-platform/appcaire, FSR/Timefold) | **`appcaire/docs_2.0/recurring-visits/huddinge-package/*.md`** (priorities_dir i config). Lägg t.ex. `priorities-2026-02-28.md` där. |
+| **beta-appcaire** | `beta-appcaire/reports/*.md` (filer direkt i `reports/`) eller workspace `priorities.md`. |
 
 Format:
 ```markdown
