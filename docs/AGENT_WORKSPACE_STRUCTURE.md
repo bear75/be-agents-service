@@ -2,6 +2,8 @@
 
 Canonical layout for the agent service and where agents (OpenClaw, compound scripts, specialists) **read** vs **write**. Follow this so work is predictable and not scattered.
 
+**One shared folder only.** Cursor, compound learning, and Telegram/OpenClaw must all use the **same** AgentWorkspace path. The folder name is **darwin** (or **be-agent-service**) — non-repo, one place for all human–agent shared state. If OpenClaw uses a different folder, you get two sources of truth: Telegram updates memory in one place, compound priorities and learnings in another. OpenClaw’s `agent.workspace` must be set to that path (e.g. `AgentWorkspace/darwin` or `AgentWorkspace/be-agent-service`). See [config/openclaw/README.md](../config/openclaw/README.md).
+
 ---
 
 ## 1. be-agent-service repo layout
@@ -60,9 +62,11 @@ be-agents-service/
 
 ---
 
-## 2. Per-repo markdown workspace (iCloud or local)
+## 2. Shared markdown workspace (iCloud or local) — darwin or be-agent-service (non-repo)
 
-Used by compound and OpenClaw MCP when a repo has `workspace.path` in `config/repos.yaml`. Full layout: [WORKSPACE.md](WORKSPACE.md).
+The single shared folder for Cursor, compound, and Telegram is under **AgentWorkspace** and is named **darwin** or **be-agent-service** (non-repo; not named after a code repo). Full layout: [WORKSPACE.md](WORKSPACE.md). For repos that have their own workspace in `config/repos.yaml`, compound may also use a per-repo folder (e.g. `AgentWorkspace/beta-appcaire`); the **one** folder that must be shared by Cursor, compound, and Telegram is **AgentWorkspace/darwin** (or **AgentWorkspace/be-agent-service**).
+
+**Do not put the repo or an `agents` folder inside the workspace path.** The shared folder holds only the markdown structure (inbox, memory, priorities, agent-reports, etc.). Code and the agent service live in their own repos (e.g. `~/HomeCare/be-agents-service`).
 
 **Agent read/write contract:**
 

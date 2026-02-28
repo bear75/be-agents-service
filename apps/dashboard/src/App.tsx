@@ -7,6 +7,7 @@ import { RosterPage } from './pages/RosterPage';
 import { PlansPage } from './pages/PlansPage';
 import { InsightsPage } from './pages/InsightsPage';
 import { MarketingPage } from './pages/MarketingPage';
+import { SchedulesPage } from './pages/SchedulesPage';
 import { SettingsWithDocsPage } from './pages/SettingsWithDocsPage';
 import './App.css';
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="roster" element={<RosterPage />} />
           <Route path="plans" element={<PlansPage />} />
           <Route path="insights" element={<InsightsPage />} />
+          <Route path="schedules" element={<SchedulesPage />} />
           <Route path="marketing" element={<MarketingPage />} />
           <Route path="settings" element={<SettingsWithDocsPage />} />
         </Route>

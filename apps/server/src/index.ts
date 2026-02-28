@@ -27,6 +27,7 @@ import jobsRouter from './routes/jobs.js';
 import integrationsRouter from './routes/integrations.js';
 import gamificationRouter from './routes/gamification.js';
 import rlRouter from './routes/rl.js';
+import schedulesRouter from './routes/schedules.js';
 import fileRouter, { handleDocsRequest } from './routes/file.js';
 import { closeDatabase } from './lib/database.js';
 
@@ -78,6 +79,7 @@ app.use('/api/jobs', jobsRouter);
 app.use('/api/integrations', integrationsRouter);
 app.use('/api/gamification', gamificationRouter);
 app.use('/api/rl', rlRouter);
+app.use('/api/schedule-runs', schedulesRouter);
 // Direct route for /api/file/docs (mounted router can miss in some setups)
 app.get('/api/file/docs', handleDocsRequest);
 app.use('/api/file', fileRouter);

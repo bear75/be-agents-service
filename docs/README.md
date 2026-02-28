@@ -13,6 +13,7 @@
 | **Mac mini setup** | [FRESH_MAC_MINI_SETUP.md](FRESH_MAC_MINI_SETUP.md) |
 | **Mac mini recovery** | [MAC_MINI_RECOVERY.md](MAC_MINI_RECOVERY.md) |
 | **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) — one server, one port |
+| **Folder structure & every file** | [FOLDER_STRUCTURE.md](FOLDER_STRUCTURE.md) |
 | **Dashboard usage** | [guides/quick-start.md](guides/quick-start.md) |
 
 ---
@@ -35,6 +36,7 @@
 | Doc | Purpose |
 |-----|---------|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | One server, one dashboard, port 3030 |
+| [FOLDER_STRUCTURE.md](FOLDER_STRUCTURE.md) | Three roots, be-agents-service tree, AgentWorkspace, every file |
 | [API_ENDPOINTS.md](API_ENDPOINTS.md) | Complete REST API reference |
 | [reference/agents.md](reference/agents.md) | All agents, roles, keywords |
 | [reference/workflow.md](reference/workflow.md) | Session flow, orchestrator |
@@ -63,6 +65,7 @@
 |-----|---------|
 | [DATA_FLOW.md](DATA_FLOW.md) | Files → DB → UI flow |
 | [DATABASE_ACCESS.md](DATABASE_ACCESS.md) | DB location, TablePlus, CLI |
+| [SCHEDULE_OPTIMIZATION_TESTING.md](SCHEDULE_OPTIMIZATION_TESTING.md) | How to test the Schedules dashboard and schedule-runs API |
 
 ---
 

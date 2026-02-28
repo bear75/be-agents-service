@@ -19,6 +19,7 @@ import type {
   DashboardStats,
   JobInfo,
   DbIntegration,
+  ScheduleRun,
 } from '../types';
 
 const API_BASE = '/api';
@@ -309,7 +310,7 @@ export async function getAgentScript(agentId: string): Promise<string> {
 }
 
 /** Get agent prompt content (target repo .claude/prompts/*.md) */
-export async function getAgentPrompt(agentId: string, repo = 'beta-appcaire'): Promise<string> {
+export async function getAgentPrompt(agentId: string, repo = 'appcaire'): Promise<string> {
   return fetchText(
     `/file/agent-prompt?agentId=${encodeURIComponent(agentId)}&repo=${encodeURIComponent(repo)}`
   );
@@ -451,4 +452,20 @@ export async function getLLMStats(days = 7): Promise<LLMStatsResponse> {
 /** Get raw LLM usage records (for timeline) */
 export async function getLLMUsage(days = 7, limit = 200): Promise<LLMUsageRecord[]> {
   return fetchRaw<LLMUsageRecord[]>(`/rl/llm-usage?days=${days}&limit=${limit}`);
+}
+
+// ─── Schedule optimization (Timefold FSR runs) ───────────────────────────────
+
+export async function getScheduleRuns(dataset?: string): Promise<ScheduleRun[]> {
+  const url = dataset ? `/schedule-runs?dataset=${encodeURIComponent(dataset)}` : '/schedule-runs';
+  const data = await fetchApi<{ runs: ScheduleRun[] }>(url);
+  return data.runs ?? [];
+}
+
+export async function cancelScheduleRun(id: string, reason?: string): Promise<ScheduleRun> {
+  const data = await fetchApi<ScheduleRun>(`/schedule-runs/${id}/cancel`, {
+    method: 'POST',
+    body: JSON.stringify({ reason: reason ?? 'Cancelled by user' }),
+  });
+  return data;
 }

@@ -373,3 +373,34 @@ export interface ActiveSessionView {
   task_count: number;
   started_at: string;
 }
+
+// ─── Schedule Optimization (Timefold FSR runs) ─────────────────────────────
+
+export interface ScheduleRun {
+  id: string;
+  dataset: string;
+  batch: string;
+  algorithm: string;
+  strategy: string;
+  hypothesis: string | null;
+  status: 'queued' | 'running' | 'completed' | 'cancelled' | 'failed';
+  decision: string | null;
+  decision_reason: string | null;
+  timefold_score: string | null;
+  routing_efficiency_pct: number | null;
+  unassigned_visits: number | null;
+  total_visits: number | null;
+  unassigned_pct: number | null;
+  continuity_avg: number | null;
+  continuity_max: number | null;
+  continuity_over_target: number | null;
+  continuity_target: number | null;
+  submitted_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  cancelled_at: string | null;
+  duration_seconds: number | null;
+  output_path: string | null;
+  notes: string | null;
+  iteration: number;
+}

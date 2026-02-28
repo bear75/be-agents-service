@@ -19,6 +19,21 @@ yarn dev
 - **Agent orchestration:** 23 specialists (engineering, marketing, management)
 - **Compound automation:** Nightly learnings (10:30 PM), auto-implement (11:00 PM)
 
+## How the agent service runs: Telegram + compound learning
+
+The agent service uses **Telegram** as the primary human interface and **compound learning** for continuous improvement. **There can only be one shared folder:** Cursor, compound, and Telegram must all use the same iCloud/AgentWorkspace path; if OpenClaw uses a different path, you get two folders and split state. Data lives in three places:
+
+| Where | What it holds |
+|-------|----------------|
+| **This repo** (`be-agents-service`) | Code, config (`config/repos.yaml`, `config/openclaw/`), agents, scripts, docs. Read by the service; you edit here. |
+| **`.compound-state/`** (inside this repo) | Session state (JSON per run), SQLite DB (`agent-service.db`), marketing/data JSON. Written by the service only. |
+| **iCloud/AgentWorkspace/** | Shared markdown workspace. **darwin** is the name for the Telegram agent, the folder `AgentWorkspace/DARWIN/`, and the dashboard workspace — not a code repo. That folder holds `inbox.md`, `priorities.md`, `tasks.md`, `check-ins/`, `memory/`, `agent-reports/`. You and agents read/write here; compound scripts read priorities and write reports. |
+
+- **Telegram:** Add to inbox, get session summaries, morning briefing (8 AM), weekly review. Configure via OpenClaw: [config/openclaw/README.md](config/openclaw/README.md).
+- **Compound learning:** At **10:30 PM** `daily-compound-review.sh` extracts learnings from Claude threads and updates repo docs. At **11:00 PM** `auto-compound.sh` reads priority #1 from the repo’s workspace (e.g. `AgentWorkspace/beta-appcaire/priorities.md`), implements it, and creates a PR. No direct push to main.
+
+See [docs/AGENT_WORKSPACE_STRUCTURE.md](docs/AGENT_WORKSPACE_STRUCTURE.md) for the full read/write contract and [docs/FOLDER_STRUCTURE.md](docs/FOLDER_STRUCTURE.md) for the full folder and file list.
+
 ## Overview
 
 **Three agent teams (23 agents total):**
@@ -26,8 +41,9 @@ yarn dev
 - **Marketing (10 Marvel agents):** Jarvis, Shuri, Fury, Vision, Loki, Quill, Wanda, Pepper, Friday, Wong
 - **Management (4 executives):** CEO, CPO/CTO, CMO/CSO, HR Agent Lead
 
-**Human-AI Interface:**
-- **Dashboard:** http://localhost:3010
+**Human–agent interface:**
+- **Telegram (primary):** Inbox, session summaries, morning briefing, weekly review
+- **Dashboard:** http://localhost:3010 — workspace, plans, agents, logs
 
 **Automation:**
 - **Nightly:** 10:30 PM learnings extraction, 11:00 PM auto-implementation
@@ -63,6 +79,7 @@ yarn dev            # Build + dev with hot reload
 | Mac mini recovery | [docs/MAC_MINI_RECOVERY.md](docs/MAC_MINI_RECOVERY.md) |
 | OpenClaw (workspace + migration) | [config/openclaw/README.md](config/openclaw/README.md) |
 | Agent folders & read/write contract | [docs/AGENT_WORKSPACE_STRUCTURE.md](docs/AGENT_WORKSPACE_STRUCTURE.md) |
+| Folder structure (repo, .compound-state, AgentWorkspace) | [docs/FOLDER_STRUCTURE.md](docs/FOLDER_STRUCTURE.md) |
 | Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Data flow | [docs/DATA_FLOW.md](docs/DATA_FLOW.md) |
 | Database access | [docs/DATABASE_ACCESS.md](docs/DATABASE_ACCESS.md) |
@@ -133,8 +150,8 @@ be-agents-service/
 │   ├── com.appcaire.caffeinate.plist
 │   ├── com.appcaire.daily-compound-review.plist
 │   └── com.appcaire.dashboard.plist
-├── .compound-state/                 # Agent session states (JSON)
-├── data/                            # SQLite database
+├── .compound-state/                 # Session state (JSON), SQLite agent-service.db; service write-only
+├── data/                            # Deprecated — use .compound-state (see data/README.md)
 ├── docs/                            # All documentation
 ├── config/
 │   ├── repos.yaml                   # Multi-repo config

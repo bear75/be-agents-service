@@ -1,9 +1,11 @@
 {
-  // Mac mini: use shared folder so all agent work is saved in the be-agents-service repo.
-  // On Mac mini (user be-agent-service): /Users/be-agent-service/.openclaw/workspace/be-agents-service
-  // On other machines: use your repo path, e.g. ~/HomeCare/be-agents-service
+  // CRITICAL: This MUST be the SAME folder used by Cursor, compound learning, and Telegram.
+  // There can only be ONE shared human-AI folder. If OpenClaw uses a different path, you get two folders:
+  // Telegram updates memory in one place, compound/priorities in another — split state, confusion.
+  // Use the exact same path as config/repos.yaml workspace.path for the context you use (or AgentWorkspace/default).
+  // NOT the be-agents-service repo.
   agent: {
-    workspace: "/Users/be-agent-service/.openclaw/workspace/be-agents-service",
+    workspace: "~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN",
   },
 
   // Telegram only — WhatsApp removed; do not re-enable.

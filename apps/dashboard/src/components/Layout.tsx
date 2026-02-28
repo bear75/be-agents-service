@@ -12,6 +12,7 @@ import {
   Sliders,
   TrendingUp,
   Brain,
+  BarChart2,
 } from 'lucide-react';
 import { RepoSelector } from './RepoSelector';
 import { useState } from 'react';
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { path: '/roster', label: 'Roster', icon: Users, subtitle: 'Agents & teams' },
   { path: '/plans', label: 'Plans', icon: Map, subtitle: 'PRDs & roadmaps' },
   { path: '/insights', label: 'Insights', icon: Brain, subtitle: 'Analytics & leaderboard' },
+  { path: '/schedules', label: 'Schedules', icon: BarChart2, subtitle: 'Schedule optimization pipeline' },
   { path: '/marketing', label: 'Marketing', icon: TrendingUp, subtitle: 'Campaigns & leads' },
   { path: '/settings', label: 'Settings', icon: Sliders, subtitle: 'Config & docs' },
 ];

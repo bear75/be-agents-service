@@ -28,6 +28,7 @@ import type {
   LessonLearned,
   AgentPerformanceView,
   ActiveSessionView,
+  ScheduleRun,
 } from '../types/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -533,6 +534,38 @@ export function getActiveExperiments(): Experiment[] {
   return db
     .prepare("SELECT * FROM experiments WHERE status = 'active' ORDER BY created_at DESC")
     .all() as Experiment[];
+}
+
+// ─── Schedule runs (Timefold FSR pipeline) ────────────────────────────────────
+
+export function getAllScheduleRuns(dataset?: string): ScheduleRun[] {
+  if (dataset) {
+    return db
+      .prepare(
+        'SELECT * FROM schedule_runs WHERE dataset = ? ORDER BY submitted_at DESC',
+      )
+      .all(dataset) as ScheduleRun[];
+  }
+  return db
+    .prepare('SELECT * FROM schedule_runs ORDER BY submitted_at DESC')
+    .all() as ScheduleRun[];
+}
+
+export function getScheduleRunById(id: string): ScheduleRun | undefined {
+  return db.prepare('SELECT * FROM schedule_runs WHERE id = ?').get(id) as
+    | ScheduleRun
+    | undefined;
+}
+
+export function cancelScheduleRun(
+  id: string,
+  reason: string,
+): ScheduleRun | undefined {
+  const now = new Date().toISOString();
+  db.prepare(
+    `UPDATE schedule_runs SET status = 'cancelled', decision = 'kill', decision_reason = ?, cancelled_at = ? WHERE id = ?`,
+  ).run(reason, now, id);
+  return getScheduleRunById(id);
 }
 
 // ─── Marketing ────────────────────────────────────────────────────────────────

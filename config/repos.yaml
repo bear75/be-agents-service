@@ -2,6 +2,20 @@
 # This file defines all repositories managed by the agent service
 
 repos:
+  # darwin = name for the Telegram agent, the shared folder (iCloud/AgentWorkspace/DARWIN), and the dashboard workspace. NOT a code repo.
+  darwin:
+    path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+    workspace:
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      enabled: true
+    schedule:
+      review: "22:30"
+      compound: "23:00"
+    priorities_dir: ""
+    logs_dir: ""
+    tasks_dir: ""
+    enabled: true
+
   beta-appcaire:
     # Absolute path to repository
     path: ~/HomeCare/beta-appcaire
@@ -47,6 +61,18 @@ repos:
     #   morning_briefing: "08:00"
     #   session_complete: true
     #   weekly_review: "monday 08:00"
+
+  # Schedule optimization data and scripts (Huddinge/Nova FSR runs)
+  appcaire:
+    path: ~/HomeCare/caire-platform/appcaire
+    priorities_dir: docs_2.0/recurring-visits/huddinge-package/
+    logs_dir: docs_2.0/recurring-visits/huddinge-package/logs/
+    tasks_dir: docs_2.0/recurring-visits/huddinge-package/tasks/
+    enabled: true
+    github:
+      owner: bear75
+      repo: caire-platform
+      default_branch: main
 
   # Hannes sandbox — compound only to this repo (WORKSPACE_ALLOWED_REPOS=hannes-projects)
   hannes-projects:
