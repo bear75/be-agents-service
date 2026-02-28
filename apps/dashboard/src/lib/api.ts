@@ -314,6 +314,18 @@ export async function getJobLogs(jobId: string): Promise<string> {
   return fetchText(`/jobs/${jobId}/logs`);
 }
 
+/** Clear all jobs (memory + log/metadata files). Removes failed and stale entries. */
+export async function clearAllJobs(): Promise<{ cleared: number; message: string }> {
+  const data = await fetchRaw<{ success: boolean; cleared?: number; message?: string; error?: string }>(
+    '/jobs/clear',
+    { method: 'POST' }
+  );
+  if (data.success === false) {
+    throw new Error(data.error ?? 'Failed to clear jobs');
+  }
+  return { cleared: data.cleared ?? 0, message: data.message ?? 'Cleared.' };
+}
+
 /** Get agent script content (agents/*.sh) */
 export async function getAgentScript(agentId: string): Promise<string> {
   return fetchText(`/file/agent-script?agentId=${encodeURIComponent(agentId)}`);

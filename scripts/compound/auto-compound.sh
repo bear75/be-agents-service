@@ -65,29 +65,33 @@ echo ""
 
 cd "$REPO_PATH"
 
-# Source environment if exists
+# Source environment (API keys for Claude CLI, GitHub, etc.)
+[[ -f "$HOME/.config/caire/env" ]] && source "$HOME/.config/caire/env"
 if [ -f .env.local ]; then
   source .env.local
 fi
 
-# SAFETY CHECK: Check current branch first
+# Ensure we're on main (auto-switch when run from dashboard / automation)
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [ "$CURRENT_BRANCH" != "main" ]; then
-  echo "❌ SAFETY CHECK FAILED: Not on main branch!"
-  echo "Current branch: $CURRENT_BRANCH"
-  echo ""
-  echo "⚠️  Running this script on a feature branch risks data loss."
-  echo "Please switch to main before running compound workflows:"
-  echo "  1. Commit your feature work: git add -A && git commit"
-  echo "  2. Push to remote: git push"
-  echo "  3. Switch to main: git checkout main"
-  echo ""
-  exit 1
-fi
-
-# SAFETY CHECK: Handle uncommitted changes on main
 STASH_CREATED=false
 STASH_MESSAGE=""
+
+if [ "$CURRENT_BRANCH" != "main" ]; then
+  echo "📌 Current branch: $CURRENT_BRANCH — switching to main for compound run..."
+  if ! git diff --quiet || ! git diff --cached --quiet; then
+    STASH_MESSAGE="auto-compound-stash-$(date +%Y-%m-%d-%H-%M-%S)"
+    git stash push -u -m "$STASH_MESSAGE"
+    STASH_CREATED=true
+    echo "   Stashed uncommitted changes (restore later with: git stash list; git stash pop)"
+  fi
+  git fetch origin 2>/dev/null || true
+  git checkout main
+  git pull origin main 2>/dev/null || true
+  echo "✓ On main, continuing."
+  echo ""
+fi
+
+# Handle uncommitted changes on main (e.g. after switch or already on main)
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "📦 Uncommitted changes detected on main branch"
   echo "Automatically stashing your work to preserve it..."
@@ -171,7 +175,13 @@ if type db_api_available &>/dev/null && db_api_available; then
   echo "📊 Session recorded in DB: $SESSION_ID"
 fi
 
-# Create feature branch
+# Create feature branch (use unique name if branch already exists, e.g. after auto-switch from it)
+if git show-ref --quiet "refs/heads/$BRANCH_NAME"; then
+  UNIQUE_SUFFIX="${SESSION_ID#session-}"
+  UNIQUE_SUFFIX="${UNIQUE_SUFFIX%-*}"
+  BRANCH_NAME="${BRANCH_NAME}-run-${UNIQUE_SUFFIX}"
+  echo "Branch already exists locally; using unique name: $BRANCH_NAME"
+fi
 git checkout -b "$BRANCH_NAME"
 
 # Create PRD

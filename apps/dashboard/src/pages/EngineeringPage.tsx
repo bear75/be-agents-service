@@ -4,7 +4,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Cpu, Play, Square, RefreshCw, Users } from 'lucide-react';
-import { getJobs, startJob, stopJob, getJobLogs, listRepositories } from '../lib/api';
+import { getJobs, startJob, stopJob, getJobLogs, clearAllJobs, listRepositories } from '../lib/api';
 import type { JobInfo } from '../types';
 
 const DEFAULT_REPO = 'appcaire';
@@ -21,6 +21,7 @@ export function EngineeringPage() {
     model: 'sonnet',
   });
   const [selectedJobLogs, setSelectedJobLogs] = useState<string | null>(null);
+  const [clearing, setClearing] = useState(false);
 
   const load = () => {
     setLoading(true);

@@ -34,9 +34,9 @@ repos:
       repo: beta-appcaire
       default_branch: main
 
-  # Schedule optimization (Huddinge/Nova FSR) — caire-platform/appcaire
+  # Schedule optimization (Huddinge/Nova FSR) — appcaire repo (same layout as beta-appcaire)
   appcaire:
-    path: ~/HomeCare/caire-platform/appcaire
+    path: ~/HomeCare/appcaire
     workspace:
       path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true

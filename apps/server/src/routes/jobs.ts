@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import path from 'path';
+import { existsSync } from 'fs';
 import { jobExecutor } from '../lib/services.js';
 import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 
@@ -7,16 +8,22 @@ const router = Router();
 
 const DEFAULT_REPO_NAME = 'appcaire';
 
-/** Resolve targetRepo: repo name → config path; else absolute path as-is; else default path. */
+/** Resolve targetRepo: repo name → config path; absolute path used only if it exists (avoids paths from other machines). */
 function resolveTargetRepoPath(targetRepo: string | undefined): string {
   if (!targetRepo || typeof targetRepo !== 'string') {
     const config = getRepoConfig(DEFAULT_REPO_NAME);
     return config?.path ?? path.join(getServiceRoot(), '..', DEFAULT_REPO_NAME);
   }
-  if (path.isAbsolute(targetRepo)) return targetRepo;
-  const config = getRepoConfig(targetRepo.trim());
+  const trimmed = targetRepo.trim();
+  if (path.isAbsolute(trimmed)) {
+    if (existsSync(trimmed)) return trimmed;
+    const repoName = path.basename(trimmed);
+    const config = getRepoConfig(repoName);
+    if (config?.path) return config.path;
+  }
+  const config = getRepoConfig(trimmed);
   if (config?.path) return config.path;
-  return path.join(getServiceRoot(), '..', targetRepo);
+  return path.join(getServiceRoot(), '..', trimmed);
 }
 
 router.get('/', (req, res) => {
@@ -112,6 +119,16 @@ router.get('/:jobId/logs', (req, res) => {
     res.type('text/plain').send(logs);
   } else {
     res.status(404).json({ error: 'Logs not found' });
+  }
+});
+
+/** Clear all jobs (memory + log/metadata files). Removes failed and stale entries from the list. */
+router.post('/clear', (req, res) => {
+  try {
+    const result = jobExecutor.clearAllJobs();
+    res.json({ success: true, ...result });
+  } catch (error) {
+    res.status(500).json({ success: false, error: (error as Error).message });
   }
 });
 

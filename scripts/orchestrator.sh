@@ -44,9 +44,11 @@ USE_ORCHESTRATOR="${USE_ORCHESTRATOR:-true}"
 SKIP_VERIFICATION="${SKIP_VERIFICATION:-false}"
 
 # State and logging
-SESSION_ID="session-$(date +%s)"
 STATE_DIR="$SERVICE_ROOT/.compound-state"
-LOG_DIR="$SERVICE_ROOT/logs/orchestrator-sessions/$SESSION_ID"
+LOG_BASE="$SERVICE_ROOT/logs/orchestrator-sessions"
+mkdir -p "$LOG_BASE"
+SESSION_ID="session-$(date +%s)"
+LOG_DIR="$LOG_BASE/$SESSION_ID"
 SESSION_LOG="$LOG_DIR/orchestrator.log"
 mkdir -p "$LOG_DIR"
 

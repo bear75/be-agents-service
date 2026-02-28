@@ -87,7 +87,7 @@ The Run Detail page shows 3 efficiency definitions with time breakdown charts. *
 | Chart | Metric | Total (denominator) | Segments | Example |
 |-------|--------|--------------------|----------|---------|
 | **Eff 1** | 62.4% | shift − break | visit, travel, wait, idle | All shifts, includes idle |
-| **Eff 2** | 87.2% | visit + travel + wait | visit, travel, wait (no idle) | Assignable only; non-empty shifts |
+| **Eff 2** | 87.2% | shift − break (shifts with ≥1 visit only) | visit, travel, wait, idle (idle within those shifts) | Min-1-visit; idle = unassigned within non-empty shifts. Eff 3 = visit span, no idle. |
 | **Eff 3** | 92.2% | visit / (pct/100) | visit, travel, wait (scaled) | Visit span; no idle |
 
 - **Eff 1 (All shifts):** `efficiency_all_pct` = `system_efficiency_pct` = `efficiency_pct`
