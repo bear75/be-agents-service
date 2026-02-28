@@ -78,6 +78,36 @@ export function RunDetailPanel({ run, onClose, onCancel }: RunDetailPanelProps) 
           </ul>
         </div>
       )}
+      {/* 3 efficiency bar charts (Eff 3 default first) */}
+      {(run.efficiency_visit_span_pct != null || run.efficiency_all_pct != null || run.efficiency_min_visit_pct != null) && (
+        <div className="mt-4 pt-3 border-t border-gray-100">
+          <h4 className="font-medium text-gray-700 mb-2">Efficiency</h4>
+          <div className="space-y-3">
+            {[
+              { label: 'Eff 3: Visit span', pct: run.efficiency_visit_span_pct, desc: 'First→last visit per shift' },
+              { label: 'Eff 1: All shifts', pct: run.efficiency_all_pct, desc: 'All shift hours (excl. break)' },
+              { label: 'Eff 2: Min 1 visit', pct: run.efficiency_min_visit_pct, desc: 'Shifts with ≥1 visit' },
+            ]
+              .filter((c) => c.pct != null)
+              .map(({ label, pct, desc }) => (
+                <div key={label}>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-xs font-medium text-gray-700">{label}</span>
+                    <span className="text-xs tabular-nums font-semibold">{(pct ?? 0).toFixed(1)}%</span>
+                  </div>
+                  <div className="h-5 rounded overflow-hidden bg-gray-100">
+                    <div
+                      className={`h-full rounded-r ${(pct ?? 0) >= 70 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                      style={{ width: `${Math.min(100, pct ?? 0)}%` }}
+                      title={`${(pct ?? 0).toFixed(1)}%`}
+                    />
+                  </div>
+                  <p className="text-[10px] text-gray-500 mt-0.5">{desc}</p>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
       <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap gap-2 items-center">
         <Link
           to={`/schedules/run/${run.id}`}
