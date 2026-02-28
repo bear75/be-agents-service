@@ -64,6 +64,10 @@ When advising or implementing: prefer FSR for visit routing and caregiver assign
    - Auth: API keys. Same lifecycle for FSR and ESS: submit dataset → solve → get solution.
    - Platform intro: https://docs.timefold.ai/timefold-platform/latest/introduction
 
+## Research handoff (workspace memory)
+
+When the workspace includes **Darwin** (shared folder), read **`memory/TIMEFOLD_RESEARCH_HANDOFF_2026-02-28.md`** for the research handoff. It summarizes ESS/FSR best-practices deep research and asks the team to **propose how to test** (test plan, shift-then-route, regression checks). Use it when advising on ESS, FSR, or testing; when asked to "analyze and propose how to test", produce a short "Research → test plan" and write it to docs or memory.
+
 ## Critical Rules
 
 - Always use **Wait efficiency** (visit/(visit+travel+wait)) for routing efficiency, not "Efficiency (visit / (shift − break))".
