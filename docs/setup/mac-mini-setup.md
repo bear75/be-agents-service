@@ -352,7 +352,7 @@ git checkout main
 git pull origin main
 
 # Run auto-compound manually with orchestrator enabled
-USE_ORCHESTRATOR=true ../be-agents-service/scripts/auto-compound.sh
+USE_ORCHESTRATOR=true ../be-agents-service/scripts/compound/auto-compound.sh
 ```
 
 ### 7.3 Monitor Dashboard

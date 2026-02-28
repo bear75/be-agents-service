@@ -154,7 +154,7 @@ cd "$TARGET_REPO"
 # Phase 4+ will use Claude Code CLI directly with specialist prompts
 
 # Check if loop.sh exists in be-agent-service
-LOOP_SCRIPT="$SERVICE_ROOT/scripts/loop.sh"
+LOOP_SCRIPT="$SERVICE_ROOT/scripts/compound/loop.sh"
 if [[ ! -f "$LOOP_SCRIPT" ]]; then
   log_error "loop.sh not found: $LOOP_SCRIPT" | tee -a "$LOG_FILE"
 

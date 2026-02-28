@@ -106,7 +106,7 @@ log_info "Executing DB architect tasks..." | tee -a "$LOG_FILE"
 
 cd "$TARGET_REPO"
 
-LOOP_SCRIPT="$SERVICE_ROOT/scripts/loop.sh"
+LOOP_SCRIPT="$SERVICE_ROOT/scripts/compound/loop.sh"
 if [[ ! -f "$LOOP_SCRIPT" ]]; then
   log_error "loop.sh not found: $LOOP_SCRIPT" | tee -a "$LOG_FILE"
   update_state "$SESSION_ID" "db-architect" '.status' 'failed'

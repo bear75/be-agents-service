@@ -54,6 +54,7 @@
 | Doc | Purpose |
 |-----|---------|
 | [WORKSPACE.md](WORKSPACE.md) | Shared markdown workspace |
+| [AGENT_WORKSPACE_STRUCTURE.md](AGENT_WORKSPACE_STRUCTURE.md) | Folder layout and agent read/write contract |
 | [CLOSED_LOOP_INTEGRATION.md](CLOSED_LOOP_INTEGRATION.md) | Closed-loop flow |
 
 ### Technical Deep-Dives

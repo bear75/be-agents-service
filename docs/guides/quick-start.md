@@ -29,7 +29,7 @@ cd ~/HomeCare/be-agents-service
 
 # Or run full auto-compound
 cd ~/HomeCare/beta-appcaire
-../be-agents-service/scripts/auto-compound.sh
+../be-agents-service/scripts/compound/auto-compound.sh
 ```
 
 ## Daily Workflow
@@ -356,7 +356,7 @@ cat ~/HomeCare/be-agents-service/.compound-state/session-*/orchestrator.json | j
 ```bash
 # Run auto-compound with verbose output
 cd ~/HomeCare/beta-appcaire
-../be-agents-service/scripts/auto-compound.sh 2>&1 | tee debug.log
+../be-agents-service/scripts/compound/auto-compound.sh 2>&1 | tee debug.log
 ```
 
 ## Dashboard Command Center

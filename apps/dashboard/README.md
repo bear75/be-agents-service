@@ -1,73 +1,36 @@
-# React + TypeScript + Vite
+# Agent Service Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React UI for the agent service: workspace, plans, sessions, agents, and run controls.
 
-Currently, two official plugins are available:
+- **Dev:** `yarn dev` → Vite on **http://localhost:3010**
+- **Production:** Dashboard is built and served by `apps/server` (same port 3010). Run from repo root: `yarn start` or `yarn dev` (see main [README](../../README.md)).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## What the dashboard shows
 
-## React Compiler
+- **Workspace** — Repo selector, workspace status, plans, inbox/priorities (when API is configured)
+- **Run / Engineering** — Start compound: `./scripts/compound/auto-compound.sh <repo>`
+- **Agents / Teams** — Agents and teams from `.compound-state/agent-service.db` (via API)
+- **Management / Insights** — Gamification, experiments, lessons learned
+- **Settings** — Setup status (workspace, OpenClaw, Telegram); links to `scripts/workspace/init-workspace.sh`, `config/openclaw/README.md`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Paths and structure
 
-## Expanding the ESLint configuration
+The UI references the canonical layout (see [docs/AGENT_WORKSPACE_STRUCTURE.md](../../docs/AGENT_WORKSPACE_STRUCTURE.md)):
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Compound scripts:** `scripts/compound/` (auto-compound, daily-compound-review, loop, check-status, test-safety)
+- **Workspace scripts:** `scripts/workspace/` (init-workspace, sync-to-workspace, process-inbox)
+- **State and DB:** `.compound-state/` (session JSON + `agent-service.db`); agents and scripts must not write elsewhere for state
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- React 19, TypeScript, Vite 7, React Router, Tailwind, Lucide, react-markdown
+- No direct DB access — all data via `apps/server` API (same origin when served by server)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Build
+
+```bash
+cd apps/dashboard
+yarn build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Output goes to `apps/dashboard/dist` and is served by `apps/server` from `apps/server/public` (build may copy into server public; see server config).

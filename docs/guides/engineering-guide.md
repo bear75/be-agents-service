@@ -96,7 +96,7 @@ cd ~/HomeCare/be-agents-service
 
 # Or run auto-compound
 cd ~/HomeCare/beta-appcaire
-../be-agents-service/scripts/auto-compound.sh
+../be-agents-service/scripts/compound/auto-compound.sh
 ```
 
 ---
@@ -451,10 +451,10 @@ launchctl start com.appcaire.auto-compound
 ./agents/verification-specialist.sh "test-$(date +%s)"
 
 # Test safety mechanisms
-./scripts/test-safety.sh
+./scripts/compound/test-safety.sh
 
 # Check status
-./scripts/check-status.sh
+./scripts/compound/check-status.sh
 ```
 
 ### Cleanup Commands

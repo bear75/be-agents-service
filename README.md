@@ -62,6 +62,7 @@ yarn dev            # Build + dev with hot reload
 | Mac mini setup | [docs/FRESH_MAC_MINI_SETUP.md](docs/FRESH_MAC_MINI_SETUP.md) |
 | Mac mini recovery | [docs/MAC_MINI_RECOVERY.md](docs/MAC_MINI_RECOVERY.md) |
 | OpenClaw (workspace + migration) | [config/openclaw/README.md](config/openclaw/README.md) |
+| Agent folders & read/write contract | [docs/AGENT_WORKSPACE_STRUCTURE.md](docs/AGENT_WORKSPACE_STRUCTURE.md) |
 | Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Data flow | [docs/DATA_FLOW.md](docs/DATA_FLOW.md) |
 | Database access | [docs/DATABASE_ACCESS.md](docs/DATABASE_ACCESS.md) |
@@ -108,13 +109,18 @@ be-agents-service/
 │   ├── infrastructure-specialist.sh # Engineering: Packages, configs, docs
 │   └── verification-specialist.sh   # Engineering: Quality gate
 ├── scripts/
+│   ├── compound/                    # Auto-compound, daily review, loop (see docs/AGENT_WORKSPACE_STRUCTURE.md)
+│   │   ├── auto-compound.sh         # 11:00 PM - Auto-implement
+│   │   ├── daily-compound-review.sh # 10:30 PM - Extract learnings
+│   │   ├── loop.sh                  # Task execution loop
+│   │   ├── analyze-report.sh        # Parse priorities report
+│   │   ├── check-status.sh          # Status monitoring
+│   │   └── test-safety.sh           # Safety mechanism tests
+│   ├── workspace/                   # init, sync, process-inbox
+│   ├── notifications/
 │   ├── orchestrator.sh              # Multi-repo coordinator
-│   ├── daily-compound-review.sh     # 10:30 PM - Extract learnings
-│   ├── auto-compound.sh             # 11:00 PM - Auto-implement
-│   ├── loop.sh                      # Task execution loop
-│   ├── analyze-report.sh            # Parse priorities report
-│   ├── check-status.sh              # Status monitoring
-│   └── test-safety.sh               # Safety mechanism tests
+│   ├── db-api.sh                    # DB API helper (sourced by compound)
+│   └── openclaw-migrate-workspace.sh
 ├── lib/
 │   ├── state-manager.sh             # JSON state coordination
 │   ├── feedback-schema.json         # Agent communication schema
@@ -122,8 +128,6 @@ be-agents-service/
 ├── apps/
 │   ├── server/                      # Unified server (port 3010): API + static in public/
 │   └── dashboard/                   # React workspace UI (build → server/public)
-├── scripts/
-│   └── start-dashboard.sh           # LaunchD: yarn workspace server start
 ├── launchd/
 │   ├── com.appcaire.auto-compound.plist
 │   ├── com.appcaire.caffeinate.plist
@@ -174,10 +178,10 @@ vim ~/Library/LaunchAgents/com.appcaire.*.plist
 
 ```bash
 # Run daily review manually
-./scripts/daily-compound-review.sh
+./scripts/compound/daily-compound-review.sh
 
 # Run auto-compound manually
-./scripts/auto-compound.sh
+./scripts/compound/auto-compound.sh
 ```
 
 ## Schedules
@@ -232,11 +236,11 @@ Features:
 ```bash
 # Run daily review
 cd ~/HomeCare/beta-appcaire
-../be-agents-service/scripts/daily-compound-review.sh
+../be-agents-service/scripts/compound/daily-compound-review.sh
 
 # Run auto-compound
 cd ~/HomeCare/beta-appcaire
-../be-agents-service/scripts/auto-compound.sh
+../be-agents-service/scripts/compound/auto-compound.sh
 
 # Run orchestrator manually
 cd ~/HomeCare/be-agents-service
@@ -247,10 +251,10 @@ cd ~/HomeCare/be-agents-service
   feature/test-branch
 
 # Check status
-../be-agents-service/scripts/check-status.sh
+../be-agents-service/scripts/compound/check-status.sh
 
 # Test safety mechanisms
-../be-agents-service/scripts/test-safety.sh
+../be-agents-service/scripts/compound/test-safety.sh
 ```
 
 ### Marketing Agents (Manual)
@@ -375,13 +379,13 @@ chmod +x ~/HomeCare/be-agents-service/scripts/*.sh
 
 ```bash
 # Test daily review (dry run)
-./scripts/daily-compound-review.sh --dry-run
+./scripts/compound/daily-compound-review.sh --dry-run
 
 # Test auto-compound (dry run)
-./scripts/auto-compound.sh --dry-run
+./scripts/compound/auto-compound.sh --dry-run
 
 # Run safety tests
-./scripts/test-safety.sh
+./scripts/compound/test-safety.sh
 ```
 
 ### Modifying Schedules

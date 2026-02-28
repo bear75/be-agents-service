@@ -3,7 +3,7 @@
  * Provides typed access to the agent service database.
  *
  * Ported from lib/database.js (CommonJS) to ESM TypeScript.
- * DB file: data/agent-service.db
+ * DB file: .compound-state/agent-service.db (single source of truth for state; see docs/AGENT_WORKSPACE_STRUCTURE.md)
  * Schema: schema.sql
  */
 
@@ -35,13 +35,13 @@ const __dirname = dirname(__filename);
 
 // Service root is four levels up: apps/server/src/lib → repo root
 const SERVICE_ROOT = resolve(__dirname, '..', '..', '..', '..');
-const DB_PATH = resolve(SERVICE_ROOT, 'data', 'agent-service.db');
+const DB_PATH = resolve(SERVICE_ROOT, '.compound-state', 'agent-service.db');
 const SCHEMA_PATH = resolve(SERVICE_ROOT, 'schema.sql');
 
-// Ensure data directory exists
-const dataDir = dirname(DB_PATH);
-if (!existsSync(dataDir)) {
-  mkdirSync(dataDir, { recursive: true });
+// Ensure .compound-state directory exists (service write area; see docs/AGENT_WORKSPACE_STRUCTURE.md)
+const stateDir = dirname(DB_PATH);
+if (!existsSync(stateDir)) {
+  mkdirSync(stateDir, { recursive: true });
 }
 
 const needsInit = !existsSync(DB_PATH);

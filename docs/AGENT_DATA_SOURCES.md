@@ -5,7 +5,7 @@
 ### Database (SQLite)
 
 **File:** `.compound-state/agent-service.db` (lib/database.js, gamification)  
-**File:** `data/agent-service.db` (apps/server database.ts — teams/agents API)
+**File:** `.compound-state/agent-service.db` (apps/server database.ts — teams/agents API)
 
 **DB schema (agents table):**
 - `id`, `team_id`, `name`, `role`, `emoji`, `llm_preference`
@@ -35,7 +35,7 @@ Leaderboard uses gamification, which reads from `.compound-state/agent-service.d
 
 Likely causes:
 1. Gamification schema (`gamification-schema.sql`) not applied to that DB
-2. Different DB path than teams API (teams use `data/agent-service.db` via apps/server)
+2. Different DB path than teams API (teams use `.compound-state/agent-service.db` via apps/server)
 3. No XP transactions yet → leaderboard needs `agent_levels` / `v_leaderboard` populated
 
 ---

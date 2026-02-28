@@ -27,6 +27,10 @@ A human-agent shared surface for unstructured data — tasks, priorities, check-
 
 ---
 
+**Agent read/write rules:** Agents read priorities, inbox, memory; they write only to `agent-reports/` and check-in appends. See [AGENT_WORKSPACE_STRUCTURE.md](AGENT_WORKSPACE_STRUCTURE.md) for the full contract.
+
+---
+
 ## Quick Start
 
 ### 1. Initialize workspace

@@ -2,11 +2,11 @@
 
 ## Quick Answer
 
-**Database Location:** `data/agent-service.db` (relative to repo root)
+**Database Location:** `.compound-state/agent-service.db` (relative to repo root; see [AGENT_WORKSPACE_STRUCTURE.md](AGENT_WORKSPACE_STRUCTURE.md))
 
 ```bash
 cd ~/HomeCare/be-agents-service
-# Path: ./data/agent-service.db
+# Path: ./.compound-state/agent-service.db
 ```
 
 **Type:** SQLite3
@@ -23,7 +23,7 @@ cd ~/HomeCare/be-agents-service
 2. **Create New Connection** → Select **SQLite**
 3. **Configure Connection:**
    - **Name:** Agent Service DB
-   - **Database Path:** `{REPO_ROOT}/data/agent-service.db` (e.g. `~/HomeCare/be-agents-service/data/agent-service.db`)
+   - **Database Path:** `{REPO_ROOT}/.compound-state/agent-service.db` (e.g. `~/HomeCare/be-agents-service/.compound-state/agent-service.db`)
    - Click **Connect**
 
 **Features in TablePlus:**
@@ -41,7 +41,7 @@ cd ~/HomeCare/be-agents-service
 **Direct Access:**
 ```bash
 cd ~/HomeCare/be-agents-service
-sqlite3 data/agent-service.db
+sqlite3 .compound-state/agent-service.db
 ```
 
 **Useful Commands:**
