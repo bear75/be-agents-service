@@ -64,6 +64,15 @@ export function EngineeringPage() {
     getJobLogs(jobId).then(setSelectedJobLogs);
   };
 
+  const handleClearAll = () => {
+    if (!confirm('Ta bort alla jobb från listan (loggar raderas)?')) return;
+    setClearing(true);
+    clearAllJobs()
+      .then(() => load())
+      .catch((e) => setError(String(e.message)))
+      .finally(() => setClearing(false));
+  };
+
   if (loading && jobs.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -139,11 +148,21 @@ export function EngineeringPage() {
 
       {/* Jobs list */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-4 py-3 border-b flex items-center justify-between">
+        <div className="px-4 py-3 border-b flex items-center justify-between gap-2">
           <h3 className="font-medium text-gray-900">Running Jobs</h3>
-          <button onClick={load} className="text-gray-500 hover:text-gray-700">
-            <RefreshCw className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleClearAll}
+              disabled={clearing || jobs.length === 0}
+              className="text-sm text-amber-600 hover:text-amber-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Rensa alla jobb från listan"
+            >
+              {clearing ? 'Rensar…' : 'Rensa alla jobb'}
+            </button>
+            <button onClick={load} className="text-gray-500 hover:text-gray-700" title="Uppdatera">
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
         </div>
         <div className="divide-y">
           {jobs.map((job) => (
