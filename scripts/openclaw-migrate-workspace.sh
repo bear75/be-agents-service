@@ -1,70 +1,29 @@
-#!/usr/bin/env bash
+# Optional: move or copy OpenClaw workspace into the shared folder.
+# Use on other machines or future runs if you need to migrate workspace data.
+# If you've already moved everything (e.g. on the Mac mini), you can ignore this script.
 #
-# One-time migration: copy OpenClaw default workspace into the shared folder
-# so all agent work lives in the be-agents-service repo.
-#
-# Usage:
-#   ./scripts/openclaw-migrate-workspace.sh [TARGET_DIR]
-#
-# Default TARGET_DIR: $HOME/.openclaw/workspace/be-agents-service (Mac mini shared folder)
-# Example (repo elsewhere): ./scripts/openclaw-migrate-workspace.sh ~/HomeCare/be-agents-service
-#
+# Usage: ./scripts/openclaw-migrate-workspace.sh
 
 set -e
 
-DEFAULT_SOURCE="$HOME/.openclaw/workspace"
-TARGET="${1:-$HOME/.openclaw/workspace/be-agents-service}"
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+OPENCLAW_WS="${OPENCLAW_WORKSPACE:-$HOME/.openclaw/workspace/be-agents-service}"
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CONFIG="${CONFIG:-$HOME/.openclaw/openclaw.json}"
 
 echo "=== OpenClaw workspace migration ==="
+echo "Target (agent.workspace): $OPENCLAW_WS"
 echo ""
 
-if [[ ! -d "$DEFAULT_SOURCE" ]]; then
-  echo "Nothing to migrate: default workspace not found at $DEFAULT_SOURCE"
-  exit 0
+if [[ ! -f "$CONFIG" ]]; then
+  echo "No config at $CONFIG — copy from config/openclaw/ first."
+  echo "  cp $SERVICE_ROOT/config/openclaw/openclaw.json ~/.openclaw/openclaw.json"
+  exit 1
 fi
 
-echo "Source: $DEFAULT_SOURCE"
-echo "Target: $TARGET"
+mkdir -p "$OPENCLAW_WS"
+echo "Ensured directory exists: $OPENCLAW_WS"
 echo ""
-
-mkdir -p "$TARGET"
-
-# Copy contents; do not overwrite existing (preserve shared repo content)
-if command -v rsync >/dev/null 2>&1; then
-  rsync -av --ignore-existing "$DEFAULT_SOURCE/" "$TARGET/"
-  echo ""
-  echo "Migration done (rsync)."
-else
-  COPIED=0
-  while IFS= read -r -d '' entry; do
-    name="${entry#$DEFAULT_SOURCE/}"
-    dest="$TARGET/$name"
-    if [[ -e "$dest" ]]; then
-      echo "  skip (exists): $name"
-    else
-      if [[ -d "$entry" ]]; then
-        mkdir -p "$dest"
-        cp -R "$entry"/* "$dest/" 2>/dev/null || true
-      else
-        mkdir -p "$(dirname "$dest")"
-        cp "$entry" "$dest"
-      fi
-      echo "  copied: $name"
-      ((COPIED++)) || true
-    fi
-  done < <(find "$DEFAULT_SOURCE" -mindepth 1 -maxdepth 1 -print0 2>/dev/null)
-  echo ""
-  if [[ $COPIED -gt 0 ]]; then
-    echo "Migrated $COPIED top-level item(s) to $TARGET"
-  else
-    echo "No new items copied (target already had content or source empty)."
-  fi
-fi
+echo "If you had an old workspace elsewhere, copy its contents into: $OPENCLAW_WS"
+echo "Then run: openclaw gateway restart"
 echo ""
-echo "Next steps:"
-echo "  1. Set agent.workspace in ~/.openclaw/openclaw.json to: $TARGET"
-echo "  2. Restart OpenClaw: openclaw gateway restart"
-echo ""
+echo "Done. New agent work will use the path in agent.workspace."

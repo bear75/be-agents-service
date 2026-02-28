@@ -1,11 +1,8 @@
 {
   // CRITICAL: This MUST be the SAME folder used by Cursor, compound learning, and Telegram.
-  // There can only be ONE shared human-AI folder. If OpenClaw uses a different path, you get two folders:
-  // Telegram updates memory in one place, compound/priorities in another — split state, confusion.
-  // Use the exact same path as config/repos.yaml workspace.path for the context you use (or AgentWorkspace/default).
-  // NOT the be-agents-service repo.
+  // One shared folder only: AgentWorkspace/DARWIN. Set workspace to that path (or your actual path).
   agent: {
-    workspace: "~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN",
+    workspace: "~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN"
   },
 
   // Telegram only — WhatsApp removed; do not re-enable.
@@ -13,7 +10,7 @@
     telegram: {
       enabled: true,
       botToken: "YOUR_TELEGRAM_BOT_TOKEN",
-      allowFrom: ["YOUR_TELEGRAM_USER_ID"],
-    },
+      allowFrom: ["YOUR_TELEGRAM_USER_ID"]
+    }
   },
 }
