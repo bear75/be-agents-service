@@ -39,20 +39,28 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
   }, []);
 
   useEffect(() => {
-    if (!isOpen || !triggerRef.current) {
-      setDropdownRect(null);
-      return;
-    }
-    const el = triggerRef.current;
-    const rect = el.getBoundingClientRect();
-    setDropdownRect({
-      top: rect.bottom + 8,
-      left: rect.left,
-      width: Math.max(rect.width, 200),
-    });
+    if (!isOpen) setDropdownRect(null);
   }, [isOpen]);
 
   const selectedRepo = repos.find((r) => r.name === value);
+
+  const openDropdown = () => {
+    setIsOpen(true);
+    const el = triggerRef.current;
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      setDropdownRect({
+        top: rect.bottom + 8,
+        left: rect.left,
+        width: Math.max(rect.width, 200),
+      });
+    }
+  };
+
+  const closeDropdown = () => {
+    setIsOpen(false);
+    setDropdownRect(null);
+  };
 
   if (loading) {
     return (
@@ -83,20 +91,25 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
     isOpen && typeof document !== 'undefined' ? (
       createPortal(
         <>
-          {/* Backdrop: above layout (z-50), subtle so page is still visible */}
+          {/* Backdrop: transparent click-catcher only (no dark tint that could render black) */}
           <div
-            className="fixed inset-0 z-50 bg-black/20"
-            onClick={() => setIsOpen(false)}
+            className="fixed inset-0"
+            style={{ zIndex: 50000 }}
+            onClick={closeDropdown}
             aria-hidden
           />
-          {/* Dropdown: positioned under the trigger, above backdrop */}
-          {dropdownRect && (
+          {/* Dropdown: always on top with explicit white background so it never appears blank */}
+          {(() => {
+            const rect = dropdownRect ?? { top: 80, left: 16, width: 280 };
+            return (
             <div
-              className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto min-w-[200px]"
+              className="fixed border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto min-w-[200px]"
               style={{
-                top: dropdownRect.top,
-                left: dropdownRect.left,
-                width: dropdownRect.width,
+                zIndex: 50001,
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                backgroundColor: '#ffffff',
               }}
               role="listbox"
               aria-label="Select repository"
@@ -105,7 +118,7 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
                 type="button"
                 onClick={() => {
                   onChange('');
-                  setIsOpen(false);
+                  closeDropdown();
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 ${
                   !value ? 'bg-blue-50' : ''
@@ -123,7 +136,7 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
                   key={repo.name}
                   onClick={() => {
                     onChange(repo.name);
-                    setIsOpen(false);
+                    closeDropdown();
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
                     repo.name === value ? 'bg-blue-50' : ''
@@ -152,7 +165,8 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
                 </button>
               ))}
             </div>
-          )}
+            );
+          })()}
         </>,
         document.body,
       )
@@ -163,7 +177,8 @@ export function RepoSelector({ value, onChange }: RepoSelectorProps) {
       <button
         ref={triggerRef}
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        data-testid="repo-selector-trigger"
+        onClick={() => (isOpen ? closeDropdown() : openDropdown())}
         className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
         aria-expanded={isOpen}
         aria-haspopup="listbox"

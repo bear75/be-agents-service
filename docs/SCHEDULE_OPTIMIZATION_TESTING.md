@@ -8,6 +8,44 @@ How to run and verify the new schedule optimization code: dashboard UI, schedule
 
 ---
 
+## Quick start: view Schedules and run agents / submit TF jobs
+
+1. **Start the server (dashboard + API on port 3010)**  
+   From repo root:
+   ```bash
+   cd ~/HomeCare/be-agents-service
+   yarn dev
+   ```
+   Then open **http://localhost:3010/schedules**. You’ll see the pipeline, scatter plot, and runs table. Use **Refresh** to reload; click a run to cancel it if it’s queued/running.
+
+2. **Optional: seed sample runs**  
+   If the page is empty, seed the DB so you have data to inspect:
+   ```bash
+   sqlite3 .compound-state/agent-service.db < scripts/seed-schedule-runs.sql
+   ```
+   Refresh http://localhost:3010/schedules.
+
+3. **Run the optimization loop (agents + research)**  
+   The **agents** (Timefold Specialist, Optimization Mathematician) are not started from the Schedules page — they are invoked by the **schedule-optimization loop** from the command line. The loop fetches strategies from the Optimization Mathematician and (in production) would dispatch FSR jobs via appcaire scripts.
+   ```bash
+   # Dry run: no real Timefold calls, only GET /api/schedule-runs and log flow
+   ./scripts/compound/schedule-optimization-loop.sh huddinge-2w-expanded --dry-run
+   ```
+   For **real** TF job submission you need:
+   - `TIMEFOLD_API_KEY` set (Timefold API).
+   - `APPCAIRE_PATH` set to the appcaire repo (or `appcaire.path` in `config/repos.yaml`).
+   - Run without `--dry-run`; actual submit is done by appcaire (e.g. `submit_to_timefold.py`). The loop then uses the dashboard API to list runs and cancel non‑promising ones (`DARWIN_API` defaults to http://localhost:3010).
+
+4. **Summary**  
+   | Goal | Action |
+   |------|--------|
+   | View Schedules at 3010 | `yarn dev` → open http://localhost:3010/schedules |
+   | See sample runs | `sqlite3 .compound-state/agent-service.db < scripts/seed-schedule-runs.sql` then refresh |
+   | Run agents (research + loop) | `./scripts/compound/schedule-optimization-loop.sh huddinge-2w-expanded [--dry-run]` |
+   | Submit real TF jobs | Use appcaire’s Timefold submit script; server must be running so loop/dashboard can list and cancel runs |
+
+---
+
 ## 1. Prerequisites
 
 - Node.js 20+ and Yarn (from repo root: `yarn install`)
