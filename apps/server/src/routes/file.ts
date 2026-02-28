@@ -35,6 +35,9 @@ const AGENT_TO_FILES: Record<string, { script: string; prompt: string }> = {
   'agent-cpo-cto': { script: 'management/cpo-cto', prompt: 'cpo-cto' },
   'agent-hr-lead': { script: 'management/hr-agent-lead', prompt: 'hr-agent-lead' },
   'agent-interface': { script: 'management/interface-agent', prompt: 'interface-agent' },
+  // Schedule optimization (Timefold FSR pipeline)
+  'agent-timefold-specialist': { script: 'timefold-specialist', prompt: 'timefold-specialist' },
+  'agent-optimization-mathematician': { script: 'optimization-mathematician', prompt: 'optimization-mathematician' },
 };
 
 /** Resolve any agent ID (incl. DB-generated) to canonical key for AGENT_TO_FILES */
@@ -97,7 +100,7 @@ router.get('/agent-script', (req: Request, res: Response) => {
 router.get('/agent-prompt', (req: Request, res: Response) => {
   const rawId = (req.query.agentId as string)?.trim();
   const agentId = rawId ? resolveCanonicalAgentId(rawId) : null;
-  const repoName = (req.query.repo as string)?.trim() || 'beta-appcaire';
+  const repoName = (req.query.repo as string)?.trim() || 'appcaire';
   if (!agentId || !AGENT_TO_FILES[agentId]) {
     return res.status(400).json({ error: 'Unknown agent ID' });
   }

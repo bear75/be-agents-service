@@ -110,7 +110,8 @@ app.use(
   }
 );
 
-app.listen(PORT, () => {
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(Number(PORT), HOST, () => {
   console.log('');
   console.log('════════════════════════════════════════');
   console.log('  Darwin — Unified Dashboard');
@@ -118,6 +119,9 @@ app.listen(PORT, () => {
   console.log(`  Dashboard:  http://localhost:${PORT}/`);
   console.log(`  API:        http://localhost:${PORT}/api/`);
   console.log(`  Health:     http://localhost:${PORT}/health`);
+  if (HOST === '0.0.0.0') {
+    console.log(`  Same WiFi:  http://<this-machine-ip>:${PORT}/  (see ipconfig/ifconfig)`);
+  }
   console.log('════════════════════════════════════════');
   console.log('');
 });

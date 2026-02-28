@@ -4,6 +4,8 @@ How to run and verify the new schedule optimization code: dashboard UI, schedule
 
 **Relevant repos:** `be-agent-service` (dashboard + API + agents/scripts), `caire-platform/appcaire` (data and Timefold scripts). No `beta-appcaire` or `bryntum-prototype` involved.
 
+**Agents page:** The **Timefold Specialist** and **Optimization Mathematician** appear in the dashboard under **Agents** (team: Schedule optimization). They are used for Timefold optimization research: the specialist submits/monitors/cancels FSR jobs and records metrics; the mathematician analyses runs and proposes next strategies. If you don’t see them, run `sqlite3 .compound-state/agent-service.db < scripts/seed-schedule-optimization-agents.sql`.
+
 ---
 
 ## 1. Prerequisites
@@ -99,6 +101,8 @@ This builds the dashboard, copies assets into the server, and starts the unified
 - **Dashboard:** http://localhost:3010/
 - **Schedules page:** http://localhost:3010/schedules
 - **Health:** http://localhost:3010/health
+
+**Open from another device on the same WiFi:** The server binds to `0.0.0.0` so it accepts LAN connections. On the machine running the server, get its IP (e.g. `ifconfig | grep "inet "` on macOS, or `ip addr` on Linux). On the remote device (phone, laptop), open `http://<that-IP>:3010` (e.g. `http://192.168.1.42:3010`). Ensure the host firewall allows incoming TCP on port 3010 if needed.
 
 ---
 

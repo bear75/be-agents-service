@@ -326,7 +326,8 @@ CREATE TABLE IF NOT EXISTS llm_usage (
 INSERT OR IGNORE INTO teams (id, name, domain, description) VALUES
     ('team-engineering', 'Engineering', 'engineering', '10 specialists + orchestrator + senior reviewer'),
     ('team-marketing', 'Marketing', 'marketing', '10 Marvel character agents led by Jarvis'),
-    ('team-management', 'Management', 'management', 'Executive leadership: CEO, CPO/CTO, CMO/CSO, HR Agent Lead');
+    ('team-management', 'Management', 'management', 'Executive leadership: CEO, CPO/CTO, CMO/CSO, HR Agent Lead'),
+    ('team-schedule-optimization', 'Schedule optimization', 'schedule-optimization', 'Timefold FSR pipeline: submit, monitor, cancel runs; propose strategies (spaghetti sort)');
 
 -- Seed engineering agents
 INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VALUES
@@ -353,6 +354,11 @@ INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VA
     ('agent-pepper', 'team-marketing', 'Pepper', 'Email Marketing', '💼', 'sonnet'),
     ('agent-friday', 'team-marketing', 'Friday', 'Marketing Dev', '💻', 'sonnet'),
     ('agent-wong', 'team-marketing', 'Wong', 'Notion Manager', '📚', 'haiku');
+
+-- Seed schedule-optimization agents (Timefold FSR pipeline; used by schedule-optimization-loop.sh)
+INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VALUES
+    ('agent-timefold-specialist', 'team-schedule-optimization', 'Timefold Specialist', 'Submit/monitor/cancel FSR jobs, run metrics and continuity scripts, write results to Darwin DB', '🕐', 'sonnet'),
+    ('agent-optimization-mathematician', 'team-schedule-optimization', 'Optimization Mathematician', 'Analyse completed runs, propose N strategies (exploitation + exploration), spaghetti sort cancellation heuristics', '📐', 'sonnet');
 
 -- Seed management agents
 INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VALUES

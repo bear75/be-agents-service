@@ -1,12 +1,13 @@
 # Repository Configuration
-# This file defines all repositories managed by the agent service
+# Repos: path = git repo root. Optional workspace.path = shared markdown folder (inbox, priorities, memory).
+# One shared workspace for Cursor/compound/Telegram: AgentWorkspace/DARWIN (see "darwin" entry).
 
 repos:
-  # darwin = name for the Telegram agent, the shared folder (iCloud/AgentWorkspace/DARWIN), and the dashboard workspace. NOT a code repo.
+  # Workspace-only (no git repo): the shared folder for Telegram/Cursor/compound. Dashboard "workspace" = darwin.
   darwin:
-    path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+    path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
     workspace:
-      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true
     schedule:
       review: "22:30"
@@ -17,54 +18,28 @@ repos:
     enabled: true
 
   beta-appcaire:
-    # Absolute path to repository
-    path: ~/HomeCare/beta-appcaire
-
-    # Shared markdown workspace (iCloud or local)
-    # Both you and agents read/write here — inbox, priorities, check-ins, memory
+    path: /Users/bjornevers_MacPro/HomeCare/beta-appcaire
     workspace:
-      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/beta-appcaire
+      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true
-
-    # Schedule for automated runs (24-hour format)
-    # Compound creates draft PRs only — you review and merge; never auto-merges to main.
     schedule:
-      review: "22:30"     # Daily compound review
-      compound: "23:00"   # Auto-compound: branch + implement + draft PR
-
-    # Directory paths within the repository
+      review: "22:30"
+      compound: "23:00"
     priorities_dir: reports/
     logs_dir: logs/
     tasks_dir: tasks/
-
-    # Enable/disable agent for this repo
     enabled: true
-
-    # GitHub configuration
     github:
       owner: bear75
       repo: beta-appcaire
       default_branch: main
 
-    # Environment configuration
-    env:
-      # API keys loaded from ~/.config/caire/env
-      # ANTHROPIC_API_KEY
-      # GITHUB_TOKEN
-
-    # Notification channels (configured after OpenClaw setup)
-    # notifications:
-    #   telegram:
-    #     enabled: true
-    #     bot_token_env: TELEGRAM_BOT_TOKEN
-    #     chat_id_env: TELEGRAM_CHAT_ID
-    #   morning_briefing: "08:00"
-    #   session_complete: true
-    #   weekly_review: "monday 08:00"
-
-  # Schedule optimization data and scripts (Huddinge/Nova FSR runs)
+  # Schedule optimization (Huddinge/Nova FSR) — caire-platform/appcaire
   appcaire:
-    path: ~/HomeCare/caire-platform/appcaire
+    path: /Users/bjornevers_MacPro/HomeCare/caire-platform/appcaire
+    workspace:
+      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      enabled: true
     priorities_dir: docs_2.0/recurring-visits/huddinge-package/
     logs_dir: docs_2.0/recurring-visits/huddinge-package/logs/
     tasks_dir: docs_2.0/recurring-visits/huddinge-package/tasks/
@@ -74,11 +49,29 @@ repos:
       repo: caire-platform
       default_branch: main
 
-  # Hannes sandbox — compound only to this repo (WORKSPACE_ALLOWED_REPOS=hannes-projects)
-  hannes-projects:
-    path: ~/HomeCare/hannes-projects
+  # This repo (be-agent-service)
+  be-agent-service:
+    path: /Users/bjornevers_MacPro/HomeCare/be-agent-service
     workspace:
-      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/hannes-space
+      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      enabled: true
+    schedule:
+      review: "22:30"
+      compound: "23:00"
+    priorities_dir: reports/
+    logs_dir: logs/
+    tasks_dir: tasks/
+    enabled: true
+    github:
+      owner: bear75
+      repo: be-agents-service
+      default_branch: main
+
+  # Hannes sandbox (WORKSPACE_ALLOWED_REPOS=hannes-projects)
+  hannes-projects:
+    path: /Users/bjornevers_MacPro/HomeCare/hannes-projects
+    workspace:
+      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true
     schedule:
       review: "22:30"
