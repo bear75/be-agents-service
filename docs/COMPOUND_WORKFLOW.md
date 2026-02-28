@@ -7,7 +7,9 @@ An autonomous AI agent system that learns from your work and ships features whil
 This workflow runs two automated jobs every night:
 
 1. **10:30 PM - Compound Review**: Reviews all work from the last 24 hours, extracts learnings, and updates CLAUDE.md files
-2. **11:00 PM - Auto-Compound**: Picks the #1 priority from your reports, implements it via the **multi-agent orchestrator** (backend, frontend, verification, etc.), and creates a PR.
+2. **11:00 PM - Auto-Compound**: Picks the #1 priority from your reports, implements it via the **multi-agent orchestrator** (backend, frontend, verification, etc.), and creates a **draft PR**. It never merges to main — you review and merge manually.
+
+**Safe workflow:** Branch → implement → draft PR → you review & approve → you merge. Payment and sensitive code always go through this review; compound does not auto-merge.
 
 The agent gets smarter every day by reading its own updated instructions before each implementation run.
 
