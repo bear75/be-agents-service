@@ -1,76 +1,60 @@
-# OpenClaw configuration (Mac mini + Telegram)
+# OpenClaw config (Mac mini / shared workspace)
 
-Template and instructions for running OpenClaw with the **shared be-agents-service folder** as the agent workspace, so all agent work is saved in the repo and under version control.
+Template for `~/.openclaw/openclaw.json`. Uses the **newer OpenClaw schema** (`agents.list`, `bindings`, etc.) and Telegram-only (no WhatsApp).
 
-**Telegram only.** WhatsApp was removed; do not re-enable.
+## Important: workspace is per-agent
 
----
+The live config uses **`agents.list`**, not a top-level `agent.workspace`. The **main** agent must have a `workspace` field in `agents.list` for new work to go to the shared folder.
 
-## 1. Use the correct shared folder (Mac mini)
+In the template, the main agent already has:
+```json
+"workspace": "/Users/be-agent-service/.openclaw/workspace/be-agents-service"
+```
+If you copy an existing config that has no `workspace` for the default agent, add it to that agent in `agents.list`, e.g.:
+```json
+{
+  "id": "main",
+  "default": true,
+  "name": "Main Agent",
+  "workspace": "/Users/be-agent-service/.openclaw/workspace/be-agents-service",
+  "agentDir": "~/.openclaw/agents/main/agent"
+}
+```
 
-To avoid work being split between `~/.openclaw/workspace` (default) and the shared repo:
+## Quick setup
 
-1. Copy the template to your OpenClaw config:
+1. **Copy the config**
    ```bash
    mkdir -p ~/.openclaw
-   cp ~/HomeCare/be-agents-service/config/openclaw/openclaw.json ~/.openclaw/openclaw.json
+   cp /path/to/be-agents-service/config/openclaw/openclaw.json ~/.openclaw/openclaw.json
    ```
 
-2. Edit `~/.openclaw/openclaw.json`:
-   - **Workspace (Mac mini):** The template uses:
-     ```json
-     "workspace": "/Users/be-agent-service/.openclaw/workspace/be-agents-service"
+2. **Set the workspace** (if different)
+   - Edit `~/.openclaw/openclaw.json` and set the **main** agent's `workspace` in `agents.list` to your shared folder (e.g. `/Users/be-agent-service/.openclaw/workspace/be-agents-service`).
+
+3. **Replace placeholders**
+   - `YOUR_TELEGRAM_USER_ID` → your numeric Telegram ID (from @userinfobot).
+   - `${TELEGRAM_BOT_TOKEN}` → your bot token, or rely on `TELEGRAM_BOT_TOKEN` in `~/.config/caire/env` and the gateway plist.
+
+4. **Optional: migration script**
+   - If you need to move an existing workspace into the shared folder, run:
+     ```bash
+     ./scripts/openclaw-migrate-workspace.sh
      ```
-     That is the shared folder on the Mac mini. If your Mac mini user is different, replace with your actual path (e.g. `/Users/YOUR_USER/.openclaw/workspace/be-agents-service`).
-   - **Other machines:** If the repo is elsewhere (e.g. `~/HomeCare/be-agents-service`), set `agent.workspace` to that path so the agent writes into the repo.
+   - You can skip this if you've already moved everything.
 
-3. Replace placeholders:
-   - `YOUR_TELEGRAM_BOT_TOKEN` → token from @BotFather
-   - `YOUR_TELEGRAM_USER_ID` → your numeric ID from @userinfobot
-
-   Or use the helper script:
-   ```bash
-   ./scripts/setup-telegram-openclaw.sh YOUR_TELEGRAM_USER_ID
-   ```
-
-4. Restart OpenClaw:
+5. **Apply and restart**
    ```bash
    openclaw gateway restart
    ```
-
-After this, the main agent uses the shared folder and all future work is saved there.
-
----
-
-## 2. Migrate existing files to the shared folder
-
-If the agent previously used the default workspace (`~/.openclaw/workspace`), migrate those files into the shared folder once:
-
-```bash
-cd ~/HomeCare/be-agents-service
-./scripts/openclaw-migrate-workspace.sh
-```
-
-The script:
-
-- Copies contents from `~/.openclaw/workspace` into the shared folder (see script for the exact target path).
-- Skips overwriting existing files in the destination.
-- Does not delete the default workspace (you can archive or remove it yourself after verifying).
-
-Then set `agent.workspace` to the shared folder as in step 1 and restart OpenClaw.
+   New agent work will use the workspace path set on the main agent in `agents.list`.
 
 ---
 
-## 3. Verify
+## On the Mac mini (after moving to shared folder)
 
-- Send `status` or `overview` to your Telegram bot; it should report the workspace that matches your shared folder.
-- Create a small file via the agent and confirm it appears in the shared repo (e.g. under `docs/` or `memory/` in the workspace).
+- Ensure **`~/.openclaw/openclaw.json`** has the **main** agent's `workspace` in `agents.list` pointing to your shared folder (or use this template).
+- Run: **`openclaw gateway restart`**.
+- After that, new agent work will go into the shared folder.
 
----
-
-## Reference
-
-- OpenClaw config examples: https://docs.openclaw.ai/gateway/configuration-examples  
-- Agent workspace: https://docs.openclaw.ai/concepts/agent-workspace  
-- Telegram setup in this repo: `scripts/setup-telegram-openclaw.sh`  
-- Full Mac mini setup: `docs/MAC_MINI_COMPLETE_SETUP.md`
+See also: `scripts/setup-telegram-openclaw.sh` for Telegram user ID and token setup.

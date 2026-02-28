@@ -48,6 +48,42 @@ repos:
     #   session_complete: true
     #   weekly_review: "monday 08:00"
 
+  # AppCaire (production / main appcaire repo — adjust path if different)
+  appcaire:
+    path: ~/HomeCare/appcaire
+    workspace:
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/appcaire
+      enabled: true
+    schedule:
+      review: "22:30"
+      compound: "23:00"
+    priorities_dir: reports/
+    logs_dir: logs/
+    tasks_dir: tasks/
+    enabled: true
+    github:
+      owner: bear75
+      repo: appcaire
+      default_branch: main
+
+  # Agent service repo (this repo — compound can run here too)
+  be-agents-service:
+    path: ~/HomeCare/be-agents-service
+    workspace:
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/be-agents-service
+      enabled: true
+    schedule:
+      review: "22:30"
+      compound: "23:00"
+    priorities_dir: reports/
+    logs_dir: logs/
+    tasks_dir: tasks/
+    enabled: true
+    github:
+      owner: bear75
+      repo: be-agents-service
+      default_branch: main
+
   # Hannes sandbox — compound only to this repo (WORKSPACE_ALLOWED_REPOS=hannes-projects)
   hannes-projects:
     path: ~/HomeCare/hannes-projects
