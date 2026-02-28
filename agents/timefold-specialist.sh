@@ -1,8 +1,9 @@
 #!/bin/bash
 #
 # Timefold Specialist Agent
-# Submits, monitors, and cancels Timefold FSR optimization jobs.
-# Runs metrics and continuity scripts in appcaire repo; writes results to DB.
+# Expert in FSR (Field Service Routing), ESS (Employee Shift Scheduling), and Timefold Platform.
+# Submits, monitors, and cancels Timefold FSR optimization jobs; runs metrics and continuity in appcaire; writes results to DB.
+# Advises on when to use FSR vs ESS vs platform to solve demand-supply (visits, shifts, coverage).
 #
 # Usage:
 #   ./timefold-specialist.sh <session_id> <appcaire_repo> [strategy_json_path]

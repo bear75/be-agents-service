@@ -10,7 +10,7 @@
 CREATE TABLE IF NOT EXISTS teams (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
-    domain TEXT NOT NULL CHECK(domain IN ('engineering', 'marketing', 'management')),
+    domain TEXT NOT NULL CHECK(domain IN ('engineering', 'marketing', 'management', 'schedule-optimization')),
     description TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
