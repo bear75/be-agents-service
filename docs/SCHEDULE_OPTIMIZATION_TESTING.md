@@ -4,6 +4,8 @@ How to run and verify the new schedule optimization code: dashboard UI, schedule
 
 **Relevant repos:** `be-agent-service` (dashboard + API + agents/scripts), `caire-platform/appcaire` (data and Timefold scripts). No `beta-appcaire` or `bryntum-prototype` involved.
 
+**Research handoff (2026-02-28):** Deep research on ESS/FSR best practices and open source solvers was handed to the **Timefold agent team** for analysis and a “how to test” proposal. See **[TIMEFOLD_RESEARCH_HANDOFF.md](TIMEFOLD_RESEARCH_HANDOFF.md)** and the full report at repo root: `timefold-ess-fsr-best-practices.md`.
+
 **Agents page:** The **Timefold Specialist** and **Optimization Mathematician** appear in the dashboard under **Agents** (team: Schedule optimization). They are used for Timefold optimization research: the specialist submits/monitors/cancels FSR jobs and records metrics; the mathematician analyses runs and proposes next strategies. If you don’t see them, run `sqlite3 .compound-state/agent-service.db < scripts/seed-schedule-optimization-agents.sql`.
 
 ---

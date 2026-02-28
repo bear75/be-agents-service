@@ -4,7 +4,7 @@
  */
 import { useEffect, useState } from 'react';
 import { PagePurpose } from '../components/PagePurpose';
-import { getScheduleRuns } from '../lib/api';
+import { getScheduleRuns, importScheduleRunsFromAppcaire } from '../lib/api';
 import type { ScheduleRun } from '../types';
 import { PipelineBoard } from '../components/schedules/PipelineBoard';
 import { ScatterPlot } from '../components/schedules/ScatterPlot';
@@ -12,18 +12,40 @@ import { RunDetailPanel } from '../components/schedules/RunDetailPanel';
 
 const DATASET = 'huddinge-2w-expanded';
 
+function toNum(v: unknown): number | null {
+  if (v == null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Ensure metric fields are numbers (API may send strings from SQLite) */
+function normalizeRun(r: ScheduleRun): ScheduleRun {
+  return {
+    ...r,
+    routing_efficiency_pct: toNum(r.routing_efficiency_pct) ?? r.routing_efficiency_pct,
+    unassigned_visits: toNum(r.unassigned_visits) ?? r.unassigned_visits,
+    total_visits: toNum(r.total_visits) ?? r.total_visits,
+    unassigned_pct: toNum(r.unassigned_pct) ?? r.unassigned_pct,
+    continuity_avg: toNum(r.continuity_avg) ?? r.continuity_avg,
+    continuity_max: toNum(r.continuity_max) ?? r.continuity_max,
+    continuity_over_target: toNum(r.continuity_over_target) ?? r.continuity_over_target,
+    continuity_target: toNum(r.continuity_target) ?? r.continuity_target,
+  };
+}
+
 export function SchedulesPage() {
   const [runs, setRuns] = useState<ScheduleRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   const load = async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await getScheduleRuns(DATASET);
-      setRuns(data);
+      setRuns(data.map(normalizeRun));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load runs');
     } finally {
@@ -34,6 +56,23 @@ export function SchedulesPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const syncFromAppcaire = async () => {
+    setSyncing(true);
+    setError(null);
+    try {
+      const result = await importScheduleRunsFromAppcaire();
+      if (result?.success) {
+        await load();
+      } else {
+        setError(result?.error ?? 'Sync failed');
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Sync failed');
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const selectedRun = selectedId ? runs.find((r) => r.id === selectedId) : null;
 
@@ -48,14 +87,24 @@ export function SchedulesPage() {
         <h2 className="text-lg font-semibold text-gray-900">
           Schedule optimization — {DATASET}
         </h2>
-        <button
-          type="button"
-          onClick={load}
-          disabled={loading}
-          className="text-sm text-blue-600 hover:underline disabled:opacity-50"
-        >
-          {loading ? 'Loading…' : 'Refresh'}
-        </button>
+        <span className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={syncFromAppcaire}
+            disabled={syncing || loading}
+            className="text-sm text-blue-600 hover:underline disabled:opacity-50"
+          >
+            {syncing ? 'Syncing…' : 'Sync from appcaire'}
+          </button>
+          <button
+            type="button"
+            onClick={load}
+            disabled={loading}
+            className="text-sm text-blue-600 hover:underline disabled:opacity-50"
+          >
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
+        </span>
       </div>
 
       {error && (
@@ -68,6 +117,34 @@ export function SchedulesPage() {
         <div className="text-gray-500">Loading runs…</div>
       ) : (
         <>
+          {runs.filter((r) => r.status === 'completed' && r.routing_efficiency_pct != null).length > 0 && (
+            <div className="rounded-lg border border-gray-200 bg-gray-50/80 p-3 text-sm">
+              <h3 className="font-medium text-gray-700 mb-2">Metrics summary (completed runs)</h3>
+              {(() => {
+                const withMetrics = runs.filter(
+                  (r) => r.status === 'completed' && r.routing_efficiency_pct != null && r.continuity_avg != null && r.unassigned_pct != null
+                );
+                const n = withMetrics.length;
+                const avgEff = withMetrics.reduce((s, r) => s + (r.routing_efficiency_pct ?? 0), 0) / n;
+                const avgCont = withMetrics.reduce((s, r) => s + (r.continuity_avg ?? 0), 0) / n;
+                const avgUn = withMetrics.reduce((s, r) => s + (r.unassigned_pct ?? 0), 0) / n;
+                const meeting = withMetrics.filter(
+                  (r) => (r.unassigned_pct ?? 99) < 1 && (r.continuity_avg ?? 99) <= 11 && (r.routing_efficiency_pct ?? 0) >= 70
+                ).length;
+                return (
+                  <p className="text-gray-600">
+                    <span className="font-medium text-gray-800">{n}</span> runs with metrics —
+                    efficiency avg <span className="font-medium">{avgEff.toFixed(1)}%</span>,
+                    continuity avg <span className="font-medium">{avgCont.toFixed(1)}</span>,
+                    unassigned avg <span className="font-medium">{avgUn.toFixed(2)}%</span>
+                    {meeting > 0 && (
+                      <> · <span className="text-green-700 font-medium">{meeting} meeting goal</span> (unassigned &lt;1%, continuity ≤11, eff ≥70%)</>
+                    )}
+                  </p>
+                );
+              })()}
+            </div>
+          )}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-2">Pipeline</h3>

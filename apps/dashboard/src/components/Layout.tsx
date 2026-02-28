@@ -1,5 +1,6 @@
 /**
  * Shared layout with single nav - wraps all pages
+ * Repo context defaults to "darwin" (shared workspace); no repo switcher in header.
  */
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
@@ -14,8 +15,8 @@ import {
   Brain,
   BarChart2,
 } from 'lucide-react';
-import { RepoSelector } from './RepoSelector';
-import { useState } from 'react';
+
+const DEFAULT_REPO = 'darwin';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Overview', icon: Layers, subtitle: 'Entry point & workspace' },
@@ -31,7 +32,6 @@ const NAV_ITEMS = [
 
 export function Layout() {
   const location = useLocation();
-  const [selectedRepo, setSelectedRepo] = useState('');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -44,9 +44,6 @@ export function Layout() {
                 <h1 className="text-2xl font-bold text-gray-900">Darwin</h1>
                 <p className="text-sm text-gray-600">Workspace & agent automation</p>
               </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <RepoSelector value={selectedRepo} onChange={setSelectedRepo} />
             </div>
           </div>
 
@@ -79,7 +76,7 @@ export function Layout() {
       </header>
 
       <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
-        <Outlet context={{ selectedRepo }} />
+        <Outlet context={{ selectedRepo: DEFAULT_REPO }} />
       </main>
 
       <footer className="bg-white border-t border-gray-200 mt-12">

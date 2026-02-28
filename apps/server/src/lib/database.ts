@@ -568,6 +568,79 @@ export function cancelScheduleRun(
   return getScheduleRunById(id);
 }
 
+/**
+ * Run seed SQL for schedule_runs so dashboard has sample 28-feb runs with full metrics.
+ * When force is false: only runs if table is empty.
+ * When force is true: always runs (REPLACE overwrites the 11 sample runs with full metrics).
+ */
+export function runSeedScheduleRunsIfEmpty(force = false): number {
+  const count = db.prepare('SELECT COUNT(*) as n FROM schedule_runs').get() as { n: number };
+  if (!force && count.n > 0) return count.n;
+  const seedPath = resolve(SERVICE_ROOT, 'scripts', 'seed-schedule-runs.sql');
+  if (!existsSync(seedPath)) return 0;
+  const sql = readFileSync(seedPath, 'utf8').replace(/^--.*$/gm, '').trim();
+  if (!sql) return 0;
+  try {
+    db.exec(sql);
+    const r = db.prepare('SELECT COUNT(*) as n FROM schedule_runs').get() as { n: number };
+    return r?.n ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Insert or replace a schedule run (for import from appcaire solve folder).
+ */
+export function upsertScheduleRun(run: Partial<ScheduleRun> & { id: string }): void {
+  const stmt = db.prepare(`
+    INSERT INTO schedule_runs (
+      id, dataset, batch, algorithm, strategy, hypothesis, status,
+      decision, decision_reason, timefold_score, routing_efficiency_pct,
+      unassigned_visits, total_visits, unassigned_pct, continuity_avg, continuity_max,
+      continuity_over_target, continuity_target, output_path, notes, iteration
+    ) VALUES (
+      @id, @dataset, @batch, @algorithm, @strategy, @hypothesis, @status,
+      @decision, @decision_reason, @timefold_score, @routing_efficiency_pct,
+      @unassigned_visits, @total_visits, @unassigned_pct, @continuity_avg, @continuity_max,
+      @continuity_over_target, @continuity_target, @output_path, @notes, @iteration
+    )
+    ON CONFLICT(id) DO UPDATE SET
+      dataset=excluded.dataset, batch=excluded.batch, algorithm=excluded.algorithm,
+      strategy=excluded.strategy, hypothesis=excluded.hypothesis, status=excluded.status,
+      decision=excluded.decision, decision_reason=excluded.decision_reason,
+      timefold_score=excluded.timefold_score, routing_efficiency_pct=excluded.routing_efficiency_pct,
+      unassigned_visits=excluded.unassigned_visits, total_visits=excluded.total_visits,
+      unassigned_pct=excluded.unassigned_pct, continuity_avg=excluded.continuity_avg,
+      continuity_max=excluded.continuity_max, continuity_over_target=excluded.continuity_over_target,
+      continuity_target=excluded.continuity_target, output_path=excluded.output_path,
+      notes=excluded.notes, iteration=excluded.iteration
+  `);
+  stmt.run({
+    id: run.id,
+    dataset: run.dataset ?? 'huddinge-2w-expanded',
+    batch: run.batch ?? 'unknown',
+    algorithm: run.algorithm ?? '',
+    strategy: run.strategy ?? '',
+    hypothesis: run.hypothesis ?? null,
+    status: run.status ?? 'completed',
+    decision: run.decision ?? null,
+    decision_reason: run.decision_reason ?? null,
+    timefold_score: run.timefold_score ?? null,
+    routing_efficiency_pct: run.routing_efficiency_pct ?? null,
+    unassigned_visits: run.unassigned_visits ?? null,
+    total_visits: run.total_visits ?? null,
+    unassigned_pct: run.unassigned_pct ?? null,
+    continuity_avg: run.continuity_avg ?? null,
+    continuity_max: run.continuity_max ?? null,
+    continuity_over_target: run.continuity_over_target ?? null,
+    continuity_target: run.continuity_target ?? 11,
+    output_path: run.output_path ?? null,
+    notes: run.notes ?? null,
+    iteration: run.iteration ?? 1,
+  });
+}
+
 // ─── Marketing ────────────────────────────────────────────────────────────────
 
 export function getAllCampaigns(): (Campaign & { owner_name?: string; owner_emoji?: string })[] {

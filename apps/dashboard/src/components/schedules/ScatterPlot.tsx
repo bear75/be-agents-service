@@ -34,19 +34,19 @@ export function ScatterPlot({ runs, selectedId, onSelect }: ScatterPlotProps) {
 
   const goalZoneX1 = scaleX(0);
   const goalZoneX2 = scaleX(TARGET_X);
-  const goalZoneY1 = scaleY(TARGET_Y);
-  const goalZoneY2 = scaleY(0);
+  const goalZoneYTop = scaleY(TARGET_Y);   // Y=1% (top of zone in screen coords)
+  const goalZoneYBottom = scaleY(0);       // Y=0% (bottom)
 
   return (
     <div className="border border-gray-200 rounded-lg bg-white p-2">
       <div className="text-xs text-gray-500 mb-1 font-medium">Unassigned % (Y) vs Continuity avg (X) — goal: bottom-left</div>
       <svg width={W} height={H} className="overflow-visible">
-        {/* Goal zone */}
+        {/* Goal zone: rect from top (smaller y) down with positive height */}
         <rect
           x={PAD.left}
-          y={goalZoneY2}
+          y={goalZoneYTop}
           width={goalZoneX2 - PAD.left}
-          height={goalZoneY1 - goalZoneY2}
+          height={Math.max(0, goalZoneYBottom - goalZoneYTop)}
           fill="rgba(34,197,94,0.15)"
           stroke="rgba(34,197,94,0.5)"
           strokeWidth={1}
@@ -63,9 +63,9 @@ export function ScatterPlot({ runs, selectedId, onSelect }: ScatterPlotProps) {
         />
         <line
           x1={PAD.left}
-          y1={goalZoneY1}
+          y1={goalZoneYTop}
           x2={W - PAD.right}
-          y2={goalZoneY1}
+          y2={goalZoneYTop}
           stroke="rgba(34,197,94,0.6)"
           strokeWidth={1}
           strokeDasharray="4,2"
@@ -77,7 +77,7 @@ export function ScatterPlot({ runs, selectedId, onSelect }: ScatterPlotProps) {
         <text x={scaleX(TARGET_X) - 6} y={H - PAD.bottom + 4} className="fill-gray-500 text-[10px]">11</text>
         <text x={W - PAD.right - 16} y={H - PAD.bottom + 4} className="fill-gray-500 text-[10px]">25</text>
         <text x={PAD.left - 4} y={PAD.top + 4} className="fill-gray-500 text-[10px]">5%</text>
-        <text x={PAD.left - 4} y={goalZoneY1 + 4} className="fill-gray-500 text-[10px]">1%</text>
+        <text x={PAD.left - 4} y={goalZoneYTop + 4} className="fill-gray-500 text-[10px]">1%</text>
         {/* Points: completed */}
         {completed.map((r) => {
           const x = scaleX(r.continuity_avg ?? 0);

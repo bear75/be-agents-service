@@ -469,3 +469,16 @@ export async function cancelScheduleRun(id: string, reason?: string): Promise<Sc
   });
   return data;
 }
+
+/** Import schedule runs from appcaire solve folder (same machine); or seed sample runs if empty. */
+export async function importScheduleRunsFromAppcaire(): Promise<{
+  success: boolean;
+  imported?: number;
+  seeded?: number;
+  appcairePath?: string;
+  batchesScanned?: string[];
+  message?: string;
+  error?: string;
+}> {
+  return fetchApi('/schedule-runs/import-from-appcaire');
+}
