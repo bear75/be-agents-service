@@ -54,12 +54,9 @@ function normalizeRun(r: ScheduleRun): ScheduleRun {
     shift_hours_idle: toNum(r.shift_hours_idle) ?? r.shift_hours_idle,
     efficiency_total_pct: toNum(r.efficiency_total_pct) ?? r.efficiency_total_pct,
     efficiency_trimmed_pct: toNum(r.efficiency_trimmed_pct) ?? r.efficiency_trimmed_pct,
-    eff_v1_pct: toNum(r.eff_v1_pct) ?? r.eff_v1_pct,
-    idle_shifts_v1: toNum(r.idle_shifts_v1) ?? r.idle_shifts_v1,
-    idle_shift_hours_v1: toNum(r.idle_shift_hours_v1) ?? r.idle_shift_hours_v1,
-    eff_v2_pct: toNum(r.eff_v2_pct) ?? r.eff_v2_pct,
-    idle_shifts_v2: toNum(r.idle_shifts_v2) ?? r.idle_shifts_v2,
-    idle_shift_hours_v2: toNum(r.idle_shift_hours_v2) ?? r.idle_shift_hours_v2,
+    efficiency_all_pct: toNum(r.efficiency_all_pct) ?? r.efficiency_all_pct,
+    efficiency_min_visit_pct: toNum(r.efficiency_min_visit_pct) ?? r.efficiency_min_visit_pct,
+    efficiency_visit_span_pct: toNum(r.efficiency_visit_span_pct) ?? r.efficiency_visit_span_pct,
   };
 }
 
@@ -132,6 +129,13 @@ export function SchedulesPage() {
 
       {loading && runs.length === 0 ? (
         <div className="text-gray-500">Loading runs…</div>
+      ) : runs.length === 0 ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-6 text-center text-sm text-amber-900">
+          <p className="font-medium">No runs in this dataset.</p>
+          <p className="mt-1 text-amber-800">
+            Click <strong>Refresh</strong> above to import from the shared huddinge-datasets folder (or seed sample runs).
+          </p>
+        </div>
       ) : (
         <>
           {runs.filter((r) => r.status === 'completed' && r.routing_efficiency_pct != null).length > 0 && (
@@ -196,12 +200,9 @@ export function SchedulesPage() {
                   <th className="text-right p-2 font-medium" title="Removed all idle, early end">Shift h trimmed</th>
                   <th className="text-right p-2 font-medium" title="Visit time / total shift hours">Eff total %</th>
                   <th className="text-right p-2 font-medium" title="Visit time / trimmed shift hours">Eff trimmed %</th>
-                  <th className="text-right p-2 font-medium" title="Variant 1: exclude empty shifts only">Eff v1 %</th>
-                  <th className="text-right p-2 font-medium" title="Variant 1: empty shifts count">Idle shifts v1</th>
-                  <th className="text-right p-2 font-medium" title="Variant 1: idle hours">Idle h v1</th>
-                  <th className="text-right p-2 font-medium" title="Variant 2: visit-span only">Eff v2 %</th>
-                  <th className="text-right p-2 font-medium" title="Variant 2: empty shifts count">Idle shifts v2</th>
-                  <th className="text-right p-2 font-medium" title="Variant 2: idle hours">Idle h v2</th>
+                  <th className="text-right p-2 font-medium" title="All shifts and hours">Eff all %</th>
+                  <th className="text-right p-2 font-medium" title="Exclude empty shifts only">Eff min visit %</th>
+                  <th className="text-right p-2 font-medium" title="Visit-span only (shift = first→last visit)">Eff visit span %</th>
                   <th className="text-right p-2 font-medium">Unassigned %</th>
                   <th className="text-right p-2 font-medium" title="Visit-weighted continuity">Cont.</th>
                 </tr>
@@ -229,12 +230,9 @@ export function SchedulesPage() {
                     <td className="p-2 text-right">{fmtNum(r.output_shift_hours_trimmed, 0)}</td>
                     <td className="p-2 text-right">{fmtNum(r.efficiency_total_pct, 1)}</td>
                     <td className="p-2 text-right">{fmtNum(r.efficiency_trimmed_pct, 1)}</td>
-                    <td className="p-2 text-right">{fmtNum(r.eff_v1_pct, 1)}</td>
-                    <td className="p-2 text-right">{fmtNum(r.idle_shifts_v1, 0)}</td>
-                    <td className="p-2 text-right">{fmtNum(r.idle_shift_hours_v1, 0)}</td>
-                    <td className="p-2 text-right">{fmtNum(r.eff_v2_pct, 1)}</td>
-                    <td className="p-2 text-right">{fmtNum(r.idle_shifts_v2, 0)}</td>
-                    <td className="p-2 text-right">{fmtNum(r.idle_shift_hours_v2, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.efficiency_all_pct, 1)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.efficiency_min_visit_pct, 1)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.efficiency_visit_span_pct, 1)}</td>
                     <td className="p-2 text-right">{fmtNum(r.unassigned_pct, 2)}</td>
                     <td className="p-2 text-right">{fmtNum(r.continuity_visit_weighted_avg, 1)}</td>
                   </tr>

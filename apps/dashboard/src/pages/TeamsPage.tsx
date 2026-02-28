@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
 import { StatsBar } from '../components/StatsBar';
-import { getTeams, getTeam } from '../lib/api';
+import { getTeams, getTeam, runTeamsSeed } from '../lib/api';
 import type { DbTeam, DbTeamWithDetails } from '../types';
 
 export function TeamsPage() {
@@ -12,6 +12,7 @@ export function TeamsPage() {
   const [selectedTeam, setSelectedTeam] = useState<DbTeamWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [seedLoading, setSeedLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,6 +30,19 @@ export function TeamsPage() {
       setError(e instanceof Error ? e.message : 'Failed to load teams');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSyncSeed = async () => {
+    setSeedLoading(true);
+    setError(null);
+    try {
+      await runTeamsSeed();
+      await loadTeams();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Sync seed failed');
+    } finally {
+      setSeedLoading(false);
     }
   };
 
@@ -58,9 +72,19 @@ export function TeamsPage() {
     <div className="space-y-6">
       <StatsBar />
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <Users className="w-6 h-6 text-blue-600" />
-        <h2 className="text-xl font-semibold text-gray-900">Teams</h2>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Users className="w-6 h-6 text-blue-600" />
+          <h2 className="text-xl font-semibold text-gray-900">Teams</h2>
+        </div>
+        <button
+          type="button"
+          onClick={handleSyncSeed}
+          disabled={seedLoading}
+          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:opacity-50"
+        >
+          {seedLoading ? 'Syncing…' : 'Sync seed data'}
+        </button>
       </div>
 
       {error && (
@@ -84,6 +108,8 @@ export function TeamsPage() {
                 ? 'hover:border-blue-400'
                 : team.domain === 'marketing'
                 ? 'hover:border-green-400'
+                : team.domain === 'schedule-optimization'
+                ? 'hover:border-teal-400'
                 : 'hover:border-orange-400'
             }`}
           >
@@ -93,10 +119,18 @@ export function TeamsPage() {
                   ? 'text-blue-600'
                   : team.domain === 'marketing'
                   ? 'text-green-600'
+                  : team.domain === 'schedule-optimization'
+                  ? 'text-teal-600'
                   : 'text-orange-600'
               }`}
             >
-              {team.domain === 'engineering' ? '⚙️' : team.domain === 'marketing' ? '📢' : '👔'}
+              {team.domain === 'engineering'
+                ? '⚙️'
+                : team.domain === 'marketing'
+                ? '📢'
+                : team.domain === 'schedule-optimization'
+                ? '🕐'
+                : '👔'}
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-1">{team.name}</h3>
             <p className="text-sm text-gray-500 capitalize">{team.domain}</p>

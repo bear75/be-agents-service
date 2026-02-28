@@ -227,6 +227,25 @@ export function RunDetailPage() {
               <p className="font-semibold text-gray-900">{run.efficiency_trimmed_pct != null ? `${run.efficiency_trimmed_pct.toFixed(1)}%` : '—'}</p>
             </div>
           </div>
+          {(run.efficiency_all_pct != null || run.efficiency_min_visit_pct != null || run.efficiency_visit_span_pct != null) && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm mt-4 pt-4 border-t border-gray-100">
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Eff all %</p>
+                <p className="font-semibold text-gray-900">{run.efficiency_all_pct != null ? `${run.efficiency_all_pct.toFixed(1)}%` : '—'}</p>
+                <p className="text-xs text-gray-500">All shifts and hours</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Eff min visit %</p>
+                <p className="font-semibold text-gray-900">{run.efficiency_min_visit_pct != null ? `${run.efficiency_min_visit_pct.toFixed(1)}%` : '—'}</p>
+                <p className="text-xs text-gray-500">Exclude empty shifts only</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Eff visit span %</p>
+                <p className="font-semibold text-gray-900">{run.efficiency_visit_span_pct != null ? `${run.efficiency_visit_span_pct.toFixed(1)}%` : '—'}</p>
+                <p className="text-xs text-gray-500">Visit-span only</p>
+              </div>
+            </div>
+          )}
         </section>
       )}
 

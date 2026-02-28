@@ -12,6 +12,7 @@ const DOMAIN_COLORS: Record<string, string> = {
   marketing: 'border-purple-200 bg-purple-50',
   management: 'border-amber-200 bg-amber-50',
   operations: 'border-green-200 bg-green-50',
+  'schedule-optimization': 'border-teal-200 bg-teal-50',
 };
 
 const DOMAIN_BADGES: Record<string, string> = {
@@ -19,6 +20,7 @@ const DOMAIN_BADGES: Record<string, string> = {
   marketing: 'bg-purple-100 text-purple-800',
   management: 'bg-amber-100 text-amber-800',
   operations: 'bg-green-100 text-green-800',
+  'schedule-optimization': 'bg-teal-100 text-teal-800',
 };
 
 const DOMAIN_ICONS: Record<string, string> = {
@@ -26,6 +28,7 @@ const DOMAIN_ICONS: Record<string, string> = {
   marketing: '📊',
   management: '👔',
   operations: '🔗',
+  'schedule-optimization': '🕐',
 };
 
 export function TeamsOverview() {

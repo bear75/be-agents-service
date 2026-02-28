@@ -8,7 +8,8 @@
  */
 import { Router, type Request, type Response } from 'express';
 import { readFileSync, existsSync, readdirSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import {
   getAllScheduleRuns,
   getScheduleRunById,
@@ -17,12 +18,22 @@ import {
   runSeedScheduleRunsIfEmpty,
 } from '../lib/database.js';
 import { getRepoConfig, getServiceRoot } from '../lib/config.js';
-import { parseRunFromFolder, getVariantMetrics } from '../lib/run-folder-parser.js';
+import { parseRunFromFolder, getThreeEfficiencies } from '../lib/run-folder-parser.js';
 import type { ScheduleRun } from '../types/index.js';
 
 const router = Router();
 
 const HUDDINGE_DATASETS_DIR = 'huddinge-datasets';
+
+/** Repo-local datasets path: from this file (routes/schedules) up to repo root, then recurring-visits/... */
+const REPO_LOCAL_DATASETS = (() => {
+  try {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    return resolve(__dirname, '..', '..', '..', '..', 'recurring-visits', 'huddinge-package', 'huddinge-datasets');
+  } catch {
+    return '';
+  }
+})();
 const DEFAULT_DATASET = 'huddinge-2w-expanded';
 const CONTINUITY_TARGET = 11;
 
@@ -292,22 +303,90 @@ function getRunFolderPath(runId: string): { basePath: string; run: ScheduleRun }
   return existsSync(basePath) ? { basePath, run } : null;
 }
 
-/** Augment run with variant metrics from metrics JSON (single source of truth, no DB copy). */
-function augmentRunWithVariantMetrics(run: ScheduleRun): ScheduleRun {
-  const base = getHuddingeDatasetsPath();
-  if (!base || !run.batch) return run;
-  const runDir = resolve(base, run.batch, run.id);
-  if (!existsSync(runDir)) return run;
-  const variant = getVariantMetrics(runDir);
-  return {
-    ...run,
-    eff_v1_pct: variant.eff_v1_pct,
-    idle_shifts_v1: variant.idle_shifts_v1,
-    idle_shift_hours_v1: variant.idle_shift_hours_v1,
-    eff_v2_pct: variant.eff_v2_pct,
-    idle_shifts_v2: variant.idle_shifts_v2,
-    idle_shift_hours_v2: variant.idle_shift_hours_v2,
+const DATASETS_RELATIVE = ['recurring-visits', 'huddinge-package', 'huddinge-datasets'] as const;
+
+/** All candidate base paths for huddinge-datasets (try cwd first, then __dirname, then config). */
+function getDatasetsBaseCandidates(): string[] {
+  const seen = new Set<string>();
+  const add = (p: string) => {
+    const norm = resolve(p);
+    if (norm && existsSync(norm) && !seen.has(norm)) {
+      seen.add(norm);
+      return norm;
+    }
+    return null;
   };
+  const bases: string[] = [];
+  const cwd = process.cwd();
+  const fromCwd = add(resolve(cwd, ...DATASETS_RELATIVE));
+  if (fromCwd) bases.push(fromCwd);
+  const fromCwdUp = add(resolve(cwd, '..', ...DATASETS_RELATIVE));
+  if (fromCwdUp) bases.push(fromCwdUp);
+  const fromCwdUp2 = add(resolve(cwd, '..', '..', ...DATASETS_RELATIVE));
+  if (fromCwdUp2) bases.push(fromCwdUp2);
+  if (REPO_LOCAL_DATASETS) {
+    const fromDirname = add(REPO_LOCAL_DATASETS);
+    if (fromDirname) bases.push(fromDirname);
+  }
+  const primary = getHuddingeDatasetsPath();
+  if (primary) {
+    const p = add(primary);
+    if (p) bases.push(p);
+  }
+  try {
+    const local = resolve(getServiceRoot(), ...DATASETS_RELATIVE);
+    const l = add(local);
+    if (l) bases.push(l);
+  } catch {
+    // ignore
+  }
+  return bases;
+}
+
+/** Augment run with 3 efficiency values from single metrics.json (merged format). */
+function augmentRunWithVariantMetrics(run: ScheduleRun): ScheduleRun {
+  if (!run.batch) return run;
+  const tryEff = (runDir: string) => {
+    if (!existsSync(runDir)) return null;
+    const v = getThreeEfficiencies(runDir);
+    const hasAny =
+      v.efficiency_all_pct != null ||
+      v.efficiency_min_visit_pct != null ||
+      v.efficiency_visit_span_pct != null;
+    if (!hasAny) return null;
+    return {
+      ...run,
+      efficiency_all_pct: v.efficiency_all_pct,
+      efficiency_min_visit_pct: v.efficiency_min_visit_pct,
+      efficiency_visit_span_pct: v.efficiency_visit_span_pct,
+    };
+  };
+  const cwd = process.cwd();
+  for (const base of [
+    resolve(cwd, ...DATASETS_RELATIVE),
+    resolve(cwd, '..', ...DATASETS_RELATIVE),
+    resolve(cwd, '..', '..', ...DATASETS_RELATIVE),
+    REPO_LOCAL_DATASETS,
+  ]) {
+    if (!base || !existsSync(base)) continue;
+    const runDir = resolve(base, run.batch, run.id);
+    const out = tryEff(runDir);
+    if (out) return out;
+  }
+  try {
+    const root = getServiceRoot();
+    const runDir = resolve(root, ...DATASETS_RELATIVE, run.batch, run.id);
+    const out = tryEff(runDir);
+    if (out) return out;
+  } catch {
+    // ignore
+  }
+  for (const base of getDatasetsBaseCandidates()) {
+    const runDir = resolve(base, run.batch, run.id);
+    const out = tryEff(runDir);
+    if (out) return out;
+  }
+  return run;
 }
 
 function findFirstFile(dir: string, predicate: (name: string) => boolean): string | null {

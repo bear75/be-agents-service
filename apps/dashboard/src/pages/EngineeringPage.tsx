@@ -7,7 +7,7 @@ import { Cpu, Play, Square, RefreshCw, Users } from 'lucide-react';
 import { getJobs, startJob, stopJob, getJobLogs, listRepositories } from '../lib/api';
 import type { JobInfo } from '../types';
 
-const DEFAULT_REPO = 'beta-appcaire';
+const DEFAULT_REPO = 'appcaire';
 
 export function EngineeringPage() {
   const [jobs, setJobs] = useState<JobInfo[]>([]);
@@ -77,7 +77,7 @@ export function EngineeringPage() {
           <h2 className="text-xl font-semibold text-gray-900">Compound</h2>
         </div>
         <p className="text-sm text-gray-500">
-          Start auto-compound: picks priority #1 from workspace or reports, creates PRD, implements, opens PR. Runs nightly at 23:00 or start manually here or via terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh &lt;repo-name&gt;</code> (default repo: beta-appcaire).
+          Start auto-compound: picks priority #1 from workspace or reports, creates PRD, implements, opens PR. Runs nightly at 23:00 or start manually here or via terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh &lt;repo-name&gt;</code> (default repo: appcaire).
         </p>
       </div>
 

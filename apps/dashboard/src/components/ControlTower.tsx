@@ -62,7 +62,7 @@ export function ControlTower() {
           <Rocket className="w-5 h-5" /> Control Tower
         </h2>
         <p className="text-sm text-gray-500 mt-1">
-          Launch sessions (DB records). For compound, use <Link to="/run" className="text-blue-600 hover:underline">Compound</Link> or terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh beta-appcaire</code>
+          Launch sessions (DB records). For compound, use <Link to="/run" className="text-blue-600 hover:underline">Compound</Link> or terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh appcaire</code>
         </p>
       </div>
 

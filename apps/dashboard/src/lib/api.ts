@@ -22,7 +22,10 @@ import type {
   ScheduleRun,
 } from '../types';
 
-const API_BASE = '/api';
+const API_BASE =
+  typeof window !== 'undefined' && window.location?.origin
+    ? `${window.location.origin}/api`
+    : '/api';
 
 async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${url}`, {
@@ -212,6 +215,13 @@ export async function getTeams(): Promise<Team[]> {
 
 export async function getTeam(teamId: string): Promise<Team> {
   return fetchApi<Team>(`/teams/${teamId}`);
+}
+
+/** Run seed data so missing teams (e.g. Schedule optimization) appear. */
+export async function runTeamsSeed(): Promise<void> {
+  const res = await fetch(`${API_BASE}/teams/seed`, { method: 'POST' });
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error || 'Seed failed');
 }
 
 export async function getTeamAgents(teamId: string): Promise<Agent[]> {
@@ -458,8 +468,9 @@ export async function getLLMUsage(days = 7, limit = 200): Promise<LLMUsageRecord
 
 export async function getScheduleRuns(dataset?: string): Promise<ScheduleRun[]> {
   const url = dataset ? `/schedule-runs?dataset=${encodeURIComponent(dataset)}` : '/schedule-runs';
-  const data = await fetchApi<{ runs: ScheduleRun[] }>(url);
-  return data.runs ?? [];
+  const data = await fetchApi<{ runs?: ScheduleRun[] } | ScheduleRun[]>(url);
+  if (Array.isArray(data)) return data;
+  return data?.runs ?? [];
 }
 
 export async function cancelScheduleRun(id: string, reason?: string): Promise<ScheduleRun> {

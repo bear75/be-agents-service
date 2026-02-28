@@ -38,6 +38,7 @@ const __dirname = dirname(__filename);
 const SERVICE_ROOT = resolve(__dirname, '..', '..', '..', '..');
 const DB_PATH = resolve(SERVICE_ROOT, '.compound-state', 'agent-service.db');
 const SCHEMA_PATH = resolve(SERVICE_ROOT, 'schema.sql');
+const SEED_DATA_PATH = resolve(SERVICE_ROOT, 'seed-data.sql');
 
 // Ensure .compound-state directory exists (service write area; see docs/AGENT_WORKSPACE_STRUCTURE.md)
 const stateDir = dirname(DB_PATH);
@@ -76,8 +77,43 @@ function initializeSchema(): void {
   }
 }
 
+/** Inline seed for schedule-optimization team so it exists even if seed-data.sql is missing (e.g. wrong cwd) */
+const INLINE_SEED_SCHEDULE_OPT =
+  `INSERT OR IGNORE INTO teams (id, name, domain, description) VALUES
+  ('team-schedule-optimization', 'Schedule optimization', 'schedule-optimization', 'Timefold FSR pipeline: submit, monitor, cancel runs; propose strategies (spaghetti sort)');
+INSERT OR IGNORE INTO agents (id, team_id, name, role, emoji, llm_preference) VALUES
+  ('agent-timefold-specialist', 'team-schedule-optimization', 'Timefold Specialist', 'Submit/monitor/cancel FSR jobs, run metrics and continuity scripts, write results to Darwin DB', '🕐', 'sonnet'),
+  ('agent-optimization-mathematician', 'team-schedule-optimization', 'Optimization Mathematician', 'Analyse completed runs, propose N strategies (exploitation + exploration), spaghetti sort cancellation heuristics', '📐', 'sonnet');`;
+
+/**
+ * Run seed data (file if present, then inline fallback for schedule-optimization).
+ * Exported so POST /api/teams/seed can trigger it on demand.
+ */
+export function runSeedData(): void {
+  if (existsSync(SEED_DATA_PATH)) {
+    try {
+      const sql = readFileSync(SEED_DATA_PATH, 'utf8');
+      const statements = sql
+        .split('\n')
+        .filter((line) => !line.trim().startsWith('--'))
+        .join('\n');
+      db.exec(statements);
+      return;
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.warn('Seed data file failed, using inline fallback:', msg);
+    }
+  }
+  db.exec(INLINE_SEED_SCHEDULE_OPT);
+}
+
+function ensureSeedData(): void {
+  runSeedData();
+}
+
 if (needsInit) {
   initializeSchema();
+  ensureSeedData();
 } else {
   const tables = db
     .prepare("SELECT name FROM sqlite_master WHERE type='table'")
@@ -85,6 +121,9 @@ if (needsInit) {
   if (tables.length === 0) {
     console.log('Database exists but empty, reinitializing...');
     initializeSchema();
+    ensureSeedData();
+  } else {
+    ensureSeedData();
   }
 }
 

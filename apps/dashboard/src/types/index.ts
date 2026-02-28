@@ -278,12 +278,9 @@ export interface ScheduleRun {
   shift_hours_idle: number | null;
   efficiency_total_pct: number | null;
   efficiency_trimmed_pct: number | null;
-  eff_v1_pct: number | null;
-  idle_shifts_v1: number | null;
-  idle_shift_hours_v1: number | null;
-  eff_v2_pct: number | null;
-  idle_shifts_v2: number | null;
-  idle_shift_hours_v2: number | null;
+  efficiency_all_pct: number | null;
+  efficiency_min_visit_pct: number | null;
+  efficiency_visit_span_pct: number | null;
   submitted_at: string;
   started_at: string | null;
   completed_at: string | null;

@@ -50,5 +50,14 @@
     "shifts": 406,
     "shifts_fixed_cost": 0,
     "shifts_hourly": 0
-  }
+  },
+  "efficiency_all_pct": 51.76,
+  "shift_hours_all": 2996.0,
+  "idle_hours_all": 1237.8002777777779,
+  "efficiency_min_visit_pct": 89.86,
+  "shift_hours_min_visit": 1888.0,
+  "idle_hours_min_visit": 129.80027777777778,
+  "efficiency_visit_span_pct": 93.68,
+  "shift_hours_visit_span": 1689.7352777777778,
+  "idle_hours_visit_span": 0.0
 }

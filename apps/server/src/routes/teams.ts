@@ -16,6 +16,7 @@ import {
   deactivateAgent,
   reactivateAgent,
   getAgentPerformance,
+  runSeedData,
 } from '../lib/database.js';
 
 const router = Router();
@@ -34,6 +35,22 @@ router.get('/', (_req, res) => {
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * POST /api/teams/seed
+ * Run seed data (teams + agents). Use if Schedule optimization / TF team is missing.
+ */
+router.post('/seed', (_req, res) => {
+  try {
+    runSeedData();
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Seed failed',
     });
   }
 });

@@ -58,16 +58,26 @@ function getInputShiftHours(runDir: string): number | null {
 }
 
 /**
- * Find first metrics JSON in run dir: metrics/*.json or metrics_*.json in run root.
+ * Find metrics JSON in run dir. Prefers file with efficiency_all_pct (merged format).
  */
 function findMetricsJson(runDir: string): string | null {
   if (!existsSync(runDir)) return null;
   const metricsDir = resolve(runDir, 'metrics');
   if (existsSync(metricsDir)) {
-    const files = readdirSync(metricsDir);
-    const json = files.find((f) => f.endsWith('.json') && (f.startsWith('metrics_') || f.startsWith('metrics.')));
-    if (json) return resolve(metricsDir, json);
-    const anyJson = files.find((f) => f.endsWith('.json'));
+    const files = readdirSync(metricsDir)
+      .filter((f) => f.endsWith('.json') && (f.startsWith('metrics_') || f.startsWith('metrics.')))
+      .sort();
+    for (const f of files) {
+      const p = resolve(metricsDir, f);
+      try {
+        const raw = JSON.parse(readFileSync(p, 'utf8'));
+        if (raw.efficiency_all_pct != null || raw.system_efficiency_pct != null) return p;
+      } catch {
+        // skip
+      }
+    }
+    if (files.length > 0) return resolve(metricsDir, files[0]);
+    const anyJson = readdirSync(metricsDir).find((f) => f.endsWith('.json'));
     if (anyJson) return resolve(metricsDir, anyJson);
   }
   const entries = readdirSync(runDir);
@@ -77,63 +87,29 @@ function findMetricsJson(runDir: string): string | null {
 }
 
 /**
- * Find first metrics JSON in run_dir/metrics/{subdir}/ (e.g. variant1, variant2).
+ * Read 3 efficiency values from single metrics.json (merged format).
+ * 1. All shifts and hours (base)
+ * 2. Min 1 visit (exclude empty shifts only)
+ * 3. Visit-span only (shift = first visit start → last visit end)
  */
-function findVariantMetricsJson(runDir: string, subdir: string): string | null {
-  const dir = resolve(runDir, 'metrics', subdir);
-  if (!existsSync(dir)) return null;
-  const files = readdirSync(dir);
-  const json = files.find((f) => f.endsWith('.json'));
-  return json ? resolve(dir, json) : null;
-}
-
-/**
- * Parse variant metrics JSON for efficiency and idle (Variant 1: exclude empty shifts only; Variant 2: visit-span only).
- */
-function parseVariantMetrics(path: string): {
-  efficiency_pct: number | null;
-  idle_shifts: number | null;
-  idle_shift_hours: number | null;
-} | null {
+export function getThreeEfficiencies(runDir: string): {
+  efficiency_all_pct: number | null;
+  efficiency_min_visit_pct: number | null;
+  efficiency_visit_span_pct: number | null;
+} {
+  const path = findMetricsJson(runDir);
+  if (!path) return { efficiency_all_pct: null, efficiency_min_visit_pct: null, efficiency_visit_span_pct: null };
   try {
     const raw = JSON.parse(readFileSync(path, 'utf8'));
-    const efficiency_pct = raw.routing_efficiency_pct != null ? Number(raw.routing_efficiency_pct) : null;
-    const idle_shifts = raw.shifts_no_visits != null ? Number(raw.shifts_no_visits) : null;
-    const idle_shift_hours = raw.inactive_time_h != null ? Number(raw.inactive_time_h) : null;
+    const n = (v: unknown) => (v != null && Number.isFinite(Number(v)) ? Number(v) : null);
     return {
-      efficiency_pct: Number.isFinite(efficiency_pct) ? efficiency_pct : null,
-      idle_shifts: Number.isFinite(idle_shifts) ? idle_shifts : null,
-      idle_shift_hours: Number.isFinite(idle_shift_hours) ? idle_shift_hours : null,
+      efficiency_all_pct: n(raw.efficiency_all_pct ?? raw.system_efficiency_pct),
+      efficiency_min_visit_pct: n(raw.efficiency_min_visit_pct),
+      efficiency_visit_span_pct: n(raw.efficiency_visit_span_pct),
     };
   } catch {
-    return null;
+    return { efficiency_all_pct: null, efficiency_min_visit_pct: null, efficiency_visit_span_pct: null };
   }
-}
-
-/**
- * Read variant1 and variant2 metrics from run_dir/metrics/variant1/ and metrics/variant2/.
- * Single source of truth: values come directly from the metrics JSON files (no DB copy).
- */
-export function getVariantMetrics(runDir: string): {
-  eff_v1_pct: number | null;
-  idle_shifts_v1: number | null;
-  idle_shift_hours_v1: number | null;
-  eff_v2_pct: number | null;
-  idle_shifts_v2: number | null;
-  idle_shift_hours_v2: number | null;
-} {
-  const v1Path = findVariantMetricsJson(runDir, 'variant1');
-  const v2Path = findVariantMetricsJson(runDir, 'variant2');
-  const v1 = v1Path ? parseVariantMetrics(v1Path) : null;
-  const v2 = v2Path ? parseVariantMetrics(v2Path) : null;
-  return {
-    eff_v1_pct: v1?.efficiency_pct ?? null,
-    idle_shifts_v1: v1?.idle_shifts ?? null,
-    idle_shift_hours_v1: v1?.idle_shift_hours ?? null,
-    eff_v2_pct: v2?.efficiency_pct ?? null,
-    idle_shifts_v2: v2?.idle_shifts ?? null,
-    idle_shift_hours_v2: v2?.idle_shift_hours ?? null,
-  };
 }
 
 /**

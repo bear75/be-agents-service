@@ -186,7 +186,7 @@ export function WorkPage() {
             <p className="text-gray-600 mb-2">No sessions yet</p>
             <p className="text-sm text-gray-500">
               Start compound from <Link to="/run" className="text-blue-600 hover:underline">Run → Compound</Link> or
-              terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh beta-appcaire</code>
+              terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh appcaire</code>
             </p>
           </div>
         )}

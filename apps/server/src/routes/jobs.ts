@@ -5,7 +5,7 @@ import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 
 const router = Router();
 
-const DEFAULT_REPO_NAME = 'beta-appcaire';
+const DEFAULT_REPO_NAME = 'appcaire';
 
 /** Resolve targetRepo: repo name → config path; else absolute path as-is; else default path. */
 function resolveTargetRepoPath(targetRepo: string | undefined): string {
