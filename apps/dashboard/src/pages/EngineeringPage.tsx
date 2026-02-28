@@ -18,8 +18,6 @@ export function EngineeringPage() {
   const [form, setForm] = useState({
     team: 'engineering' as const,
     targetRepo: DEFAULT_REPO,
-    priorityFile: 'reports/priorities-' + new Date().toISOString().slice(0, 10) + '.md',
-    branchName: 'feature/auto-' + Date.now(),
     model: 'sonnet',
   });
   const [selectedJobLogs, setSelectedJobLogs] = useState<string | null>(null);
@@ -42,7 +40,11 @@ export function EngineeringPage() {
 
   const handleStart = () => {
     setStarting(true);
-    startJob(form)
+    startJob({
+      team: form.team,
+      targetRepo: form.targetRepo,
+      model: form.model,
+    })
       .then(() => {
         load();
         setStarting(false);
@@ -111,26 +113,6 @@ export function EngineeringPage() {
             </select>
           </label>
           <label>
-            <span className="block text-sm text-gray-600 mb-1">Priority file</span>
-            <input
-              type="text"
-              value={form.priorityFile}
-              onChange={(e) => setForm({ ...form, priorityFile: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
-              placeholder="reports/priorities-2026-02-09.md"
-            />
-          </label>
-          <label>
-            <span className="block text-sm text-gray-600 mb-1">Branch name</span>
-            <input
-              type="text"
-              value={form.branchName}
-              onChange={(e) => setForm({ ...form, branchName: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
-              placeholder="feature/auto-123"
-            />
-          </label>
-          <label>
             <span className="block text-sm text-gray-600 mb-1">Model</span>
             <select
               value={form.model}
@@ -142,6 +124,9 @@ export function EngineeringPage() {
             </select>
           </label>
         </div>
+        <p className="text-xs text-gray-500 mt-2">
+          Auto-compound finds priority from workspace or repo, creates PRD, implements, and opens PR.
+        </p>
         <button
           onClick={handleStart}
           disabled={starting}

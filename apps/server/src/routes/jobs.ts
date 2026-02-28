@@ -38,9 +38,9 @@ router.post('/start', (req, res) => {
   try {
     const { team, model, priorityFile, branchName, baseBranch, targetRepo } = req.body;
 
-    if (!team || !priorityFile || !branchName) {
+    if (!team) {
       return res.status(400).json({
-        error: 'Missing required fields: team, priorityFile, branchName',
+        error: 'Missing required field: team',
       });
     }
 
@@ -48,14 +48,22 @@ router.post('/start', (req, res) => {
 
     let job;
     if (team === 'engineering') {
+      // Engineering: runs auto-compound.sh (finds priority, creates PRD, runs orchestrator)
+      if (!targetRepo) {
+        return res.status(400).json({
+          error: 'Missing required field: targetRepo for engineering job',
+        });
+      }
       job = jobExecutor.startEngineeringJob({
         model,
-        priorityFile,
-        branchName,
-        baseBranch,
-        targetRepo: targetRepoPath,
+        targetRepo: targetRepo.trim(),
       });
     } else if (team === 'marketing') {
+      if (!priorityFile || !branchName) {
+        return res.status(400).json({
+          error: 'Missing required fields: priorityFile, branchName for marketing job',
+        });
+      }
       job = jobExecutor.startMarketingJob({
         model,
         priorityFile,

@@ -141,6 +141,14 @@ export function RunDetailPage() {
   const threeCharts = metrics
     ? [
         {
+          label: 'Eff 3: Visit span',
+          pct: run.efficiency_visit_span_pct ?? undefined,
+          activeShiftHours: shiftHoursVisitSpan ?? undefined,
+          total: total3,
+          segments: [visitH, travelH, waitH, 0],
+          desc: 'First visit → last visit per shift. No idle.',
+        },
+        {
           label: 'Eff 1: All shifts',
           pct: run.efficiency_all_pct ?? undefined,
           activeShiftHours: shiftHoursAll ?? undefined,
@@ -155,14 +163,6 @@ export function RunDetailPage() {
           total: total2,
           segments: [visitH, travelH, waitH, idleMinVisit],
           desc: 'Shifts with ≥1 visit (excl. break). Idle: less.',
-        },
-        {
-          label: 'Eff 3: Visit span',
-          pct: run.efficiency_visit_span_pct ?? undefined,
-          activeShiftHours: shiftHoursVisitSpan ?? undefined,
-          total: total3,
-          segments: [visitH, travelH, waitH, 0],
-          desc: 'First visit → last visit per shift. No idle.',
         },
       ].filter((c) => c.total > 0)
     : [];
