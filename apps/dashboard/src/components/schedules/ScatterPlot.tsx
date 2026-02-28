@@ -33,7 +33,7 @@ function getContinuity(r: ScheduleRun): number | null {
 }
 
 function getEfficiency(r: ScheduleRun): number | null {
-  return r.efficiency_trimmed_pct ?? r.routing_efficiency_pct ?? null;
+  return r.efficiency_min_visit_pct ?? r.routing_efficiency_pct ?? null;
 }
 
 export function ScatterPlot({ runs, selectedId, onSelect }: ScatterPlotProps) {

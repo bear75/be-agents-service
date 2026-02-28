@@ -52,8 +52,6 @@ function normalizeRun(r: ScheduleRun): ScheduleRun {
     output_shift_hours_trimmed: toNum(r.output_shift_hours_trimmed) ?? r.output_shift_hours_trimmed,
     shift_hours_total: toNum(r.shift_hours_total) ?? r.shift_hours_total,
     shift_hours_idle: toNum(r.shift_hours_idle) ?? r.shift_hours_idle,
-    efficiency_total_pct: toNum(r.efficiency_total_pct) ?? r.efficiency_total_pct,
-    efficiency_trimmed_pct: toNum(r.efficiency_trimmed_pct) ?? r.efficiency_trimmed_pct,
     efficiency_all_pct: toNum(r.efficiency_all_pct) ?? r.efficiency_all_pct,
     efficiency_min_visit_pct: toNum(r.efficiency_min_visit_pct) ?? r.efficiency_min_visit_pct,
     efficiency_visit_span_pct: toNum(r.efficiency_visit_span_pct) ?? r.efficiency_visit_span_pct,
@@ -198,9 +196,7 @@ export function SchedulesPage() {
                   <th className="text-right p-2 font-medium" title="Before trim (incl idle)">Shift h total</th>
                   <th className="text-right p-2 font-medium" title="Idle / empty shift hours">Shift h idle</th>
                   <th className="text-right p-2 font-medium" title="Removed all idle, early end">Shift h trimmed</th>
-                  <th className="text-right p-2 font-medium" title="Visit time / total shift hours">Eff total %</th>
-                  <th className="text-right p-2 font-medium" title="Visit time / trimmed shift hours">Eff trimmed %</th>
-                  <th className="text-right p-2 font-medium" title="All shifts and hours">Eff all %</th>
+                  <th className="text-right p-2 font-medium" title="Visit / (shift − break). All shifts.">Eff all %</th>
                   <th className="text-right p-2 font-medium" title="Exclude empty shifts only">Eff min visit %</th>
                   <th className="text-right p-2 font-medium" title="Visit-span only (shift = first→last visit)">Eff visit span %</th>
                   <th className="text-right p-2 font-medium">Unassigned %</th>
@@ -228,8 +224,6 @@ export function SchedulesPage() {
                     <td className="p-2 text-right">{fmtNum(r.shift_hours_total, 0)}</td>
                     <td className="p-2 text-right">{fmtNum(r.shift_hours_idle, 0)}</td>
                     <td className="p-2 text-right">{fmtNum(r.output_shift_hours_trimmed, 0)}</td>
-                    <td className="p-2 text-right">{fmtNum(r.efficiency_total_pct, 1)}</td>
-                    <td className="p-2 text-right">{fmtNum(r.efficiency_trimmed_pct, 1)}</td>
                     <td className="p-2 text-right">{fmtNum(r.efficiency_all_pct, 1)}</td>
                     <td className="p-2 text-right">{fmtNum(r.efficiency_min_visit_pct, 1)}</td>
                     <td className="p-2 text-right">{fmtNum(r.efficiency_visit_span_pct, 1)}</td>

@@ -20,6 +20,10 @@ interface MetricsJson {
   wait_time_h?: number;
   break_time_h?: number;
   inactive_time_h?: number;
+  shift_hours_min_visit?: number;
+  idle_hours_min_visit?: number;
+  shift_hours_visit_span?: number;
+  idle_hours_visit_span?: number;
   routing_efficiency_pct?: number;
   field_efficiency_pct?: number;
   unassigned_visits?: number;
@@ -31,6 +35,13 @@ interface MetricsJson {
   score?: string;
   [key: string]: unknown;
 }
+
+const TIME_SEGMENTS = [
+  { key: 'visit_time_h' as const, label: 'Visit', color: 'bg-emerald-500' },
+  { key: 'travel_time_h' as const, label: 'Travel', color: 'bg-amber-500' },
+  { key: 'wait_time_h' as const, label: 'Wait', color: 'bg-amber-300' },
+  { key: 'idle', label: 'Idle', color: 'bg-slate-300' },
+];
 
 function parseContinuityCsv(csv: string): { client: string; nr_visits: number; continuity: number }[] {
   const lines = csv.trim().split(/\r?\n/);
@@ -108,18 +119,53 @@ export function RunDetailPage() {
   if (!run) return null;
 
   const continuityRows = continuityCsv ? parseContinuityCsv(continuityCsv) : [];
-  const inactiveH = metrics?.inactive_time_h ?? 0;
-  const totalShiftH = metrics?.shift_time_h ?? 0;
-  const activeH = totalShiftH > 0 ? totalShiftH - inactiveH : 0;
-  const activeSegments = activeH > 0 && metrics
+  const breakH = metrics?.break_time_h ?? 0;
+  const visitH = metrics?.visit_time_h ?? 0;
+  const travelH = metrics?.travel_time_h ?? 0;
+  const waitH = metrics?.wait_time_h ?? 0;
+
+  // Same visit, travel, wait for all three. Only total and idle differ:
+  // 1 = all shifts: total = shift − break, idle = lots (idle_hours_all)
+  // 2 = min 1 visit: total = shift_hours_min_visit − break, idle = less (idle_hours_min_visit)
+  // 3 = visit span: total = shift_hours_visit_span, idle = 0
+  const shiftHoursAll = metrics?.shift_hours_all ?? metrics?.shift_time_h;
+  const shiftHoursMinVisit = metrics?.shift_hours_min_visit;
+  const shiftHoursVisitSpan = metrics?.shift_hours_visit_span;
+  const idleAll = metrics?.idle_hours_all ?? metrics?.inactive_time_h ?? 0;
+  const idleMinVisit = metrics?.idle_hours_min_visit ?? 0;
+
+  const total1 = (metrics?.shift_time_h ?? shiftHoursAll ?? 0) - breakH;
+  const total2 = (shiftHoursMinVisit ?? 0) - breakH;
+  const total3 = shiftHoursVisitSpan ?? 0;
+
+  const threeCharts = metrics
     ? [
-        { label: 'Visit', h: metrics.visit_time_h ?? 0, color: 'bg-emerald-500' },
-        { label: 'Travel', h: metrics.travel_time_h ?? 0, color: 'bg-amber-500' },
-        { label: 'Wait', h: metrics.wait_time_h ?? 0, color: 'bg-amber-300' },
-        { label: 'Break', h: metrics.break_time_h ?? 0, color: 'bg-slate-400' },
-      ].filter((s) => s.h > 0)
+        {
+          label: 'Eff 1: All shifts',
+          pct: run.efficiency_all_pct ?? undefined,
+          activeShiftHours: shiftHoursAll ?? undefined,
+          total: total1,
+          segments: [visitH, travelH, waitH, idleAll],
+          desc: 'All shift hours (excl. break). Idle: lots.',
+        },
+        {
+          label: 'Eff 2: Min 1 visit',
+          pct: run.efficiency_min_visit_pct ?? undefined,
+          activeShiftHours: shiftHoursMinVisit ?? undefined,
+          total: total2,
+          segments: [visitH, travelH, waitH, idleMinVisit],
+          desc: 'Shifts with ≥1 visit (excl. break). Idle: less.',
+        },
+        {
+          label: 'Eff 3: Visit span',
+          pct: run.efficiency_visit_span_pct ?? undefined,
+          activeShiftHours: shiftHoursVisitSpan ?? undefined,
+          total: total3,
+          segments: [visitH, travelH, waitH, 0],
+          desc: 'First visit → last visit per shift. No idle.',
+        },
+      ].filter((c) => c.total > 0)
     : [];
-  const hasInactive = inactiveH > 0 && totalShiftH > 0;
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
@@ -219,137 +265,58 @@ export function RunDetailPage() {
               <p className="font-semibold text-gray-900">{run.output_shifts_trimmed ?? '—'}</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm mt-4 pt-4 border-t border-gray-100">
-            <div>
-              <p className="text-gray-500">Visit / total shift h</p>
-              <p className="font-semibold text-gray-900">{run.efficiency_total_pct != null ? `${run.efficiency_total_pct.toFixed(1)}%` : '—'}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">Visit / trimmed shift h</p>
-              <p className="font-semibold text-gray-900">{run.efficiency_trimmed_pct != null ? `${run.efficiency_trimmed_pct.toFixed(1)}%` : '—'}</p>
-            </div>
-          </div>
-          {(run.efficiency_all_pct != null || run.efficiency_min_visit_pct != null || run.efficiency_visit_span_pct != null) && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <p className="text-xs font-medium text-gray-600 mb-4">
-                Visit time ÷ denominator. Target ≥70%.
-              </p>
-              <div className="space-y-5">
-                {[
-                  {
-                    label: 'Eff 1: All shifts',
-                    pct: run.efficiency_all_pct,
-                    desc: 'Denominator: all shift hours (incl. empty shifts)',
-                    color: 'bg-emerald-500',
-                  },
-                  {
-                    label: 'Eff 2: Min 1 visit',
-                    pct: run.efficiency_min_visit_pct,
-                    desc: 'Denominator: only shifts with ≥1 visit',
-                    color: 'bg-emerald-600',
-                  },
-                  {
-                    label: 'Eff 3: Visit span',
-                    pct: run.efficiency_visit_span_pct,
-                    desc: 'Denominator: first visit start → last visit end (no idle)',
-                    color: 'bg-emerald-700',
-                  },
-                ].map(({ label, pct, desc, color }) => (
-                  <div key={label}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-800">{label}</span>
-                      <span className="text-sm font-semibold text-gray-900 tabular-nums">
-                        {pct != null ? `${pct.toFixed(1)}%` : '—'}
-                      </span>
-                    </div>
-                    <div className="h-6 rounded-md bg-gray-100 overflow-hidden relative">
-                      <div
-                        className={`${color} h-full transition-all flex items-center justify-end pr-1.5`}
-                        style={{ width: pct != null ? `${Math.min(100, pct)}%` : 0 }}
-                      >
-                        {pct != null && pct >= 12 && (
-                          <span className="text-xs font-medium text-white">{pct.toFixed(0)}%</span>
-                        )}
-                      </div>
-                      {/* Target line at 70% */}
-                      <div
-                        className="absolute top-0 bottom-0 w-0.5 bg-amber-500 opacity-60 pointer-events-none"
-                        style={{ left: '70%' }}
-                        title="Target 70%"
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">{desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </section>
       )}
 
-      {/* Time breakdown: how shift hours are split (not efficiency) */}
-      {(activeSegments.length > 0 || hasInactive) && (
+      {/* 3 efficiency charts: Visit, Travel, Wait, Idle (break excl.) */}
+      {threeCharts.length > 0 && (
         <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-800 mb-1">Time breakdown (shift hours)</h2>
-          <p className="text-xs text-gray-500 mb-4">How hours are spent — Visit, Travel, Wait, Break, Idle. Separate from efficiency % above.</p>
-          {/* Active time bar: Visit, Travel, Wait, Break */}
-          {activeSegments.length > 0 && (
-            <div className="mb-4">
-              <p className="text-xs text-gray-500 mb-2">Active time (idle removed)</p>
-              <div className="flex h-8 rounded-lg overflow-hidden bg-gray-100">
-                {activeSegments.map((s) => (
-                  <div
-                    key={s.label}
-                    className={`${s.color} flex items-center justify-center min-w-[2rem] text-white text-xs font-medium`}
-                    style={{ width: `${(s.h / activeH) * 100}%` }}
-                    title={`${s.label}: ${s.h.toFixed(0)}h`}
-                  >
-                    {(s.h / activeH) * 100 >= 8 ? s.label : ''}
+          <h2 className="text-sm font-semibold text-gray-800 mb-1">3 efficiency definitions</h2>
+          <p className="text-xs text-gray-500 mb-4">Visit, Travel, Wait, Idle. Break excluded (non-assignable). Target ≥70%.</p>
+          <div className="space-y-6">
+            {threeCharts.map(({ label, pct, activeShiftHours, total, segments: segs, desc }) => {
+              const segments = [
+                { h: segs[0], ...TIME_SEGMENTS[0] },
+                { h: segs[1], ...TIME_SEGMENTS[1] },
+                { h: segs[2], ...TIME_SEGMENTS[2] },
+                { h: segs[3], ...TIME_SEGMENTS[3] },
+              ].filter((s) => s.h > 0);
+              return (
+                <div key={label}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-gray-800">{label}</span>
+                    <span className="text-sm text-gray-900 tabular-nums flex items-center gap-2">
+                      {activeShiftHours != null && (
+                        <span className="text-gray-500 font-normal">{activeShiftHours.toFixed(0)} h</span>
+                      )}
+                      <span className="font-semibold">{pct != null ? `${pct.toFixed(1)}%` : '—'}</span>
+                    </span>
                   </div>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-4 mt-2 text-xs text-gray-600">
-                {activeSegments.map((s) => (
-                  <span key={s.label}>
-                    <span className={`inline-block w-3 h-3 rounded ${s.color} align-middle mr-1`} />
-                    {s.label}: {((s.h / activeH) * 100).toFixed(1)}%
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-          {/* Separate bar: Active vs Idle */}
-          {hasInactive && (
-            <div>
-              <p className="text-xs text-gray-500 mb-2">Shift split: Active vs Idle</p>
-              <div className="flex h-8 rounded-lg overflow-hidden bg-gray-100">
-                <div
-                  className="bg-emerald-400 flex items-center justify-center text-white text-xs font-medium"
-                  style={{ width: `${((totalShiftH - inactiveH) / totalShiftH) * 100}%` }}
-                  title={`Active: ${(totalShiftH - inactiveH).toFixed(0)}h`}
-                >
-                  {((totalShiftH - inactiveH) / totalShiftH) * 100 >= 15 ? 'Active' : ''}
+                  <div className="flex h-7 rounded-md overflow-hidden bg-gray-100">
+                    {segments.map((s) => (
+                      <div
+                        key={s.label}
+                        className={`${s.color} flex items-center justify-center min-w-0 text-white text-xs font-medium`}
+                        style={{ width: `${(s.h / total) * 100}%` }}
+                        title={`${s.label}: ${s.h.toFixed(0)}h`}
+                      >
+                        {(s.h / total) * 100 >= 8 ? s.label : ''}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{desc}</p>
                 </div>
-                <div
-                  className="bg-slate-300 flex items-center justify-center text-white text-xs font-medium"
-                  style={{ width: `${(inactiveH / totalShiftH) * 100}%` }}
-                  title={`Idle: ${inactiveH.toFixed(0)}h`}
-                >
-                  {(inactiveH / totalShiftH) * 100 >= 15 ? 'Idle' : ''}
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4 mt-2 text-xs text-gray-600">
-                <span>
-                  <span className="inline-block w-3 h-3 rounded bg-emerald-400 align-middle mr-1" />
-                  Active: {(((totalShiftH - inactiveH) / totalShiftH) * 100).toFixed(1)}% ({(totalShiftH - inactiveH).toFixed(0)}h)
-                </span>
-                <span>
-                  <span className="inline-block w-3 h-3 rounded bg-slate-300 align-middle mr-1" />
-                  Idle: {((inactiveH / totalShiftH) * 100).toFixed(1)}% ({inactiveH.toFixed(0)}h)
-                </span>
-              </div>
-            </div>
-          )}
+              );
+            })}
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-4 pt-4 border-t border-gray-100 text-xs text-gray-600">
+            {TIME_SEGMENTS.map((s) => (
+              <span key={s.label}>
+                <span className={`inline-block w-3 h-3 rounded ${s.color} align-middle mr-1`} />
+                {s.label}
+              </span>
+            ))}
+          </div>
         </section>
       )}
 
