@@ -1,6 +1,7 @@
 /**
  * Detail panel for a single schedule run (metrics, insights, actions)
  */
+import { Link } from 'react-router-dom';
 import type { ScheduleRun } from '../../types';
 import { GoalBadge, unassignedStatus, efficiencyStatus, continuityStatus } from './GoalBadge';
 import { cancelScheduleRun } from '../../lib/api';
@@ -77,7 +78,13 @@ export function RunDetailPanel({ run, onClose, onCancel }: RunDetailPanelProps) 
           </ul>
         </div>
       )}
-      <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
+      <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap gap-2 items-center">
+        <Link
+          to={`/schedules/run/${run.id}`}
+          className="px-3 py-1.5 text-xs rounded border border-blue-200 text-blue-700 hover:bg-blue-50"
+        >
+          View full details (charts, report, continuity) →
+        </Link>
         {canCancel && (
           <button
             type="button"

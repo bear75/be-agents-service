@@ -1,16 +1,17 @@
 /**
- * SVG scatter plot: X = continuity avg, Y = unassigned%
- * Goal zone: X ≤ 11, Y < 1%
+ * SVG scatter plot: X = continuity (avg), Y = efficiency %
+ * Goal zone: X ≤ 11, Y ≥ 70%
  */
 import type { ScheduleRun } from '../../types';
 
 const W = 400;
 const H = 280;
-const PAD = { left: 48, right: 24, top: 24, bottom: 40 };
+const PAD = { left: 44, right: 24, top: 24, bottom: 40 };
 const X_MAX = 25;
-const Y_MAX = 5;
+const Y_MIN = 0;
+const Y_MAX = 100;
 const TARGET_X = 11;
-const TARGET_Y = 1;
+const TARGET_Y = 70;
 
 interface ScatterPlotProps {
   runs: ScheduleRun[];
@@ -22,26 +23,34 @@ function scaleX(x: number) {
   return PAD.left + (x / X_MAX) * (W - PAD.left - PAD.right);
 }
 
+/** Y axis: efficiency 0–100%; screen y increases downward so high efficiency = top */
 function scaleY(y: number) {
-  return PAD.top + (1 - y / Y_MAX) * (H - PAD.top - PAD.bottom);
+  return PAD.top + (1 - (y - Y_MIN) / (Y_MAX - Y_MIN)) * (H - PAD.top - PAD.bottom);
+}
+
+function getContinuity(r: ScheduleRun): number | null {
+  return r.continuity_visit_weighted_avg ?? r.continuity_avg ?? null;
+}
+
+function getEfficiency(r: ScheduleRun): number | null {
+  return r.efficiency_trimmed_pct ?? r.routing_efficiency_pct ?? null;
 }
 
 export function ScatterPlot({ runs, selectedId, onSelect }: ScatterPlotProps) {
   const completed = runs.filter(
-    (r) => r.status === 'completed' && r.continuity_avg != null && r.unassigned_pct != null
+    (r) => r.status === 'completed' && getContinuity(r) != null && getEfficiency(r) != null
   );
   const running = runs.filter((r) => r.status === 'running');
 
-  const goalZoneX1 = scaleX(0);
   const goalZoneX2 = scaleX(TARGET_X);
-  const goalZoneYTop = scaleY(TARGET_Y);   // Y=1% (top of zone in screen coords)
-  const goalZoneYBottom = scaleY(0);       // Y=0% (bottom)
+  const goalZoneYTop = scaleY(Y_MAX);      // top of chart (100%)
+  const goalZoneYBottom = scaleY(TARGET_Y); // Y=70% line
 
   return (
     <div className="border border-gray-200 rounded-lg bg-white p-2">
-      <div className="text-xs text-gray-500 mb-1 font-medium">Unassigned % (Y) vs Continuity avg (X) — goal: bottom-left</div>
+      <div className="text-xs text-gray-500 mb-1 font-medium">Efficiency % (Y) vs Continuity (X) — goal: top-left (eff ≥70%, continuity ≤11)</div>
       <svg width={W} height={H} className="overflow-visible">
-        {/* Goal zone: rect from top (smaller y) down with positive height */}
+        {/* Goal zone: top-left — X ≤ 11, Y ≥ 70% */}
         <rect
           x={PAD.left}
           y={goalZoneYTop}
@@ -51,7 +60,6 @@ export function ScatterPlot({ runs, selectedId, onSelect }: ScatterPlotProps) {
           stroke="rgba(34,197,94,0.5)"
           strokeWidth={1}
         />
-        {/* Target lines */}
         <line
           x1={scaleX(TARGET_X)}
           y1={PAD.top}
@@ -63,26 +71,26 @@ export function ScatterPlot({ runs, selectedId, onSelect }: ScatterPlotProps) {
         />
         <line
           x1={PAD.left}
-          y1={goalZoneYTop}
+          y1={goalZoneYBottom}
           x2={W - PAD.right}
-          y2={goalZoneYTop}
+          y2={goalZoneYBottom}
           stroke="rgba(34,197,94,0.6)"
           strokeWidth={1}
           strokeDasharray="4,2"
         />
-        {/* Axes */}
         <line x1={PAD.left} y1={H - PAD.bottom} x2={W - PAD.right} y2={H - PAD.bottom} stroke="#e5e7eb" strokeWidth={1} />
         <line x1={PAD.left} y1={PAD.top} x2={PAD.left} y2={H - PAD.bottom} stroke="#e5e7eb" strokeWidth={1} />
         <text x={PAD.left - 8} y={H - PAD.bottom + 4} className="fill-gray-500 text-[10px]">0</text>
         <text x={scaleX(TARGET_X) - 6} y={H - PAD.bottom + 4} className="fill-gray-500 text-[10px]">11</text>
-        <text x={W - PAD.right - 16} y={H - PAD.bottom + 4} className="fill-gray-500 text-[10px]">25</text>
-        <text x={PAD.left - 4} y={PAD.top + 4} className="fill-gray-500 text-[10px]">5%</text>
-        <text x={PAD.left - 4} y={goalZoneYTop + 4} className="fill-gray-500 text-[10px]">1%</text>
-        {/* Points: completed */}
+        <text x={W - PAD.right - 20} y={H - PAD.bottom + 4} className="fill-gray-500 text-[10px]">25</text>
+        <text x={PAD.left - 28} y={PAD.top + 4} className="fill-gray-500 text-[10px]">100%</text>
+        <text x={PAD.left - 28} y={goalZoneYBottom + 4} className="fill-gray-500 text-[10px]">70%</text>
+        <text x={PAD.left - 28} y={H - PAD.bottom + 4} className="fill-gray-500 text-[10px]">0%</text>
         {completed.map((r) => {
-          const x = scaleX(r.continuity_avg ?? 0);
-          const y = scaleY(Math.min(r.unassigned_pct ?? 0, Y_MAX));
-          const eff = r.routing_efficiency_pct ?? 0;
+          const cont = getContinuity(r) ?? 0;
+          const eff = getEfficiency(r) ?? 0;
+          const x = scaleX(Math.min(cont, X_MAX));
+          const y = scaleY(Math.max(Y_MIN, Math.min(Y_MAX, eff)));
           const green = Math.round(128 + (eff / 100) * 127);
           const isSelected = selectedId === r.id;
           return (
@@ -100,15 +108,16 @@ export function ScatterPlot({ runs, selectedId, onSelect }: ScatterPlotProps) {
                 strokeWidth={isSelected ? 2 : 1}
               />
               <title>
-                {r.id} — eff {eff.toFixed(1)}% unassigned {r.unassigned_pct?.toFixed(2)}% continuity {r.continuity_avg?.toFixed(1)}
+                {r.id} — eff {eff.toFixed(1)}% continuity {cont.toFixed(1)} unassigned {r.unassigned_pct?.toFixed(2)}%
               </title>
             </g>
           );
         })}
-        {/* Running (grey) */}
         {running.map((r) => {
-          const x = scaleX(r.continuity_avg ?? 0);
-          const y = scaleY(Math.min(r.unassigned_pct ?? 0, Y_MAX));
+          const cont = getContinuity(r) ?? 0;
+          const eff = getEfficiency(r) ?? 0;
+          const x = scaleX(Math.min(cont, X_MAX));
+          const y = scaleY(Math.max(Y_MIN, Math.min(Y_MAX, eff)));
           return (
             <circle
               key={r.id}

@@ -4,16 +4,20 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Cpu, Play, Square, RefreshCw, Users } from 'lucide-react';
-import { getJobs, startJob, stopJob, getJobLogs } from '../lib/api';
+import { getJobs, startJob, stopJob, getJobLogs, listRepositories } from '../lib/api';
 import type { JobInfo } from '../types';
+
+const DEFAULT_REPO = 'beta-appcaire';
 
 export function EngineeringPage() {
   const [jobs, setJobs] = useState<JobInfo[]>([]);
+  const [repos, setRepos] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [form, setForm] = useState({
     team: 'engineering' as const,
+    targetRepo: DEFAULT_REPO,
     priorityFile: 'reports/priorities-' + new Date().toISOString().slice(0, 10) + '.md',
     branchName: 'feature/auto-' + Date.now(),
     model: 'sonnet',
@@ -22,8 +26,12 @@ export function EngineeringPage() {
 
   const load = () => {
     setLoading(true);
-    getJobs()
-      .then((j) => setJobs(Array.isArray(j) ? j : []))
+    setError(null);
+    Promise.all([getJobs(), listRepositories()])
+      .then(([jobsData, reposData]) => {
+        setJobs(Array.isArray(jobsData) ? jobsData : []);
+        setRepos((reposData ?? []).map((r) => r.name).filter(Boolean));
+      })
       .catch((e) => setError(String(e.message)))
       .finally(() => setLoading(false));
   };
@@ -69,7 +77,7 @@ export function EngineeringPage() {
           <h2 className="text-xl font-semibold text-gray-900">Compound</h2>
         </div>
         <p className="text-sm text-gray-500">
-          Start auto-compound: picks priority #1 from workspace or reports, creates PRD, implements, opens PR. Runs nightly at 23:00 or start manually here or via terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh beta-appcaire</code>
+          Start auto-compound: picks priority #1 from workspace or reports, creates PRD, implements, opens PR. Runs nightly at 23:00 or start manually here or via terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh &lt;repo-name&gt;</code> (default repo: beta-appcaire).
         </p>
       </div>
 
@@ -84,6 +92,24 @@ export function EngineeringPage() {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="font-medium text-gray-900 mb-4">Start Compound Workflow</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label>
+            <span className="block text-sm text-gray-600 mb-1">Repo</span>
+            <select
+              value={form.targetRepo}
+              onChange={(e) => setForm({ ...form, targetRepo: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
+            >
+              {repos.length > 0 ? (
+                repos.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))
+              ) : (
+                <option value={DEFAULT_REPO}>{DEFAULT_REPO}</option>
+              )}
+            </select>
+          </label>
           <label>
             <span className="block text-sm text-gray-600 mb-1">Priority file</span>
             <input

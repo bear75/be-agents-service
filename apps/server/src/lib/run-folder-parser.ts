@@ -14,13 +14,47 @@ export interface ParsedMetrics {
   total_visits: number | null;
   unassigned_pct: number | null;
   timefold_score: string | null;
+  input_shifts: number | null;
+  input_shift_hours: number | null;
+  output_shifts_trimmed: number | null;
+  output_shift_hours_trimmed: number | null;
+  shift_hours_total: number | null;
+  shift_hours_idle: number | null;
+  efficiency_total_pct: number | null;
+  efficiency_trimmed_pct: number | null;
 }
 
 export interface ParsedContinuity {
   continuity_avg: number | null;
+  continuity_median: number | null;
+  continuity_visit_weighted_avg: number | null;
   continuity_max: number | null;
   continuity_over_target: number | null;
   continuity_target: number;
+}
+
+/**
+ * Compute total scheduled shift hours from run_dir/input.json (modelInput.vehicles[].shifts[].minStartTime/maxEndTime).
+ */
+function getInputShiftHours(runDir: string): number | null {
+  const path = resolve(runDir, 'input.json');
+  if (!existsSync(path)) return null;
+  try {
+    const raw = JSON.parse(readFileSync(path, 'utf8'));
+    const vehicles = (raw.modelInput ?? raw).vehicles ?? [];
+    let totalMs = 0;
+    for (const v of vehicles) {
+      for (const s of v.shifts ?? []) {
+        const start = s.minStartTime ? new Date(s.minStartTime).getTime() : NaN;
+        const end = s.maxEndTime ? new Date(s.maxEndTime).getTime() : NaN;
+        if (Number.isFinite(start) && Number.isFinite(end) && end >= start) totalMs += end - start;
+      }
+    }
+    if (totalMs <= 0) return null;
+    return totalMs / (1000 * 3600);
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -43,6 +77,66 @@ function findMetricsJson(runDir: string): string | null {
 }
 
 /**
+ * Find first metrics JSON in run_dir/metrics/{subdir}/ (e.g. variant1, variant2).
+ */
+function findVariantMetricsJson(runDir: string, subdir: string): string | null {
+  const dir = resolve(runDir, 'metrics', subdir);
+  if (!existsSync(dir)) return null;
+  const files = readdirSync(dir);
+  const json = files.find((f) => f.endsWith('.json'));
+  return json ? resolve(dir, json) : null;
+}
+
+/**
+ * Parse variant metrics JSON for efficiency and idle (Variant 1: exclude empty shifts only; Variant 2: visit-span only).
+ */
+function parseVariantMetrics(path: string): {
+  efficiency_pct: number | null;
+  idle_shifts: number | null;
+  idle_shift_hours: number | null;
+} | null {
+  try {
+    const raw = JSON.parse(readFileSync(path, 'utf8'));
+    const efficiency_pct = raw.routing_efficiency_pct != null ? Number(raw.routing_efficiency_pct) : null;
+    const idle_shifts = raw.shifts_no_visits != null ? Number(raw.shifts_no_visits) : null;
+    const idle_shift_hours = raw.inactive_time_h != null ? Number(raw.inactive_time_h) : null;
+    return {
+      efficiency_pct: Number.isFinite(efficiency_pct) ? efficiency_pct : null,
+      idle_shifts: Number.isFinite(idle_shifts) ? idle_shifts : null,
+      idle_shift_hours: Number.isFinite(idle_shift_hours) ? idle_shift_hours : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Read variant1 and variant2 metrics from run_dir/metrics/variant1/ and metrics/variant2/.
+ * Single source of truth: values come directly from the metrics JSON files (no DB copy).
+ */
+export function getVariantMetrics(runDir: string): {
+  eff_v1_pct: number | null;
+  idle_shifts_v1: number | null;
+  idle_shift_hours_v1: number | null;
+  eff_v2_pct: number | null;
+  idle_shifts_v2: number | null;
+  idle_shift_hours_v2: number | null;
+} {
+  const v1Path = findVariantMetricsJson(runDir, 'variant1');
+  const v2Path = findVariantMetricsJson(runDir, 'variant2');
+  const v1 = v1Path ? parseVariantMetrics(v1Path) : null;
+  const v2 = v2Path ? parseVariantMetrics(v2Path) : null;
+  return {
+    eff_v1_pct: v1?.efficiency_pct ?? null,
+    idle_shifts_v1: v1?.idle_shifts ?? null,
+    idle_shift_hours_v1: v1?.idle_shift_hours ?? null,
+    eff_v2_pct: v2?.efficiency_pct ?? null,
+    idle_shifts_v2: v2?.idle_shifts ?? null,
+    idle_shift_hours_v2: v2?.idle_shift_hours ?? null,
+  };
+}
+
+/**
  * Parse metrics from appcaire metrics.py output JSON.
  * Fields: routing_efficiency_pct, unassigned_visits, total_visits_assigned, total_visits, unassigned_pct, score.
  */
@@ -60,12 +154,38 @@ export function parseMetricsFromRunDir(runDir: string): ParsedMetrics | null {
       score != null && String(score).trim() !== '' && String(score) !== 'N/A'
         ? String(score)
         : null;
+    const inputSummary = raw.input_summary as { shifts?: number } | undefined;
+    const inputShifts = inputSummary?.shifts != null ? Number(inputSummary.shifts) : null;
+    const shiftTimeH = raw.shift_time_h != null ? Number(raw.shift_time_h) : null;
+    const inactiveTimeH = raw.inactive_time_h != null ? Number(raw.inactive_time_h) : null;
+    const shiftsWithVisits = raw.shifts_with_visits != null ? Number(raw.shifts_with_visits) : null;
+    const outputShiftHoursTrimmed =
+      shiftTimeH != null && inactiveTimeH != null && Number.isFinite(shiftTimeH) && Number.isFinite(inactiveTimeH)
+        ? shiftTimeH - inactiveTimeH
+        : null;
+    const visitTimeH = raw.visit_time_h != null ? Number(raw.visit_time_h) : null;
+    const efficiencyTotalPct =
+      shiftTimeH != null && visitTimeH != null && shiftTimeH > 0 && Number.isFinite(visitTimeH)
+        ? (visitTimeH / shiftTimeH) * 100
+        : null;
+    const efficiencyTrimmedPct =
+      outputShiftHoursTrimmed != null && visitTimeH != null && outputShiftHoursTrimmed > 0 && Number.isFinite(visitTimeH)
+        ? (visitTimeH / outputShiftHoursTrimmed) * 100
+        : null;
     return {
       routing_efficiency_pct: raw.routing_efficiency_pct != null ? Number(raw.routing_efficiency_pct) : null,
       unassigned_visits: Number.isFinite(unassigned) ? unassigned : null,
       total_visits: totalVisits > 0 ? totalVisits : null,
       unassigned_pct: unassignedPct != null && Number.isFinite(unassignedPct) ? unassignedPct : null,
       timefold_score,
+      input_shifts: Number.isFinite(inputShifts) ? inputShifts : null,
+      input_shift_hours: null,
+      output_shifts_trimmed: Number.isFinite(shiftsWithVisits) ? shiftsWithVisits : null,
+      output_shift_hours_trimmed: outputShiftHoursTrimmed != null && Number.isFinite(outputShiftHoursTrimmed) ? outputShiftHoursTrimmed : null,
+      shift_hours_total: shiftTimeH != null && Number.isFinite(shiftTimeH) ? shiftTimeH : null,
+      shift_hours_idle: inactiveTimeH != null && Number.isFinite(inactiveTimeH) ? inactiveTimeH : null,
+      efficiency_total_pct: efficiencyTotalPct,
+      efficiency_trimmed_pct: efficiencyTrimmedPct,
     };
   } catch {
     return null;
@@ -131,6 +251,8 @@ export function parseContinuityFromRunDir(
       }
       return {
         continuity_avg: avg,
+        continuity_median: null,
+        continuity_visit_weighted_avg: null,
         continuity_max: Math.round(max),
         continuity_over_target: overTarget,
         continuity_target: continuityTarget,
@@ -145,20 +267,32 @@ export function parseContinuityFromRunDir(
         h === 'count' ||
         h === 'vehicles',
     );
+    const visitsCol = header.findIndex((h) => h === 'nr_visits' || h === 'visits' || h === 'n_visits');
     if (countCol < 0) return null;
-    const values: number[] = [];
+    const pairs: { c: number; visits: number }[] = [];
     for (const row of dataRows) {
       const cells = row.split(',');
-      const v = parseFloat(cells[countCol]?.trim() ?? '');
-      if (Number.isFinite(v)) values.push(v);
+      const c = parseFloat(cells[countCol]?.trim() ?? '');
+      if (!Number.isFinite(c)) continue;
+      const visits = visitsCol >= 0 ? parseInt(cells[visitsCol]?.trim() ?? '1', 10) : 1;
+      pairs.push({ c, visits: Number.isFinite(visits) && visits > 0 ? visits : 1 });
     }
-    if (values.length === 0) return null;
+    if (pairs.length === 0) return null;
+    const values = pairs.map((p) => p.c);
     const sum = values.reduce((a, b) => a + b, 0);
     const continuity_avg = sum / values.length;
+    const sorted = [...values].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    const continuity_median = sorted.length % 2 === 1 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+    const totalWeight = pairs.reduce((a, p) => a + p.visits, 0);
+    const weightedSum = pairs.reduce((a, p) => a + p.c * p.visits, 0);
+    const continuity_visit_weighted_avg = totalWeight > 0 ? weightedSum / totalWeight : continuity_avg;
     const continuity_max = Math.round(Math.max(...values));
     const continuity_over_target = values.filter((v) => v > continuityTarget).length;
     return {
       continuity_avg,
+      continuity_median,
+      continuity_visit_weighted_avg,
       continuity_max,
       continuity_over_target,
       continuity_target: continuityTarget,
@@ -193,14 +327,25 @@ export function parseRunFromFolder(
   unassigned_pct: number | null;
   timefold_score: string | null;
   continuity_avg: number | null;
+  continuity_median: number | null;
+  continuity_visit_weighted_avg: number | null;
   continuity_max: number | null;
   continuity_over_target: number | null;
   continuity_target: number;
+  input_shifts: number | null;
+  input_shift_hours: number | null;
+  output_shifts_trimmed: number | null;
+  output_shift_hours_trimmed: number | null;
+  shift_hours_total: number | null;
+  shift_hours_idle: number | null;
+  efficiency_total_pct: number | null;
+  efficiency_trimmed_pct: number | null;
   output_path: string | null;
 } {
   const runDir = resolve(batchDir, runId);
   const metrics = parseMetricsFromRunDir(runDir);
   const continuity = parseContinuityFromRunDir(runDir, continuityTarget);
+  const inputShiftHours = getInputShiftHours(runDir);
 
   const algorithm = manifestEntry?.algorithm ?? runId ?? 'imported';
   const strategy = manifestEntry?.strategy ?? runId ?? 'imported';
@@ -226,9 +371,19 @@ export function parseRunFromFolder(
     unassigned_pct: metrics?.unassigned_pct ?? null,
     timefold_score: metrics?.timefold_score ?? null,
     continuity_avg: continuity?.continuity_avg ?? null,
+    continuity_median: continuity?.continuity_median ?? null,
+    continuity_visit_weighted_avg: continuity?.continuity_visit_weighted_avg ?? null,
     continuity_max: continuity?.continuity_max ?? null,
     continuity_over_target: continuity?.continuity_over_target ?? null,
     continuity_target: continuity?.continuity_target ?? continuityTarget,
+    input_shifts: metrics?.input_shifts ?? null,
+    input_shift_hours: inputShiftHours ?? metrics?.input_shift_hours ?? null,
+    output_shifts_trimmed: metrics?.output_shifts_trimmed ?? null,
+    output_shift_hours_trimmed: metrics?.output_shift_hours_trimmed ?? null,
+    shift_hours_total: metrics?.shift_hours_total ?? null,
+    shift_hours_idle: metrics?.shift_hours_idle ?? null,
+    efficiency_total_pct: metrics?.efficiency_total_pct ?? null,
+    efficiency_trimmed_pct: metrics?.efficiency_trimmed_pct ?? null,
     output_path,
   };
 }

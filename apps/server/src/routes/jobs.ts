@@ -1,11 +1,32 @@
 import { Router } from 'express';
+import path from 'path';
 import { jobExecutor } from '../lib/services.js';
+import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 
 const router = Router();
 
+const DEFAULT_REPO_NAME = 'beta-appcaire';
+
+/** Resolve targetRepo: repo name → config path; else absolute path as-is; else default path. */
+function resolveTargetRepoPath(targetRepo: string | undefined): string {
+  if (!targetRepo || typeof targetRepo !== 'string') {
+    const config = getRepoConfig(DEFAULT_REPO_NAME);
+    return config?.path ?? path.join(getServiceRoot(), '..', DEFAULT_REPO_NAME);
+  }
+  if (path.isAbsolute(targetRepo)) return targetRepo;
+  const config = getRepoConfig(targetRepo.trim());
+  if (config?.path) return config.path;
+  return path.join(getServiceRoot(), '..', targetRepo);
+}
+
 router.get('/', (req, res) => {
-  const jobs = jobExecutor.getAllJobs();
-  res.json(jobs);
+  try {
+    const jobs = jobExecutor.getAllJobs();
+    res.json(jobs);
+  } catch (err) {
+    console.error('GET /jobs error:', err);
+    res.json([]);
+  }
 });
 
 router.post('/nightly/trigger', (req, res) => {
@@ -23,6 +44,8 @@ router.post('/start', (req, res) => {
       });
     }
 
+    const targetRepoPath = resolveTargetRepoPath(targetRepo);
+
     let job;
     if (team === 'engineering') {
       job = jobExecutor.startEngineeringJob({
@@ -30,14 +53,14 @@ router.post('/start', (req, res) => {
         priorityFile,
         branchName,
         baseBranch,
-        targetRepo,
+        targetRepo: targetRepoPath,
       });
     } else if (team === 'marketing') {
       job = jobExecutor.startMarketingJob({
         model,
         priorityFile,
         branchName,
-        targetRepo,
+        targetRepo: targetRepoPath,
       });
     } else {
       return res.status(400).json({

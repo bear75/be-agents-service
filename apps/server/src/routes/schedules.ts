@@ -1,10 +1,9 @@
 /**
  * Schedule optimization API — pipeline of Timefold FSR runs
  * GET /api/schedule-runs — list runs (optional ?dataset=)
- * GET /api/schedule-runs/import-from-appcaire — import from appcaire/huddinge-datasets:
- *   reads manifest.json for run list and metadata, then for each run folder reads
- *   metrics/*.json (efficiency, unassigned) and *continuity*.csv (continuity_avg, continuity_max).
- *   Algorithm/strategy come from manifest or run folder name, never hardcoded.
+ * GET /api/schedule-runs/import-from-appcaire — import from shared huddinge-datasets only:
+ *   scans HUDDINGE_DATASETS_PATH (or AgentWorkspace/huddinge-datasets), reads manifest.json
+ *   and each run folder’s metrics/*.json and *continuity*.csv. Algorithm/strategy from manifest or run id.
  * POST /api/schedule-runs/:id/cancel — cancel run (Timefold DELETE + DB update)
  */
 import { Router, type Request, type Response } from 'express';
@@ -18,39 +17,16 @@ import {
   runSeedScheduleRunsIfEmpty,
 } from '../lib/database.js';
 import { getRepoConfig, getServiceRoot } from '../lib/config.js';
-import { parseRunFromFolder } from '../lib/run-folder-parser.js';
+import { parseRunFromFolder, getVariantMetrics } from '../lib/run-folder-parser.js';
 import type { ScheduleRun } from '../types/index.js';
 
 const router = Router();
 
-const SOLVE_SUBPATH = 'docs_2.0/recurring-visits/huddinge-package/solve';
 const HUDDINGE_DATASETS_DIR = 'huddinge-datasets';
 const DEFAULT_DATASET = 'huddinge-2w-expanded';
 const CONTINUITY_TARGET = 11;
 
-function getAppcairePath(): string | null {
-  const home = process.env.HOME || '';
-  const root = getServiceRoot();
-  const candidates: string[] = [];
-  try {
-    const appcaire = getRepoConfig('appcaire');
-    if (appcaire?.path) candidates.push(appcaire.path);
-  } catch {
-    // config not found
-  }
-  if (home) {
-    candidates.push(resolve(home, 'HomeCare/caire-platform/appcaire'));
-    candidates.push(resolve(home, 'HomeCare/appcaire'));
-  }
-  candidates.push(resolve(root, '../caire-platform/appcaire'));
-  candidates.push(resolve(root, '../../caire-platform/appcaire'));
-  for (const p of candidates) {
-    if (p && existsSync(p)) return p;
-  }
-  return null;
-}
-
-/** Shared folder: AgentWorkspace/huddinge-datasets (e.g. .../huddinge-datasets/28-feb). */
+/** Shared folder: AgentWorkspace/huddinge-datasets (e.g. .../huddinge-datasets/28-feb). Import uses this only, not appcaire. */
 function getHuddingeDatasetsPath(): string | null {
   const envPath = process.env.HUDDINGE_DATASETS_PATH;
   if (envPath && existsSync(envPath)) return envPath;
@@ -68,6 +44,13 @@ function getHuddingeDatasetsPath(): string | null {
   if (home) {
     const p = resolve(home, 'Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace', HUDDINGE_DATASETS_DIR);
     if (existsSync(p)) return p;
+  }
+  try {
+    const root = getServiceRoot();
+    const localDatasets = resolve(root, 'recurring-visits', 'huddinge-package', 'huddinge-datasets');
+    if (existsSync(localDatasets)) return localDatasets;
+  } catch {
+    // ignore
   }
   return null;
 }
@@ -196,14 +179,15 @@ function importRunsFromManifestOnly(
       total_visits: null,
       unassigned_pct: null,
       continuity_avg: null,
+      continuity_median: null,
+      continuity_visit_weighted_avg: null,
       continuity_max: null,
       continuity_over_target: null,
       continuity_target: CONTINUITY_TARGET,
-      submitted_at: new Date().toISOString(),
-      started_at: null,
-      completed_at: null,
-      cancelled_at: null,
-      duration_seconds: null,
+      input_shifts: null,
+      input_shift_hours: null,
+      output_shifts_trimmed: null,
+      output_shift_hours_trimmed: null,
       output_path: null,
       notes: null,
       iteration: 1,
@@ -219,7 +203,7 @@ router.get('/import-from-appcaire', (req: Request, res: Response) => {
     const batchesScanned: string[] = [];
     const sources: string[] = [];
 
-    // 1) Shared folder: AgentWorkspace/huddinge-datasets (e.g. .../huddinge-datasets/28-feb)
+    // Shared folder only: AgentWorkspace/huddinge-datasets (e.g. .../huddinge-datasets/28-feb)
     const huddingePath = getHuddingeDatasetsPath();
     if (huddingePath) {
       sources.push(`huddinge-datasets: ${huddingePath}`);
@@ -229,34 +213,16 @@ router.get('/import-from-appcaire', (req: Request, res: Response) => {
         const batch = ent.name;
         if (batch.startsWith('.')) continue;
         const batchDir = resolve(huddingePath, batch);
-        batchesScanned.push(`${batch} (shared)`);
+        batchesScanned.push(batch);
         imported += importRunsFromBatchDir(batchDir, batch);
-      }
-    }
-
-    // 2) Appcaire repo: .../solve/{batch}/manifest.json
-    const appcairePath = process.env.APPCAIRE_PATH || getAppcairePath();
-    if (appcairePath && existsSync(appcairePath)) {
-      const solveDir = resolve(appcairePath, SOLVE_SUBPATH);
-      if (existsSync(solveDir)) {
-        sources.push(`appcaire solve: ${solveDir}`);
-        const entries = readdirSync(solveDir, { withFileTypes: true });
-        for (const ent of entries) {
-          if (!ent.isDirectory()) continue;
-          const batch = ent.name;
-          if (batch.startsWith('.')) continue;
-          const batchDir = resolve(solveDir, batch);
-          if (!batchesScanned.includes(batch)) batchesScanned.push(batch);
-          imported += importRunsFromBatchDir(batchDir, batch);
-        }
       }
     }
 
     if (imported === 0 && sources.length === 0) {
       return res.status(404).json({
         success: false,
-        error: 'No dataset folder found. Use shared AgentWorkspace/huddinge-datasets (e.g. 28-feb/manifest.json), or set APPCAIRE_PATH / appcaire in config.',
-        hint: 'HUDDINGE_DATASETS_PATH can point to the shared huddinge-datasets folder.',
+        error: 'No shared dataset folder found. Use AgentWorkspace/huddinge-datasets (e.g. 28-feb/ with run subdirs and metrics/continuity files).',
+        hint: 'Set HUDDINGE_DATASETS_PATH to the shared huddinge-datasets folder, or configure darwin.workspace.path in config/repos.yaml.',
       });
     }
 
@@ -303,6 +269,7 @@ router.get('/', (req: Request, res: Response) => {
       runSeedScheduleRunsIfEmpty();
       runs = getAllScheduleRuns(dataset);
     }
+    runs = runs.map(augmentRunWithVariantMetrics);
     res.json({
       success: true,
       data: { runs },
@@ -312,6 +279,125 @@ router.get('/', (req: Request, res: Response) => {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch schedule runs',
     });
+  }
+});
+
+/** Resolve run folder path from shared huddinge-datasets (batch/run_id). Returns null if run not in DB or folder missing. */
+function getRunFolderPath(runId: string): { basePath: string; run: ScheduleRun } | null {
+  const run = getScheduleRunById(runId);
+  if (!run?.batch) return null;
+  const base = getHuddingeDatasetsPath();
+  if (!base) return null;
+  const basePath = resolve(base, run.batch, runId);
+  return existsSync(basePath) ? { basePath, run } : null;
+}
+
+/** Augment run with variant metrics from metrics JSON (single source of truth, no DB copy). */
+function augmentRunWithVariantMetrics(run: ScheduleRun): ScheduleRun {
+  const base = getHuddingeDatasetsPath();
+  if (!base || !run.batch) return run;
+  const runDir = resolve(base, run.batch, run.id);
+  if (!existsSync(runDir)) return run;
+  const variant = getVariantMetrics(runDir);
+  return {
+    ...run,
+    eff_v1_pct: variant.eff_v1_pct,
+    idle_shifts_v1: variant.idle_shifts_v1,
+    idle_shift_hours_v1: variant.idle_shift_hours_v1,
+    eff_v2_pct: variant.eff_v2_pct,
+    idle_shifts_v2: variant.idle_shifts_v2,
+    idle_shift_hours_v2: variant.idle_shift_hours_v2,
+  };
+}
+
+function findFirstFile(dir: string, predicate: (name: string) => boolean): string | null {
+  if (!existsSync(dir)) return null;
+  const name = readdirSync(dir).find(predicate);
+  return name ? resolve(dir, name) : null;
+}
+
+/** GET run metrics JSON (from run folder metrics/metrics_*.json) */
+router.get('/:id/files/metrics-json', (req: Request, res: Response) => {
+  try {
+    const resolved = getRunFolderPath(req.params.id);
+    if (!resolved) {
+      return res.status(404).json({ success: false, error: 'Run or run folder not found' });
+    }
+    const metricsDir = resolve(resolved.basePath, 'metrics');
+    const path = findFirstFile(metricsDir, (f) => f.endsWith('.json') && (f.startsWith('metrics_') || f.startsWith('metrics.')))
+      ?? findFirstFile(metricsDir, (f) => f.endsWith('.json'));
+    if (!path) return res.status(404).json({ success: false, error: 'No metrics JSON in run folder' });
+    const raw = readFileSync(path, 'utf8');
+    const data = JSON.parse(raw);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(raw);
+  } catch (e) {
+    res.status(500).json({ success: false, error: e instanceof Error ? e.message : 'Failed to read metrics JSON' });
+  }
+});
+
+/** GET run metrics report text (metrics_report_*.txt) */
+router.get('/:id/files/metrics-report', (req: Request, res: Response) => {
+  try {
+    const resolved = getRunFolderPath(req.params.id);
+    if (!resolved) return res.status(404).json({ success: false, error: 'Run or run folder not found' });
+    const metricsDir = resolve(resolved.basePath, 'metrics');
+    const path = findFirstFile(metricsDir, (f) => f.startsWith('metrics_report_') && f.endsWith('.txt'));
+    if (!path) return res.status(404).json({ success: false, error: 'No metrics report in run folder' });
+    const text = readFileSync(path, 'utf8');
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(text);
+  } catch (e) {
+    res.status(500).json({ success: false, error: e instanceof Error ? e.message : 'Failed to read report' });
+  }
+});
+
+/** GET run continuity CSV */
+router.get('/:id/files/continuity', (req: Request, res: Response) => {
+  try {
+    const resolved = getRunFolderPath(req.params.id);
+    if (!resolved) return res.status(404).json({ success: false, error: 'Run or run folder not found' });
+    const check = (d: string) => {
+      if (!existsSync(d)) return null;
+      const name = readdirSync(d).find((f) => f.toLowerCase().includes('continuity') && f.endsWith('.csv'));
+      return name ? resolve(d, name) : null;
+    };
+    const path = check(resolved.basePath) ?? check(resolve(resolved.basePath, 'metrics'));
+    if (!path) return res.status(404).json({ success: false, error: 'No continuity CSV in run folder' });
+    const text = readFileSync(path, 'utf8');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.send(text);
+  } catch (e) {
+    res.status(500).json({ success: false, error: e instanceof Error ? e.message : 'Failed to read continuity CSV' });
+  }
+});
+
+/** GET dataset-level asset (e.g. pilot report PDF) from shared folder root */
+router.get('/dataset-assets/:filename', (req: Request, res: Response) => {
+  try {
+    const base = getHuddingeDatasetsPath();
+    if (!base) return res.status(404).json({ success: false, error: 'Shared dataset folder not configured' });
+    const filename = req.params.filename.replace(/[^a-zA-Z0-9._-]/g, '');
+    const path = resolve(base, filename);
+    const baseResolved = resolve(base);
+    if (!existsSync(path) || !path.startsWith(baseResolved)) return res.status(404).json({ success: false, error: 'File not found' });
+    res.sendFile(path, { maxAge: 3600 }, (err) => {
+      if (err && !res.headersSent) res.status(500).json({ success: false, error: 'Failed to send file' });
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e instanceof Error ? e.message : 'Failed to serve asset' });
+  }
+});
+
+/** GET single run by id (variant metrics read from run folder JSON, not DB) */
+router.get('/:id', (req: Request, res: Response) => {
+  try {
+    const run = getScheduleRunById(req.params.id);
+    if (!run) return res.status(404).json({ success: false, error: 'Run not found' });
+    const augmented = augmentRunWithVariantMetrics(run);
+    res.json({ success: true, data: { run: augmented } });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e instanceof Error ? e.message : 'Failed to fetch run' });
   }
 });
 

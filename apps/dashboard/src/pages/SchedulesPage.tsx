@@ -1,14 +1,22 @@
 /**
- * Schedule optimization — pipeline, scatter plot, runs table
+ * Schedule optimization — single runs table (status + metrics) and scatter plot.
  * Target: unassigned <1%, continuity ≤11, routing efficiency ≥70%
  */
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PagePurpose } from '../components/PagePurpose';
 import { getScheduleRuns, importScheduleRunsFromAppcaire } from '../lib/api';
 import type { ScheduleRun } from '../types';
-import { PipelineBoard } from '../components/schedules/PipelineBoard';
 import { ScatterPlot } from '../components/schedules/ScatterPlot';
 import { RunDetailPanel } from '../components/schedules/RunDetailPanel';
+
+const STATUS_STYLE: Record<string, string> = {
+  queued: 'bg-gray-100 text-gray-700',
+  running: 'bg-blue-100 text-blue-800',
+  completed: 'bg-green-100 text-green-800',
+  cancelled: 'bg-gray-100 text-gray-600',
+  failed: 'bg-red-100 text-red-800',
+};
 
 const DATASET = 'huddinge-2w-expanded';
 
@@ -16,6 +24,12 @@ function toNum(v: unknown): number | null {
   if (v == null) return null;
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
+}
+
+/** Format for table: show number or — (handles API strings) */
+function fmtNum(v: unknown, decimals: number): string {
+  const n = toNum(v);
+  return n != null ? (decimals === 0 ? String(Math.round(n)) : n.toFixed(decimals)) : '—';
 }
 
 /** Ensure metric fields are numbers (API may send strings from SQLite) */
@@ -27,9 +41,25 @@ function normalizeRun(r: ScheduleRun): ScheduleRun {
     total_visits: toNum(r.total_visits) ?? r.total_visits,
     unassigned_pct: toNum(r.unassigned_pct) ?? r.unassigned_pct,
     continuity_avg: toNum(r.continuity_avg) ?? r.continuity_avg,
+    continuity_median: toNum(r.continuity_median) ?? r.continuity_median,
+    continuity_visit_weighted_avg: toNum(r.continuity_visit_weighted_avg) ?? r.continuity_visit_weighted_avg,
     continuity_max: toNum(r.continuity_max) ?? r.continuity_max,
     continuity_over_target: toNum(r.continuity_over_target) ?? r.continuity_over_target,
     continuity_target: toNum(r.continuity_target) ?? r.continuity_target,
+    input_shifts: toNum(r.input_shifts) ?? r.input_shifts,
+    input_shift_hours: toNum(r.input_shift_hours) ?? r.input_shift_hours,
+    output_shifts_trimmed: toNum(r.output_shifts_trimmed) ?? r.output_shifts_trimmed,
+    output_shift_hours_trimmed: toNum(r.output_shift_hours_trimmed) ?? r.output_shift_hours_trimmed,
+    shift_hours_total: toNum(r.shift_hours_total) ?? r.shift_hours_total,
+    shift_hours_idle: toNum(r.shift_hours_idle) ?? r.shift_hours_idle,
+    efficiency_total_pct: toNum(r.efficiency_total_pct) ?? r.efficiency_total_pct,
+    efficiency_trimmed_pct: toNum(r.efficiency_trimmed_pct) ?? r.efficiency_trimmed_pct,
+    eff_v1_pct: toNum(r.eff_v1_pct) ?? r.eff_v1_pct,
+    idle_shifts_v1: toNum(r.idle_shifts_v1) ?? r.idle_shifts_v1,
+    idle_shift_hours_v1: toNum(r.idle_shift_hours_v1) ?? r.idle_shift_hours_v1,
+    eff_v2_pct: toNum(r.eff_v2_pct) ?? r.eff_v2_pct,
+    idle_shifts_v2: toNum(r.idle_shifts_v2) ?? r.idle_shifts_v2,
+    idle_shift_hours_v2: toNum(r.idle_shift_hours_v2) ?? r.idle_shift_hours_v2,
   };
 }
 
@@ -38,7 +68,6 @@ export function SchedulesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [syncing, setSyncing] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -57,20 +86,18 @@ export function SchedulesPage() {
     load();
   }, []);
 
-  const syncFromAppcaire = async () => {
-    setSyncing(true);
+  /** Sync from shared dataset (huddinge-datasets) then reload list — single action for "latest data". */
+  const refresh = async () => {
+    setLoading(true);
     setError(null);
     try {
       const result = await importScheduleRunsFromAppcaire();
-      if (result?.success) {
-        await load();
-      } else {
-        setError(result?.error ?? 'Sync failed');
-      }
+      if (result?.success === false) setError(result?.error ?? 'Sync failed');
+      await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Sync failed');
+      setError(e instanceof Error ? e.message : 'Refresh failed');
     } finally {
-      setSyncing(false);
+      setLoading(false);
     }
   };
 
@@ -80,31 +107,21 @@ export function SchedulesPage() {
     <div className="space-y-6">
       <PagePurpose
         purpose="Schedule optimization pipeline."
-        how="Timefold FSR runs: queued → running → completed/cancelled. Scatter: continuity vs unassigned %. Goal: unassigned &lt;1%, continuity ≤11, efficiency ≥70%."
+        how="Single table: all runs with status. Scatter: efficiency % (Y) vs continuity (X). Goal: top-left (eff ≥70%, continuity ≤11)."
         tip="Use the loop script to dispatch parallel runs and cancel non-promising ones early."
       />
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">
           Schedule optimization — {DATASET}
         </h2>
-        <span className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={syncFromAppcaire}
-            disabled={syncing || loading}
-            className="text-sm text-blue-600 hover:underline disabled:opacity-50"
-          >
-            {syncing ? 'Syncing…' : 'Sync from appcaire'}
-          </button>
-          <button
-            type="button"
-            onClick={load}
-            disabled={loading}
-            className="text-sm text-blue-600 hover:underline disabled:opacity-50"
-          >
-            {loading ? 'Loading…' : 'Refresh'}
-          </button>
-        </span>
+        <button
+          type="button"
+          onClick={refresh}
+          disabled={loading}
+          className="text-sm text-blue-600 hover:underline disabled:opacity-50"
+        >
+          {loading ? 'Refreshing…' : 'Refresh'}
+        </button>
       </div>
 
       {error && (
@@ -145,23 +162,14 @@ export function SchedulesPage() {
               })()}
             </div>
           )}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Pipeline</h3>
-              <PipelineBoard
-                runs={runs}
-                selectedId={selectedId}
-                onSelectRun={setSelectedId}
-              />
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Scatter (continuity vs unassigned %)</h3>
-              <ScatterPlot
-                runs={runs}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-              />
-            </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Scatter (efficiency % vs continuity)</h3>
+            <ScatterPlot
+              runs={runs}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+            />
           </div>
 
           {selectedRun && (
@@ -176,16 +184,26 @@ export function SchedulesPage() {
           )}
 
           <div className="overflow-x-auto">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Runs table</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Runs</h3>
             <table className="min-w-full text-sm border border-gray-200 rounded-lg">
               <thead>
                 <tr className="bg-gray-50">
                   <th className="text-left p-2 font-medium">ID</th>
-                  <th className="text-left p-2 font-medium">Algorithm</th>
                   <th className="text-left p-2 font-medium">Status</th>
-                  <th className="text-right p-2 font-medium">Eff %</th>
+                  <th className="text-right p-2 font-medium">In shifts</th>
+                  <th className="text-right p-2 font-medium" title="Before trim (incl idle)">Shift h total</th>
+                  <th className="text-right p-2 font-medium" title="Idle / empty shift hours">Shift h idle</th>
+                  <th className="text-right p-2 font-medium" title="Removed all idle, early end">Shift h trimmed</th>
+                  <th className="text-right p-2 font-medium" title="Visit time / total shift hours">Eff total %</th>
+                  <th className="text-right p-2 font-medium" title="Visit time / trimmed shift hours">Eff trimmed %</th>
+                  <th className="text-right p-2 font-medium" title="Variant 1: exclude empty shifts only">Eff v1 %</th>
+                  <th className="text-right p-2 font-medium" title="Variant 1: empty shifts count">Idle shifts v1</th>
+                  <th className="text-right p-2 font-medium" title="Variant 1: idle hours">Idle h v1</th>
+                  <th className="text-right p-2 font-medium" title="Variant 2: visit-span only">Eff v2 %</th>
+                  <th className="text-right p-2 font-medium" title="Variant 2: empty shifts count">Idle shifts v2</th>
+                  <th className="text-right p-2 font-medium" title="Variant 2: idle hours">Idle h v2</th>
                   <th className="text-right p-2 font-medium">Unassigned %</th>
-                  <th className="text-right p-2 font-medium">Continuity</th>
+                  <th className="text-right p-2 font-medium" title="Visit-weighted continuity">Cont.</th>
                 </tr>
               </thead>
               <tbody>
@@ -195,18 +213,30 @@ export function SchedulesPage() {
                     className="border-t border-gray-100 hover:bg-gray-50 cursor-pointer"
                     onClick={() => setSelectedId(selectedId === r.id ? null : r.id)}
                   >
-                    <td className="p-2 font-mono">{r.id}</td>
-                    <td className="p-2">{r.algorithm}</td>
-                    <td className="p-2">{r.status}</td>
-                    <td className="p-2 text-right">
-                      {r.routing_efficiency_pct != null ? r.routing_efficiency_pct.toFixed(1) : '—'}
+                    <td className="p-2 font-mono">
+                      <Link to={`/schedules/run/${r.id}`} className="text-blue-600 hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {r.id}
+                      </Link>
                     </td>
-                    <td className="p-2 text-right">
-                      {r.unassigned_pct != null ? r.unassigned_pct.toFixed(2) : '—'}
+                    <td className="p-2">
+                      <span className={`inline-flex px-1.5 py-0.5 rounded text-xs font-medium ${STATUS_STYLE[r.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                        {r.status}
+                      </span>
                     </td>
-                    <td className="p-2 text-right">
-                      {r.continuity_avg != null ? r.continuity_avg.toFixed(1) : '—'}
-                    </td>
+                    <td className="p-2 text-right">{fmtNum(r.input_shifts, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.shift_hours_total, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.shift_hours_idle, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.output_shift_hours_trimmed, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.efficiency_total_pct, 1)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.efficiency_trimmed_pct, 1)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.eff_v1_pct, 1)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.idle_shifts_v1, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.idle_shift_hours_v1, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.eff_v2_pct, 1)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.idle_shifts_v2, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.idle_shift_hours_v2, 0)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.unassigned_pct, 2)}</td>
+                    <td className="p-2 text-right">{fmtNum(r.continuity_visit_weighted_avg, 1)}</td>
                   </tr>
                 ))}
               </tbody>

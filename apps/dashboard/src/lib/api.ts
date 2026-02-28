@@ -470,7 +470,7 @@ export async function cancelScheduleRun(id: string, reason?: string): Promise<Sc
   return data;
 }
 
-/** Import schedule runs from appcaire solve folder (same machine); or seed sample runs if empty. */
+/** Import schedule runs from shared huddinge-datasets; or seed sample runs if empty. */
 export async function importScheduleRunsFromAppcaire(): Promise<{
   success: boolean;
   imported?: number;
@@ -481,4 +481,36 @@ export async function importScheduleRunsFromAppcaire(): Promise<{
   error?: string;
 }> {
   return fetchApi('/schedule-runs/import-from-appcaire');
+}
+
+/** Get a single schedule run by id */
+export async function getScheduleRun(id: string): Promise<ScheduleRun | null> {
+  const data = await fetchApi<{ run: ScheduleRun }>(`/schedule-runs/${id}`);
+  return data?.run ?? null;
+}
+
+/** Get run metrics JSON from shared folder (metrics/metrics_*.json) */
+export async function getRunMetricsJson(id: string): Promise<Record<string, unknown> | null> {
+  const res = await fetch(`${API_BASE}/schedule-runs/${id}/files/metrics-json`);
+  if (!res.ok) return null;
+  return res.json();
+}
+
+/** Get run metrics report text from shared folder */
+export async function getRunMetricsReport(id: string): Promise<string | null> {
+  const res = await fetch(`${API_BASE}/schedule-runs/${id}/files/metrics-report`);
+  if (!res.ok) return null;
+  return res.text();
+}
+
+/** Get run continuity CSV from shared folder */
+export async function getRunContinuity(id: string): Promise<string | null> {
+  const res = await fetch(`${API_BASE}/schedule-runs/${id}/files/continuity`);
+  if (!res.ok) return null;
+  return res.text();
+}
+
+/** URL to dataset-level asset (e.g. pilot report PDF) in shared folder */
+export function getDatasetAssetUrl(filename: string): string {
+  return `${API_BASE}/schedule-runs/dataset-assets/${encodeURIComponent(filename)}`;
 }

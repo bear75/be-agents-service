@@ -8,6 +8,7 @@ import { PlansPage } from './pages/PlansPage';
 import { InsightsPage } from './pages/InsightsPage';
 import { MarketingPage } from './pages/MarketingPage';
 import { SchedulesPage } from './pages/SchedulesPage';
+import { RunDetailPage } from './pages/RunDetailPage';
 import { SettingsWithDocsPage } from './pages/SettingsWithDocsPage';
 import './App.css';
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="plans" element={<PlansPage />} />
           <Route path="insights" element={<InsightsPage />} />
           <Route path="schedules" element={<SchedulesPage />} />
+          <Route path="schedules/run/:id" element={<RunDetailPage />} />
           <Route path="marketing" element={<MarketingPage />} />
           <Route path="settings" element={<SettingsWithDocsPage />} />
         </Route>

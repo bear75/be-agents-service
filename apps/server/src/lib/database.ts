@@ -597,13 +597,21 @@ export function upsertScheduleRun(run: Partial<ScheduleRun> & { id: string }): v
     INSERT INTO schedule_runs (
       id, dataset, batch, algorithm, strategy, hypothesis, status,
       decision, decision_reason, timefold_score, routing_efficiency_pct,
-      unassigned_visits, total_visits, unassigned_pct, continuity_avg, continuity_max,
-      continuity_over_target, continuity_target, output_path, notes, iteration
+      unassigned_visits, total_visits, unassigned_pct,
+      continuity_avg, continuity_median, continuity_visit_weighted_avg, continuity_max,
+      continuity_over_target, continuity_target,
+      input_shifts, input_shift_hours, output_shifts_trimmed, output_shift_hours_trimmed,
+      shift_hours_total, shift_hours_idle, efficiency_total_pct, efficiency_trimmed_pct,
+      output_path, notes, iteration
     ) VALUES (
       @id, @dataset, @batch, @algorithm, @strategy, @hypothesis, @status,
       @decision, @decision_reason, @timefold_score, @routing_efficiency_pct,
-      @unassigned_visits, @total_visits, @unassigned_pct, @continuity_avg, @continuity_max,
-      @continuity_over_target, @continuity_target, @output_path, @notes, @iteration
+      @unassigned_visits, @total_visits, @unassigned_pct,
+      @continuity_avg, @continuity_median, @continuity_visit_weighted_avg, @continuity_max,
+      @continuity_over_target, @continuity_target,
+      @input_shifts, @input_shift_hours, @output_shifts_trimmed, @output_shift_hours_trimmed,
+      @shift_hours_total, @shift_hours_idle, @efficiency_total_pct, @efficiency_trimmed_pct,
+      @output_path, @notes, @iteration
     )
     ON CONFLICT(id) DO UPDATE SET
       dataset=excluded.dataset, batch=excluded.batch, algorithm=excluded.algorithm,
@@ -611,10 +619,15 @@ export function upsertScheduleRun(run: Partial<ScheduleRun> & { id: string }): v
       decision=excluded.decision, decision_reason=excluded.decision_reason,
       timefold_score=excluded.timefold_score, routing_efficiency_pct=excluded.routing_efficiency_pct,
       unassigned_visits=excluded.unassigned_visits, total_visits=excluded.total_visits,
-      unassigned_pct=excluded.unassigned_pct, continuity_avg=excluded.continuity_avg,
-      continuity_max=excluded.continuity_max, continuity_over_target=excluded.continuity_over_target,
-      continuity_target=excluded.continuity_target, output_path=excluded.output_path,
-      notes=excluded.notes, iteration=excluded.iteration
+      unassigned_pct=excluded.unassigned_pct,
+      continuity_avg=excluded.continuity_avg, continuity_median=excluded.continuity_median,
+      continuity_visit_weighted_avg=excluded.continuity_visit_weighted_avg, continuity_max=excluded.continuity_max,
+      continuity_over_target=excluded.continuity_over_target, continuity_target=excluded.continuity_target,
+      input_shifts=excluded.input_shifts, input_shift_hours=excluded.input_shift_hours,
+      output_shifts_trimmed=excluded.output_shifts_trimmed, output_shift_hours_trimmed=excluded.output_shift_hours_trimmed,
+      shift_hours_total=excluded.shift_hours_total, shift_hours_idle=excluded.shift_hours_idle,
+      efficiency_total_pct=excluded.efficiency_total_pct, efficiency_trimmed_pct=excluded.efficiency_trimmed_pct,
+      output_path=excluded.output_path, notes=excluded.notes, iteration=excluded.iteration
   `);
   stmt.run({
     id: run.id,
@@ -632,9 +645,19 @@ export function upsertScheduleRun(run: Partial<ScheduleRun> & { id: string }): v
     total_visits: run.total_visits ?? null,
     unassigned_pct: run.unassigned_pct ?? null,
     continuity_avg: run.continuity_avg ?? null,
+    continuity_median: run.continuity_median ?? null,
+    continuity_visit_weighted_avg: run.continuity_visit_weighted_avg ?? null,
     continuity_max: run.continuity_max ?? null,
     continuity_over_target: run.continuity_over_target ?? null,
     continuity_target: run.continuity_target ?? 11,
+    input_shifts: run.input_shifts ?? null,
+    input_shift_hours: run.input_shift_hours ?? null,
+    output_shifts_trimmed: run.output_shifts_trimmed ?? null,
+    output_shift_hours_trimmed: run.output_shift_hours_trimmed ?? null,
+    shift_hours_total: run.shift_hours_total ?? null,
+    shift_hours_idle: run.shift_hours_idle ?? null,
+    efficiency_total_pct: run.efficiency_total_pct ?? null,
+    efficiency_trimmed_pct: run.efficiency_trimmed_pct ?? null,
     output_path: run.output_path ?? null,
     notes: run.notes ?? null,
     iteration: run.iteration ?? 1,

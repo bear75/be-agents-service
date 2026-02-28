@@ -26,10 +26,16 @@ SERVICE_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AGENTS_DIR="$SERVICE_ROOT/agents"
 CONFIG_FILE="$SERVICE_ROOT/config/repos.yaml"
 
-DATASET="${1:-huddinge-2w-expanded}"
 PARALLEL=4
 MAX_ITERS=20
 DRY_RUN=false
+# Consume first non-option argument as dataset so that "huddinge-2w-expanded --dry-run" works
+if [[ -n "${1:-}" && "$1" != --* ]]; then
+  DATASET="$1"
+  shift
+else
+  DATASET="huddinge-2w-expanded"
+fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
