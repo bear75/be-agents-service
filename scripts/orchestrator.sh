@@ -48,6 +48,7 @@ SESSION_ID="session-$(date +%s)"
 STATE_DIR="$SERVICE_ROOT/.compound-state"
 LOG_DIR="$SERVICE_ROOT/logs/orchestrator-sessions/$SESSION_ID"
 SESSION_LOG="$LOG_DIR/orchestrator.log"
+mkdir -p "$LOG_DIR"
 
 # Override state directory for state manager
 export COMPOUND_STATE_DIR="$STATE_DIR"
@@ -103,9 +104,6 @@ if [[ ! -f "$PRIORITY_FILE" ]]; then
   log_error "Priority file not found: $PRIORITY_FILE"
   exit 2
 fi
-
-# Create session log directory
-mkdir -p "$LOG_DIR"
 
 # Sync to DB on exit (success or failure) - ensures sessions/tasks visible in Kanban
 sync_on_exit() {

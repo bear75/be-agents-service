@@ -5,9 +5,9 @@
 repos:
   # Workspace-only (no git repo): the shared folder for Telegram/Cursor/compound. Dashboard "workspace" = darwin.
   darwin:
-    path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+    path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
     workspace:
-      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true
     schedule:
       review: "22:30"
@@ -18,9 +18,9 @@ repos:
     enabled: true
 
   beta-appcaire:
-    path: /Users/bjornevers_MacPro/HomeCare/beta-appcaire
+    path: ~/HomeCare/beta-appcaire
     workspace:
-      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true
     schedule:
       review: "22:30"
@@ -36,9 +36,9 @@ repos:
 
   # Schedule optimization (Huddinge/Nova FSR) — caire-platform/appcaire
   appcaire:
-    path: /Users/bjornevers_MacPro/HomeCare/caire-platform/appcaire
+    path: ~/HomeCare/caire-platform/appcaire
     workspace:
-      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true
     priorities_dir: docs_2.0/recurring-visits/huddinge-package/
     logs_dir: docs_2.0/recurring-visits/huddinge-package/logs/
@@ -51,9 +51,9 @@ repos:
 
   # This repo (be-agent-service)
   be-agent-service:
-    path: /Users/bjornevers_MacPro/HomeCare/be-agent-service
+    path: ~/HomeCare/be-agent-service
     workspace:
-      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true
     schedule:
       review: "22:30"
@@ -69,9 +69,9 @@ repos:
 
   # Hannes sandbox (WORKSPACE_ALLOWED_REPOS=hannes-projects)
   hannes-projects:
-    path: /Users/bjornevers_MacPro/HomeCare/hannes-projects
+    path: ~/HomeCare/hannes-projects
     workspace:
-      path: /Users/bjornevers_MacPro/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
       enabled: true
     schedule:
       review: "22:30"
