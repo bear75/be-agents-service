@@ -1,0 +1,22 @@
+============================================================
+VERIFICATION REPORT
+============================================================
+Dataset: ../huddinge-package/huddinge-datasets/28-feb/203cf1d6
+Day checked: 2026-02-16
+
+--- 1) Continuity re-run vs continuity.csv ---
+  (Re-run continuity_report.py: content matches; see diff earlier.)
+
+--- 2) Visit uniqueness (no clumping / double assignment) ---
+  OK: Every assigned visit ID appears exactly once (3554 visits).
+  Input visits (solo+groups): 3622  Assigned in output: 3554
+
+--- 3) Continuity vs day analysis ---
+  Clients on 2026-02-16: 67
+  OK: For every client on this day, # drivers on day <= continuity (2-week).
+
+--- 4) Day totals vs time equation ---
+  Day analysis file: shift = visit + travel + wait + break + idle per shift.
+  Sum over day should match; see day_2026-02-16_analysis.txt for per-shift sums.
+
+============================================================

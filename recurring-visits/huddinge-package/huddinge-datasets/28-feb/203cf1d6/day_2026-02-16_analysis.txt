@@ -1,0 +1,430 @@
+================================================================================
+DAY: 2026-02-16 — Shifts, visits, travel, break, idle (client = visit name from input)
+================================================================================
+
+--- Driver-01 / shift 9ab84ab9   scheduled 8h00 ---
+  Visit: 5h07  Travel: 0h07  Wait: 0h00  Break: 0h30  Idle: 2h15  (sum check: 8h00)
+  Itinerary:
+    VISIT 3225 (client: Client-074_1 - Bad/Dusch, Måltid, Toalettbesök)  arr=07:00:59  start=07:00:59  dep=08:00:59  duration=1h00  travel_prev=0h00  wait=0s
+    VISIT 1 (client: Client-001_1 - Tillsyn)  arr=08:01:54  start=08:01:54  dep=08:07:54  duration=0h06  travel_prev=0h00  wait=0s
+    VISIT 1314 (client: Client-031_1 - Bad/Dusch)  arr=08:09:24  start=08:09:24  dep=08:39:24  duration=0h30  travel_prev=0h01  wait=0s
+    VISIT 3151 (client: Client-073_1 - Förflyttning, Måltid, Personlig Hygien Morgon, Påk)  arr=08:39:24  start=08:39:24  dep=09:14:24  duration=0h35  travel_prev=0h00  wait=0s
+    VISIT 3159 (client: Client-073_1 - Förflyttning, Måltid, Personlig Hygien Morgon, Påk)  arr=09:14:24  start=09:14:24  dep=09:49:24  duration=0h35  travel_prev=0h00  wait=0s
+    VISIT 1328 (client: Client-031_1 - Måltid, Toalettbesök)  arr=09:49:24  start=09:49:24  dep=10:14:24  duration=0h25  travel_prev=0h00  wait=0s
+    BREAK  10:14:24 – 10:44:24
+    VISIT 3171 (client: Client-073_1 - Förflyttning, Måltid, Toalettbesök)  arr=10:14:24  start=10:44:24  dep=11:24:24  duration=0h40  travel_prev=0h00  wait=1800s
+    VISIT 1330 (client: Client-031_1 - Bad/Dusch)  arr=11:24:24  start=11:24:24  dep=12:04:24  duration=0h40  travel_prev=0h00  wait=0s
+    VISIT 3181 (client: Client-073_1 - Förflyttning, Toalettbesök)  arr=12:04:24  start=12:04:24  dep=12:24:24  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 1344 (client: Client-031_1 - Toalettbesök)  arr=12:24:24  start=12:24:24  dep=12:34:24  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 19 (client: Client-001_1 - Tillsyn)  arr=12:36:02  start=12:36:02  dep=12:42:02  duration=0h06  travel_prev=0h01  wait=0s
+
+--- Driver-03 / shift c983a4a5   scheduled 6h00 ---
+  Visit: 4h41  Travel: 0h37  Wait: 0h03  Break: 0h00  Idle: 0h38  (sum check: 6h00)
+  Itinerary:
+    VISIT 29 (client: Client-001_1 - Tillsyn)  arr=16:01:55  start=16:01:55  dep=16:07:55  duration=0h06  travel_prev=0h01  wait=0s
+    VISIT 3379 (client: Client-077_1 - Förflyttning, Måltid, Toalettbesök)  arr=16:08:40  start=16:11:00  dep=16:36:00  duration=0h25  travel_prev=0h00  wait=140s
+    VISIT 1346 (client: Client-031_1 - Måltid, Toalettbesök)  arr=16:37:55  start=16:39:00  dep=17:04:00  duration=0h25  travel_prev=0h01  wait=65s
+    VISIT 953 (client: Client-021_1 - Personlig Hygien Kväll, Toalettbesök)  arr=17:09:42  start=17:09:42  dep=17:32:42  duration=0h23  travel_prev=0h05  wait=0s
+    VISIT 901 (client: Client-021_1 - Måltid, Toalettbesök)  arr=17:32:42  start=17:32:42  dep=18:14:42  duration=0h42  travel_prev=0h00  wait=0s
+    VISIT 1814 (client: Client-042_1 - Tillsyn)  arr=18:19:42  start=18:19:42  dep=18:24:42  duration=0h05  travel_prev=0h05  wait=0s
+    VISIT 3233 (client: Client-074_1 - Måltid, Toalettbesök)  arr=18:30:20  start=18:30:20  dep=18:55:20  duration=0h25  travel_prev=0h05  wait=0s
+    VISIT 1217 (client: Client-029_1 - Egenvård, Måltid)  arr=18:57:18  start=18:57:18  dep=19:10:18  duration=0h13  travel_prev=0h01  wait=0s
+    VISIT 3191 (client: Client-073_1 - Avklädning, Förflyttning, Personlig Hygien Kväll, )  arr=19:10:44  start=19:10:44  dep=19:31:44  duration=0h21  travel_prev=0h00  wait=0s
+    VISIT 1360 (client: Client-031_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=19:31:44  start=19:31:44  dep=19:51:44  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 1253 (client: Client-030_1 - Måltid, Toalettbesök)  arr=19:57:55  start=19:57:55  dep=20:23:55  duration=0h26  travel_prev=0h06  wait=0s
+    VISIT 73 (client: Client-002_1 - Förflyttning)  arr=20:23:55  start=20:23:55  dep=20:33:55  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 3393 (client: Client-077_1 - Avklädning, Förflyttning, Personlig Hygien Kväll, )  arr=20:40:10  start=20:40:10  dep=21:00:10  duration=0h20  travel_prev=0h06  wait=0s
+    VISIT 3247 (client: Client-074_1 - Avklädning, Toalettbesök)  arr=21:00:40  start=21:00:40  dep=21:20:40  duration=0h20  travel_prev=0h00  wait=0s
+
+--- Driver-05 / shift f881fbbe   scheduled 8h00 ---
+  Visit: 5h13  Travel: 0h21  Wait: 0h00  Break: 0h30  Idle: 1h55  (sum check: 8h00)
+  Itinerary:
+    VISIT 1276 (client: Client-030_1 - Måltid, Toalettbesök)  arr=07:07:29  start=07:07:29  dep=07:26:29  duration=0h19  travel_prev=0h07  wait=0s
+    VISIT 55 (client: Client-002_1 - Förflyttning)  arr=07:26:29  start=07:26:29  dep=07:41:29  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 873 (client: Client-021_1 - Måltid, Personlig Hygien Morgon, Toalettbesök)  arr=07:44:33  start=07:44:33  dep=08:10:33  duration=0h26  travel_prev=0h03  wait=0s
+    VISIT 935 (client: Client-021_1 - Måltid, Toalettbesök)  arr=08:10:33  start=08:10:33  dep=08:34:33  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 887 (client: Client-021_1 - Toalettbesök)  arr=08:34:33  start=08:34:33  dep=08:49:33  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 927 (client: Client-021_1 - Toalettbesök)  arr=08:49:33  start=08:49:33  dep=09:11:33  duration=0h22  travel_prev=0h00  wait=0s
+    VISIT 899 (client: Client-021_1 - Toalettbesök)  arr=09:11:33  start=09:11:33  dep=09:31:33  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 883 (client: Client-021_1 - Egenvård, Måltid, Personlig Hygien Morgon, Toalett)  arr=09:31:33  start=09:31:33  dep=10:12:33  duration=0h41  travel_prev=0h00  wait=0s
+    BREAK  10:12:33 – 10:42:33
+    VISIT 909 (client: Client-021_1 - Måltid, Toalettbesök)  arr=10:12:33  start=10:42:33  dep=11:34:33  duration=0h52  travel_prev=0h00  wait=1800s
+    VISIT 875 (client: Client-021_1 - Måltid, Personlig Hygien Morgon, Toalettbesök)  arr=11:34:33  start=11:34:33  dep=12:00:33  duration=0h26  travel_prev=0h00  wait=0s
+    VISIT 921 (client: Client-021_1 - Toalettbesök)  arr=12:00:33  start=12:00:33  dep=12:15:33  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 63 (client: Client-002_1 - Förflyttning)  arr=12:18:41  start=12:18:41  dep=12:27:41  duration=0h09  travel_prev=0h03  wait=0s
+    VISIT 1249 (client: Client-030_1 - Måltid, Toalettbesök)  arr=12:27:41  start=12:27:41  dep=12:56:41  duration=0h29  travel_prev=0h00  wait=0s
+
+--- Driver-06 / shift 149a833c   scheduled 8h00 ---
+  Visit: 6h51  Travel: 0h29  Wait: 0h00  Break: 0h30  Idle: 0h09  (sum check: 8h00)
+  Itinerary:
+    VISIT 109 (client: Client-003_1 - Egenvård, Förflyttning, Personlig Hygien Morgon, P)  arr=07:11:31  start=07:11:31  dep=07:36:31  duration=0h25  travel_prev=0h11  wait=0s
+    VISIT 95 (client: Client-003_1 - Egenvård, Förflyttning, Personlig Hygien Morgon, P)  arr=07:36:31  start=07:36:31  dep=08:16:31  duration=0h40  travel_prev=0h00  wait=0s
+    VISIT 1627 (client: Client-038_1 - Måltid, Påklädning, Toalettbesök)  arr=08:16:58  start=08:16:58  dep=08:46:58  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 1629 (client: Client-038_1 - Måltid, Påklädning, Toalettbesök)  arr=08:46:58  start=08:46:58  dep=09:16:58  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 1643 (client: Client-038_1 - Måltid, Toalettbesök)  arr=09:16:58  start=09:16:58  dep=09:46:58  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 1621 (client: Client-038_1 - Måltid, Påklädning, Toalettbesök)  arr=09:46:58  start=09:46:58  dep=10:18:58  duration=0h32  travel_prev=0h00  wait=0s
+    BREAK  10:19:25 – 10:49:25
+    VISIT 99 (client: Client-003_1 - Förflyttning)  arr=10:19:25  start=10:49:25  dep=11:04:25  duration=0h15  travel_prev=0h00  wait=1800s
+    VISIT 1647 (client: Client-038_1 - Måltid, Toalettbesök)  arr=11:04:52  start=11:04:52  dep=11:29:52  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 127 (client: Client-003_1 - Förflyttning)  arr=11:30:19  start=11:30:19  dep=11:50:19  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 141 (client: Client-003_1 - Förflyttning)  arr=11:50:19  start=11:50:19  dep=12:00:19  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 1653 (client: Client-038_1 - Promenad)  arr=12:00:46  start=12:00:46  dep=12:22:46  duration=0h22  travel_prev=0h00  wait=0s
+    VISIT 101 (client: Client-003_1 - Bad/Dusch, Förflyttning)  arr=12:23:13  start=12:23:13  dep=12:48:13  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 1728 (client: Client-041_1 - Personlig Hygien Morgon)  arr=12:49:52  start=12:49:52  dep=13:01:52  duration=0h12  travel_prev=0h01  wait=0s
+    VISIT 103 (client: Client-003_1 - Förflyttning)  arr=13:03:32  start=13:03:32  dep=13:18:32  duration=0h15  travel_prev=0h01  wait=0s
+    VISIT 1645 (client: Client-038_1 - Måltid, Toalettbesök)  arr=13:18:59  start=13:18:59  dep=13:43:59  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 107 (client: Client-003_1 - Egenvård, Förflyttning, Personlig Hygien Morgon, P)  arr=13:44:26  start=13:44:26  dep=14:09:26  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 1651 (client: Client-038_1 - Måltid, Toalettbesök)  arr=14:09:53  start=14:09:53  dep=14:39:53  duration=0h30  travel_prev=0h00  wait=0s
+
+--- Driver-07 / shift d1d9b1e5   scheduled 8h00 ---
+  Visit: 5h44  Travel: 0h26  Wait: 0h30  Break: 0h30  Idle: 0h49  (sum check: 8h00)
+  Itinerary:
+    VISIT 113 (client: Client-003_1 - Förflyttning)  arr=07:11:31  start=07:11:31  dep=07:26:31  duration=0h15  travel_prev=0h11  wait=0s
+    VISIT 105 (client: Client-003_1 - Förflyttning)  arr=07:26:31  start=07:36:31  dep=07:51:31  duration=0h15  travel_prev=0h00  wait=600s
+    VISIT 661 (client: Client-015_1 - Bad/Dusch, Måltid)  arr=07:53:24  start=07:53:24  dep=08:47:24  duration=0h54  travel_prev=0h01  wait=0s
+    VISIT 667 (client: Client-015_1 - Måltid)  arr=08:47:24  start=08:47:24  dep=09:18:24  duration=0h31  travel_prev=0h00  wait=0s
+    VISIT 653 (client: Client-015_1 - Måltid)  arr=09:18:24  start=09:18:24  dep=09:47:24  duration=0h29  travel_prev=0h00  wait=0s
+    VISIT 663 (client: Client-015_1 - Måltid, Påklädning)  arr=09:47:24  start=09:47:24  dep=10:17:24  duration=0h30  travel_prev=0h00  wait=0s
+    BREAK  10:19:23 – 10:49:23
+    VISIT 89 (client: Client-003_1 - Egenvård, Personlig Hygien Morgon, Påklädning, Toa)  arr=10:19:23  start=10:49:25  dep=11:29:25  duration=0h40  travel_prev=0h01  wait=1802s
+    VISIT 135 (client: Client-003_1 - Förflyttning)  arr=11:29:25  start=11:30:19  dep=11:40:19  duration=0h10  travel_prev=0h00  wait=54s
+    VISIT 133 (client: Client-003_1 - Förflyttning)  arr=11:40:19  start=11:50:19  dep=12:15:19  duration=0h25  travel_prev=0h00  wait=600s
+    VISIT 91 (client: Client-003_1 - Bad/Dusch, Egenvård, Förflyttning, Personlig Hygie)  arr=12:15:19  start=12:23:13  dep=13:03:13  duration=0h40  travel_prev=0h00  wait=474s
+    VISIT 93 (client: Client-003_1 - Egenvård, Förflyttning, Personlig Hygien Morgon, P)  arr=13:03:13  start=13:03:32  dep=13:43:32  duration=0h40  travel_prev=0h00  wait=19s
+    VISIT 111 (client: Client-003_1 - Förflyttning)  arr=13:43:32  start=13:44:26  dep=13:59:26  duration=0h15  travel_prev=0h00  wait=54s
+
+--- Driver-10 / shift 2dd0edd9   scheduled 6h00 ---
+  Visit: 4h26  Travel: 1h13  Wait: 0h03  Break: 0h00  Idle: 0h17  (sum check: 6h00)
+  Itinerary:
+    VISIT 143 (client: Client-003_1 - Förflyttning)  arr=16:11:31  start=16:14:00  dep=16:24:00  duration=0h10  travel_prev=0h11  wait=149s
+    VISIT 1655 (client: Client-038_1 - Måltid, Toalettbesök)  arr=16:24:27  start=16:24:27  dep=16:49:27  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 1770 (client: Client-041_1 - Måltid, Toalettbesök)  arr=16:51:33  start=16:51:33  dep=17:21:33  duration=0h30  travel_prev=0h02  wait=0s
+    VISIT 1137 (client: Client-025_1 - Måltid)  arr=17:27:21  start=17:27:21  dep=17:55:21  duration=0h28  travel_prev=0h05  wait=0s
+    VISIT 2234 (client: Client-052_1 - Förflyttning, Måltid, Personlig Hygien Morgon, Påk)  arr=18:02:33  start=18:02:33  dep=18:22:33  duration=0h20  travel_prev=0h07  wait=0s
+    VISIT 2248 (client: Client-052_1 - Måltid, Toalettbesök)  arr=18:22:33  start=18:22:33  dep=18:42:33  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 3307 (client: Client-076_1 - Avklädning, Förflyttning, Personlig Hygien Kväll, )  arr=18:47:13  start=18:47:13  dep=19:12:13  duration=0h25  travel_prev=0h04  wait=0s
+    VISIT 1631 (client: Client-038_1 - Måltid, Påklädning, Toalettbesök)  arr=19:14:49  start=19:14:49  dep=19:41:49  duration=0h27  travel_prev=0h02  wait=0s
+    VISIT 171 (client: Client-003_1 - Avklädning, Egenvård, Personlig Hygien Kväll)  arr=19:42:16  start=19:42:41  dep=20:07:41  duration=0h25  travel_prev=0h00  wait=25s
+    VISIT 1669 (client: Client-038_1 - Avklädning, Personlig Hygien Kväll)  arr=20:08:08  start=20:08:08  dep=20:20:08  duration=0h12  travel_prev=0h00  wait=0s
+    VISIT 2377 (client: Client-056_1 - Avklädning, Förflyttning, Personlig Hygien Kväll, )  arr=20:32:44  start=20:33:00  dep=20:48:00  duration=0h15  travel_prev=0h12  wait=16s
+    VISIT 1790 (client: Client-041_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=21:01:04  start=21:01:04  dep=21:19:04  duration=0h18  travel_prev=0h13  wait=0s
+    VISIT 2262 (client: Client-052_1 - Avklädning, Förflyttning, Personlig Hygien Kväll, )  arr=21:23:03  start=21:23:03  dep=21:34:03  duration=0h11  travel_prev=0h03  wait=0s
+
+--- Driver-11 / shift d5e67ced   scheduled 6h00 ---
+  Visit: 4h01  Travel: 1h43  Wait: 0h02  Break: 0h00  Idle: 0h13  (sum check: 6h00)
+  Itinerary:
+    VISIT 157 (client: Client-003_1 - Förflyttning)  arr=16:11:31  start=16:14:00  dep=16:24:00  duration=0h10  travel_prev=0h11  wait=149s
+    VISIT 511 (client: Client-011_1 - Toalettbesök)  arr=16:38:48  start=16:38:48  dep=16:46:48  duration=0h08  travel_prev=0h14  wait=0s
+    VISIT 567 (client: Client-012_1 - Måltid)  arr=16:51:59  start=16:51:59  dep=17:25:59  duration=0h34  travel_prev=0h05  wait=0s
+    VISIT 2317 (client: Client-055_1 - Måltid, Toalettbesök)  arr=17:31:37  start=17:31:37  dep=17:57:37  duration=0h26  travel_prev=0h05  wait=0s
+    VISIT 229 (client: Client-005_1 - Måltid, Social Samvaro)  arr=18:02:18  start=18:02:18  dep=18:28:18  duration=0h26  travel_prev=0h04  wait=0s
+    VISIT 243 (client: Client-005_1 - Avklädning, Personlig Hygien Kväll)  arr=18:28:18  start=18:28:18  dep=18:45:18  duration=0h17  travel_prev=0h00  wait=0s
+    VISIT 525 (client: Client-011_1 - Avklädning, Personlig Hygien Kväll)  arr=18:53:39  start=18:53:39  dep=19:08:39  duration=0h15  travel_prev=0h08  wait=0s
+    VISIT 609 (client: Client-013_1 - Avklädning, Måltid)  arr=19:08:39  start=19:08:39  dep=19:28:39  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 185 (client: Client-003_1 - Avklädning, Egenvård, Personlig Hygien Kväll)  arr=19:42:41  start=19:42:41  dep=19:52:41  duration=0h10  travel_prev=0h14  wait=0s
+    VISIT 581 (client: Client-012_1 - Avklädning, Måltid, Personlig Hygien Kväll)  arr=20:02:40  start=20:02:40  dep=20:30:40  duration=0h28  travel_prev=0h09  wait=0s
+    VISIT 2391 (client: Client-056_1 - Förflyttning)  arr=20:33:00  start=20:33:00  dep=20:43:00  duration=0h10  travel_prev=0h02  wait=0s
+    VISIT 2331 (client: Client-055_1 - Egenvård, Toalettbesök)  arr=20:50:53  start=20:50:53  dep=21:03:53  duration=0h13  travel_prev=0h07  wait=0s
+    VISIT 1151 (client: Client-025_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=21:11:19  start=21:11:19  dep=21:35:19  duration=0h24  travel_prev=0h07  wait=0s
+
+--- Driver-12 / shift 34da08ed   scheduled 8h00 ---
+  Visit: 6h52  Travel: 0h33  Wait: 0h00  Break: 0h30  Idle: 0h04  (sum check: 8h00)
+  Itinerary:
+    VISIT 2295 (client: Client-055_1 - Egenvård, Måltid, Toalettbesök)  arr=07:16:42  start=07:16:42  dep=07:41:42  duration=0h25  travel_prev=0h16  wait=0s
+    VISIT 2291 (client: Client-055_1 - Bad/Dusch, Egenvård, Måltid, Toalettbesök)  arr=07:41:42  start=07:41:42  dep=08:21:42  duration=0h40  travel_prev=0h00  wait=0s
+    VISIT 2313 (client: Client-055_1 - Måltid, Toalettbesök)  arr=08:21:42  start=08:21:42  dep=08:51:42  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 2303 (client: Client-055_1 - Måltid, Toalettbesök)  arr=08:51:42  start=08:51:42  dep=09:24:42  duration=0h33  travel_prev=0h00  wait=0s
+    VISIT 2297 (client: Client-055_1 - Måltid)  arr=09:24:42  start=09:24:42  dep=09:49:42  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 2305 (client: Client-055_1 - Måltid, Toalettbesök)  arr=09:49:42  start=09:49:42  dep=10:22:42  duration=0h33  travel_prev=0h00  wait=0s
+    BREAK  10:22:42 – 10:52:42
+    VISIT 2307 (client: Client-055_1 - Måltid, Toalettbesök)  arr=10:22:42  start=10:52:42  dep=11:22:42  duration=0h30  travel_prev=0h00  wait=1800s
+    VISIT 2293 (client: Client-055_1 - Egenvård, Måltid, Toalettbesök)  arr=11:22:42  start=11:22:42  dep=11:48:42  duration=0h26  travel_prev=0h00  wait=0s
+    VISIT 2309 (client: Client-055_1 - Måltid, Toalettbesök)  arr=11:48:42  start=11:48:42  dep=12:18:42  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 2301 (client: Client-055_1 - Egenvård, Måltid, Toalettbesök)  arr=12:18:42  start=12:18:42  dep=12:48:42  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 2299 (client: Client-055_1 - Måltid)  arr=12:48:42  start=12:48:42  dep=13:13:42  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 2311 (client: Client-055_1 - Måltid, Toalettbesök)  arr=13:13:42  start=13:13:42  dep=13:43:42  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 2289 (client: Client-055_1 - Egenvård, Måltid, Toalettbesök)  arr=13:43:42  start=13:43:42  dep=14:08:42  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 2315 (client: Client-055_1 - Måltid, Toalettbesök)  arr=14:08:42  start=14:08:42  dep=14:38:42  duration=0h30  travel_prev=0h00  wait=0s
+
+--- Driver-15 / shift 3b7871bf   scheduled 8h00 ---
+  Visit: 6h25  Travel: 0h17  Wait: 0h00  Break: 0h30  Idle: 0h47  (sum check: 8h00)
+  Itinerary:
+    VISIT 427 (client: Client-009_1 - Måltid, Toalettbesök)  arr=07:08:03  start=07:08:03  dep=07:38:03  duration=0h30  travel_prev=0h08  wait=0s
+    VISIT 439 (client: Client-009_1 - Måltid, Toalettbesök)  arr=07:38:03  start=07:38:03  dep=08:03:03  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 435 (client: Client-009_1 - Måltid, Toalettbesök)  arr=08:03:03  start=08:03:03  dep=08:32:03  duration=0h29  travel_prev=0h00  wait=0s
+    VISIT 691 (client: Client-016_1 - Egenvård, Måltid, Personlig Hygien Morgon, Påklädn)  arr=08:32:03  start=08:32:03  dep=08:49:03  duration=0h17  travel_prev=0h00  wait=0s
+    VISIT 681 (client: Client-016_1 - Egenvård, Måltid, Personlig Hygien Morgon, Påklädn)  arr=08:49:03  start=08:49:03  dep=09:09:03  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 2162 (client: Client-051_1 - Måltid, Toalettbesök)  arr=09:09:03  start=09:09:03  dep=09:37:03  duration=0h28  travel_prev=0h00  wait=0s
+    VISIT 2192 (client: Client-051_1 - Toalettbesök)  arr=09:37:03  start=09:37:03  dep=09:51:03  duration=0h14  travel_prev=0h00  wait=0s
+    VISIT 2160 (client: Client-051_1 - Måltid, Toalettbesök)  arr=09:51:03  start=09:51:03  dep=10:21:03  duration=0h30  travel_prev=0h00  wait=0s
+    BREAK  10:21:03 – 10:51:03
+    VISIT 2176 (client: Client-051_1 - Promenad)  arr=10:21:03  start=10:51:03  dep=11:41:03  duration=0h50  travel_prev=0h00  wait=1800s
+    VISIT 2164 (client: Client-051_1 - Måltid, Toalettbesök)  arr=11:41:03  start=11:41:03  dep=12:09:03  duration=0h28  travel_prev=0h00  wait=0s
+    VISIT 2178 (client: Client-051_1 - Toalettbesök)  arr=12:09:03  start=12:09:03  dep=12:24:03  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 423 (client: Client-009_1 - Måltid, Toalettbesök)  arr=12:24:03  start=12:24:03  dep=12:42:03  duration=0h18  travel_prev=0h00  wait=0s
+    VISIT 433 (client: Client-009_1 - Måltid, Toalettbesök)  arr=12:42:03  start=12:42:03  dep=13:07:03  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 2170 (client: Client-051_1 - Måltid, Toalettbesök)  arr=13:07:03  start=13:07:03  dep=13:48:03  duration=0h41  travel_prev=0h00  wait=0s
+    VISIT 835 (client: Client-020_1 - Toalettbesök)  arr=13:49:16  start=13:49:16  dep=14:04:16  duration=0h15  travel_prev=0h01  wait=0s
+
+--- Driver-16 / shift 9ae9136b   scheduled 6h00 ---
+  Visit: 4h56  Travel: 0h18  Wait: 0h02  Break: 0h00  Idle: 0h42  (sum check: 6h00)
+  Itinerary:
+    VISIT 845 (client: Client-020_1 - Måltid, Toalettbesök)  arr=16:07:26  start=16:10:00  dep=16:30:00  duration=0h20  travel_prev=0h07  wait=154s
+    VISIT 693 (client: Client-016_1 - Avklädning, Egenvård, Måltid, Personlig Hygien Kvä)  arr=16:31:15  start=16:31:15  dep=16:52:15  duration=0h21  travel_prev=0h01  wait=0s
+    VISIT 2499 (client: Client-059_1 - Toalettbesök)  arr=16:52:15  start=16:52:15  dep=17:09:15  duration=0h17  travel_prev=0h00  wait=0s
+    VISIT 1025 (client: Client-023_1 - Förflyttning, Toalettbesök, Äta/Dricka)  arr=17:09:15  start=17:09:15  dep=17:41:15  duration=0h32  travel_prev=0h00  wait=0s
+    VISIT 2194 (client: Client-051_1 - Måltid, Toalettbesök)  arr=17:41:15  start=17:41:15  dep=18:01:15  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 1565 (client: Client-036_1 - Måltid)  arr=18:01:15  start=18:01:15  dep=18:26:15  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 471 (client: Client-010_1 - Måltid)  arr=18:26:15  start=18:26:15  dep=18:50:15  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 1039 (client: Client-023_1 - Avklädning, Förflyttning, Måltid, Äta/Dricka)  arr=18:50:15  start=18:50:15  dep=19:27:15  duration=0h37  travel_prev=0h00  wait=0s
+    VISIT 1579 (client: Client-036_1 - Avklädning, Förflyttning, Personlig Hygien Kväll, )  arr=19:27:15  start=19:27:15  dep=19:42:15  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 1532 (client: Client-036_1 - Tillsyn)  arr=19:42:15  start=19:42:15  dep=19:52:15  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 2513 (client: Client-059_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=19:52:15  start=19:52:15  dep=20:06:15  duration=0h14  travel_prev=0h00  wait=0s
+    VISIT 483 (client: Client-010_1 - Måltid)  arr=20:06:15  start=20:06:15  dep=20:21:15  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 2208 (client: Client-051_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=20:21:15  start=20:21:15  dep=20:31:15  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 287 (client: Client-007_1 - Avklädning, Toalettbesök)  arr=20:33:04  start=20:33:04  dep=20:53:04  duration=0h20  travel_prev=0h01  wait=0s
+    VISIT 859 (client: Client-020_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=20:53:43  start=20:53:43  dep=21:09:43  duration=0h16  travel_prev=0h00  wait=0s
+
+--- Driver-18 / shift 428da54b   scheduled 8h00 ---
+  Visit: 4h52  Travel: 0h26  Wait: 0h00  Break: 0h30  Idle: 2h11  (sum check: 8h00)
+  Itinerary:
+    VISIT 315 (client: Client-008_1 - Personlig Hygien Morgon, Påklädning)  arr=07:10:00  start=07:10:00  dep=07:35:00  duration=0h25  travel_prev=0h10  wait=0s
+    VISIT 401 (client: Client-008_1 - Avklädning, Personlig Hygien Kväll)  arr=07:35:00  start=07:35:00  dep=07:45:00  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 723 (client: Client-017_1 - Måltid, Promenad)  arr=07:56:08  start=07:56:08  dep=09:02:08  duration=1h06  travel_prev=0h11  wait=0s
+    VISIT 721 (client: Client-017_1 - Måltid, Promenad)  arr=09:02:08  start=09:02:08  dep=10:12:08  duration=1h10  travel_prev=0h00  wait=0s
+    BREAK  10:12:08 – 10:42:08
+    VISIT 725 (client: Client-017_1 - Bad/Dusch, Måltid)  arr=10:12:08  start=10:42:08  dep=11:40:08  duration=0h58  travel_prev=0h00  wait=1800s
+    VISIT 719 (client: Client-017_1 - Förflyttning, Måltid)  arr=11:40:08  start=11:40:08  dep=12:10:08  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 715 (client: Client-017_1 - Förflyttning, Måltid)  arr=12:10:08  start=12:10:08  dep=12:43:08  duration=0h33  travel_prev=0h00  wait=0s
+
+--- Driver-20 / shift b0fb55db   scheduled 8h00 ---
+  Visit: 5h50  Travel: 0h37  Wait: 0h05  Break: 0h30  Idle: 0h57  (sum check: 8h00)
+  Itinerary:
+    VISIT 313 (client: Client-008_1 - Personlig Hygien Morgon, Påklädning)  arr=07:10:00  start=07:10:00  dep=07:30:00  duration=0h20  travel_prev=0h10  wait=0s
+    VISIT 387 (client: Client-008_1 - Avklädning, Personlig Hygien Kväll)  arr=07:30:00  start=07:35:00  dep=07:55:00  duration=0h20  travel_prev=0h00  wait=300s
+    VISIT 753 (client: Client-018_1 - Måltid, Personlig Hygien Morgon, Påklädning, Städ)  arr=07:58:46  start=07:58:46  dep=08:53:46  duration=0h55  travel_prev=0h03  wait=0s
+    VISIT 749 (client: Client-018_1 - Bad/Dusch, Måltid, Personlig Hygien Morgon, Påkläd)  arr=08:53:46  start=08:53:46  dep=09:52:46  duration=0h59  travel_prev=0h00  wait=0s
+    VISIT 759 (client: Client-018_1 - Bad/Dusch, Måltid, Städ)  arr=09:52:46  start=09:52:46  dep=10:53:46  duration=1h01  travel_prev=0h00  wait=0s
+    BREAK  10:53:46 – 11:23:46
+    VISIT 751 (client: Client-018_1 - Måltid, Personlig Hygien Morgon, Påklädning, Städ)  arr=10:53:46  start=11:23:46  dep=12:23:46  duration=1h00  travel_prev=0h00  wait=1800s
+    VISIT 755 (client: Client-018_1 - Måltid, Personlig Hygien Morgon, Påklädning, Städ)  arr=12:23:46  start=12:23:46  dep=13:18:46  duration=0h55  travel_prev=0h00  wait=0s
+    VISIT 3297 (client: Client-076_1 - Förflyttning, Toalettbesök)  arr=13:31:54  start=13:31:54  dep=13:51:54  duration=0h20  travel_prev=0h13  wait=0s
+
+--- Driver-21 / shift e9b1487e   scheduled 6h00 ---
+  Visit: 5h10  Travel: 0h30  Wait: 0h00  Break: 0h00  Idle: 0h19  (sum check: 6h00)
+  Itinerary:
+    VISIT 1444 (client: Client-034_1 - Måltid, Personlig Hygien Morgon, Påklädning)  arr=16:05:08  start=16:05:08  dep=16:25:08  duration=0h20  travel_prev=0h05  wait=0s
+    VISIT 1460 (client: Client-034_1 - Måltid, Toalettbesök)  arr=16:25:08  start=16:25:08  dep=16:50:08  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 1970 (client: Client-045_1 - Måltid, Social Samvaro)  arr=16:50:57  start=16:50:57  dep=17:12:57  duration=0h22  travel_prev=0h00  wait=0s
+    VISIT 3135 (client: Client-072_1 - Avklädning, Måltid, Toalettbesök)  arr=17:14:44  start=17:14:44  dep=17:34:44  duration=0h20  travel_prev=0h01  wait=0s
+    VISIT 2104 (client: Client-049_1 - Måltid, Social Samvaro)  arr=17:36:17  start=17:36:17  dep=17:54:17  duration=0h18  travel_prev=0h01  wait=0s
+    VISIT 3539 (client: Client-080_1 - Måltid)  arr=17:58:02  start=17:58:02  dep=18:23:02  duration=0h25  travel_prev=0h03  wait=0s
+    VISIT 1418 (client: Client-033_1 - Egenvård, Måltid, Toalettbesök)  arr=18:23:35  start=18:23:35  dep=18:44:35  duration=0h21  travel_prev=0h00  wait=0s
+    VISIT 1404 (client: Client-033_1 - Måltid, Toalettbesök)  arr=18:44:35  start=18:44:35  dep=19:10:35  duration=0h26  travel_prev=0h00  wait=0s
+    VISIT 735 (client: Client-017_1 - Måltid)  arr=19:15:18  start=19:15:18  dep=19:35:18  duration=0h20  travel_prev=0h04  wait=0s
+    VISIT 1938 (client: Client-045_1 - Tillsyn)  arr=19:38:22  start=19:38:22  dep=19:48:22  duration=0h10  travel_prev=0h03  wait=0s
+    VISIT 1984 (client: Client-045_1 - Tillsyn)  arr=19:48:22  start=19:48:22  dep=20:12:22  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 1928 (client: Client-045_1 - Tillsyn)  arr=20:12:22  start=20:12:22  dep=20:22:22  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 1474 (client: Client-034_1 - Avklädning, Personlig Hygien Kväll)  arr=20:23:08  start=20:23:08  dep=20:38:08  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 2118 (client: Client-049_1 - Tillsyn)  arr=20:39:28  start=20:39:28  dep=20:53:28  duration=0h14  travel_prev=0h01  wait=0s
+    VISIT 2100 (client: Client-049_1 - Måltid, Social Samvaro)  arr=20:53:28  start=20:53:28  dep=21:13:28  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 3553 (client: Client-080_1 - Avklädning, Personlig Hygien Kväll)  arr=21:17:13  start=21:17:13  dep=21:37:13  duration=0h20  travel_prev=0h03  wait=0s
+
+--- Driver-22 / shift 2d1b4d3a   scheduled 6h00 ---
+  Visit: 4h49  Travel: 0h53  Wait: 0h16  Break: 0h00  Idle: 0h00  (sum check: 6h00)
+  Itinerary:
+    VISIT 3595 (client: Client-081_1 - Förflyttning, Måltid)  arr=16:11:06  start=16:15:00  dep=16:36:00  duration=0h21  travel_prev=0h11  wait=234s
+    VISIT 3079 (client: Client-071_1 - Måltid, Toalettbesök)  arr=16:44:00  start=16:44:00  dep=17:14:00  duration=0h30  travel_prev=0h08  wait=0s
+    VISIT 3495 (client: Client-079_1 - Måltid, Toalettbesök)  arr=17:21:01  start=17:32:00  dep=17:52:00  duration=0h20  travel_prev=0h07  wait=659s
+    VISIT 1886 (client: Client-044_1 - Måltid, Toalettbesök)  arr=17:53:09  start=17:53:09  dep=18:11:09  duration=0h18  travel_prev=0h01  wait=0s
+    VISIT 1189 (client: Client-028_1 - Avklädning, Personlig Hygien Kväll)  arr=18:12:08  start=18:12:08  dep=18:35:08  duration=0h23  travel_prev=0h00  wait=0s
+    VISIT 637 (client: Client-014_1 - Tillsyn)  arr=18:37:49  start=18:37:49  dep=18:45:49  duration=0h08  travel_prev=0h02  wait=0s
+    VISIT 775 (client: Client-019_1 - Avklädning, Egenvård, Personlig Hygien Kväll, Toal)  arr=18:46:16  start=18:46:16  dep=19:06:16  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 3609 (client: Client-081_1 - Avklädning, Förflyttning, Personlig Hygien Kväll, )  arr=19:09:41  start=19:11:00  dep=19:24:00  duration=0h13  travel_prev=0h03  wait=79s
+    VISIT 1900 (client: Client-044_1 - Toalettbesök)  arr=19:25:15  start=19:26:00  dep=19:40:00  duration=0h14  travel_prev=0h01  wait=45s
+    VISIT 3425 (client: Client-078_1 - Avklädning)  arr=19:42:31  start=19:42:31  dep=19:57:31  duration=0h15  travel_prev=0h02  wait=0s
+    VISIT 3509 (client: Client-079_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=19:59:54  start=19:59:54  dep=20:16:54  duration=0h17  travel_prev=0h02  wait=0s
+    VISIT 3093 (client: Client-071_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=20:23:48  start=20:23:48  dep=20:53:48  duration=0h30  travel_prev=0h06  wait=0s
+    VISIT 3077 (client: Client-071_1 - Äta/Dricka)  arr=20:53:48  start=20:53:48  dep=21:23:48  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 3055 (client: Client-071_1 - Personlig Hygien Morgon, Påklädning)  arr=21:23:48  start=21:23:48  dep=21:53:48  duration=0h30  travel_prev=0h00  wait=0s
+
+--- Driver-23 / shift 46102ee9   scheduled 8h00 ---
+  Visit: 0h00  Travel: 0h00  Wait: 0h00  Break: 0h00  Idle: 8h00  (sum check: 8h00)
+  Itinerary:
+    BREAK  10:00:00 – 10:30:00
+
+--- Driver-25 / shift e4260b28   scheduled 8h00 ---
+  Visit: 2h48  Travel: 0h28  Wait: 0h14  Break: 0h00  Idle: 4h29  (sum check: 8h00)
+  Itinerary:
+    VISIT 1119 (client: Client-025_1 - Måltid)  arr=07:11:29  start=07:11:29  dep=07:55:29  duration=0h44  travel_prev=0h11  wait=0s
+    VISIT 1121 (client: Client-025_1 - Bad/Dusch)  arr=07:55:29  start=07:55:29  dep=08:35:29  duration=0h40  travel_prev=0h00  wait=0s
+    VISIT 1838 (client: Client-043_1 - Förflyttning, Måltid, Toalettbesök)  arr=08:37:39  start=08:37:39  dep=08:57:39  duration=0h20  travel_prev=0h02  wait=0s
+    VISIT 1826 (client: Client-043_1 - Förflyttning, Måltid, Toalettbesök)  arr=08:57:39  start=08:57:39  dep=09:21:39  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 3263 (client: Client-076_1 - Förflyttning, Personlig Hygien Morgon, Påklädning,)  arr=09:25:57  start=09:25:57  dep=09:45:57  duration=0h20  travel_prev=0h04  wait=0s
+    VISIT 3279 (client: Client-076_1 - Förflyttning, Toalettbesök)  arr=09:45:57  start=10:00:00  dep=10:20:00  duration=0h20  travel_prev=0h00  wait=843s
+    BREAK  10:20:00 – 10:50:00
+
+--- Driver-26 / shift bdf94413   scheduled 8h00 ---
+  Visit: 5h00  Travel: 0h25  Wait: 0h32  Break: 0h30  Idle: 1h31  (sum check: 8h00)
+  Itinerary:
+    VISIT 761 (client: Client-019_1 - Bad/Dusch, Egenvård, Personlig Hygien Morgon, Påkl)  arr=07:10:44  start=07:10:44  dep=08:16:44  duration=1h06  travel_prev=0h10  wait=0s
+    VISIT 767 (client: Client-019_1 - Egenvård, Personlig Hygien Morgon, Påklädning, Toa)  arr=08:16:44  start=08:16:44  dep=08:40:44  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 3583 (client: Client-081_1 - Förflyttning, Måltid, Toalettbesök)  arr=08:44:09  start=08:44:09  dep=09:06:09  duration=0h22  travel_prev=0h03  wait=0s
+    VISIT 2006 (client: Client-047_1 - Måltid)  arr=09:06:09  start=09:06:09  dep=09:26:09  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 3593 (client: Client-081_1 - Förflyttning, Måltid, Toalettbesök)  arr=09:26:09  start=09:26:09  dep=09:51:09  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 3569 (client: Client-081_1 - Förflyttning, Måltid, Personlig Hygien Morgon, Påk)  arr=09:51:09  start=09:51:09  dep=10:21:09  duration=0h30  travel_prev=0h00  wait=0s
+    BREAK  10:21:09 – 10:51:09
+    VISIT 2038 (client: Client-047_1 - Promenad)  arr=10:21:09  start=10:51:09  dep=11:26:09  duration=0h35  travel_prev=0h00  wait=1800s
+    VISIT 3571 (client: Client-081_1 - Förflyttning, Måltid, Personlig Hygien Morgon, Påk)  arr=11:26:09  start=11:26:09  dep=11:56:09  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 3589 (client: Client-081_1 - Förflyttning, Måltid, Toalettbesök)  arr=11:56:09  start=11:56:09  dep=12:24:09  duration=0h28  travel_prev=0h00  wait=0s
+    VISIT 2048 (client: Client-047_1 - Måltid)  arr=12:24:09  start=12:57:00  dep=13:17:00  duration=0h20  travel_prev=0h00  wait=1971s
+
+--- Driver-27 / shift 6a83d58b   scheduled 8h00 ---
+  Visit: 4h10  Travel: 0h17  Wait: 0h00  Break: 0h30  Idle: 3h02  (sum check: 8h00)
+  Itinerary:
+    VISIT 1611 (client: Client-037_1 - Måltid)  arr=07:08:03  start=07:08:03  dep=08:08:03  duration=1h00  travel_prev=0h08  wait=0s
+    VISIT 1613 (client: Client-037_1 - Måltid)  arr=08:08:03  start=08:08:03  dep=09:08:03  duration=1h00  travel_prev=0h00  wait=0s
+    VISIT 1011 (client: Client-023_1 - Förflyttning, Måltid, Social Samvaro, Toalettbesök)  arr=09:08:03  start=09:08:03  dep=10:08:03  duration=1h00  travel_prev=0h00  wait=0s
+    BREAK  10:08:03 – 10:38:03
+    VISIT 997 (client: Client-023_1 - Förflyttning, Toalettbesök)  arr=10:08:03  start=10:38:03  dep=10:48:03  duration=0h10  travel_prev=0h00  wait=1800s
+    VISIT 791 (client: Client-020_1 - Måltid, Personlig Hygien Morgon, Påklädning, Toale)  arr=10:49:16  start=10:49:16  dep=11:13:16  duration=0h24  travel_prev=0h01  wait=0s
+    VISIT 803 (client: Client-020_1 - Toalettbesök)  arr=11:13:16  start=11:13:16  dep=11:23:16  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 821 (client: Client-020_1 - Måltid, Toalettbesök)  arr=11:23:16  start=11:23:16  dep=11:49:16  duration=0h26  travel_prev=0h00  wait=0s
+
+--- Driver-28 / shift 224f517b   scheduled 8h00 ---
+  Visit: 4h54  Travel: 0h18  Wait: 0h12  Break: 0h30  Idle: 2h04  (sum check: 8h00)
+  Itinerary:
+    VISIT 3531 (client: Client-080_1 - Måltid, Personlig Hygien Morgon, Påklädning)  arr=07:03:19  start=07:16:00  dep=07:46:00  duration=0h30  travel_prev=0h03  wait=761s
+    VISIT 959 (client: Client-022_1 - Bad/Dusch, Måltid)  arr=07:50:32  start=07:50:32  dep=08:35:32  duration=0h45  travel_prev=0h04  wait=0s
+    VISIT 967 (client: Client-022_1 - Måltid)  arr=08:35:32  start=08:35:32  dep=09:05:32  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 969 (client: Client-022_1 - Måltid)  arr=09:05:32  start=09:05:32  dep=09:29:32  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 975 (client: Client-022_1 - Måltid)  arr=09:29:32  start=09:29:32  dep=09:59:32  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 961 (client: Client-022_1 - Måltid)  arr=09:59:32  start=09:59:32  dep=10:29:32  duration=0h30  travel_prev=0h00  wait=0s
+    BREAK  10:29:32 – 10:59:32
+    VISIT 957 (client: Client-022_1 - Måltid)  arr=10:29:32  start=10:59:32  dep=11:29:32  duration=0h30  travel_prev=0h00  wait=1800s
+    VISIT 1057 (client: Client-024_1 - Måltid, Personlig Hygien Morgon, Påklädning)  arr=11:33:14  start=11:33:14  dep=11:53:14  duration=0h20  travel_prev=0h03  wait=0s
+    VISIT 1081 (client: Client-024_1 - Promenad)  arr=11:53:14  start=11:53:14  dep=12:28:14  duration=0h35  travel_prev=0h00  wait=0s
+    VISIT 1067 (client: Client-024_1 - Måltid)  arr=12:28:14  start=12:28:14  dep=12:48:14  duration=0h20  travel_prev=0h00  wait=0s
+
+--- Driver-30 / shift b7564cf0   scheduled 8h00 ---
+  Visit: 4h02  Travel: 0h21  Wait: 1h42  Break: 0h30  Idle: 1h23  (sum check: 8h00)
+  Itinerary:
+    VISIT 1868 (client: Client-044_1 - Måltid, Toalettbesök)  arr=07:10:23  start=07:10:23  dep=07:35:23  duration=0h25  travel_prev=0h10  wait=0s
+    VISIT 1884 (client: Client-044_1 - Måltid, Toalettbesök)  arr=07:35:23  start=07:35:23  dep=07:50:23  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 1870 (client: Client-044_1 - Måltid, Toalettbesök)  arr=07:50:23  start=07:50:23  dep=08:16:23  duration=0h26  travel_prev=0h00  wait=0s
+    VISIT 1858 (client: Client-044_1 - Måltid, Påklädning, Toalettbesök)  arr=08:16:23  start=08:16:23  dep=08:45:23  duration=0h29  travel_prev=0h00  wait=0s
+    VISIT 1876 (client: Client-044_1 - Måltid, Toalettbesök)  arr=08:45:23  start=08:45:23  dep=09:10:23  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 1860 (client: Client-044_1 - Måltid, Personlig Hygien Morgon, Påklädning)  arr=09:10:23  start=09:10:23  dep=09:34:23  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 1872 (client: Client-044_1 - Måltid, Toalettbesök)  arr=09:34:23  start=09:34:23  dep=09:58:23  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 1856 (client: Client-044_1 - Måltid, Påklädning, Toalettbesök)  arr=09:58:23  start=09:58:23  dep=10:28:23  duration=0h30  travel_prev=0h00  wait=0s
+    BREAK  10:28:23 – 10:58:23
+    VISIT 1862 (client: Client-044_1 - Måltid, Personlig Hygien Morgon, Påklädning)  arr=10:28:23  start=10:58:23  dep=11:22:23  duration=0h24  travel_prev=0h00  wait=1800s
+    VISIT 3457 (client: Client-079_1 - Toalettbesök)  arr=11:23:25  start=11:23:25  dep=11:33:25  duration=0h10  travel_prev=0h01  wait=0s
+    VISIT 3485 (client: Client-079_1 - Toalettbesök)  arr=11:33:25  start=13:16:00  dep=13:26:00  duration=0h10  travel_prev=0h00  wait=6155s
+
+--- Driver-31 / shift 8e90cbab   scheduled 8h00 ---
+  Visit: 5h50  Travel: 0h11  Wait: 0h00  Break: 0h30  Idle: 1h29  (sum check: 8h00)
+  Itinerary:
+    VISIT 2282 (client: Client-054_1 - Måltid, Promenad)  arr=07:05:05  start=07:05:05  dep=09:15:05  duration=2h10  travel_prev=0h05  wait=0s
+    VISIT 2457 (client: Client-058_1 - Promenad)  arr=09:15:15  start=09:15:15  dep=10:00:15  duration=0h45  travel_prev=0h00  wait=0s
+    BREAK  10:00:15 – 10:30:15
+    VISIT 2467 (client: Client-058_1 - Måltid)  arr=10:00:15  start=10:30:15  dep=11:00:15  duration=0h30  travel_prev=0h00  wait=1800s
+    VISIT 2463 (client: Client-058_1 - Bad/Dusch, Måltid)  arr=11:00:15  start=11:00:15  dep=11:45:15  duration=0h45  travel_prev=0h00  wait=0s
+    VISIT 3343 (client: Client-077_1 - Förflyttning, Toalettbesök)  arr=11:49:10  start=11:49:10  dep=12:09:10  duration=0h20  travel_prev=0h03  wait=0s
+    VISIT 3337 (client: Client-077_1 - Förflyttning, Toalettbesök)  arr=12:09:10  start=12:09:10  dep=12:29:10  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 3321 (client: Client-077_1 - Förflyttning, Måltid, Personlig Hygien Morgon, Påk)  arr=12:29:10  start=12:29:10  dep=13:09:10  duration=0h40  travel_prev=0h00  wait=0s
+    VISIT 3365 (client: Client-077_1 - Förflyttning, Toalettbesök)  arr=13:09:10  start=13:09:10  dep=13:29:10  duration=0h20  travel_prev=0h00  wait=0s
+
+--- Driver-32 / shift 6d762497   scheduled 8h00 ---
+  Visit: 7h19  Travel: 0h10  Wait: 0h00  Break: 0h30  Idle: 0h00  (sum check: 8h00)
+  Itinerary:
+    VISIT 1920 (client: Client-045_1 - Måltid)  arr=07:05:00  start=07:05:00  dep=07:32:00  duration=0h27  travel_prev=0h05  wait=0s
+    VISIT 1926 (client: Client-045_1 - Måltid)  arr=07:32:00  start=07:32:00  dep=08:17:00  duration=0h45  travel_prev=0h00  wait=0s
+    VISIT 1962 (client: Client-045_1 - Tillsyn)  arr=08:17:00  start=08:17:00  dep=08:41:00  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 1918 (client: Client-045_1 - Bad/Dusch, Måltid)  arr=08:41:00  start=08:41:00  dep=09:31:00  duration=0h50  travel_prev=0h00  wait=0s
+    VISIT 1922 (client: Client-045_1 - Måltid)  arr=09:31:00  start=09:31:00  dep=09:58:00  duration=0h27  travel_prev=0h00  wait=0s
+    VISIT 1950 (client: Client-045_1 - Måltid, Social Samvaro)  arr=09:58:00  start=09:58:00  dep=10:33:00  duration=0h35  travel_prev=0h00  wait=0s
+    BREAK  10:33:00 – 11:03:00
+    VISIT 1952 (client: Client-045_1 - Promenad)  arr=10:33:00  start=11:03:00  dep=11:48:00  duration=0h45  travel_prev=0h00  wait=1800s
+    VISIT 1960 (client: Client-045_1 - Tillsyn)  arr=11:48:00  start=11:48:00  dep=12:12:00  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 1958 (client: Client-045_1 - Tillsyn)  arr=12:12:00  start=12:12:00  dep=12:36:00  duration=0h24  travel_prev=0h00  wait=0s
+    VISIT 1954 (client: Client-045_1 - Måltid, Social Samvaro)  arr=12:36:00  start=12:36:00  dep=13:27:00  duration=0h51  travel_prev=0h00  wait=0s
+    VISIT 1914 (client: Client-045_1 - Måltid)  arr=13:27:00  start=13:27:00  dep=14:19:00  duration=0h52  travel_prev=0h00  wait=0s
+    VISIT 1948 (client: Client-045_1 - Måltid, Social Samvaro)  arr=14:19:00  start=14:19:00  dep=14:54:00  duration=0h35  travel_prev=0h00  wait=0s
+
+--- Driver-33 / shift 4bb47fc1   scheduled 8h00 ---
+  Visit: 3h11  Travel: 0h37  Wait: 0h03  Break: 0h30  Idle: 3h38  (sum check: 8h00)
+  Itinerary:
+    VISIT 2056 (client: Client-048_1 - Måltid, Personlig Hygien Morgon, Toalettbesök)  arr=07:12:10  start=07:12:10  dep=07:43:10  duration=0h31  travel_prev=0h12  wait=0s
+    VISIT 2066 (client: Client-048_1 - Måltid, Personlig Hygien Morgon)  arr=07:43:10  start=07:43:10  dep=08:23:10  duration=0h40  travel_prev=0h00  wait=0s
+    VISIT 2072 (client: Client-048_1 - Måltid, Toalettbesök)  arr=08:23:10  start=08:23:10  dep=08:53:10  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 2070 (client: Client-048_1 - Måltid, Toalettbesök)  arr=08:53:10  start=08:53:10  dep=09:23:10  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 2535 (client: Client-060_1 - Förflyttning, Personlig Hygien Morgon, Påklädning,)  arr=09:31:37  start=09:31:37  dep=09:51:37  duration=0h20  travel_prev=0h08  wait=0s
+    VISIT 2553 (client: Client-060_1 - Förflyttning, Toalettbesök)  arr=09:51:37  start=09:51:37  dep=10:06:37  duration=0h15  travel_prev=0h00  wait=0s
+    BREAK  10:17:59 – 10:47:59
+    VISIT 3133 (client: Client-072_1 - Måltid, Toalettbesök)  arr=10:17:59  start=10:51:00  dep=11:16:00  duration=0h25  travel_prev=0h11  wait=1981s
+
+--- Driver-34 / shift a2087c48   scheduled 6h00 ---
+  Visit: 4h44  Travel: 0h56  Wait: 0h02  Break: 0h00  Idle: 0h16  (sum check: 6h00)
+  Itinerary:
+    VISIT 2855 (client: Client-066_1 - Tillsyn)  arr=16:17:28  start=16:17:28  dep=16:27:28  duration=0h10  travel_prev=0h17  wait=0s
+    VISIT 2883 (client: Client-066_1 - Måltid)  arr=16:27:28  start=16:30:00  dep=16:55:00  duration=0h25  travel_prev=0h00  wait=152s
+    VISIT 2825 (client: Client-065_1 - Måltid)  arr=16:59:48  start=16:59:48  dep=17:19:48  duration=0h20  travel_prev=0h04  wait=0s
+    VISIT 2607 (client: Client-061_1 - Måltid, Toalettbesök)  arr=17:22:45  start=17:22:45  dep=17:42:45  duration=0h20  travel_prev=0h02  wait=0s
+    VISIT 2681 (client: Client-062_1 - Måltid, Toalettbesök)  arr=17:44:49  start=17:44:49  dep=18:14:49  duration=0h30  travel_prev=0h02  wait=0s
+    VISIT 2775 (client: Client-064_1 - Avklädning, Egenvård)  arr=18:14:49  start=18:14:49  dep=18:24:49  duration=0h10  travel_prev=0h00  wait=0s
+    VISIT 3023 (client: Client-070_1 - Måltid)  arr=18:24:49  start=18:24:49  dep=18:49:49  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 3007 (client: Client-070_1 - Måltid)  arr=18:49:49  start=18:49:49  dep=19:15:49  duration=0h26  travel_prev=0h00  wait=0s
+    VISIT 3037 (client: Client-070_1 - Tillsyn)  arr=19:15:49  start=19:15:49  dep=19:33:49  duration=0h18  travel_prev=0h00  wait=0s
+    VISIT 2597 (client: Client-061_1 - Toalettbesök)  arr=19:35:51  start=19:35:51  dep=19:40:51  duration=0h05  travel_prev=0h02  wait=0s
+    VISIT 2605 (client: Client-061_1 - Toalettbesök)  arr=19:40:51  start=19:40:51  dep=19:45:51  duration=0h05  travel_prev=0h00  wait=0s
+    VISIT 2579 (client: Client-061_1 - Måltid, Personlig Hygien Morgon, Påklädning, Toale)  arr=19:45:51  start=19:45:51  dep=20:05:51  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 2621 (client: Client-061_1 - Avklädning, Personlig Hygien Kväll, Toalettbesök)  arr=20:05:51  start=20:05:51  dep=20:25:51  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 2977 (client: Client-069_1 - Avklädning)  arr=20:28:57  start=20:28:57  dep=20:43:57  duration=0h15  travel_prev=0h03  wait=0s
+    VISIT 2897 (client: Client-066_1 - Avklädning, Personlig Hygien Kväll)  arr=20:48:49  start=20:48:49  dep=21:03:49  duration=0h15  travel_prev=0h04  wait=0s
+    VISIT 2555 (client: Client-060_1 - Avklädning, Förflyttning, Personlig Hygien Kväll, )  arr=21:11:21  start=21:11:21  dep=21:31:21  duration=0h20  travel_prev=0h07  wait=0s
+
+--- Driver-35 / shift c81d8990   scheduled 8h00 ---
+  Visit: 4h53  Travel: 0h28  Wait: 0h00  Break: 0h30  Idle: 2h08  (sum check: 8h00)
+  Itinerary:
+    VISIT 2731 (client: Client-063_1 - Måltid)  arr=07:13:59  start=07:13:59  dep=07:28:59  duration=0h15  travel_prev=0h13  wait=0s
+    VISIT 2807 (client: Client-065_1 - Måltid)  arr=07:28:59  start=07:28:59  dep=07:48:59  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 2793 (client: Client-065_1 - Bad/Dusch, Måltid)  arr=07:48:59  start=07:48:59  dep=08:36:59  duration=0h48  travel_prev=0h00  wait=0s
+    VISIT 2819 (client: Client-065_1 - Måltid)  arr=08:36:59  start=08:36:59  dep=08:56:59  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 2747 (client: Client-063_1 - Måltid)  arr=08:56:59  start=08:56:59  dep=09:07:59  duration=0h11  travel_prev=0h00  wait=0s
+    VISIT 2795 (client: Client-065_1 - Måltid)  arr=09:07:59  start=09:07:59  dep=09:27:59  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 2721 (client: Client-063_1 - Bad/Dusch, Måltid)  arr=09:27:59  start=09:27:59  dep=10:02:59  duration=0h35  travel_prev=0h00  wait=0s
+    BREAK  10:02:59 – 10:32:59
+    VISIT 2719 (client: Client-063_1 - Måltid)  arr=10:02:59  start=10:32:59  dep=10:47:59  duration=0h15  travel_prev=0h00  wait=1800s
+    VISIT 2789 (client: Client-065_1 - Måltid)  arr=10:47:59  start=10:47:59  dep=11:07:59  duration=0h20  travel_prev=0h00  wait=0s
+    VISIT 2711 (client: Client-063_1 - Måltid)  arr=11:07:59  start=11:07:59  dep=11:22:59  duration=0h15  travel_prev=0h00  wait=0s
+    VISIT 2799 (client: Client-065_1 - Måltid)  arr=11:22:59  start=11:22:59  dep=11:38:59  duration=0h16  travel_prev=0h00  wait=0s
+    VISIT 2739 (client: Client-063_1 - Måltid)  arr=11:38:59  start=11:38:59  dep=11:51:59  duration=0h13  travel_prev=0h00  wait=0s
+    VISIT 2967 (client: Client-069_1 - Måltid)  arr=11:52:09  start=11:52:09  dep=12:17:09  duration=0h25  travel_prev=0h00  wait=0s
+    VISIT 2953 (client: Client-069_1 - Måltid)  arr=12:17:09  start=12:17:09  dep=12:37:09  duration=0h20  travel_prev=0h00  wait=0s
+
+--- Driver-37 / shift 9fee6f78   scheduled 8h00 ---
+  Visit: 0h00  Travel: 0h00  Wait: 0h00  Break: 0h00  Idle: 8h00  (sum check: 8h00)
+  Itinerary:
+    BREAK  10:00:00 – 10:30:00
+
+--- Driver-38 / shift 06fd3fca   scheduled 8h00 ---
+  Visit: 5h56  Travel: 0h40  Wait: 0h00  Break: 0h30  Idle: 0h53  (sum check: 8h00)
+  Itinerary:
+    VISIT 2773 (client: Client-064_1 - Måltid)  arr=07:18:24  start=07:18:24  dep=07:58:24  duration=0h40  travel_prev=0h18  wait=0s
+    VISIT 3005 (client: Client-070_1 - Måltid)  arr=07:58:24  start=07:58:24  dep=08:28:24  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 2923 (client: Client-067_1 - Tillsyn)  arr=08:30:09  start=08:30:09  dep=08:50:09  duration=0h20  travel_prev=0h01  wait=0s
+    VISIT 2769 (client: Client-064_1 - Måltid, Promenad)  arr=08:51:52  start=08:51:52  dep=10:07:52  duration=1h16  travel_prev=0h01  wait=0s
+    BREAK  10:07:52 – 10:37:52
+    VISIT 2661 (client: Client-062_1 - Måltid, Toalettbesök)  arr=10:07:52  start=10:37:52  dep=11:12:52  duration=0h35  travel_prev=0h00  wait=1800s
+    VISIT 2651 (client: Client-062_1 - Egenvård, Måltid, Påklädning, Toalettbesök)  arr=11:12:52  start=11:12:52  dep=11:42:52  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 3015 (client: Client-070_1 - Måltid)  arr=11:42:52  start=11:42:52  dep=12:12:52  duration=0h30  travel_prev=0h00  wait=0s
+    VISIT 2657 (client: Client-062_1 - Måltid, Toalettbesök)  arr=12:12:52  start=12:12:52  dep=12:47:52  duration=0h35  travel_prev=0h00  wait=0s
+    VISIT 3003 (client: Client-070_1 - Bad/Dusch, Måltid)  arr=12:47:52  start=12:47:52  dep=13:32:52  duration=0h45  travel_prev=0h00  wait=0s
+    VISIT 2671 (client: Client-062_1 - Toalettbesök, Äta/Dricka)  arr=13:32:52  start=13:32:52  dep=13:47:52  duration=0h15  travel_prev=0h00  wait=0s
+
+--- Day totals ---
+  Shifts on 2026-02-16: 27
+  Shift time (scheduled 8h each): 202h00
+  Visit: 127h44  Travel: 13h33  Wait: 3h51  Break: 8h30  Idle: 48h21
+================================================================================

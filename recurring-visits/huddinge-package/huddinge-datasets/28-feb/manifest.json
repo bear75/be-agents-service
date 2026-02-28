@@ -1,0 +1,50 @@
+{
+  "batch": "28-feb",
+  "dataset": "huddinge-2w-expanded",
+  "runs": {
+    "203cf1d6": {
+      "strategy": "Continuity pool (first-run style)",
+      "hypothesis": "Limit caregivers per client via pool; expect low unassigned if pool sized well."
+    },
+    "2b36ebdb": {
+      "strategy": "Continuity pool variant",
+      "hypothesis": "Slight change to pool assignment to improve balance."
+    },
+    "41ce610c": {
+      "strategy": "Manual continuity pools (per-client cross-type)",
+      "hypothesis": "Per-client pool of max 15 caregivers; trade continuity for assignment."
+    },
+    "48b04930": {
+      "strategy": "Tighter continuity pools",
+      "hypothesis": "Smaller pool size to push continuity avg down toward 11."
+    },
+    "5ff7929f": {
+      "strategy": "Base solve, no continuity constraint",
+      "hypothesis": "Maximize assignment and efficiency first; continuity unconstrained."
+    },
+    "7c002442": {
+      "strategy": "from-patch trim-empty (variant)",
+      "hypothesis": "Pin visits and trim empty shifts; may leave more unassigned if pins are strict."
+    },
+    "82a338b9": {
+      "strategy": "from-patch trim-empty shifts",
+      "hypothesis": "Pin assigned visits, trim empty shifts to reduce idle time. Best unassigned so far."
+    },
+    "8a2318b9": {
+      "strategy": "from-patch trim-empty (variant)",
+      "hypothesis": "Same as 82a338b9 with different pin set; higher unassigned in this run."
+    },
+    "a9664f39": {
+      "strategy": "Area / first-run pool",
+      "hypothesis": "Geographic or first-run grouping to limit continuity."
+    },
+    "b69e582b": {
+      "strategy": "from-patch trim-empty (variant)",
+      "hypothesis": "Same family as 82a338b9; good efficiency and low unassigned, continuity just above target."
+    },
+    "b8e58647": {
+      "strategy": "Continuity pool",
+      "hypothesis": "Pool-based constraint to cap distinct caregivers per client."
+    }
+  }
+}

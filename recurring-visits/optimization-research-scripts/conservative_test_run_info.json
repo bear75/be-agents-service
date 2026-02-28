@@ -1,0 +1,14 @@
+{
+  "run_id": "48b04930-53ef-4b69-b34b-7235e97879cd",
+  "submission_time": "2026-02-27T18:11:13.093256",
+  "job_name": "Conservative Capacity Test (+8 vehicles)",
+  "vehicles": 46,
+  "visits": 3334,
+  "strategy": "moderate_capacity_increase",
+  "baseline_run": "41ce610c-bd67-47b8-9e62-7820f87ffcdd",
+  "parallel_to": "b69e582b-9321-4cfe-be40-92bc27287b5e",
+  "expected_improvements": {
+    "vs_baseline": "Better continuity + unassigned",
+    "vs_strategic": "Better efficiency with moderate capacity"
+  }
+}

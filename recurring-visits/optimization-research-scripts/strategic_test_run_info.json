@@ -1,0 +1,13 @@
+{
+  "run_id": "b69e582b-9321-4cfe-be40-92bc27287b5e",
+  "submission_time": "2026-02-27T17:16:36.762283",
+  "job_name": "Strategic Capacity Test (+15 vehicles)",
+  "vehicles": 53,
+  "visits": 3334,
+  "baseline_run": "41ce610c-bd67-47b8-9e62-7820f87ffcdd",
+  "expected_improvements": {
+    "poor_continuity_rate": "from 37% to 12-15%",
+    "unassigned_visits": "from 42 to 25-30",
+    "efficiency": "from 62.2% to 56-58%"
+  }
+}
