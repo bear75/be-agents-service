@@ -49,7 +49,6 @@ source ~/.config/caire/env
 This will:
 - initialize/verify Hannes repo + workspace
 - configure isolated OpenClaw runtime at `~/.openclaw-hannes`
-- set `gateway.auth.enabled=false` for local loopback runtime (avoids CLI pairing errors)
 - send Telegram test (unless `--no-test`)
 
 ### 2) Start isolated Hannes dashboard/API
