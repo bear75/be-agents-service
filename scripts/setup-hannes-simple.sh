@@ -68,6 +68,14 @@ log() { echo "[setup-hannes] $*"; }
 warn() { echo "[setup-hannes] WARNING: $*"; }
 fail() { echo "[setup-hannes] ERROR: $*" >&2; exit 1; }
 
+ensure_modern_openclaw_config() {
+  if [[ -f "$OPENCLAW_CONFIG" ]] && grep -qE '^\s*agent:\s*' "$OPENCLAW_CONFIG"; then
+    warn "Legacy OpenClaw config detected (agent.*). Replacing with template."
+    mkdir -p "$HOME/.openclaw"
+    cp "$OPENCLAW_TEMPLATE" "$OPENCLAW_CONFIG"
+  fi
+}
+
 if [[ -f "$ENV_FILE" ]]; then
   # shellcheck source=/dev/null
   source "$ENV_FILE" || true
@@ -121,14 +129,11 @@ if [[ -n "$OWNER_ID" || -n "$HANNES_ID" ]]; then
   [[ -n "$OWNER_ID" ]] && MERGED_IDS+=("$OWNER_ID")
   [[ -n "$HANNES_ID" ]] && MERGED_IDS+=("$HANNES_ID")
   if command -v openclaw >/dev/null 2>&1; then
-    if [[ -f "$OPENCLAW_CONFIG" ]] && grep -qE '^\s*agent:\s*$' "$OPENCLAW_CONFIG"; then
-      warn "Legacy OpenClaw config detected (agent:). Replacing with template."
-      mkdir -p "$HOME/.openclaw"
-      cp "$OPENCLAW_TEMPLATE" "$OPENCLAW_CONFIG"
-    fi
+    ensure_modern_openclaw_config
 
     log "Running OpenClaw doctor fix (safe no-op if already clean)"
     openclaw doctor --fix >/dev/null || true
+    ensure_modern_openclaw_config
 
     ACTIVE_TELEGRAM_TOKEN="${TELEGRAM_TOKEN:-${TELEGRAM_BOT_TOKEN:-}}"
     if [[ -n "$ACTIVE_TELEGRAM_TOKEN" ]]; then
@@ -145,7 +150,11 @@ if [[ -n "$OWNER_ID" || -n "$HANNES_ID" ]]; then
 
     IDS_JSON="$(printf '%s\n' "${MERGED_IDS[@]}" | jq -R . | jq -s .)"
     log "Updating Telegram allowFrom via openclaw config set"
-    openclaw config set channels.telegram.allowFrom "$IDS_JSON" >/dev/null
+    if ! openclaw config set channels.telegram.allowFrom "$IDS_JSON" >/dev/null; then
+      warn "allowFrom update failed once; refreshing config template and retrying"
+      ensure_modern_openclaw_config
+      openclaw config set channels.telegram.allowFrom "$IDS_JSON" >/dev/null || true
+    fi
     log "allowFrom => $(echo "$IDS_JSON" | jq -r 'join(", ")')"
     log "Restarting OpenClaw gateway to apply allowFrom"
     openclaw gateway restart >/dev/null || warn "OpenClaw gateway restart reported issues"

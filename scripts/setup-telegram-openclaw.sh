@@ -14,6 +14,7 @@ set -euo pipefail
 CONFIG="$HOME/.openclaw/openclaw.json"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+TEMPLATE_CONFIG="$SERVICE_ROOT/config/openclaw/openclaw.json"
 USER_ID_ARG=""
 SEND_TEST=false
 
@@ -57,7 +58,7 @@ fi
 
 # Auto-fix legacy OpenClaw config schema when possible
 if command -v openclaw >/dev/null 2>&1; then
-  if grep -qE '^\s*agent:\s*$' "$CONFIG"; then
+  if grep -qE '^\s*agent:\s*' "$CONFIG"; then
     echo "Detected legacy OpenClaw config keys. Running migration..."
     if openclaw doctor --fix >/dev/null 2>&1; then
       echo "✅ OpenClaw config migrated via: openclaw doctor --fix"
@@ -65,6 +66,12 @@ if command -v openclaw >/dev/null 2>&1; then
       echo "⚠️  Could not auto-migrate OpenClaw config. Run manually:"
       echo "   openclaw doctor --fix"
     fi
+  fi
+
+  if grep -qE '^\s*agent:\s*' "$CONFIG"; then
+    echo "⚠️  Legacy config still present after migration. Resetting to template."
+    cp "$TEMPLATE_CONFIG" "$CONFIG"
+    echo "✅ Reset OpenClaw config from template"
   fi
 fi
 
