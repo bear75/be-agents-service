@@ -130,6 +130,46 @@ Do **not** use generic `openclaw gateway restart` for dual-stack mode, because i
 
 ---
 
+## Reboot behavior (Mac mini)
+
+If services are installed once via launchd, they auto-start after reboot:
+
+- `com.appcaire.agent-server` (Darwin dashboard/API on `3010`)
+- `com.appcaire.hannes-dashboard` (Hannes dashboard/API on `3011`)
+- `com.appcaire.openclaw-darwin` (Darwin gateway on `18789`)
+- `com.appcaire.openclaw-hannes` (Hannes gateway on `19001`)
+
+Install/repair all boot services:
+
+```bash
+yarn stack:boot:install
+```
+
+---
+
+## Yarn runtime commands (recommended)
+
+```bash
+# 1) Restart ALL (both gateways + both dashboards)
+yarn stack:all
+
+# 2) Restart Darwin only (gateway + dashboard)
+yarn stack:darwin
+
+# 3) Restart Hannes only (gateway + dashboard)
+yarn stack:hannes
+
+# Status (terminal)
+yarn stack:status
+yarn stack:status:darwin
+yarn stack:status:hannes
+
+# Status via Telegram (uses TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID)
+yarn stack:status:telegram
+```
+
+---
+
 ## Notes
 
 - Primary DARWIN stack remains unchanged on port `3010`.
@@ -137,3 +177,4 @@ Do **not** use generic `openclaw gateway restart` for dual-stack mode, because i
 - Both stacks share the same repository code and prompts.
 - Hannes dashboard data isolation is enforced by separate repo config, DB, jobs dir, OpenClaw config path, and docs/file access scope.
 - In Hannes mode, Plans/Schedules/Settings are disabled in both UI and API (`403`) to avoid cross-workspace leakage.
+- In Hannes mode, job start API is restricted to `hannes-projects` only.

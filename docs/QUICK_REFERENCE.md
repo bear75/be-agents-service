@@ -8,6 +8,14 @@ Commands, schedules, and one-pager for the agent service.
 # Dashboard (port 3010)
 yarn start          # Build + start
 yarn dev            # Dev with hot reload
+
+# Dual-stack runtime (Darwin + Hannes)
+yarn stack:boot:install   # Ensure launchd boot services are installed
+yarn stack:all            # Restart all gateways + dashboards
+yarn stack:darwin         # Restart Darwin gateway + dashboard
+yarn stack:hannes         # Restart Hannes gateway + dashboard
+yarn stack:status         # Check status of all stacks
+yarn stack:status:telegram  # Send status summary to Telegram
 ```
 
 ## Schedules

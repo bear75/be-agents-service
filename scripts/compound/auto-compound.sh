@@ -17,7 +17,7 @@ on_error() {
 }
 
 # Config-driven approach: Accept repo name as argument
-REPO_NAME="${1:-appcaire}"
+REPO_NAME="${1:-appcaire}"  # Default target repo (agents live in be-agents-service, target is appcaire)
 
 # Get the directory where this script lives
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

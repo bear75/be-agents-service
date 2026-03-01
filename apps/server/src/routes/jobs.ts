@@ -7,6 +7,15 @@ import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 const router = Router();
 
 const DEFAULT_REPO_NAME = process.env.DEFAULT_TARGET_REPO || 'appcaire';
+const ALLOWED_TARGET_REPOS = (process.env.ALLOWED_TARGET_REPOS || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+function isTargetRepoAllowed(targetRepo: string): boolean {
+  if (ALLOWED_TARGET_REPOS.length === 0) return true;
+  return ALLOWED_TARGET_REPOS.includes(targetRepo);
+}
 
 /** Resolve targetRepo: repo name → config path; absolute path used only if it exists (avoids paths from other machines). */
 function resolveTargetRepoPath(targetRepo: string | undefined): string {
@@ -57,6 +66,12 @@ router.post('/start', (req, res) => {
       });
     }
 
+    if (targetRepo && !isTargetRepoAllowed(targetRepo.trim())) {
+      return res.status(403).json({
+        error: `targetRepo '${targetRepo}' is not allowed for this dashboard instance`,
+      });
+    }
+
     const targetRepoPath = resolveTargetRepoPath(targetRepo);
 
     let job;
@@ -65,6 +80,11 @@ router.post('/start', (req, res) => {
       if (!targetRepo) {
         return res.status(400).json({
           error: 'Missing required field: targetRepo for engineering job',
+        });
+      }
+      if (!isTargetRepoAllowed(targetRepo.trim())) {
+        return res.status(403).json({
+          error: `targetRepo '${targetRepo}' is not allowed for this dashboard instance`,
         });
       }
       job = jobExecutor.startEngineeringJob({

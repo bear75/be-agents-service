@@ -29,6 +29,7 @@ export AGENT_SESSION_LOGS_DIR="$SERVICE_ROOT/.compound-state/orchestrator-sessio
 export PLAN_DOCS_ROOT="$HOME/HomeCare/strength-stride-coach/docs"
 export FILE_ACCESS_ALLOWED_PATHS="$HOME/HomeCare/strength-stride-coach"
 export DEFAULT_TARGET_REPO="hannes-projects"
+export ALLOWED_TARGET_REPOS="hannes-projects"
 export ENABLE_NIGHTLY_TRIGGER="false"
 export AUTO_COMPOUND_LAUNCHD_LABEL="com.appcaire.auto-compound-hannes"
 export OPENCLAW_WORKSPACE_REPO_KEY="darwin"
