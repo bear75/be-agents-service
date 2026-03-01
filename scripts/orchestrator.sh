@@ -47,7 +47,9 @@ SKIP_VERIFICATION="${SKIP_VERIFICATION:-false}"
 STATE_DIR="$SERVICE_ROOT/.compound-state"
 LOG_BASE="$SERVICE_ROOT/logs/orchestrator-sessions"
 mkdir -p "$LOG_BASE"
-SESSION_ID="session-$(date +%s)"
+# Use SESSION_ID from env when set (dashboard/job-executor); else generate for nightly/CLI
+SESSION_ID="${SESSION_ID:-session-$(date +%s)}"
+export SESSION_ID
 LOG_DIR="$LOG_BASE/$SESSION_ID"
 SESSION_LOG="$LOG_DIR/orchestrator.log"
 mkdir -p "$LOG_DIR"
@@ -235,13 +237,16 @@ if echo "$PRIORITY_CONTENT" | grep -qi "gamification\|xp\|achievements\|leaderbo
   log_info "✓ Agent Levelup specialist needed (detected: gamification)"
 fi
 
-# If nothing detected, assume full-stack feature (needs all core specialists)
-if [[ "$NEEDS_BACKEND" == "false" && "$NEEDS_FRONTEND" == "false" && "$NEEDS_INFRASTRUCTURE" == "false" ]]; then
-  log_warn "Could not determine specialist needs, assuming full-stack feature"
-  NEEDS_BACKEND=true
-  NEEDS_FRONTEND=true
-  NEEDS_INFRASTRUCTURE=true
-fi
+# Always use all engineering specialists (no keyword gating)
+# Keyword detection above is kept for logging only; every run invokes the full agent set.
+NEEDS_BACKEND=true
+NEEDS_FRONTEND=true
+NEEDS_INFRASTRUCTURE=true
+NEEDS_DB_ARCHITECT=true
+NEEDS_UX_DESIGNER=true
+NEEDS_DOCS_EXPERT=true
+NEEDS_LEVELUP=true
+log_info "All specialists enabled for this run (backend, frontend, infra, db-architect, docs, levelup, ux-designer, verification)"
 
 #
 # Phase 1: Backend + Infrastructure (Parallel)

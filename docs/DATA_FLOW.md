@@ -142,6 +142,10 @@ export OLLAMA_MODEL=qwen2.5:14b
 ./scripts/compound/llm-invoke.sh analyze "Extract priority from: ..."
 ```
 
+### Dashboard "LLM Cost (7d)" — not wired to real usage
+
+The Insights → Analytics card "LLM Cost (7d)" reads from the `llm_usage` table (SQLite). That table is **only** populated if something calls `recordLLMUsage()` in `lib/llm-router.js`. Currently **nothing** calls it: compound scripts and OpenClaw invoke Claude/Ollama outside this Node process, and Cursor/Sonnet usage is entirely outside the service. So the card will show "—" or "$0.00" until a future integration wires LLM calls (e.g. a proxy or post-call hook) to `recordLLMUsage()`.
+
 ---
 
 ## Detailed Data Flow Examples

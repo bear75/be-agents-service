@@ -95,7 +95,9 @@ export function RLDashboardPage() {
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="text-sm text-gray-500">LLM Cost (7d)</div>
           <div className="text-2xl font-bold text-gray-900">
-            {llmStats ? `$${llmStats.totalCost}` : '—'}
+            {llmStats && Number(llmStats.totalCost) > 0
+              ? `$${llmStats.totalCost}`
+              : 'Not tracked'}
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-4">

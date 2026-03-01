@@ -284,14 +284,15 @@ export async function getJobs(): Promise<JobInfo[]> {
   return Array.isArray(data) ? data : (data.jobs ?? []);
 }
 
-/** Start a job (engineering or marketing) */
+/** Start a job (engineering or marketing). For engineering only team + targetRepo are required. Pass sessionId so the orchestrator uses the same session (Work view). */
 export async function startJob(params: {
   team: string;
   model?: string;
-  priorityFile: string;
-  branchName: string;
+  priorityFile?: string;
+  branchName?: string;
   baseBranch?: string;
   targetRepo?: string;
+  sessionId?: string;
 }): Promise<JobInfo> {
   return fetchRaw<JobInfo>('/jobs/start', {
     method: 'POST',

@@ -109,7 +109,6 @@ be-agents-service/
 │   │       ├── components/
 │   │       │   ├── AgentStatusCard.tsx
 │   │       │   ├── CheckInTimeline.tsx
-│   │       │   ├── ControlTower.tsx
 │   │       │   ├── DocViewer.tsx
 │   │       │   ├── InboxView.tsx
 │   │       │   ├── Layout.tsx

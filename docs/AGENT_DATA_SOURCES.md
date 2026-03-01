@@ -27,6 +27,8 @@
 - Short: DB `role` column
 - Long: prompt file in target repo (same file as system prompt)
 
+**What compound uses:** See [COMPOUND_USES.md](COMPOUND_USES.md) for how compound uses agents, teams, prompts (soul), and gamification.
+
 ---
 
 ## Leaderboard shows 0 agents
@@ -43,8 +45,7 @@ Likely causes:
 ## Work started from Run?
 
 Mostly yes, but not only:
-- **Run → Compound** starts compound
-- **Run → Control Tower** starts sessions
+- **Run → Compound** starts compound (and records session for Work)
 - **Terminal:** `./scripts/compound/auto-compound.sh beta-appcaire`
 - **Launchd:** nightly at 23:00
 

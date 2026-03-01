@@ -32,6 +32,24 @@ repos:
       repo: caire-platform
       default_branch: main
 
+  # Monorepo: dashboard, website (www.caire.se), SEO sites, handbook
+  beta-appcaire:
+    path: ~/HomeCare/beta-appcaire
+    workspace:
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      enabled: true
+    schedule:
+      review: "22:30"
+      compound: "23:00"
+    priorities_dir: reports/
+    logs_dir: logs/
+    tasks_dir: tasks/
+    enabled: true
+    github:
+      owner: bear75
+      repo: beta-appcaire
+      default_branch: main
+
   # This repo (be-agent-service)
   be-agent-service:
     path: ~/HomeCare/be-agent-service

@@ -4,7 +4,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Cpu, Play, Square, RefreshCw, Users } from 'lucide-react';
-import { getJobs, startJob, stopJob, getJobLogs, clearAllJobs, listRepositories } from '../lib/api';
+import { getJobs, startJob, stopJob, getJobLogs, clearAllJobs, listRepositories, getTeams, createSession } from '../lib/api';
 import type { JobInfo } from '../types';
 
 const DEFAULT_REPO = 'appcaire';
@@ -35,25 +35,38 @@ export function EngineeringPage() {
       .finally(() => setLoading(false));
   };
 
+  /** Find engineering team id for session creation */
+  const getEngineeringTeamId = async (): Promise<string | null> => {
+    const teamList = await getTeams();
+    const eng = teamList.find((t) => t.domain === 'engineering');
+    return eng?.id ?? null;
+  };
+
   useEffect(() => {
     load();
   }, []);
 
-  const handleStart = () => {
+  const handleStart = async () => {
     setStarting(true);
-    startJob({
-      team: form.team,
-      targetRepo: form.targetRepo,
-      model: form.model,
-    })
-      .then(() => {
-        load();
-        setStarting(false);
-      })
-      .catch((e) => {
-        setError(e.message);
-        setStarting(false);
+    setError(null);
+    try {
+      const sessionId = `session-${Date.now()}`;
+      const teamId = await getEngineeringTeamId();
+      if (teamId) {
+        await createSession({ sessionId, teamId, targetRepo: form.targetRepo });
+      }
+      await startJob({
+        team: form.team,
+        targetRepo: form.targetRepo,
+        model: form.model,
+        sessionId,
       });
+      load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setStarting(false);
+    }
   };
 
   const handleStop = (jobId: string) => {
@@ -89,7 +102,7 @@ export function EngineeringPage() {
           <h2 className="text-xl font-semibold text-gray-900">Compound</h2>
         </div>
         <p className="text-sm text-gray-500">
-          Start auto-compound: picks priority #1 from workspace or reports, creates PRD, implements, opens PR. Runs nightly at 23:00 or start manually here or via terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh &lt;repo-name&gt;</code> (default repo: appcaire).
+          Picks priority #1 from repo, creates PRD, runs engineering specialists (agents + target-repo prompts + gamification), opens draft PR. Nightly 23:00 or start here / terminal: <code className="bg-gray-100 px-1 rounded text-xs">./scripts/compound/auto-compound.sh &lt;repo-name&gt;</code>
         </p>
       </div>
 
@@ -135,7 +148,7 @@ export function EngineeringPage() {
           </label>
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          Auto-compound finds priority from workspace or repo, creates PRD, implements, and opens PR.
+          Uses all engineering agents, target-repo prompts (soul), and records session + tasks for Work and Leaderboard.
         </p>
         <button
           onClick={handleStart}

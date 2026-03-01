@@ -43,7 +43,7 @@ yarn stack:status:telegram  # Send status summary to Telegram
 Single entry point: http://localhost:3010. Nav (no overlap, one purpose per page):
 
 - **Overview** — Entry point & workspace (quick start when no repo)
-- **Run** — Launch automation (Compound | Control Tower)
+- **Run** — Launch automation (Compound; Commit & push all)
 - **Work** — Sessions + tasks in one view (click session to expand)
 - **Roster** — Configure who (Agents | Teams)
 - **Plans** — What to build (PRDs, roadmaps, repo status)

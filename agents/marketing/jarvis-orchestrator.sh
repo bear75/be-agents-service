@@ -156,6 +156,18 @@ function analyze_marketing_priority() {
     needs_notion=true
   fi
 
+  # Always use all marketing specialists (no keyword gating)
+  # Keyword detection above is kept for logging only; every run invokes the full agent set.
+  needs_seo=true
+  needs_content=true
+  needs_design=true
+  needs_social=true
+  needs_email=true
+  needs_product_analysis=true
+  needs_customer_research=true
+  needs_developer=true
+  needs_notion=true
+
   # Export for use in orchestration
   cat <<EOF
 needs_seo=$needs_seo
@@ -363,8 +375,9 @@ function main() {
     exit 1
   fi
 
-  # Create session
-  local session_id="session-marketing-$(date +%s)"
+  # Use SESSION_ID from env when set (compound run); else create marketing session
+  local session_id="${SESSION_ID:-session-marketing-$(date +%s)}"
+  export SESSION_ID="$session_id"
   init_session "$session_id"
 
   # Setup logging

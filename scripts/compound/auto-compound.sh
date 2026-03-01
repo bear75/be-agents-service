@@ -67,8 +67,9 @@ if [ -f "$DB_API_SCRIPT" ]; then
   source "$DB_API_SCRIPT"
 fi
 
-# Generate a unique session ID for this run
-SESSION_ID="session-$(date +%s)-$$"
+# Use SESSION_ID from env when set (dashboard/job-executor); else generate for nightly/CLI
+SESSION_ID="${SESSION_ID:-session-$(date +%s)-$$}"
+export SESSION_ID
 SESSION_TEAM="team-engineering"  # Default team; orchestrator can override
 
 echo "🤖 Darwin: Auto-Compound"
@@ -145,10 +146,23 @@ fi
 
 LATEST_REPORT=""
 
-# Check workspace priorities first
-if [ -n "$WORKSPACE_PATH" ] && [ -f "$WORKSPACE_PATH/priorities.md" ]; then
-  LATEST_REPORT="$WORKSPACE_PATH/priorities.md"
-  echo "Using workspace priorities: $LATEST_REPORT"
+# Check workspace priorities first (dated file takes precedence over priorities.md)
+if [ -n "$WORKSPACE_PATH" ]; then
+  WORKSPACE_PRIO_DATED=$(ls -t "$WORKSPACE_PATH"/priorities-*.md 2>/dev/null | head -1)
+  if [ -n "$WORKSPACE_PRIO_DATED" ]; then
+    LATEST_REPORT="$WORKSPACE_PRIO_DATED"
+    echo "Using workspace priorities (dated): $LATEST_REPORT"
+  elif [ -f "$WORKSPACE_PATH/priorities.md" ]; then
+    LATEST_REPORT="$WORKSPACE_PATH/priorities.md"
+    echo "Using workspace priorities: $LATEST_REPORT"
+  fi
+fi
+
+# Export workspace paths for agents (darwin input/memory) when available
+if [ -n "$WORKSPACE_PATH" ]; then
+  export WORKSPACE_PATH
+  export WORKSPACE_INPUT="${WORKSPACE_PATH}/input"
+  export WORKSPACE_MEMORY="${WORKSPACE_PATH}/memory"
 fi
 
 # Fall back to repo: priorities_dir from config if set, else reports/
@@ -169,6 +183,19 @@ if [ -z "$LATEST_REPORT" ]; then
 fi
 
 echo "Using report: $LATEST_REPORT"
+
+# Resolve absolute priority path (for strategy, orchestrator, and marketing)
+PRIORITY_ABS="$LATEST_REPORT"
+[ "${LATEST_REPORT#/}" = "$LATEST_REPORT" ] && PRIORITY_ABS="$REPO_PATH/$LATEST_REPORT"
+
+# Phase 0: Strategy (management) – optional, produces strategy-brief.md for alignment
+STRATEGY_SCRIPT="$SERVICE_ROOT/agents/management/strategy-brief.sh"
+if [ -f "$STRATEGY_SCRIPT" ] && [ -n "$SESSION_ID" ]; then
+  echo "Running strategy phase (management)..."
+  "$STRATEGY_SCRIPT" "$SESSION_ID" "$REPO_PATH" "$PRIORITY_ABS" 2>/dev/null || echo "⚠️ Strategy phase failed (non-fatal, continuing)"
+else
+  [ ! -f "$STRATEGY_SCRIPT" ] && echo "Skipping strategy phase (script not found)"
+fi
 
 # Analyze and pick #1 priority
 ANALYSIS=$("$SCRIPT_DIR/analyze-report.sh" "$LATEST_REPORT")
@@ -226,8 +253,6 @@ ORCHESTRATOR_SCRIPT="$SERVICE_ROOT/scripts/orchestrator.sh"
 
 if [ "$USE_ORCHESTRATOR_AGENTS" = "true" ] && [ -f "$ORCHESTRATOR_SCRIPT" ]; then
   echo "Running implementation via orchestrator (specialist agents)..."
-  PRIORITY_ABS="$LATEST_REPORT"
-  [ "${LATEST_REPORT#/}" = "$LATEST_REPORT" ] && PRIORITY_ABS="$REPO_PATH/$LATEST_REPORT"
   PRD_ABS="$REPO_PATH/tasks/prd-$(basename $BRANCH_NAME).md"
   if "$ORCHESTRATOR_SCRIPT" "$REPO_PATH" "$PRIORITY_ABS" "$PRD_ABS" "$BRANCH_NAME"; then
     ORCHESTRATOR_SUCCEEDED=true
@@ -251,6 +276,22 @@ fi
 if [ "$ORCHESTRATOR_SUCCEEDED" = "true" ]; then
   echo "✓ Orchestrator completed (specialists + verification + PR)"
   PR_URL=$(cd "$REPO_PATH" && gh pr view --json url -q '.url' 2>/dev/null || echo "")
+
+  # Phase: Marketing (SEO, web pages) – same session, same branch, same priority
+  JARVIS_SCRIPT="$SERVICE_ROOT/agents/marketing/jarvis-orchestrator.sh"
+  if [ -f "$JARVIS_SCRIPT" ]; then
+    echo "Running marketing phase (Jarvis: SEO, content, web)..."
+    export SESSION_ID
+    export COMPOUND_STATE_DIR="$SERVICE_ROOT/.compound-state"
+    MARKETING_PRD="$REPO_PATH/tasks/marketing-prd-$(basename "$BRANCH_NAME").json"
+    if "$JARVIS_SCRIPT" "$REPO_PATH" "$PRIORITY_ABS" "$MARKETING_PRD" "$BRANCH_NAME"; then
+      echo "✓ Marketing phase completed"
+    else
+      echo "⚠️ Marketing phase failed (non-fatal)"
+    fi
+  else
+    echo "Skipping marketing phase (Jarvis not found)"
+  fi
 fi
 
 # Final safety net and PR (skip if orchestrator already did it)

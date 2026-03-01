@@ -58,7 +58,7 @@ router.post('/nightly/trigger', (req, res) => {
 
 router.post('/start', (req, res) => {
   try {
-    const { team, model, priorityFile, branchName, baseBranch, targetRepo } = req.body;
+    const { team, model, priorityFile, branchName, baseBranch, targetRepo, sessionId } = req.body;
 
     if (!team) {
       return res.status(400).json({
@@ -90,6 +90,7 @@ router.post('/start', (req, res) => {
       job = jobExecutor.startEngineeringJob({
         model,
         targetRepo: targetRepo.trim(),
+        sessionId: sessionId || undefined,
       });
     } else if (team === 'marketing') {
       if (!priorityFile || !branchName) {

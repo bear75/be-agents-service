@@ -1,35 +1,33 @@
 /**
- * Run - start compound, control tower sessions
+ * Run - start compound (priority #1 → PR), commit & push
  * Purpose: Launch automation (no overlap)
  */
 import { useState } from 'react';
-import { Cpu, Rocket, GitCommit } from 'lucide-react';
+import { Cpu, GitCommit } from 'lucide-react';
 import { StatsBar } from '../components/StatsBar';
 import { PagePurpose } from '../components/PagePurpose';
 import { EngineeringPage } from './EngineeringPage';
-import { ControlTower } from '../components/ControlTower';
 
 const TABS = [
   { id: 'compound', label: 'Compound', icon: Cpu, desc: 'Start auto-compound' },
-  { id: 'control', label: 'Control Tower', icon: Rocket, desc: 'Launch sessions' },
   { id: 'commit', label: 'Commit & push all', icon: GitCommit, desc: 'Git add, commit, push' },
 ] as const;
 
 export function RunPage() {
-  const [activeTab, setActiveTab] = useState<'compound' | 'control' | 'commit'>('compound');
+  const [activeTab, setActiveTab] = useState<'compound' | 'commit'>('compound');
 
   return (
     <div className="space-y-6">
       <StatsBar />
       <PagePurpose
         purpose="Launch automation."
-        how="Compound: start auto-compound (priority → PRD → PR). Control Tower: launch sessions by team and repo."
+        how="Compound: priority #1 from repo → PRD → specialists (agents, prompts, gamification) → PR. Session recorded for Work."
         tip="Nightly at 23:00 or start manually from here or terminal."
       />
       <div>
         <h2 className="text-xl font-semibold text-gray-900">Run</h2>
         <p className="text-sm text-gray-500 mt-1">
-          Start compound workflows or launch sessions via Control Tower
+          Start compound or run git commit & push
         </p>
       </div>
       <div className="border-b border-gray-200">
@@ -55,11 +53,6 @@ export function RunPage() {
         </nav>
       </div>
       {activeTab === 'compound' && <EngineeringPage />}
-      {activeTab === 'control' && (
-        <div className="pt-2">
-          <ControlTower />
-        </div>
-      )}
       {activeTab === 'commit' && (
         <div className="pt-2 space-y-4">
           <div className="bg-white rounded-lg border border-gray-200 p-6">

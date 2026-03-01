@@ -41,7 +41,7 @@ Reference for Darwin dashboard design. Sources: OpenClaw, SwarmClaw, AgenticFlow
 | Page | Purpose | What it does |
 |------|---------|--------------|
 | **Overview** | Entry point & context | Quick start, workspace (inbox, priorities, check-ins) when repo selected |
-| **Run** | Launch automation | Compound: start auto-compound. Control Tower: launch sessions |
+| **Run** | Launch automation | Compound: start auto-compound (records session for Work). Commit & push all. |
 | **Work** | Show work status | Sessions and tasks in one view. Click session to expand. Tasks sync from prd.json when compound runs. |
 | **Roster** | Configure who does what | Agents: hire/fire. Teams: config & members. One surface. |
 | **Plans** | What to build | PRDs, roadmaps. Repo status & logs when repo selected |
