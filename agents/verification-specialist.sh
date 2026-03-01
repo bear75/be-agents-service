@@ -32,7 +32,11 @@ source "$LIB_DIR/state-manager.sh"
 # Configuration
 SESSION_ID="${1:-}"
 AUTO_FIX="${2:-}"
-PROMPT_FILE="$REPO_ROOT/.claude/prompts/verification-specialist.md"
+PROMPT_FILE="$SCRIPT_DIR/prompts/verification-specialist.md"
+# Fallback: check target repo for repo-specific overrides
+if [[ -f "$REPO_ROOT/.claude/prompts/verification-specialist.md" ]]; then
+  PROMPT_FILE="$REPO_ROOT/.claude/prompts/verification-specialist.md"
+fi
 LOG_DIR="$SERVICE_ROOT/logs/verification-sessions"
 STATE_DIR="$SERVICE_ROOT/.compound-state"
 

@@ -28,7 +28,11 @@ source "$LIB_DIR/state-manager.sh"
 SESSION_ID="${1:-}"
 TARGET_REPO="${2:-}"
 PRIORITY_FILE="${3:-}"
-PROMPT_FILE="$TARGET_REPO/.claude/prompts/db-architect-specialist.md"
+PROMPT_FILE="$SCRIPT_DIR/prompts/db-architect-specialist.md"
+# Fallback: check target repo for repo-specific overrides
+if [[ -f "$TARGET_REPO/.claude/prompts/db-architect-specialist.md" ]]; then
+  PROMPT_FILE="$TARGET_REPO/.claude/prompts/db-architect-specialist.md"
+fi
 LOG_DIR="$SERVICE_ROOT/logs/db-architect-sessions"
 STATE_DIR="$SERVICE_ROOT/.compound-state"
 
