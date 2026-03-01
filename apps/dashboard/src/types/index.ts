@@ -290,3 +290,52 @@ export interface ScheduleRun {
   notes: string | null;
   iteration: number;
 }
+
+// ─── System Health (runtime checks from server) ─────────────────────────────
+
+export interface HealthCheckResult {
+  ok: boolean;
+  details?: string;
+}
+
+export interface OpenClawHealth extends HealthCheckResult {
+  configExists: boolean;
+  configPath: string;
+  placeholdersFound: boolean;
+  cliInstalled: boolean;
+  gatewayLoaded: boolean | null;
+}
+
+export interface TelegramHealth extends HealthCheckResult {
+  tokenPresent: boolean;
+  chatIdPresent: boolean;
+  tokenValid: boolean | null;
+  chatIdValid: boolean | null;
+}
+
+export interface LaunchdHealth extends HealthCheckResult {
+  supported: boolean;
+  jobs: Record<string, boolean>;
+}
+
+export interface WorkspaceHealth extends HealthCheckResult {
+  path: string | null;
+  exists: boolean;
+}
+
+export interface ScriptsHealth extends HealthCheckResult {
+  missing: string[];
+}
+
+export interface SystemHealth {
+  checkedAt: string;
+  deep: boolean;
+  overall: 'healthy' | 'degraded' | 'unhealthy';
+  checks: {
+    workspace: WorkspaceHealth;
+    openclaw: OpenClawHealth;
+    telegram: TelegramHealth;
+    launchd: LaunchdHealth;
+    scripts: ScriptsHealth;
+  };
+}

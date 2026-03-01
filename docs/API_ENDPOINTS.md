@@ -9,15 +9,16 @@ Complete REST API documentation for the Agent Service.
 ## Table of Contents
 
 1. [Health Check](#health-check)
-2. [Teams API](#teams-api)
-3. [Agents API](#agents-api)
-4. [Tasks API](#tasks-api)
-5. [Sessions API](#sessions-api)
-6. [Jobs API](#jobs-api)
-7. [Integrations API](#integrations-api)
-8. [Data API](#data-api)
-9. [RL API](#rl-api)
-10. [File API](#file-api)
+2. [System Health](#system-health)
+3. [Teams API](#teams-api)
+4. [Agents API](#agents-api)
+5. [Tasks API](#tasks-api)
+6. [Sessions API](#sessions-api)
+7. [Jobs API](#jobs-api)
+8. [Integrations API](#integrations-api)
+9. [Data API](#data-api)
+10. [RL API](#rl-api)
+11. [File API](#file-api)
 
 ---
 
@@ -34,6 +35,56 @@ Check if the server is running.
   "service": "agent-service",
   "version": "1.0.0",
   "timestamp": "2025-02-09T18:00:00.000Z"
+}
+```
+
+---
+
+## System Health
+
+### GET /api/system/health
+
+Runtime readiness checks for dashboard display (workspace, OpenClaw, Telegram, launchd jobs, required scripts).
+
+**Query params:**
+- `deep=1` (optional): run deeper external checks (Telegram `getMe`/`getChat`).
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "checkedAt": "2026-03-01T12:34:56.000Z",
+    "deep": false,
+    "overall": "degraded",
+    "checks": {
+      "workspace": { "ok": true, "path": "/.../AgentWorkspace/DARWIN", "exists": true },
+      "openclaw": {
+        "ok": false,
+        "configExists": true,
+        "configPath": "/Users/.../.openclaw/openclaw.json",
+        "placeholdersFound": true,
+        "cliInstalled": true,
+        "gatewayLoaded": true
+      },
+      "telegram": {
+        "ok": false,
+        "tokenPresent": true,
+        "chatIdPresent": false,
+        "tokenValid": null,
+        "chatIdValid": null
+      },
+      "launchd": {
+        "ok": true,
+        "supported": true,
+        "jobs": {
+          "com.appcaire.agent-server": true,
+          "com.appcaire.auto-compound": true
+        }
+      },
+      "scripts": { "ok": true, "missing": [] }
+    }
+  }
 }
 ```
 

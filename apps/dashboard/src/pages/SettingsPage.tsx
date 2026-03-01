@@ -7,6 +7,7 @@ import { Sliders, Power, Edit2, Trash2, Plus } from 'lucide-react';
 import { getIntegrations, updateIntegration } from '../lib/api';
 import type { DbIntegration } from '../types';
 import { SetupStatus } from '../components/SetupStatus';
+import { SystemHealthCard } from '../components/SystemHealthCard';
 
 export function SettingsPage() {
   const { selectedRepo = '' } = useOutletContext<{ selectedRepo?: string }>() ?? {};
@@ -72,6 +73,7 @@ export function SettingsPage() {
     <div className="space-y-6">
       {/* Setup Status */}
       {selectedRepo && <SetupStatus repoName={selectedRepo} />}
+      <SystemHealthCard />
 
       {/* Header */}
       <div className="flex items-center justify-between">

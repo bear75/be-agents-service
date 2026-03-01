@@ -20,6 +20,7 @@ import type {
   JobInfo,
   DbIntegration,
   ScheduleRun,
+  SystemHealth,
 } from '../types';
 
 const API_BASE =
@@ -536,4 +537,11 @@ export async function getRunContinuity(id: string): Promise<string | null> {
 /** URL to dataset-level asset (e.g. pilot report PDF) in shared folder */
 export function getDatasetAssetUrl(filename: string): string {
   return `${API_BASE}/schedule-runs/dataset-assets/${encodeURIComponent(filename)}`;
+}
+
+// ─── System Health ───────────────────────────────────────────────────────────
+
+export async function getSystemHealth(deep = false): Promise<SystemHealth> {
+  const query = deep ? '?deep=1' : '';
+  return fetchApi<SystemHealth>(`/system/health${query}`);
 }
