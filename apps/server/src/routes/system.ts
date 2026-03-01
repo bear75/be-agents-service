@@ -9,7 +9,7 @@ import type { SystemHealth } from '../types/index.js';
 
 const router = Router();
 
-const REQUIRED_APPCAIRE_JOBS = [
+const DEFAULT_REQUIRED_APPCAIRE_JOBS = [
   'com.appcaire.agent-server',
   'com.appcaire.auto-compound',
   'com.appcaire.daily-compound-review',
@@ -28,6 +28,47 @@ const REQUIRED_SCRIPTS = [
   'scripts/compound/auto-compound.sh',
   'scripts/compound/daily-compound-review.sh',
 ] as const;
+
+function getRequiredLaunchdJobs(): string[] {
+  const override = (process.env.APP_REQUIRED_LAUNCHD_JOBS || '').trim();
+  if (!override) {
+    return [...DEFAULT_REQUIRED_APPCAIRE_JOBS];
+  }
+  if (override.toLowerCase() === 'none') {
+    return [];
+  }
+  return override
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function expandHomePath(value: string): string {
+  if (!value) return value;
+  if (value.startsWith('~')) {
+    return value.replace('~', homedir());
+  }
+  return value;
+}
+
+function resolveOpenClawConfigPath(): string {
+  const override = expandHomePath((process.env.OPENCLAW_CONFIG_PATH || '').trim());
+  if (!override) {
+    return resolve(homedir(), '.openclaw', 'openclaw.json');
+  }
+  if (override.startsWith('/')) {
+    return override;
+  }
+  return resolve(process.cwd(), override);
+}
+
+function getOpenClawGatewayLabels(): string[] {
+  const configuredLabel = (process.env.OPENCLAW_LAUNCHD_LABEL || '').trim();
+  if (configuredLabel) {
+    return [configuredLabel];
+  }
+  return ['com.appcaire.openclaw-darwin', 'ai.openclaw.gateway'];
+}
 
 function commandExists(command: string): boolean {
   const out = spawnSync('which', [command], { stdio: 'ignore' });
@@ -110,7 +151,7 @@ router.get('/health', async (req: Request, res: Response) => {
     };
 
     // OpenClaw
-    const openclawConfigPath = resolve(homedir(), '.openclaw', 'openclaw.json');
+    const openclawConfigPath = resolveOpenClawConfigPath();
     const openclawConfigExists = existsSync(openclawConfigPath);
     let openclawPlaceholdersFound = false;
     if (openclawConfigExists) {
@@ -125,8 +166,9 @@ router.get('/health', async (req: Request, res: Response) => {
     }
     const openclawCliInstalled = commandExists('openclaw');
     const loadedJobs = getLoadedLaunchdJobs();
+    const openclawGatewayLabels = getOpenClawGatewayLabels();
     const openclawGatewayLoaded =
-      loadedJobs == null ? null : loadedJobs.has('ai.openclaw.gateway');
+      loadedJobs == null ? null : openclawGatewayLabels.some((label) => loadedJobs.has(label));
     const openclawOk =
       openclawConfigExists &&
       !openclawPlaceholdersFound &&
@@ -139,6 +181,7 @@ router.get('/health', async (req: Request, res: Response) => {
       placeholdersFound: openclawPlaceholdersFound,
       cliInstalled: openclawCliInstalled,
       gatewayLoaded: openclawGatewayLoaded,
+      gatewayLabels: openclawGatewayLabels,
       details: openclawOk
         ? undefined
         : 'OpenClaw config/CLI/gateway is not fully configured',
@@ -184,22 +227,26 @@ router.get('/health', async (req: Request, res: Response) => {
     };
 
     // launchd core jobs
+    const requiredLaunchdJobs = getRequiredLaunchdJobs();
     const launchdSupported = process.platform === 'darwin' && commandExists('launchctl');
     const jobs: Record<string, boolean> = {};
     if (launchdSupported && loadedJobs) {
-      for (const job of REQUIRED_APPCAIRE_JOBS) {
+      for (const job of requiredLaunchdJobs) {
         jobs[job] = loadedJobs.has(job);
       }
     } else {
-      for (const job of REQUIRED_APPCAIRE_JOBS) {
+      for (const job of requiredLaunchdJobs) {
         jobs[job] = false;
       }
     }
     const launchdOk =
-      !launchdSupported || Object.values(jobs).every((isLoaded) => isLoaded);
+      !launchdSupported ||
+      requiredLaunchdJobs.length === 0 ||
+      Object.values(jobs).every((isLoaded) => isLoaded);
     const launchdCheck = {
       ok: launchdOk,
       supported: launchdSupported,
+      requiredJobs: requiredLaunchdJobs,
       jobs,
       details: launchdOk
         ? undefined

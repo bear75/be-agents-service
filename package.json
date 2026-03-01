@@ -23,6 +23,11 @@
     "start:hannes": "./scripts/start-hannes-dashboard.sh",
     "restart:hannes": "./scripts/restart-hannes-dashboard.sh",
     "verify:hannes": "./scripts/verify-hannes-stack.sh",
+    "hannes:dashboard:status": "./scripts/manage-hannes-dashboard-launchd.sh status",
+    "hannes:dashboard:install": "./scripts/manage-hannes-dashboard-launchd.sh install",
+    "openclaw:dual": "./scripts/openclaw/setup-dual-launchd.sh",
+    "openclaw:darwin:status": "./scripts/openclaw/manage-gateway-launchd.sh darwin status",
+    "openclaw:hannes:status": "./scripts/openclaw/manage-gateway-launchd.sh hannes status",
     "type-check": "yarn workspaces run type-check",
     "lint": "yarn workspaces run lint"
   },

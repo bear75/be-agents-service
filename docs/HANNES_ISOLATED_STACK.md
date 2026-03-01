@@ -20,11 +20,16 @@ This setup gives Hannes a fully isolated runtime on the same Mac mini while reus
 - `scripts/verify-hannes-stack.sh`
 - `scripts/setup-hannes-isolated-openclaw.sh`
 - `scripts/setup-hannes-isolated-stack.sh`
+- `scripts/manage-hannes-dashboard-launchd.sh`
+- `scripts/openclaw/manage-gateway-launchd.sh`
+- `scripts/openclaw/setup-dual-launchd.sh`
 
 Also added env-aware config/DB support:
 
 - `REPOS_CONFIG_PATH` for config source override
 - `AGENT_DB_PATH` for isolated SQLite file
+- `AGENT_JOBS_DIR` for isolated job metadata/log files
+- `PLAN_DOCS_ROOT` + `FILE_ACCESS_ALLOWED_PATHS` to prevent reading DARWIN plans/docs
 
 ---
 
@@ -49,6 +54,9 @@ source ~/.config/caire/env
 This will:
 - initialize/verify Hannes repo + workspace
 - configure isolated OpenClaw runtime at `~/.openclaw-hannes`
+- install dedicated launchd gateway services with separate labels:
+  - `com.appcaire.openclaw-darwin` (you)
+  - `com.appcaire.openclaw-hannes` (Hannes)
 - send Telegram test (unless `--no-test`)
 
 ### 2) Start isolated Hannes dashboard/API
@@ -57,10 +65,19 @@ This will:
 ./scripts/restart-hannes-dashboard.sh
 ```
 
+Or install as persistent launchd service:
+
+```bash
+./scripts/manage-hannes-dashboard-launchd.sh install
+```
+
 Runs with:
 - `PORT=3011`
 - `REPOS_CONFIG_PATH=config/repos.hannes.yaml`
 - `AGENT_DB_PATH=.compound-state/agent-service-hannes.db`
+- `AGENT_JOBS_DIR=.compound-state/running-jobs-hannes`
+- `OPENCLAW_CONFIG_PATH=~/.openclaw-hannes/openclaw.json`
+- `OPENCLAW_LAUNCHD_LABEL=com.appcaire.openclaw-hannes`
 - `APP_DISPLAY_NAME=Hannes AI`
 
 ### 3) Verify isolated stack
@@ -90,8 +107,31 @@ If triggered via the isolated dashboard API on port `3011`, those env vars are i
 
 ---
 
+## Managing gateways without cross-stop risk
+
+Use profile-specific commands only:
+
+```bash
+./scripts/openclaw/manage-gateway-launchd.sh darwin status
+./scripts/openclaw/manage-gateway-launchd.sh darwin restart
+
+./scripts/openclaw/manage-gateway-launchd.sh hannes status
+./scripts/openclaw/manage-gateway-launchd.sh hannes restart
+```
+
+Install both in one command:
+
+```bash
+./scripts/openclaw/setup-dual-launchd.sh
+```
+
+Do **not** use generic `openclaw gateway restart` for dual-stack mode, because it targets shared legacy labels and can switch the wrong config.
+
+---
+
 ## Notes
 
 - Primary DARWIN stack remains unchanged on port `3010`.
 - Hannes stack is intentionally separate on port `3011`.
 - Both stacks share the same repository code and prompts.
+- Hannes dashboard data isolation is enforced by separate repo config, DB, jobs dir, OpenClaw config path, and docs/file access scope.

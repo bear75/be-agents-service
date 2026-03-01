@@ -18,7 +18,13 @@ export const llmRouter = require(path.join(ROOT, 'lib/llm-router'));
 export const repositoryManager = require(path.join(ROOT, 'lib/repository-manager'));
 export const gamification = require(path.join(ROOT, 'lib/gamification'));
 
-const LOGS_DIR = path.join(ROOT, 'logs/orchestrator-sessions');
+const LOGS_DIR = (() => {
+  const override = (process.env.AGENT_SESSION_LOGS_DIR || '').trim();
+  if (!override) {
+    return path.join(ROOT, 'logs/orchestrator-sessions');
+  }
+  return path.isAbsolute(override) ? override : path.join(ROOT, override);
+})();
 
 export function getSessionLogs(sessionId: string): Record<string, string> {
   try {

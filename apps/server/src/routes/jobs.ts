@@ -6,7 +6,7 @@ import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 
 const router = Router();
 
-const DEFAULT_REPO_NAME = 'appcaire';
+const DEFAULT_REPO_NAME = process.env.DEFAULT_TARGET_REPO || 'appcaire';
 
 /** Resolve targetRepo: repo name → config path; absolute path used only if it exists (avoids paths from other machines). */
 function resolveTargetRepoPath(targetRepo: string | undefined): string {
@@ -37,6 +37,12 @@ router.get('/', (req, res) => {
 });
 
 router.post('/nightly/trigger', (req, res) => {
+  if ((process.env.ENABLE_NIGHTLY_TRIGGER || '').toLowerCase() === 'false') {
+    return res.status(403).json({
+      success: false,
+      message: 'Nightly trigger is disabled for this dashboard instance',
+    });
+  }
   const result = jobExecutor.triggerNightlyJob();
   res.status(result.success ? 200 : 500).json(result);
 });
