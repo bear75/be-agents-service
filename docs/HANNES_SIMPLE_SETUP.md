@@ -77,6 +77,8 @@ What this does:
 
 This will:
 - merge both IDs into `~/.openclaw/openclaw.json` `channels.telegram.allowFrom`
+- run `openclaw doctor --fix`
+- restart OpenClaw gateway
 - send a test message to each provided ID
 
 ### 4) Verify workspace mapping

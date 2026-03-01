@@ -101,10 +101,14 @@ if [[ -n "$OWNER_ID" || -n "$HANNES_ID" ]]; then
   [[ -n "$OWNER_ID" ]] && MERGED_IDS+=("$OWNER_ID")
   [[ -n "$HANNES_ID" ]] && MERGED_IDS+=("$HANNES_ID")
   if command -v openclaw >/dev/null 2>&1; then
+    log "Running OpenClaw doctor fix (safe no-op if already clean)"
+    openclaw doctor --fix >/dev/null || true
     IDS_JSON="$(printf '%s\n' "${MERGED_IDS[@]}" | jq -R . | jq -s .)"
     log "Updating Telegram allowFrom via openclaw config set"
     openclaw config set channels.telegram.allowFrom "$IDS_JSON" >/dev/null
     log "allowFrom => $(echo "$IDS_JSON" | jq -r 'join(", ")')"
+    log "Restarting OpenClaw gateway to apply allowFrom"
+    openclaw gateway restart >/dev/null || warn "OpenClaw gateway restart reported issues"
   else
     warn "OpenClaw CLI not found; skipping allowFrom update"
   fi
