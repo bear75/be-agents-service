@@ -53,3 +53,6 @@ temp/
 .compound-state/
 logs/orchestrator-sessions/
 logs/verification-sessions/
+
+# GitHub Actions runner (local setup, binaries > 100MB)
+actions-runner/

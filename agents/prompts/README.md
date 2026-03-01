@@ -11,9 +11,9 @@ To add or update prompts: create them here first, or copy from the target repo.
 
 ---
 
-## All 25 Agents vs Prompts
+## All 27 Agents vs Prompts
 
-`AGENT_TO_FILES` in `apps/server/src/routes/file.ts` maps each agent to a script and a prompt file. Script paths are `agents/{script}.sh`. Scripts and prompts now exist for **all 25 agents**.
+`AGENT_TO_FILES` in `apps/server/src/routes/file.ts` maps each agent to a script and a prompt file. Script paths are `agents/{script}.sh` or `agents/marketing/{script}.sh` or `agents/management/{script}.sh`. Scripts and prompts now exist for **all 27 agents**.
 
 ### Engineering (10) — all prompts exist
 
@@ -54,6 +54,13 @@ To add or update prompts: create them here first, or copy from the target repo.
 | agent-cpo-cto | management/cpo-cto | cpo-cto.md | ✅ |
 | agent-hr-lead | management/hr-agent-lead | hr-agent-lead.md | ✅ |
 | agent-interface | management/interface-agent | interface-agent.md | ✅ |
+
+### Schedule optimization (2) — all prompts exist
+
+| Agent ID | Script | Prompt file | Status |
+|----------|--------|-------------|--------|
+| agent-timefold-specialist | timefold-specialist | timefold-specialist.md | ✅ |
+| agent-optimization-mathematician | optimization-mathematician | optimization-mathematician.md | ✅ |
 
 ---
 

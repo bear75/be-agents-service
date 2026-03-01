@@ -22,7 +22,7 @@ yarn dev
 ## What This Repo Does
 
 - **Dashboard (port 3010):** Web UI for workspace, repos, plans, agents, logs
-- **Agent orchestration:** 23 specialists (engineering, marketing, management)
+- **Agent orchestration:** 27 agents across 4 teams (engineering, marketing, management, schedule-optimization)
 - **Compound automation:** Nightly learnings (10:30 PM), auto-implement (11:00 PM)
 
 ## How the agent service runs: Telegram + compound learning
@@ -42,10 +42,11 @@ See [docs/AGENT_WORKSPACE_STRUCTURE.md](docs/AGENT_WORKSPACE_STRUCTURE.md) for t
 
 ## Overview
 
-**Three agent teams (23 agents total):**
-- **Engineering (9 specialists):** Backend, Frontend, Infrastructure, Verification, DB Architect, UX Designer, Documentation Expert, Agent Levelup, Orchestrator
-- **Marketing (10 Marvel agents):** Jarvis, Shuri, Fury, Vision, Loki, Quill, Wanda, Pepper, Friday, Wong
-- **Management (4 executives):** CEO, CPO/CTO, CMO/CSO, HR Agent Lead
+**Four agent teams (27 agents total):**
+- **Engineering (10):** Orchestrator, Backend, Frontend, Infrastructure, Verification, Senior Reviewer, DB Architect, UX Designer, Documentation Expert, Agent Levelup
+- **Marketing (10):** Jarvis, Shuri, Fury, Vision, Loki, Quill, Wanda, Pepper, Friday, Wong
+- **Management (5):** CEO, CPO/CTO, CMO/CSO, HR Agent Lead, Interface Agent
+- **Schedule optimization (2):** Timefold Specialist, Optimization Mathematician
 
 **Human–agent interface:**
 - **Telegram (primary):** Inbox, session summaries, morning briefing, weekly review
@@ -92,6 +93,7 @@ yarn dev            # Build + dev with hot reload
 | Data flow | [docs/DATA_FLOW.md](docs/DATA_FLOW.md) |
 | Database access | [docs/DATABASE_ACCESS.md](docs/DATABASE_ACCESS.md) |
 | API reference | [docs/API_ENDPOINTS.md](docs/API_ENDPOINTS.md) |
+| Agents & teams (DB vs disk) | [docs/AGENTS_AND_TEAMS_DATA.md](docs/AGENTS_AND_TEAMS_DATA.md) |
 
 ## Run latest agent code on the Mac mini
 
@@ -132,7 +134,9 @@ be-agents-service/
 │   ├── backend-specialist.sh        # Engineering: Database, GraphQL, resolvers
 │   ├── frontend-specialist.sh       # Engineering: UI, codegen, operations
 │   ├── infrastructure-specialist.sh # Engineering: Packages, configs, docs
-│   └── verification-specialist.sh   # Engineering: Quality gate
+│   ├── verification-specialist.sh   # Engineering: Quality gate
+│   ├── timefold-specialist.sh       # Schedule optimization: FSR jobs, metrics
+│   └── ... (see agents/prompts/README.md for all 27 agents)
 ├── scripts/
 │   ├── compound/                    # Auto-compound, daily review, loop (see docs/AGENT_WORKSPACE_STRUCTURE.md)
 │   │   ├── auto-compound.sh         # 11:00 PM - Auto-implement
@@ -239,11 +243,12 @@ vim ~/Library/LaunchAgents/com.appcaire.*.plist
 **Real-time monitoring at http://localhost:3010**
 
 ```bash
-# Start dashboard
+# Start dashboard (from repo root)
 cd ~/HomeCare/be-agents-service
-./dashboard/start.sh
+yarn start
+# or: yarn dev  (with hot reload)
 
-# Auto-starts on boot via LaunchAgent
+# Auto-starts on boot via LaunchAgent (com.appcaire.dashboard)
 ```
 
 Features:

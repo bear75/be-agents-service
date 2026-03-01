@@ -2,7 +2,9 @@
 
 ## ⚠️ Critical Safety Information
 
-The compound workflow scripts (`daily-compound-review.sh` and `auto-compound.sh`) are **SCHEDULED TO RUN AUTOMATICALLY** every night. They have been designed with safety checks to prevent data loss.
+The compound workflow scripts (`daily-compound-review.sh` and `auto-compound.sh`) are **SCHEDULED TO RUN AUTOMATICALLY** every night (when launchd jobs are loaded). They have been designed with safety checks to prevent data loss.
+
+**Scope:** When you run a script with a repo name (e.g. `./scripts/compound/auto-compound.sh beta-appcaire`), all branch and file checks apply to **that target repo**, not be-agents-service. See [README.md](README.md) for script usage and file paths.
 
 ## Schedule
 
@@ -94,17 +96,19 @@ The scripts will then run safely.
 
 ## Manual Execution
 
-You can run these scripts manually anytime:
+Run from **be-agents-service** repo root; pass the **target repo name** (e.g. `beta-appcaire`) so the script knows which repo to operate on:
 
 ```bash
-# Run daily review
-./scripts/compound/daily-compound-review.sh
+cd ~/HomeCare/be-agents-service
 
-# Run auto-compound
-./scripts/compound/auto-compound.sh
+# Run daily review (target repo from config or argument)
+./scripts/compound/daily-compound-review.sh <repo-name>
+
+# Run auto-compound (creates branch + PR in target repo)
+./scripts/compound/auto-compound.sh <repo-name>
 ```
 
-The same safety checks apply - they will abort if it's not safe.
+The same safety checks apply to the **target repo** (main branch, clean tree)—they will abort if it's not safe. To test safety logic without creating a branch/PR, use `./scripts/compound/test-safety.sh`.
 
 ## Troubleshooting
 
@@ -147,14 +151,14 @@ git push
 git checkout main
 ```
 
-### "No reports found in reports/ directory"
+### "No reports found" / "No priorities"
 
-**Cause:** The auto-compound script expects priority reports in `reports/` directory after resetting to main.
+**Cause:** The auto-compound script reads priority #1 from the target repo’s workspace or `reports/` (see root README "Priority Reports"). If workspace has no `priorities.md` and the repo has no (or empty) `reports/*.md` on main, the script exits.
 
 **Fix:**
 
-1. Ensure priority reports are committed to main branch (e.g. `reports/priorities-2026-01-31.md`)
-2. Keep the reports directory up-to-date with current priorities
+1. Ensure priority reports exist in the target repo and are committed to main (e.g. `reports/priorities-2026-01-31.md`), or use the shared workspace `priorities.md` for that context.
+2. If compound is "on hold", merge the reports (or priorities) to main and reload launchd jobs (see [README.md](README.md) "Agent on hold").
 
 ## Historical Context
 

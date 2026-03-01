@@ -128,7 +128,7 @@ Agents communicate via JSON state files:
 
 ## Dashboard Integration
 
-Marketing agents appear in dashboard at http://localhost:3030
+Marketing agents appear in dashboard at http://localhost:3010
 
 **View session state:**
 ```bash
@@ -185,11 +185,10 @@ GET /api/sessions/session-marketing-123
 ### Add New Marketing Agent
 
 1. Create agent script in `agents/marketing/`
-2. Create prompt in `.claude/prompts/marketing/`
-3. Add to Jarvis orchestrator logic
+2. Create prompt in `agents/prompts/` (see `agents/prompts/README.md` for lookup order)
+3. Add entry to `AGENT_TO_FILES` in `apps/server/src/routes/file.ts` and add agent to DB (e.g. `schema.sql`)
 4. Update AGENTS_REGISTRY.md
-5. Test individual agent
-6. Test orchestrated workflow
+5. Test individual agent and orchestrated workflow
 
 ### Add New Marketing Domain
 
@@ -207,23 +206,29 @@ Example: Add "webinars" domain
 ```
 agents/marketing/
 ├── README.md                      # This file
-├── AGENTS_REGISTRY.md             # Full agent details
-├── jarvis-orchestrator.sh         # Main orchestrator
+├── AGENTS_REGISTRY.md             # Full agent details (all 10 agents)
+├── jarvis-orchestrator.sh         # Squad lead orchestrator
 ├── vision-seo-analyst.sh          # SEO specialist
-├── shuri-product-analyst.sh       # Product analyst (TODO)
-├── fury-customer-researcher.sh    # Customer research (TODO)
-├── loki-content-writer.sh         # Content writer (TODO)
-├── quill-social-media.sh          # Social media (TODO)
-├── wanda-designer.sh              # Designer (TODO)
-├── pepper-email-marketing.sh      # Email marketing (TODO)
-├── friday-developer.sh            # Developer (TODO)
-└── wong-notion-agent.sh           # Notion agent (TODO)
+├── shuri-product-analyst.sh       # Product analyst
+├── fury-customer-researcher.sh    # Customer researcher
+├── loki-content-writer.sh         # Content writer
+├── quill-social-media.sh         # Social media manager
+├── wanda-designer.sh              # Designer
+├── pepper-email-marketing.sh      # Email marketing
+├── friday-developer.sh            # Developer
+└── wong-notion-agent.sh           # Notion agent
 
-.claude/prompts/marketing/
-├── jarvis-orchestrator.md         # Jarvis system prompt (TODO)
-├── vision-seo.md                  # Vision system prompt (TODO)
-├── shuri-product.md               # Shuri system prompt (TODO)
-└── ... (other prompts)
+agents/prompts/                   # System prompts (souls) for all agents
+├── jarvis-orchestrator.md
+├── vision-seo-analyst.md
+├── shuri-product-analyst.md
+├── fury-customer-researcher.md
+├── loki-content-writer.md
+├── quill-social-media.md
+├── wanda-designer.md
+├── pepper-email-marketing.md
+├── friday-developer.md
+└── wong-notion-agent.md
 ```
 
 ---
@@ -233,8 +238,8 @@ agents/marketing/
 | Feature | Engineering Agents | Marketing Agents |
 |---------|-------------------|------------------|
 | **Domain** | Code, DB, Infrastructure | Content, SEO, Design |
-| **Orchestrator** | Orchestrator.sh | Jarvis.sh |
-| **Agents** | 4 specialists | 10 specialists |
+| **Orchestrator** | orchestrator.sh | jarvis-orchestrator.sh |
+| **Agents** | 10 (orchestrator + 9 specialists) | 10 (Jarvis + 9 specialists) |
 | **Personalities** | Functional | Marvel characters |
 | **Parallel execution** | ✅ Backend + Infra | ✅ Research agents |
 | **Verification** | ✅ Type-check, build | TBD (content quality) |
@@ -245,14 +250,11 @@ agents/marketing/
 
 ## Next Steps
 
-1. Complete remaining agent scripts
-2. Create all system prompts
-3. Test individual agents
-4. Test full orchestration
-5. Enhance dashboard for marketing view
-6. Add to nightly automation (optional)
-7. Create marketing priority templates
+1. Test individual agents and full orchestration
+2. Enhance dashboard for marketing-specific view
+3. Add to nightly automation (optional)
+4. Create marketing priority templates
 
 ---
 
-See **AGENTS_REGISTRY.md** for full agent details and **../COMPARISON.md** for system comparison.
+See **AGENTS_REGISTRY.md** for full agent details. For repo-wide agent/team count (4 teams, 27 agents), see root **README.md** and **docs/AGENTS_AND_TEAMS_DATA.md**.
