@@ -117,6 +117,20 @@ However, with one shared default gateway/workspace, Telegram context is not full
 
 ---
 
+## Rescue (bot receives but does not reply)
+
+If Telegram test sends work but bot does not answer inbound messages, run this one-shot runtime reset:
+
+```bash
+cd ~/HomeCare/be-agents-service
+source ~/.config/caire/env
+./scripts/reset-openclaw-runtime.sh 8399128208 7604480012
+```
+
+This resets stale OpenClaw runtime state and launchd jobs, reapplies modern config, restarts gateway, and sends test messages.
+
+---
+
 ## Operator checklist
 
 - [ ] `config/repos.yaml` has `hannes-projects` pointing to `strength-stride-coach` + `hannes-space`
