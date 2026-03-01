@@ -33,6 +33,8 @@ The agent service orchestrates Claude Code automation workflows across multiple 
 - **Web Dashboard**: Unified dashboard at http://localhost:3030 (React + classic HTML)
 - **Scheduled Automation**: LaunchD integration for nightly workflows
 
+**Compound runs on the Mac mini server.** Nightly compound (and any compound triggered via the dashboard or API) is executed by the agents on the Mac mini; the dashboard can be used from other machines to trigger or monitor, but the actual run (strategy, engineering, marketing) happens on the Mac mini.
+
 **No WhatsApp.** The WhatsApp bot was removed. It sent error messages to everyone who messaged. Use **Telegram only**. Do not re-enable WhatsApp. Script `scripts/kill-all-claw.sh` disables WhatsApp only and leaves Telegram running.
 
 ### Key Principle: Separation of Concerns

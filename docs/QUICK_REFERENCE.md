@@ -20,6 +20,8 @@ yarn stack:status:telegram  # Send status summary to Telegram
 
 ## Schedules
 
+Compound runs on the **Mac mini server** (agents execute there). Dashboard/API can trigger or monitor from elsewhere.
+
 | Time | Script | Purpose |
 |------|--------|---------|
 | 10:30 PM | daily-compound-review.sh | Extract learnings, update CLAUDE.md |

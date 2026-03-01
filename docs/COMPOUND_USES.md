@@ -2,6 +2,8 @@
 
 One place to see what the compound job (priority #1 → PR) actually uses: agents, teams, prompts, gamification.
 
+**Where it runs:** Compound is executed on the **Mac mini server** by the agents (nightly or when triggered from the dashboard/API). The dashboard may be opened from other machines to start or monitor runs; the actual strategy, engineering, and marketing phases run on the Mac mini.
+
 ---
 
 ## Single job type: compound is the only run
