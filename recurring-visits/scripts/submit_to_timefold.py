@@ -151,6 +151,67 @@ def poll_until_done(plan_id: str, api_key: str) -> dict:
     raise RuntimeError("Timeout waiting for solve to complete.")
 
 
+def _short_run_id(raw_id: str) -> str:
+    if "-" in raw_id:
+        return raw_id.split("-", 1)[0]
+    return raw_id[:8]
+
+
+def _map_solver_status_to_run_status(solver_status: str | None) -> str:
+    status = (solver_status or "").upper().strip()
+    if status in {"SOLVING_COMPLETED", "COMPLETED"}:
+        return "completed"
+    if status in {"SOLVING_FAILED", "SOLVING_INCOMPLETE", "FAILED", "INCOMPLETE"}:
+        return "failed"
+    if status in {"CANCELLED", "CANCELED"}:
+        return "cancelled"
+    if status in {"SOLVING_SCHEDULED", "SCHEDULED", "QUEUED", "PENDING"}:
+        return "queued"
+    if status in {"SOLVING_ACTIVE", "ACTIVE", "RUNNING"}:
+        return "running"
+    return "running"
+
+
+def _register_run_in_darwin(
+    args: argparse.Namespace,
+    plan_id: str,
+    status: str,
+    score: str | None = None,
+) -> None:
+    if getattr(args, "no_register_darwin", False):
+        return
+    darwin_api = (getattr(args, "darwin_api", None) or "").strip()
+    if not darwin_api:
+        return
+    run_id = _short_run_id(plan_id)
+    payload = {
+        "id": run_id,
+        "route_plan_id": plan_id,
+        "dataset": getattr(args, "dataset", None) or "huddinge-2w-expanded",
+        "batch": getattr(args, "batch", None) or datetime.now().strftime("%d-%b").lower(),
+        "algorithm": getattr(args, "algorithm", None) or run_id,
+        "strategy": getattr(args, "strategy", None)
+        or ("from-patch" if args.mode == "from-patch" else "fresh-solve"),
+        "hypothesis": getattr(args, "hypothesis", None),
+        "status": status,
+        "timefold_score": score,
+        "output_path": str(args.save) if getattr(args, "save", None) else None,
+        "notes": getattr(args, "notes", None),
+    }
+    url = f"{darwin_api.rstrip('/')}/api/schedule-runs/register"
+    try:
+        r = requests.post(url, headers={"Content-Type": "application/json"}, json=payload, timeout=10)
+        if r.status_code >= 400:
+            print(
+                f"Warning: Darwin register failed ({r.status_code}): {r.text[:220]}",
+                file=sys.stderr,
+            )
+            return
+        print(f"Darwin run synced: {run_id} ({status})")
+    except requests.RequestException as e:
+        print(f"Warning: Darwin register request failed: {e}", file=sys.stderr)
+
+
 def main() -> int:
     _bootstrap_env()
 
@@ -186,6 +247,30 @@ def main() -> int:
             "--api-key",
             default=None,
             help="Timefold API key (default: TIMEFOLD_API_KEY env or ~/.config/caire/env).",
+        )
+        p.add_argument(
+            "--dataset",
+            default=os.environ.get("TIMEFOLD_DATASET", "huddinge-2w-expanded"),
+            help="Schedule dataset label for Darwin dashboard row.",
+        )
+        p.add_argument(
+            "--batch",
+            default=os.environ.get("TIMEFOLD_BATCH", datetime.now().strftime("%d-%b").lower()),
+            help="Batch label for Darwin dashboard row (e.g. 28-feb).",
+        )
+        p.add_argument("--algorithm", default=None, help="Algorithm label for Darwin schedule run row.")
+        p.add_argument("--strategy", default=None, help="Strategy label for Darwin schedule run row.")
+        p.add_argument("--hypothesis", default=None, help="Hypothesis text for Darwin schedule run row.")
+        p.add_argument("--notes", default=None, help="Optional notes for Darwin schedule run row.")
+        p.add_argument(
+            "--darwin-api",
+            default=os.environ.get("DARWIN_API", "http://localhost:3010"),
+            help="Darwin dashboard base URL for run registration.",
+        )
+        p.add_argument(
+            "--no-register-darwin",
+            action="store_true",
+            help="Do not POST run state to Darwin /api/schedule-runs/register.",
         )
     patch_p.add_argument("--save-id", type=Path, default=None, help="Write new route plan ID to this file (from-patch only).")
 
@@ -264,6 +349,17 @@ def main() -> int:
         ap.print_help()
         return 1
 
+    initial_solver_status = (
+        (resp.get("metadata") or {}).get("solverStatus")
+        or resp.get("solverStatus")
+        or "SOLVING_SCHEDULED"
+    )
+    _register_run_in_darwin(
+        args,
+        plan_id,
+        _map_solver_status_to_run_status(initial_solver_status),
+    )
+
     if args.wait:
         print(f"\nPolling for completion (route plan: {plan_id})...")
         try:
@@ -276,6 +372,12 @@ def main() -> int:
         status = meta.get("solverStatus", "?")
         score = meta.get("score", "?")
         print(f"\nDone. Status: {status}, Score: {score}")
+        _register_run_in_darwin(
+            args,
+            plan_id,
+            _map_solver_status_to_run_status(status),
+            str(score) if score is not None else None,
+        )
 
         if args.save:
             args.save.parent.mkdir(parents=True, exist_ok=True)

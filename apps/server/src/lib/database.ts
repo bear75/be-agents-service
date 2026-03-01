@@ -641,6 +641,7 @@ export function upsertScheduleRun(run: Partial<ScheduleRun> & { id: string }): v
       continuity_over_target, continuity_target,
       input_shifts, input_shift_hours, output_shifts_trimmed, output_shift_hours_trimmed,
       shift_hours_total, shift_hours_idle, efficiency_total_pct, efficiency_trimmed_pct,
+      submitted_at, started_at, completed_at, cancelled_at, duration_seconds,
       output_path, notes, iteration
     ) VALUES (
       @id, @dataset, @batch, @algorithm, @strategy, @hypothesis, @status,
@@ -650,6 +651,7 @@ export function upsertScheduleRun(run: Partial<ScheduleRun> & { id: string }): v
       @continuity_over_target, @continuity_target,
       @input_shifts, @input_shift_hours, @output_shifts_trimmed, @output_shift_hours_trimmed,
       @shift_hours_total, @shift_hours_idle, @efficiency_total_pct, @efficiency_trimmed_pct,
+      @submitted_at, @started_at, @completed_at, @cancelled_at, @duration_seconds,
       @output_path, @notes, @iteration
     )
     ON CONFLICT(id) DO UPDATE SET
@@ -666,6 +668,11 @@ export function upsertScheduleRun(run: Partial<ScheduleRun> & { id: string }): v
       output_shifts_trimmed=excluded.output_shifts_trimmed, output_shift_hours_trimmed=excluded.output_shift_hours_trimmed,
       shift_hours_total=excluded.shift_hours_total, shift_hours_idle=excluded.shift_hours_idle,
       efficiency_total_pct=excluded.efficiency_total_pct, efficiency_trimmed_pct=excluded.efficiency_trimmed_pct,
+      submitted_at=COALESCE(excluded.submitted_at, schedule_runs.submitted_at),
+      started_at=COALESCE(excluded.started_at, schedule_runs.started_at),
+      completed_at=COALESCE(excluded.completed_at, schedule_runs.completed_at),
+      cancelled_at=COALESCE(excluded.cancelled_at, schedule_runs.cancelled_at),
+      duration_seconds=COALESCE(excluded.duration_seconds, schedule_runs.duration_seconds),
       output_path=excluded.output_path, notes=excluded.notes, iteration=excluded.iteration
   `);
   stmt.run({
@@ -697,6 +704,11 @@ export function upsertScheduleRun(run: Partial<ScheduleRun> & { id: string }): v
     shift_hours_idle: run.shift_hours_idle ?? null,
     efficiency_total_pct: run.efficiency_total_pct ?? null,
     efficiency_trimmed_pct: run.efficiency_trimmed_pct ?? null,
+    submitted_at: run.submitted_at ?? null,
+    started_at: run.started_at ?? null,
+    completed_at: run.completed_at ?? null,
+    cancelled_at: run.cancelled_at ?? null,
+    duration_seconds: run.duration_seconds ?? null,
     output_path: run.output_path ?? null,
     notes: run.notes ?? null,
     iteration: run.iteration ?? 1,

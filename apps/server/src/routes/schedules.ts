@@ -272,6 +272,108 @@ router.get('/import-from-appcaire', (req: Request, res: Response) => {
   }
 });
 
+/**
+ * Register or update a run row directly (used by live submit/poll scripts).
+ * This allows in-progress runs to appear before folder-based import.
+ */
+router.post('/register', (req: Request, res: Response) => {
+  try {
+    const body = (req.body ?? {}) as Partial<ScheduleRun> & {
+      route_plan_id?: string;
+      batch?: string;
+      algorithm?: string;
+      strategy?: string;
+      notes?: string;
+      timefold_score?: string;
+    };
+
+    const rawId = String(body.id ?? '').trim();
+    if (!rawId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required field: id',
+      });
+    }
+
+    const id = rawId.includes('-') ? rawId.split('-')[0] : rawId;
+    const now = new Date().toISOString();
+    const allowedStatuses = new Set(['queued', 'running', 'completed', 'cancelled', 'failed']);
+    const status = String(body.status ?? 'queued');
+    if (!allowedStatuses.has(status)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid status '${status}'. Allowed: ${Array.from(allowedStatuses).join(', ')}`,
+      });
+    }
+
+    const existing = getScheduleRunById(id);
+    const routePlanId = String(body.route_plan_id ?? rawId).trim();
+    const noteParts = [
+      String(body.notes ?? '').trim(),
+      routePlanId && routePlanId !== id ? `route_plan_id=${routePlanId}` : '',
+    ].filter(Boolean);
+
+    upsertScheduleRun({
+      id,
+      dataset: body.dataset ?? existing?.dataset ?? DEFAULT_DATASET,
+      batch: body.batch ?? existing?.batch ?? new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }).replace(' ', '-').toLowerCase(),
+      algorithm: body.algorithm ?? existing?.algorithm ?? id,
+      strategy: body.strategy ?? existing?.strategy ?? 'manual-submit',
+      hypothesis: body.hypothesis ?? existing?.hypothesis ?? null,
+      status: status as ScheduleRun['status'],
+      decision: body.decision ?? existing?.decision ?? null,
+      decision_reason: body.decision_reason ?? existing?.decision_reason ?? null,
+      timefold_score: body.timefold_score ?? existing?.timefold_score ?? null,
+      routing_efficiency_pct: body.routing_efficiency_pct ?? existing?.routing_efficiency_pct ?? null,
+      unassigned_visits: body.unassigned_visits ?? existing?.unassigned_visits ?? null,
+      total_visits: body.total_visits ?? existing?.total_visits ?? null,
+      unassigned_pct: body.unassigned_pct ?? existing?.unassigned_pct ?? null,
+      continuity_avg: body.continuity_avg ?? existing?.continuity_avg ?? null,
+      continuity_median: body.continuity_median ?? existing?.continuity_median ?? null,
+      continuity_visit_weighted_avg: body.continuity_visit_weighted_avg ?? existing?.continuity_visit_weighted_avg ?? null,
+      continuity_max: body.continuity_max ?? existing?.continuity_max ?? null,
+      continuity_over_target: body.continuity_over_target ?? existing?.continuity_over_target ?? null,
+      continuity_target: body.continuity_target ?? existing?.continuity_target ?? CONTINUITY_TARGET,
+      input_shifts: body.input_shifts ?? existing?.input_shifts ?? null,
+      input_shift_hours: body.input_shift_hours ?? existing?.input_shift_hours ?? null,
+      output_shifts_trimmed: body.output_shifts_trimmed ?? existing?.output_shifts_trimmed ?? null,
+      output_shift_hours_trimmed: body.output_shift_hours_trimmed ?? existing?.output_shift_hours_trimmed ?? null,
+      shift_hours_total: body.shift_hours_total ?? existing?.shift_hours_total ?? null,
+      shift_hours_idle: body.shift_hours_idle ?? existing?.shift_hours_idle ?? null,
+      efficiency_total_pct: body.efficiency_total_pct ?? existing?.efficiency_total_pct ?? null,
+      efficiency_trimmed_pct: body.efficiency_trimmed_pct ?? existing?.efficiency_trimmed_pct ?? null,
+      submitted_at: body.submitted_at ?? existing?.submitted_at ?? now,
+      started_at:
+        body.started_at
+        ?? existing?.started_at
+        ?? (status === 'running' ? now : null),
+      completed_at:
+        body.completed_at
+        ?? existing?.completed_at
+        ?? (status === 'completed' || status === 'failed' ? now : null),
+      cancelled_at:
+        body.cancelled_at
+        ?? existing?.cancelled_at
+        ?? (status === 'cancelled' ? now : null),
+      duration_seconds: body.duration_seconds ?? existing?.duration_seconds ?? null,
+      output_path: body.output_path ?? existing?.output_path ?? null,
+      notes: noteParts.length > 0 ? noteParts.join(' | ') : (existing?.notes ?? null),
+      iteration: body.iteration ?? existing?.iteration ?? 1,
+    });
+
+    const run = getScheduleRunById(id);
+    res.json({
+      success: true,
+      data: { run },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to register run',
+    });
+  }
+});
+
 router.get('/', (req: Request, res: Response) => {
   try {
     const dataset = req.query.dataset as string | undefined;
