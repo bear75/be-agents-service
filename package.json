@@ -20,6 +20,9 @@
     "build:dashboard:copy": "cp apps/dashboard/dist/index.html apps/server/public/index.html && cp -r apps/dashboard/dist/assets apps/server/public/ 2>/dev/null || true",
     "build:unified": "yarn build:dashboard && yarn build:dashboard:copy",
     "restart": "./scripts/restart-darwin.sh",
+    "start:hannes": "./scripts/start-hannes-dashboard.sh",
+    "restart:hannes": "./scripts/restart-hannes-dashboard.sh",
+    "verify:hannes": "./scripts/verify-hannes-stack.sh",
     "type-check": "yarn workspaces run type-check",
     "lint": "yarn workspaces run lint"
   },

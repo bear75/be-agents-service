@@ -24,7 +24,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AGENTS_DIR="$SERVICE_ROOT/agents"
-CONFIG_FILE="$SERVICE_ROOT/config/repos.yaml"
+CONFIG_FILE="${REPOS_CONFIG_PATH:-$SERVICE_ROOT/config/repos.yaml}"
+CONFIG_FILE="${CONFIG_FILE/#\~/$HOME}"
 
 PARALLEL=4
 MAX_ITERS=20

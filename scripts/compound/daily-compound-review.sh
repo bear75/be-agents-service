@@ -12,8 +12,9 @@ REPO_NAME="${1:-beta-appcaire}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Load repo configuration from config/repos.yaml
-CONFIG_FILE="$SERVICE_ROOT/config/repos.yaml"
+# Load repo configuration from config/repos.yaml (override via REPOS_CONFIG_PATH)
+CONFIG_FILE="${REPOS_CONFIG_PATH:-$SERVICE_ROOT/config/repos.yaml}"
+CONFIG_FILE="${CONFIG_FILE/#\~/$HOME}"
 
 if [ ! -f "$CONFIG_FILE" ]; then
   echo "❌ Config file not found: $CONFIG_FILE"

@@ -1,5 +1,5 @@
 import { readFileSync, existsSync } from 'fs';
-import { resolve, dirname } from 'path';
+import { resolve, dirname, isAbsolute } from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
 import type { ReposConfig, RepoConfig } from '../types/index.js';
@@ -10,8 +10,16 @@ const __dirname = dirname(__filename);
 // Service root is three levels up from apps/server/src/lib
 const SERVICE_ROOT = resolve(__dirname, '..', '..', '..', '..');
 
+function resolveReposConfigPath(): string {
+  const override = (process.env.REPOS_CONFIG_PATH || '').trim();
+  if (!override) {
+    return resolve(SERVICE_ROOT, 'config', 'repos.yaml');
+  }
+  return isAbsolute(override) ? override : resolve(SERVICE_ROOT, override);
+}
+
 export function loadReposConfig(): ReposConfig {
-  const configPath = resolve(SERVICE_ROOT, 'config', 'repos.yaml');
+  const configPath = resolveReposConfigPath();
 
   if (!existsSync(configPath)) {
     throw new Error(`Config file not found: ${configPath}`);
