@@ -6,6 +6,7 @@
 #   ./scripts/notifications/send-telegram-test.sh
 #   ./scripts/notifications/send-telegram-test.sh --ids 8399128208 7604480012
 #   ./scripts/notifications/send-telegram-test.sh --ids 8399128208 --label "post-restart"
+#   ./scripts/notifications/send-telegram-test.sh --token "<bot-token>" --ids 8399128208
 #
 
 set -euo pipefail
@@ -13,6 +14,7 @@ set -euo pipefail
 ENV_FILE="$HOME/.config/caire/env"
 LABEL="manual"
 IDS=()
+BOT_TOKEN_OVERRIDE=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -27,6 +29,10 @@ while [[ $# -gt 0 ]]; do
       LABEL="${2:-manual}"
       shift 2
       ;;
+    --token)
+      BOT_TOKEN_OVERRIDE="${2:-}"
+      shift 2
+      ;;
     -h|--help)
       cat <<'EOF'
 Usage: ./scripts/notifications/send-telegram-test.sh [options]
@@ -34,6 +40,7 @@ Usage: ./scripts/notifications/send-telegram-test.sh [options]
 Options:
   --ids <id1> [id2 ...]   One or more Telegram chat IDs
   --label <text>          Label to include in message (default: manual)
+  --token <bot-token>     Override TELEGRAM_BOT_TOKEN for this run
   -h, --help              Show this help
 EOF
       exit 0
@@ -48,6 +55,10 @@ done
 if [[ -f "$ENV_FILE" ]]; then
   # shellcheck source=/dev/null
   source "$ENV_FILE" || true
+fi
+
+if [[ -n "$BOT_TOKEN_OVERRIDE" ]]; then
+  TELEGRAM_BOT_TOKEN="$BOT_TOKEN_OVERRIDE"
 fi
 
 if [[ -z "${TELEGRAM_BOT_TOKEN:-}" ]]; then

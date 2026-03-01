@@ -9,6 +9,7 @@
 #   ./scripts/setup-hannes-simple.sh
 #   ./scripts/setup-hannes-simple.sh --owner-id 8399128208 --hannes-id 7604480012 --send-telegram-test
 #   ./scripts/setup-hannes-simple.sh hannes-projects --owner-id 8399128208 --hannes-id 7604480012
+#   ./scripts/setup-hannes-simple.sh --owner-id 8399128208 --hannes-id 7604480012 --send-telegram-test --telegram-token "<bot-token>"
 #
 
 set -euo pipefail
@@ -23,6 +24,7 @@ REPO_KEY="${1:-hannes-projects}"
 OWNER_ID=""
 HANNES_ID=""
 SEND_TELEGRAM_TEST=false
+TELEGRAM_TOKEN=""
 
 if [[ "$REPO_KEY" == "--owner-id" || "$REPO_KEY" == "--hannes-id" || "$REPO_KEY" == "--send-telegram-test" ]]; then
   REPO_KEY="hannes-projects"
@@ -41,6 +43,10 @@ while [[ $# -gt 0 ]]; do
     --send-telegram-test)
       SEND_TELEGRAM_TEST=true
       shift
+      ;;
+    --telegram-token)
+      TELEGRAM_TOKEN="${2:-}"
+      shift 2
       ;;
     hannes-projects)
       REPO_KEY="$1"
@@ -83,9 +89,15 @@ if [[ ! -d "$REPO_PATH/.git" ]]; then
   log "Local repo not found at $REPO_PATH; cloning..."
   mkdir -p "$(dirname "$REPO_PATH")"
   if command -v gh >/dev/null 2>&1; then
-    gh repo clone "$GITHUB_OWNER/$GITHUB_REPO" "$REPO_PATH" || fail "gh clone failed for $GITHUB_OWNER/$GITHUB_REPO"
+    if ! gh repo clone "$GITHUB_OWNER/$GITHUB_REPO" "$REPO_PATH"; then
+      warn "gh clone failed for $GITHUB_OWNER/$GITHUB_REPO (continuing in workspace-only mode)"
+      mkdir -p "$REPO_PATH"
+    fi
   else
-    git clone "https://github.com/$GITHUB_OWNER/$GITHUB_REPO.git" "$REPO_PATH" || fail "git clone failed for $GITHUB_OWNER/$GITHUB_REPO"
+    if ! git clone "https://github.com/$GITHUB_OWNER/$GITHUB_REPO.git" "$REPO_PATH"; then
+      warn "git clone failed for $GITHUB_OWNER/$GITHUB_REPO (continuing in workspace-only mode)"
+      mkdir -p "$REPO_PATH"
+    fi
   fi
 else
   log "Local repo exists: $REPO_PATH"
@@ -123,7 +135,11 @@ if [[ "$SEND_TELEGRAM_TEST" == "true" ]]; then
     fail "--send-telegram-test requires --owner-id and/or --hannes-id"
   fi
   log "Sending Telegram test message to: ${TEST_IDS[*]}"
-  "$TELEGRAM_TEST_SCRIPT" --ids "${TEST_IDS[@]}" --label "hannes-simple-setup"
+  TELEGRAM_CMD=("$TELEGRAM_TEST_SCRIPT" --ids "${TEST_IDS[@]}" --label "hannes-simple-setup")
+  if [[ -n "$TELEGRAM_TOKEN" ]]; then
+    TELEGRAM_CMD+=(--token "$TELEGRAM_TOKEN")
+  fi
+  "${TELEGRAM_CMD[@]}"
 fi
 
 log "Done."
