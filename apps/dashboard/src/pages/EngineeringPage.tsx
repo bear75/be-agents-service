@@ -50,16 +50,17 @@ export function EngineeringPage() {
     setStarting(true);
     setError(null);
     try {
-      const sessionId = `session-${Date.now()}`;
       const teamId = await getEngineeringTeamId();
+      let sessionId: string | undefined;
       if (teamId) {
+        sessionId = `session-${Date.now()}`;
         await createSession({ sessionId, teamId, targetRepo: form.targetRepo });
       }
       await startJob({
         team: form.team,
         targetRepo: form.targetRepo,
         model: form.model,
-        sessionId,
+        ...(sessionId !== undefined && { sessionId }),
       });
       load();
     } catch (e) {
