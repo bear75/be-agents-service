@@ -17,6 +17,17 @@ SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 USER_ID_ARG=""
 SEND_TEST=false
 
+replace_placeholder() {
+  local file="$1"
+  local search="$2"
+  local replace="$3"
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    sed -i '' "s|$search|$replace|g" "$file"
+  else
+    sed -i "s|$search|$replace|g" "$file"
+  fi
+}
+
 for arg in "$@"; do
   if [[ "$arg" == "--test" ]]; then
     SEND_TEST=true
@@ -41,8 +52,7 @@ fi
 if grep -q "YOUR_TELEGRAM_USER_ID" "$CONFIG"; then
   if [[ -n "$USER_ID_ARG" ]]; then
     echo "Updating config with your Telegram user ID: $USER_ID_ARG"
-    # Use sed to replace the placeholder (macOS compatible)
-    sed -i '' "s/\"YOUR_TELEGRAM_USER_ID\"/\"$USER_ID_ARG\"/g" "$CONFIG"
+    replace_placeholder "$CONFIG" "\"YOUR_TELEGRAM_USER_ID\"" "\"$USER_ID_ARG\""
     echo "✅ Updated allowFrom with your user ID"
   else
     echo "❌ Telegram user ID is still the placeholder."

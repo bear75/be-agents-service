@@ -9,6 +9,12 @@ Multi-agent autonomous service for software development and marketing automation
 yarn start
 # or with hot reload:
 yarn dev
+
+# Verify dashboard + OpenClaw + Telegram + launchd setup
+./scripts/verify-all-services.sh --send-telegram-test
+
+# macOS only: (re)load all launchd services + run verification
+./scripts/start-all-services.sh --send-telegram-test
 ```
 
 **Dashboard:** http://localhost:3010
