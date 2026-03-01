@@ -40,6 +40,25 @@ const STATIC_DIR = path.join(__dirname, '..', 'public');
 
 const PORT = process.env.PORT || process.env.DASHBOARD_PORT || 3010;
 const APP_DISPLAY_NAME = process.env.APP_DISPLAY_NAME || 'Darwin';
+const DISABLED_DASHBOARD_MODULES = new Set(
+  (process.env.DISABLED_DASHBOARD_MODULES || '')
+    .split(',')
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean),
+);
+
+function isModuleDisabled(moduleName: string): boolean {
+  return DISABLED_DASHBOARD_MODULES.has(moduleName.toLowerCase());
+}
+
+function disabledModuleHandler(moduleName: string) {
+  return (_req: express.Request, res: express.Response) => {
+    res.status(403).json({
+      success: false,
+      error: `${moduleName} module is disabled for this dashboard instance`,
+    });
+  };
+}
 
 const app = express();
 
@@ -56,13 +75,21 @@ app.use((req, res, next) => {
 
 // Health
 app.get('/health', (req, res) => {
+  const features = ['workspace', 'sessions', 'teams', 'marketing', 'metrics']
+    .filter((feature) => !DISABLED_DASHBOARD_MODULES.has(feature))
+    .filter((feature) => {
+      if (feature === 'workspace') return !isModuleDisabled('workspace');
+      if (feature === 'sessions') return !isModuleDisabled('work');
+      return true;
+    });
   res.json({
     success: true,
     service: 'agent-service',
     displayName: APP_DISPLAY_NAME,
+    disabledModules: Array.from(DISABLED_DASHBOARD_MODULES),
     version: '2.0.0',
     timestamp: new Date().toISOString(),
-    features: ['workspace', 'sessions', 'teams', 'marketing', 'metrics'],
+    features,
   });
 });
 
@@ -70,7 +97,7 @@ app.get('/health', (req, res) => {
 app.use('/api/repos', reposRouter);
 app.use('/api/agents', agentsRouter);
 app.use('/api/workspace', workspaceRouter);
-app.use('/api/plans', plansRouter);
+app.use('/api/plans', isModuleDisabled('plans') ? disabledModuleHandler('plans') : plansRouter);
 
 // API Routes — SQLite-backed (sessions, teams, commands, marketing, metrics)
 app.use('/api/sessions', sessionsRouter);
@@ -82,7 +109,10 @@ app.use('/api/jobs', jobsRouter);
 app.use('/api/integrations', integrationsRouter);
 app.use('/api/gamification', gamificationRouter);
 app.use('/api/rl', rlRouter);
-app.use('/api/schedule-runs', schedulesRouter);
+app.use(
+  '/api/schedule-runs',
+  isModuleDisabled('schedules') ? disabledModuleHandler('schedules') : schedulesRouter,
+);
 app.use('/api/system', systemRouter);
 // Direct route for /api/file/docs (mounted router can miss in some setups)
 app.get('/api/file/docs', handleDocsRequest);
