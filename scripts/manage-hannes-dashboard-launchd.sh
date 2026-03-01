@@ -38,6 +38,16 @@ is_loaded() {
   launchctl print "${USER_DOMAIN}/${LABEL}" >/dev/null 2>&1
 }
 
+free_dashboard_port() {
+  local pid
+  pid="$(lsof -ti :3011 2>/dev/null || true)"
+  if [[ -n "$pid" ]]; then
+    echo "[hannes-dashboard] Killing stale process on 3011 (PID $pid)"
+    kill -9 $pid >/dev/null 2>&1 || true
+    sleep 1
+  fi
+}
+
 write_plist() {
   mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
   cat > "$PLIST_PATH" <<EOF
@@ -79,6 +89,7 @@ EOF
 }
 
 start_job() {
+  free_dashboard_port
   if [[ ! -f "$PLIST_PATH" ]]; then
     echo "[hannes-dashboard] Missing plist: $PLIST_PATH" >&2
     echo "[hannes-dashboard] Run: $0 install" >&2
