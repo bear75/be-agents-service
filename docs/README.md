@@ -31,6 +31,7 @@
 | [SANDBOX_SETUP.md](SANDBOX_SETUP.md) | Sandbox/Hannes setup |
 | [HANNES_WORKSPACE_GUIDE.md](HANNES_WORKSPACE_GUIDE.md) | Hannes workspace & channels |
 | [HANNES_SIMPLE_SETUP.md](HANNES_SIMPLE_SETUP.md) | 90/10 simple setup (DARWIN + Hannes) |
+| [HANNES_ISOLATED_STACK.md](HANNES_ISOLATED_STACK.md) | Full isolated Hannes stack on same Mac mini |
 
 ### Architecture & Reference
 

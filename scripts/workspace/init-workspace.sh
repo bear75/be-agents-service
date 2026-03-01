@@ -20,7 +20,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TEMPLATES_DIR="$SCRIPT_DIR/templates"
-CONFIG_FILE="$SERVICE_ROOT/config/repos.yaml"
+CONFIG_FILE="${REPOS_CONFIG_PATH:-$SERVICE_ROOT/config/repos.yaml}"
+CONFIG_FILE="${CONFIG_FILE/#\~/$HOME}"
 
 # Colors
 GREEN='\033[0;32m'

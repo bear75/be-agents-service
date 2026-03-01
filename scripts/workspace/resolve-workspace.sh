@@ -10,7 +10,8 @@
 # Get the directory where this script lives
 _RESOLVE_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _RESOLVE_SERVICE_ROOT="$(cd "$_RESOLVE_SCRIPT_DIR/../.." && pwd)"
-_RESOLVE_CONFIG_FILE="$_RESOLVE_SERVICE_ROOT/config/repos.yaml"
+_RESOLVE_CONFIG_FILE="${REPOS_CONFIG_PATH:-$_RESOLVE_SERVICE_ROOT/config/repos.yaml}"
+_RESOLVE_CONFIG_FILE="${_RESOLVE_CONFIG_FILE/#\~/$HOME}"
 
 # Get workspace path for a repo from config
 # Returns empty string if not configured

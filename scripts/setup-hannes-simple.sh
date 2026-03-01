@@ -16,7 +16,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-CONFIG_FILE="$SERVICE_ROOT/config/repos.yaml"
+CONFIG_FILE="${REPOS_CONFIG_PATH:-$SERVICE_ROOT/config/repos.yaml}"
+CONFIG_FILE="${CONFIG_FILE/#\~/$HOME}"
 INIT_WORKSPACE_SCRIPT="$SERVICE_ROOT/scripts/workspace/init-workspace.sh"
 TELEGRAM_TEST_SCRIPT="$SERVICE_ROOT/scripts/notifications/send-telegram-test.sh"
 OPENCLAW_TEMPLATE="$SERVICE_ROOT/config/openclaw/openclaw.json"

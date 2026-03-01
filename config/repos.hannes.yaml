@@ -1,0 +1,36 @@
+# Repository Configuration — Hannes isolated stack
+# Used with REPOS_CONFIG_PATH=config/repos.hannes.yaml
+# This keeps Hannes dashboard/workspace/repo views isolated from the primary DARWIN stack.
+
+repos:
+  # Workspace-only key used by API routes/system checks
+  darwin:
+    path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/hannes-space
+    workspace:
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/hannes-space
+      enabled: true
+    schedule:
+      review: "22:30"
+      compound: "23:00"
+    priorities_dir: ""
+    logs_dir: ""
+    tasks_dir: ""
+    enabled: true
+
+  # Hannes isolated coding repo
+  hannes-projects:
+    path: ~/HomeCare/strength-stride-coach
+    workspace:
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/hannes-space
+      enabled: true
+    schedule:
+      review: "22:30"
+      compound: "23:00"
+    priorities_dir: reports/
+    logs_dir: logs/
+    tasks_dir: tasks/
+    enabled: true
+    github:
+      owner: hannes453
+      repo: strength-stride-coach
+      default_branch: main

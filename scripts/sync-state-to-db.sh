@@ -23,7 +23,8 @@ fi
 echo "Syncing .compound-state/ to DB..."
 
 REPO_NAME="${1:-}"
-CONFIG_FILE="$SERVICE_ROOT/config/repos.yaml"
+CONFIG_FILE="${REPOS_CONFIG_PATH:-$SERVICE_ROOT/config/repos.yaml}"
+CONFIG_FILE="${CONFIG_FILE/#\~/$HOME}"
 
 # If repo name is provided, sync that repo's state
 # Otherwise, sync all repos from config

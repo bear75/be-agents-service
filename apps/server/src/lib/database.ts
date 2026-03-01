@@ -9,7 +9,7 @@
 
 import Database, { type Database as DatabaseType } from 'better-sqlite3';
 import { readFileSync, existsSync, mkdirSync } from 'fs';
-import { resolve, dirname } from 'path';
+import { resolve, dirname, isAbsolute } from 'path';
 import { fileURLToPath } from 'url';
 import type {
   Team,
@@ -36,7 +36,13 @@ const __dirname = dirname(__filename);
 
 // Service root is four levels up: apps/server/src/lib → repo root
 const SERVICE_ROOT = resolve(__dirname, '..', '..', '..', '..');
-const DB_PATH = resolve(SERVICE_ROOT, '.compound-state', 'agent-service.db');
+const DB_PATH = (() => {
+  const override = (process.env.AGENT_DB_PATH || '').trim();
+  if (!override) {
+    return resolve(SERVICE_ROOT, '.compound-state', 'agent-service.db');
+  }
+  return isAbsolute(override) ? override : resolve(SERVICE_ROOT, override);
+})();
 const SCHEMA_PATH = resolve(SERVICE_ROOT, 'schema.sql');
 const SEED_DATA_PATH = resolve(SERVICE_ROOT, 'seed-data.sql');
 
