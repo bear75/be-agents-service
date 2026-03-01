@@ -1,8 +1,10 @@
 {
   // CRITICAL: This MUST be the SAME folder used by Cursor, compound learning, and Telegram.
   // One shared folder only: AgentWorkspace/DARWIN. Set workspace to that path (or your actual path).
-  agent: {
-    workspace: "~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN"
+  agents: {
+    defaults: {
+      workspace: "~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN"
+    }
   },
 
   // Telegram only — WhatsApp removed; do not re-enable.

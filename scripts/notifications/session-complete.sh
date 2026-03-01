@@ -59,7 +59,7 @@ if [[ -n "${TELEGRAM_BOT_TOKEN:-}" && -n "${TELEGRAM_CHAT_ID:-}" ]]; then
     -d "parse_mode=Markdown" \
     2>/dev/null || echo '{"ok":false}')
 
-  if echo "$RESPONSE" | jq -r '.ok // false' 2>/dev/null | rg -q '^true$'; then
+  if echo "$RESPONSE" | jq -r '.ok // false' 2>/dev/null | grep -q '^true$'; then
     echo "✅ Sent Telegram session notification"
   else
     echo "⚠️  Failed to send Telegram session notification"

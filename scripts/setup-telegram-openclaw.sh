@@ -28,6 +28,13 @@ replace_placeholder() {
   fi
 }
 
+is_http_200() {
+  local url="$1"
+  local code
+  code="$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || true)"
+  [[ "$code" == "200" ]]
+}
+
 for arg in "$@"; do
   if [[ "$arg" == "--test" ]]; then
     SEND_TEST=true
@@ -46,6 +53,19 @@ if [[ ! -f "$CONFIG" ]]; then
   echo "Copy the template first:"
   echo "  cp $SERVICE_ROOT/config/openclaw/openclaw.json ~/.openclaw/openclaw.json"
   exit 1
+fi
+
+# Auto-fix legacy OpenClaw config schema when possible
+if command -v openclaw >/dev/null 2>&1; then
+  if grep -qE '^\s*agent:\s*$' "$CONFIG"; then
+    echo "Detected legacy OpenClaw config keys. Running migration..."
+    if openclaw doctor --fix >/dev/null 2>&1; then
+      echo "✅ OpenClaw config migrated via: openclaw doctor --fix"
+    else
+      echo "⚠️  Could not auto-migrate OpenClaw config. Run manually:"
+      echo "   openclaw doctor --fix"
+    fi
+  fi
 fi
 
 # Check for placeholder
@@ -74,13 +94,13 @@ if grep -q "YOUR_TELEGRAM_BOT_TOKEN" "$CONFIG"; then
 fi
 
 # Check TELEGRAM_BOT_TOKEN
-if [[ -z "$TELEGRAM_BOT_TOKEN" ]]; then
+if [[ -z "${TELEGRAM_BOT_TOKEN:-}" ]]; then
   if [[ -f "$HOME/.config/caire/env" ]]; then
     source "$HOME/.config/caire/env" 2>/dev/null || true
   fi
 fi
 
-if [[ -z "$TELEGRAM_BOT_TOKEN" ]]; then
+if [[ -z "${TELEGRAM_BOT_TOKEN:-}" ]]; then
   echo "⚠️  TELEGRAM_BOT_TOKEN not set."
   echo "   Add to ~/.config/caire/env:"
   echo "   export TELEGRAM_BOT_TOKEN=\"your-bot-token-from-botfather\""
@@ -96,16 +116,16 @@ if [[ -z "${TELEGRAM_CHAT_ID:-}" ]]; then
 fi
 
 # Verify Darwin is reachable (current default 3010; legacy 3030 fallback)
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:3010/health 2>/dev/null | rg -q '^200$'; then
+if is_http_200 "http://localhost:3010/health"; then
   echo "✅ Darwin server (3010) is running"
-elif curl -s -o /dev/null -w "%{http_code}" http://localhost:3030/health 2>/dev/null | rg -q '^200$'; then
+elif is_http_200 "http://localhost:3030/health"; then
   echo "✅ Darwin server (3030) is running"
 else
   echo "⚠️  Darwin server not reachable on 3010 or 3030. Start with: yarn start"
 fi
 
 # Inject TELEGRAM_BOT_TOKEN into OpenClaw gateway plist (launchd doesn't source env)
-if [[ -n "$TELEGRAM_BOT_TOKEN" ]] && [[ -f "$HOME/Library/LaunchAgents/ai.openclaw.gateway.plist" ]]; then
+if [[ -n "${TELEGRAM_BOT_TOKEN:-}" ]] && [[ -f "$HOME/Library/LaunchAgents/ai.openclaw.gateway.plist" ]]; then
   /usr/libexec/PlistBuddy -c "Add :EnvironmentVariables:TELEGRAM_BOT_TOKEN string '$TELEGRAM_BOT_TOKEN'" "$HOME/Library/LaunchAgents/ai.openclaw.gateway.plist" 2>/dev/null || \
   /usr/libexec/PlistBuddy -c "Set :EnvironmentVariables:TELEGRAM_BOT_TOKEN '$TELEGRAM_BOT_TOKEN'" "$HOME/Library/LaunchAgents/ai.openclaw.gateway.plist" 2>/dev/null
   echo "✅ Injected TELEGRAM_BOT_TOKEN into gateway plist"
@@ -122,7 +142,7 @@ if [[ "$SEND_TEST" == "true" ]]; then
       -d "chat_id=${TELEGRAM_CHAT_ID}" \
       -d "text=${TEST_MSG}" \
       2>/dev/null || echo '{"ok":false}')
-    if echo "$RESPONSE" | jq -r '.ok // false' 2>/dev/null | rg -q '^true$'; then
+    if echo "$RESPONSE" | jq -r '.ok // false' 2>/dev/null | grep -q '^true$'; then
       echo "✅ Telegram send test succeeded"
     else
       echo "❌ Telegram send test failed"

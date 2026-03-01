@@ -113,7 +113,6 @@ done
 section "Prerequisites"
 require_cmd "curl"
 require_cmd "jq"
-require_cmd "rg"
 require_cmd "bash"
 
 if [[ -f "$CAIRE_ENV" ]]; then
@@ -167,13 +166,18 @@ else
 fi
 
 if [[ -f "$OPENCLAW_CONFIG" ]]; then
-  if rg -q 'YOUR_TELEGRAM_USER_ID|YOUR_TELEGRAM_BOT_TOKEN' "$OPENCLAW_CONFIG"; then
+  if grep -qE 'YOUR_TELEGRAM_USER_ID|YOUR_TELEGRAM_BOT_TOKEN' "$OPENCLAW_CONFIG"; then
     fail "OpenClaw config still has Telegram placeholders"
   else
     ok "OpenClaw config has no Telegram placeholders"
   fi
 
-  openclaw_workspace="$(rg -o 'workspace:\s*"[^"]+"' "$OPENCLAW_CONFIG" 2>/dev/null | head -1 | sed -E 's/.*"([^"]+)".*/\1/' || true)"
+  openclaw_workspace="$(
+    grep -Eo '"workspace"\s*:\s*"[^"]+"|workspace:\s*"[^"]+"' "$OPENCLAW_CONFIG" 2>/dev/null \
+      | head -1 \
+      | sed -E 's/.*"([^"]+)".*/\1/' \
+      || true
+  )"
   openclaw_workspace="$(expand_home_path "$openclaw_workspace")"
   if [[ -z "$openclaw_workspace" ]]; then
     warn "Could not parse OpenClaw workspace path from config"
@@ -204,7 +208,7 @@ else
 fi
 
 if command -v launchctl >/dev/null 2>&1; then
-  if launchctl list 2>/dev/null | rg -q 'ai\.openclaw\.gateway'; then
+  if launchctl list 2>/dev/null | grep -Eq 'ai\.openclaw\.gateway'; then
     ok "OpenClaw gateway launchd job is loaded"
   else
     warn "OpenClaw gateway launchd job not loaded (ai.openclaw.gateway)"
@@ -273,7 +277,7 @@ if command -v launchctl >/dev/null 2>&1; then
     "com.appcaire.weekly-review"
   )
   for label in "${required_jobs[@]}"; do
-    if launchctl list 2>/dev/null | rg -q "$label"; then
+    if launchctl list 2>/dev/null | grep -Fq "$label"; then
       ok "launchd job loaded: $label"
     else
       if [[ "$label" == "com.appcaire.agent-server" ]]; then

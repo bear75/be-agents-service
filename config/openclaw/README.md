@@ -2,7 +2,7 @@
 
 **There can only be ONE shared folder** for Cursor, compound learning, and Telegram. OpenClaw **must** use that same folder. If Telegram/OpenClaw writes to a different path, you get two folders: human instructions and agent memory in one place, compound priorities and learnings in another — split state and confusion.
 
-**OpenClaw’s workspace must point at the SAME path** that compound uses (`config/repos.yaml` → `repos.<name>.workspace.path`) and that you use with Cursor. Not the be-agents-service repo; not a second “OpenClaw workspace”. The template in this folder uses `agent.workspace`. If your gateway uses the newer schema with `agents.list`, set the **main** agent’s `workspace` in `agents.list` to that same path (e.g. `AgentWorkspace/DARWIN`).
+**OpenClaw’s workspace must point at the SAME path** that compound uses (`config/repos.yaml` → `repos.<name>.workspace.path`) and that you use with Cursor. Not the be-agents-service repo; not a second “OpenClaw workspace”. The template in this folder uses `agents.defaults.workspace` (current schema). If your gateway has custom agents in `agents.list`, set each active agent’s `workspace` to that same path (e.g. `AgentWorkspace/DARWIN`).
 
 ## 1. Set workspace to THE shared folder (one folder for everything)
 
@@ -18,7 +18,7 @@ Under **iCloud/AgentWorkspace/** you have one folder per context (e.g. **DARWIN*
    cp /path/to/be-agents-service/config/openclaw/openclaw.json ~/.openclaw/openclaw.json
    ```
 
-2. Edit `~/.openclaw/openclaw.json` and set `agent.workspace` (or the main agent’s `workspace` in `agents.list`) to the **same** path used by compound and Cursor. For example:
+2. Edit `~/.openclaw/openclaw.json` and set `agents.defaults.workspace` (and any active custom agent `workspace` in `agents.list`) to the **same** path used by compound and Cursor. For example:
    - **Generic:** `~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/default`
    - **DARWIN:** `~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN`
    - **Per-repo/project:** same as in `repos.yaml` (e.g. `.../AgentWorkspace/beta-appcaire`).
@@ -35,9 +35,9 @@ Under **iCloud/AgentWorkspace/** you have one folder per context (e.g. **DARWIN*
 
 ## 2. Migrate if the agent was writing into the repo
 
-If you previously had `agent.workspace` pointing at be-agents-service, the agent may have created or changed files under that repo (e.g. docs, memory). To fix:
+If you previously had a legacy `agent.workspace` pointing at be-agents-service, the agent may have created or changed files under that repo (e.g. docs, memory). To fix:
 
-1. Set `agent.workspace` to the shared folder (step 1 above).
+1. Set `agents.defaults.workspace` to the shared folder (step 1 above).
 2. If you want to keep any of the agent-created content from the repo, copy it into the correct place in the shared folder (e.g. `memory/`, `agent-reports/`) and then remove or revert the copies from the repo.
 3. Do **not** use `scripts/openclaw-migrate-workspace.sh` to move *from* the default `~/.openclaw/workspace` *into* the repo — that script was for an old setup. Use it only to copy from `~/.openclaw/workspace` **into** your AgentWorkspace folder (e.g. `AgentWorkspace/DARWIN` or `AgentWorkspace/default`) if that’s where you want the files.
 
