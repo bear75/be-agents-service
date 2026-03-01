@@ -3,6 +3,7 @@
  * Repo context defaults to "darwin" (shared workspace); no repo switcher in header.
  */
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   Bot,
   Layers,
@@ -32,6 +33,25 @@ const NAV_ITEMS = [
 
 export function Layout() {
   const location = useLocation();
+  const [appName, setAppName] = useState('Darwin');
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/health')
+      .then((response) => response.json())
+      .then((data) => {
+        const displayName = typeof data?.displayName === 'string' ? data.displayName : '';
+        if (!cancelled && displayName.trim()) {
+          setAppName(displayName.trim());
+        }
+      })
+      .catch(() => {
+        // Keep default name if health endpoint is unavailable.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -41,7 +61,7 @@ export function Layout() {
             <div className="flex items-center gap-3">
               <Bot className="w-8 h-8 text-blue-600" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Darwin</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{appName}</h1>
                 <p className="text-sm text-gray-600">Workspace & agent automation</p>
               </div>
             </div>
@@ -82,7 +102,7 @@ export function Layout() {
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
           <p className="text-center text-sm text-gray-600">
-            Darwin v1.0.0 • Powered by Claude Code
+            {appName} v1.0.0 • Powered by Claude Code
           </p>
         </div>
       </footer>

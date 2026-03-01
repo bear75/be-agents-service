@@ -39,6 +39,7 @@ const ROOT = path.resolve(__dirname, '..', '..', '..');
 const STATIC_DIR = path.join(__dirname, '..', 'public');
 
 const PORT = process.env.PORT || process.env.DASHBOARD_PORT || 3010;
+const APP_DISPLAY_NAME = process.env.APP_DISPLAY_NAME || 'Darwin';
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.get('/health', (req, res) => {
   res.json({
     success: true,
     service: 'agent-service',
+    displayName: APP_DISPLAY_NAME,
     version: '2.0.0',
     timestamp: new Date().toISOString(),
     features: ['workspace', 'sessions', 'teams', 'marketing', 'metrics'],
@@ -116,7 +118,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 app.listen(Number(PORT), HOST, () => {
   console.log('');
   console.log('════════════════════════════════════════');
-  console.log('  Darwin — Unified Dashboard');
+  console.log(`  ${APP_DISPLAY_NAME} — Unified Dashboard`);
   console.log('════════════════════════════════════════');
   console.log(`  Dashboard:  http://localhost:${PORT}/`);
   console.log(`  API:        http://localhost:${PORT}/api/`);
