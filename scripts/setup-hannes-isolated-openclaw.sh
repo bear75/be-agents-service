@@ -86,10 +86,14 @@ echo "  Workspace=$workspace_path"
 echo "  Gateway port=$GATEWAY_PORT"
 
 if [[ "$SEND_TEST" == "true" ]]; then
-  "$SERVICE_ROOT/scripts/notifications/send-telegram-test.sh" \
+  if ! "$SERVICE_ROOT/scripts/notifications/send-telegram-test.sh" \
     --token "$BOT_TOKEN" \
     --ids "$HANNES_ID" \
-    --label "hannes-isolated-openclaw"
+    --label "hannes-isolated-openclaw"; then
+    echo "[setup-hannes-openclaw] WARNING: Telegram test failed."
+    echo "[setup-hannes-openclaw] Likely cause: Hannes has not opened the new bot and pressed /start yet."
+    echo "[setup-hannes-openclaw] Ask Hannes to open the bot once, then rerun with --send-test."
+  fi
 fi
 
 echo

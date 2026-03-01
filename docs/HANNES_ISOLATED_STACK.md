@@ -43,8 +43,7 @@ git pull origin main
 source ~/.config/caire/env
 ./scripts/setup-hannes-isolated-stack.sh \
   --hannes-id 7604480012 \
-  --bot-token "<HANNES_TELEGRAM_BOT_TOKEN>" \
-  --owner-id 8399128208
+  --bot-token "<HANNES_TELEGRAM_BOT_TOKEN>"
 ```
 
 This will:
@@ -68,6 +67,8 @@ Runs with:
 ```bash
 ./scripts/verify-hannes-stack.sh --send-telegram-test
 ```
+
+If test says `chat not found`, Hannes must open the new bot once and press `/start`, then rerun verification.
 
 ### 4) Open Hannes dashboard
 

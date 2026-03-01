@@ -95,6 +95,9 @@ for chat_id in "${IDS[@]}"; do
   else
     desc="$(echo "$response" | jq -r '.description // "unknown error"' 2>/dev/null || echo "unknown error")"
     echo "❌ Failed Telegram test for chat_id=${chat_id}: $desc"
+    if [[ "$desc" == *"chat not found"* ]]; then
+      echo "   ℹ️  Open the bot in Telegram for this account and press /start first."
+    fi
     fail_count=$((fail_count + 1))
   fi
 done
