@@ -1,0 +1,77 @@
+name: Deploy main to Mac mini
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main-mac-mini
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Validate required secrets
+        env:
+          MAC_MINI_HOST: ${{ secrets.MAC_MINI_HOST }}
+          MAC_MINI_USER: ${{ secrets.MAC_MINI_USER }}
+          MAC_MINI_SSH_KEY: ${{ secrets.MAC_MINI_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for key in MAC_MINI_HOST MAC_MINI_USER MAC_MINI_SSH_KEY; do
+            if [ -z "${!key:-}" ]; then
+              echo "::error::Missing required secret: $key"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Configure SSH
+        env:
+          MAC_MINI_HOST: ${{ secrets.MAC_MINI_HOST }}
+          MAC_MINI_SSH_KEY: ${{ secrets.MAC_MINI_SSH_KEY }}
+          MAC_MINI_SSH_PORT: ${{ secrets.MAC_MINI_SSH_PORT }}
+          MAC_MINI_KNOWN_HOSTS: ${{ secrets.MAC_MINI_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          PORT="${MAC_MINI_SSH_PORT:-22}"
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+
+          printf '%s\n' "$MAC_MINI_SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+
+          if [ -n "${MAC_MINI_KNOWN_HOSTS:-}" ]; then
+            printf '%s\n' "$MAC_MINI_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          else
+            ssh-keyscan -p "$PORT" -H "$MAC_MINI_HOST" > "$HOME/.ssh/known_hosts"
+          fi
+          chmod 644 "$HOME/.ssh/known_hosts"
+
+      - name: Deploy latest main
+        env:
+          MAC_MINI_HOST: ${{ secrets.MAC_MINI_HOST }}
+          MAC_MINI_USER: ${{ secrets.MAC_MINI_USER }}
+          MAC_MINI_SSH_PORT: ${{ secrets.MAC_MINI_SSH_PORT }}
+          MAC_MINI_REPO_DIR: ${{ secrets.MAC_MINI_REPO_DIR }}
+        run: |
+          set -euo pipefail
+          PORT="${MAC_MINI_SSH_PORT:-22}"
+          REPO_DIR="${MAC_MINI_REPO_DIR:-/Users/be-agent-service/HomeCare/be-agents-service}"
+
+          ssh \
+            -i "$HOME/.ssh/id_ed25519" \
+            -p "$PORT" \
+            -o StrictHostKeyChecking=yes \
+            "${MAC_MINI_USER}@${MAC_MINI_HOST}" \
+            "REPO_DIR=\"$REPO_DIR\" DEPLOY_BRANCH=\"main\" \"$REPO_DIR/scripts/deploy-main.sh\""

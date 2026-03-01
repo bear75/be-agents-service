@@ -79,6 +79,7 @@ yarn dev            # Build + dev with hot reload
 | Mac mini recovery | [docs/MAC_MINI_RECOVERY.md](docs/MAC_MINI_RECOVERY.md) |
 | OpenClaw (workspace + migration) | [config/openclaw/README.md](config/openclaw/README.md) |
 | **API keys (env)** | [config/caire/README.md](config/caire/README.md) — `~/.config/caire/env` from [config/caire/env.example](config/caire/env.example) |
+| **Auto-deploy main → Mac mini** | [docs/AUTO_DEPLOY_MAIN_MAC_MINI.md](docs/AUTO_DEPLOY_MAIN_MAC_MINI.md) |
 | Agent folders & read/write contract | [docs/AGENT_WORKSPACE_STRUCTURE.md](docs/AGENT_WORKSPACE_STRUCTURE.md) |
 | Folder structure (repo, .compound-state, AgentWorkspace) | [docs/FOLDER_STRUCTURE.md](docs/FOLDER_STRUCTURE.md) |
 | Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
