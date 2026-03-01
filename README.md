@@ -73,6 +73,49 @@ yarn dev            # Build + dev with hot reload
 
 **Architecture:** One Express server (`apps/server`) on port 3010 serves API + static. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## Start, stop, restart: gateways and dashboards
+
+All commands from repo root: `~/HomeCare/be-agents-service`.
+
+### Gateways (OpenClaw)
+
+Use **profile-specific** commands so Darwin and Hannes don’t affect each other. Do **not** use generic `openclaw gateway restart` in dual-stack mode.
+
+| Action | Darwin | Hannes |
+|--------|--------|--------|
+| Start | `./scripts/openclaw/manage-gateway-launchd.sh darwin start` | `./scripts/openclaw/manage-gateway-launchd.sh hannes start` |
+| Stop | `./scripts/openclaw/manage-gateway-launchd.sh darwin stop` | `./scripts/openclaw/manage-gateway-launchd.sh hannes stop` |
+| Restart | `./scripts/openclaw/manage-gateway-launchd.sh darwin restart` | `./scripts/openclaw/manage-gateway-launchd.sh hannes restart` |
+| Status | `./scripts/openclaw/manage-gateway-launchd.sh darwin status` | `./scripts/openclaw/manage-gateway-launchd.sh hannes status` |
+
+Install both gateways once: `./scripts/openclaw/setup-dual-launchd.sh`
+
+### Main dashboard (Darwin, port 3010)
+
+| Action | Command |
+|--------|--------|
+| Start (foreground) | `yarn start` |
+| Restart (kill + build + start) | `./scripts/restart-darwin.sh` or `yarn restart` |
+| Via launchd: stop | `launchctl unload ~/Library/LaunchAgents/com.appcaire.agent-server.plist` |
+| Via launchd: start | `launchctl load ~/Library/LaunchAgents/com.appcaire.agent-server.plist` |
+
+### Hannes dashboard (isolated, port 3011)
+
+| Action | Command |
+|--------|--------|
+| Start (foreground) | `./scripts/start-hannes-dashboard.sh` |
+| Restart | `./scripts/restart-hannes-dashboard.sh` |
+| Via launchd | `./scripts/manage-hannes-dashboard-launchd.sh start \| stop \| restart \| status` |
+
+### Start everything (Darwin stack)
+
+```bash
+./scripts/start-all-services.sh
+# optional: ./scripts/start-all-services.sh --send-telegram-test
+```
+
+See [docs/HANNES_ISOLATED_STACK.md](docs/HANNES_ISOLATED_STACK.md) for the full Hannes setup.
+
 ## Documentation
 
 **All docs live in `docs/`.** Start with [docs/README.md](docs/README.md) for the full index.
