@@ -77,6 +77,8 @@ oc config set channels.telegram.botToken "$BOT_TOKEN" >/dev/null || true
 oc config set channels.telegram.allowFrom "[\"$HANNES_ID\"]" >/dev/null || true
 oc config set gateway.mode local >/dev/null || true
 oc config set gateway.port "$GATEWAY_PORT" >/dev/null || true
+# Local isolated stack on loopback: disable gateway auth to avoid CLI pairing friction.
+oc config set gateway.auth.enabled false >/dev/null || true
 oc doctor --fix >/dev/null || true
 
 echo "[setup-hannes-openclaw] Configured isolated runtime:"
