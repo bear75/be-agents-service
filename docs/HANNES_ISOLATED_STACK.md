@@ -78,6 +78,7 @@ Runs with:
 - `AGENT_JOBS_DIR=.compound-state/running-jobs-hannes`
 - `OPENCLAW_CONFIG_PATH=~/.openclaw-hannes/openclaw.json`
 - `OPENCLAW_LAUNCHD_LABEL=com.appcaire.openclaw-hannes`
+- `DISABLED_DASHBOARD_MODULES=plans,schedules,settings`
 - `APP_DISPLAY_NAME=Hannes AI`
 
 ### 3) Verify isolated stack
@@ -135,3 +136,4 @@ Do **not** use generic `openclaw gateway restart` for dual-stack mode, because i
 - Hannes stack is intentionally separate on port `3011`.
 - Both stacks share the same repository code and prompts.
 - Hannes dashboard data isolation is enforced by separate repo config, DB, jobs dir, OpenClaw config path, and docs/file access scope.
+- In Hannes mode, Plans/Schedules/Settings are disabled in both UI and API (`403`) to avoid cross-workspace leakage.

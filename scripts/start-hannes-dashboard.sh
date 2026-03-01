@@ -32,6 +32,7 @@ export DEFAULT_TARGET_REPO="hannes-projects"
 export ENABLE_NIGHTLY_TRIGGER="false"
 export AUTO_COMPOUND_LAUNCHD_LABEL="com.appcaire.auto-compound-hannes"
 export OPENCLAW_WORKSPACE_REPO_KEY="darwin"
+export DISABLED_DASHBOARD_MODULES="plans,schedules,settings"
 
 mkdir -p "$OPENCLAW_STATE_DIR" "$AGENT_JOBS_DIR" "$AGENT_SESSION_LOGS_DIR"
 
@@ -48,6 +49,7 @@ echo "[start-hannes-dashboard] OPENCLAW_LAUNCHD_LABEL=$OPENCLAW_LAUNCHD_LABEL"
 echo "[start-hannes-dashboard] AGENT_JOBS_DIR=$AGENT_JOBS_DIR"
 echo "[start-hannes-dashboard] PLAN_DOCS_ROOT=$PLAN_DOCS_ROOT"
 echo "[start-hannes-dashboard] FILE_ACCESS_ALLOWED_PATHS=$FILE_ACCESS_ALLOWED_PATHS"
+echo "[start-hannes-dashboard] DISABLED_DASHBOARD_MODULES=$DISABLED_DASHBOARD_MODULES"
 
 yarn build:unified 2>/dev/null || true
 yarn workspace server build 2>/dev/null || true

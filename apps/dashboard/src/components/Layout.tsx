@@ -18,22 +18,42 @@ import {
 } from 'lucide-react';
 
 const DEFAULT_REPO = 'darwin';
+type NavModule =
+  | 'overview'
+  | 'run'
+  | 'work'
+  | 'roster'
+  | 'plans'
+  | 'insights'
+  | 'schedules'
+  | 'marketing'
+  | 'settings';
 
 const NAV_ITEMS = [
-  { path: '/', label: 'Overview', icon: Layers, subtitle: 'Entry point & workspace' },
-  { path: '/run', label: 'Run', icon: Rocket, subtitle: 'Launch automation' },
-  { path: '/work', label: 'Work', icon: Clock, subtitle: 'Sessions & Kanban' },
-  { path: '/roster', label: 'Roster', icon: Users, subtitle: 'Agents & teams' },
-  { path: '/plans', label: 'Plans', icon: Map, subtitle: 'PRDs & roadmaps' },
-  { path: '/insights', label: 'Insights', icon: Brain, subtitle: 'Analytics & leaderboard' },
-  { path: '/schedules', label: 'Schedules', icon: BarChart2, subtitle: 'Schedule optimization pipeline' },
-  { path: '/marketing', label: 'Marketing', icon: TrendingUp, subtitle: 'Campaigns & leads' },
-  { path: '/settings', label: 'Settings', icon: Sliders, subtitle: 'Config & docs' },
+  { path: '/', label: 'Overview', icon: Layers, subtitle: 'Entry point & workspace', module: 'overview' as NavModule },
+  { path: '/run', label: 'Run', icon: Rocket, subtitle: 'Launch automation', module: 'run' as NavModule },
+  { path: '/work', label: 'Work', icon: Clock, subtitle: 'Sessions & Kanban', module: 'work' as NavModule },
+  { path: '/roster', label: 'Roster', icon: Users, subtitle: 'Agents & teams', module: 'roster' as NavModule },
+  { path: '/plans', label: 'Plans', icon: Map, subtitle: 'PRDs & roadmaps', module: 'plans' as NavModule },
+  { path: '/insights', label: 'Insights', icon: Brain, subtitle: 'Analytics & leaderboard', module: 'insights' as NavModule },
+  { path: '/schedules', label: 'Schedules', icon: BarChart2, subtitle: 'Schedule optimization pipeline', module: 'schedules' as NavModule },
+  { path: '/marketing', label: 'Marketing', icon: TrendingUp, subtitle: 'Campaigns & leads', module: 'marketing' as NavModule },
+  { path: '/settings', label: 'Settings', icon: Sliders, subtitle: 'Config & docs', module: 'settings' as NavModule },
 ];
+
+function parseDisabledModules(value: unknown): Set<string> {
+  if (!Array.isArray(value)) return new Set<string>();
+  return new Set(
+    value
+      .map((item) => (typeof item === 'string' ? item.trim().toLowerCase() : ''))
+      .filter(Boolean),
+  );
+}
 
 export function Layout() {
   const location = useLocation();
   const [appName, setAppName] = useState('Darwin');
+  const [disabledModules, setDisabledModules] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
@@ -44,6 +64,9 @@ export function Layout() {
         if (!cancelled && displayName.trim()) {
           setAppName(displayName.trim());
         }
+        if (!cancelled) {
+          setDisabledModules(parseDisabledModules(data?.disabledModules));
+        }
       })
       .catch(() => {
         // Keep default name if health endpoint is unavailable.
@@ -52,6 +75,8 @@ export function Layout() {
       cancelled = true;
     };
   }, []);
+
+  const visibleNavItems = NAV_ITEMS.filter((item) => !disabledModules.has(item.module));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -68,7 +93,7 @@ export function Layout() {
           </div>
 
           <nav className="flex flex-wrap gap-x-1 gap-y-2 mt-3 text-sm items-center">
-            {NAV_ITEMS.map((item) => {
+            {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const isActive =
                 location.pathname === item.path || (item.path === '/' && location.pathname === '/');
