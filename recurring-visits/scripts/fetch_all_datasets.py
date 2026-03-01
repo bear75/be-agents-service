@@ -12,11 +12,14 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 _SCRIPT_DIR = Path(__file__).resolve().parent
+_DEFAULT_ENV_FILE = Path.home() / ".config" / "caire" / "env"
 
 # Dataset IDs from TF prod (28-feb run)
 DEFAULT_IDS = [
@@ -34,14 +37,44 @@ DEFAULT_IDS = [
 ]
 
 
+def _load_env_file(env_file: Path) -> None:
+    """Load simple KEY=VALUE or export KEY=VALUE pairs into os.environ."""
+    if not env_file.exists():
+        return
+    pattern = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
+    for raw_line in env_file.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        match = pattern.match(line)
+        if not match:
+            continue
+        key, value = match.groups()
+        value = value.strip()
+        if (value.startswith('"') and value.endswith('"')) or (
+            value.startswith("'") and value.endswith("'")
+        ):
+            value = value[1:-1]
+        os.environ.setdefault(key, value)
+
+
+def _bootstrap_env() -> None:
+    """Load ~/.config/caire/env (or CAIRE_ENV_FILE override) if present."""
+    override = os.environ.get("CAIRE_ENV_FILE", "").strip()
+    if override:
+        _load_env_file(Path(override).expanduser())
+        return
+    _load_env_file(_DEFAULT_ENV_FILE)
+
+
 def main() -> int:
+    _bootstrap_env()
+
     ap = argparse.ArgumentParser(description="Fetch multiple TF FSR datasets and run metrics + continuity")
     ap.add_argument("--base", type=Path, required=True, help="Base dir, e.g. ../huddinge-package/solve/28-feb")
     ap.add_argument("--ids", nargs="*", default=None, help="Dataset IDs (default: built-in list)")
     ap.add_argument("--api-key", default=None, help="Timefold API key (default: TIMEFOLD_API_KEY env)")
     args = ap.parse_args()
-
-    import os
     api_key = args.api_key or os.environ.get("TIMEFOLD_API_KEY", "")
     if not api_key:
         print("Error: Set TIMEFOLD_API_KEY or pass --api-key", file=sys.stderr)

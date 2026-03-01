@@ -26,6 +26,7 @@ Route plan IDs are listed in timefold_route_plan_ids.md in this folder.
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -38,6 +39,37 @@ if str(_SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIR))
 
 TIMEFOLD_BASE = "https://app.timefold.ai/api/models/field-service-routing/v1/route-plans"
+_DEFAULT_ENV_FILE = Path.home() / ".config" / "caire" / "env"
+
+
+def _load_env_file(env_file: Path) -> None:
+    """Load simple KEY=VALUE or export KEY=VALUE pairs into os.environ."""
+    if not env_file.exists():
+        return
+    pattern = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
+    for raw_line in env_file.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        match = pattern.match(line)
+        if not match:
+            continue
+        key, value = match.groups()
+        value = value.strip()
+        if (value.startswith('"') and value.endswith('"')) or (
+            value.startswith("'") and value.endswith("'")
+        ):
+            value = value[1:-1]
+        os.environ.setdefault(key, value)
+
+
+def _bootstrap_env() -> None:
+    """Load ~/.config/caire/env (or CAIRE_ENV_FILE override) if present."""
+    override = os.environ.get("CAIRE_ENV_FILE", "").strip()
+    if override:
+        _load_env_file(Path(override).expanduser())
+        return
+    _load_env_file(_DEFAULT_ENV_FILE)
 
 
 def fetch_solution(route_plan_id: str, api_key: str) -> dict:
@@ -65,6 +97,8 @@ def fetch_input(route_plan_id: str, api_key: str) -> dict:
 
 
 def main() -> int:
+    _bootstrap_env()
+
     parser = argparse.ArgumentParser(
         description="Fetch Timefold FSR solution by route plan ID",
         formatter_class=argparse.RawDescriptionHelpFormatter,

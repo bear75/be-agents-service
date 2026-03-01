@@ -36,9 +36,22 @@ REPO_BLOCK=$(grep -A 25 "^  $REPO_NAME:" "$CONFIG_FILE" | head -26)
 REPO_PATH=$(echo "$REPO_BLOCK" | grep "path:" | head -1 | sed 's/.*path: *//' | sed "s|~|$HOME|")
 PRIORITIES_DIR=$(echo "$REPO_BLOCK" | grep "priorities_dir:" | head -1 | sed 's/.*priorities_dir: *//' | tr -d '"' | tr -d "'")
 
+# Optional path overrides (useful in cloud/dev environments)
+if [ -n "${REPO_PATH_OVERRIDE:-}" ]; then
+  REPO_PATH="${REPO_PATH_OVERRIDE/#\~/$HOME}"
+elif [ "$REPO_NAME" = "appcaire" ] && [ -n "${APPCAIRE_PATH:-}" ]; then
+  REPO_PATH="${APPCAIRE_PATH/#\~/$HOME}"
+fi
+
 if [ -z "$REPO_PATH" ]; then
   echo "❌ Repository '$REPO_NAME' not found in config"
   exit 1
+fi
+
+# Cloud fallback: this repo may itself be the appcaire workspace.
+if [ ! -d "$REPO_PATH" ] && [ "$REPO_NAME" = "appcaire" ] && [ -d "$SERVICE_ROOT/recurring-visits" ]; then
+  echo "⚠️  appcaire path not found in config; using current workspace: $SERVICE_ROOT"
+  REPO_PATH="$SERVICE_ROOT"
 fi
 
 # Verify repo path exists

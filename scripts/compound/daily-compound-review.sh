@@ -23,9 +23,22 @@ fi
 # Parse repo configuration (simple YAML parsing)
 REPO_PATH=$(grep -A 20 "^  $REPO_NAME:" "$CONFIG_FILE" | grep "path:" | head -1 | sed 's/.*path: *//' | sed "s|~|$HOME|")
 
+# Optional path overrides (useful in cloud/dev environments)
+if [ -n "${REPO_PATH_OVERRIDE:-}" ]; then
+  REPO_PATH="${REPO_PATH_OVERRIDE/#\~/$HOME}"
+elif [ "$REPO_NAME" = "appcaire" ] && [ -n "${APPCAIRE_PATH:-}" ]; then
+  REPO_PATH="${APPCAIRE_PATH/#\~/$HOME}"
+fi
+
 if [ -z "$REPO_PATH" ]; then
   echo "❌ Repository '$REPO_NAME' not found in config"
   exit 1
+fi
+
+# Cloud fallback: this repo may itself be the appcaire workspace.
+if [ ! -d "$REPO_PATH" ] && [ "$REPO_NAME" = "appcaire" ] && [ -d "$SERVICE_ROOT/recurring-visits" ]; then
+  echo "⚠️  appcaire path not found in config; using current workspace: $SERVICE_ROOT"
+  REPO_PATH="$SERVICE_ROOT"
 fi
 
 # Verify repo path exists

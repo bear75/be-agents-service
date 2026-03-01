@@ -21,6 +21,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime
@@ -34,11 +35,44 @@ import requests
 print = functools.partial(print, flush=True)
 
 TIMEFOLD_BASE = "https://app.timefold.ai/api/models/field-service-routing/v1/route-plans"
-API_KEY = os.environ.get("TIMEFOLD_API_KEY", "tf_p_411fa75d-ffeb-40ec-b491-9d925bd1d1f3")
-HEADERS = {"Content-Type": "application/json", "X-API-KEY": API_KEY}
 SOLVER_TERMINAL = {"SOLVING_COMPLETED", "SOLVING_FAILED", "SOLVING_INCOMPLETE"}
 POLL_INTERVAL_SEC = 10
 POLL_TIMEOUT_SEC = 7200  # 2 hours
+_DEFAULT_ENV_FILE = Path.home() / ".config" / "caire" / "env"
+
+
+def _load_env_file(env_file: Path) -> None:
+    """Load simple KEY=VALUE or export KEY=VALUE pairs into os.environ."""
+    if not env_file.exists():
+        return
+    pattern = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
+    for raw_line in env_file.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        match = pattern.match(line)
+        if not match:
+            continue
+        key, value = match.groups()
+        value = value.strip()
+        if (value.startswith('"') and value.endswith('"')) or (
+            value.startswith("'") and value.endswith("'")
+        ):
+            value = value[1:-1]
+        os.environ.setdefault(key, value)
+
+
+def _bootstrap_env() -> None:
+    """Load ~/.config/caire/env (or CAIRE_ENV_FILE override) if present."""
+    override = os.environ.get("CAIRE_ENV_FILE", "").strip()
+    if override:
+        _load_env_file(Path(override).expanduser())
+        return
+    _load_env_file(_DEFAULT_ENV_FILE)
+
+
+def _headers(api_key: str) -> dict[str, str]:
+    return {"Content-Type": "application/json", "X-API-KEY": api_key}
 
 
 def validate_shifts(model_input: dict) -> list[tuple[str, str]]:
@@ -55,13 +89,17 @@ def validate_shifts(model_input: dict) -> list[tuple[str, str]]:
     return bad
 
 
-def submit_solve(payload: dict, configuration_id: str | None = None) -> dict:
+def submit_solve(payload: dict, api_key: str, configuration_id: str | None = None) -> dict:
     """POST a fresh solve request. Returns response JSON."""
     params = {}
     if configuration_id:
         params["configurationId"] = configuration_id
     r = requests.post(
-        TIMEFOLD_BASE, headers=HEADERS, json=payload, params=params or None, timeout=300
+        TIMEFOLD_BASE,
+        headers=_headers(api_key),
+        json=payload,
+        params=params or None,
+        timeout=300,
     )
     if r.status_code not in (200, 201, 202):
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:800]}")
@@ -69,26 +107,35 @@ def submit_solve(payload: dict, configuration_id: str | None = None) -> dict:
 
 
 def submit_from_patch(
-    payload: dict, route_plan_id: str, configuration_id: str | None = None
+    payload: dict,
+    route_plan_id: str,
+    api_key: str,
+    configuration_id: str | None = None,
 ) -> dict:
     """POST a from-patch request. Returns response JSON."""
     url = f"{TIMEFOLD_BASE}/{route_plan_id}/from-patch"
     params = {"select": "SOLVED", "operation": "SOLVE"}
     if configuration_id:
         params["configurationId"] = configuration_id
-    r = requests.post(url, headers=HEADERS, params=params, json=payload, timeout=60)
+    r = requests.post(
+        url,
+        headers=_headers(api_key),
+        params=params,
+        json=payload,
+        timeout=60,
+    )
     if r.status_code not in (200, 201, 202):
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:800]}")
     return r.json()
 
 
-def poll_until_done(plan_id: str) -> dict:
+def poll_until_done(plan_id: str, api_key: str) -> dict:
     """Poll route plan until terminal status. Returns final response."""
     url = f"{TIMEFOLD_BASE}/{plan_id}"
     deadline = time.monotonic() + POLL_TIMEOUT_SEC
     last_status = ""
     while time.monotonic() < deadline:
-        r = requests.get(url, headers=HEADERS, timeout=30)
+        r = requests.get(url, headers=_headers(api_key), timeout=30)
         if r.status_code != 200:
             raise RuntimeError(f"Poll error: HTTP {r.status_code}: {r.text[:500]}")
         data = r.json()
@@ -105,6 +152,8 @@ def poll_until_done(plan_id: str) -> dict:
 
 
 def main() -> int:
+    _bootstrap_env()
+
     ap = argparse.ArgumentParser(description="Submit to Timefold FSR API.")
     sub = ap.add_subparsers(dest="mode", required=True)
 
@@ -133,9 +182,21 @@ def main() -> int:
         p.add_argument("--wait", action="store_true", help="Poll until solve completes.")
         p.add_argument("--save", type=Path, default=None, help="Save output JSON to file (timestamp inserted: output_YYYYMMDD_HHMMSS.json).")
         p.add_argument("--no-timestamp", action="store_true", help="Use exact --save path (no timestamp).")
+        p.add_argument(
+            "--api-key",
+            default=None,
+            help="Timefold API key (default: TIMEFOLD_API_KEY env or ~/.config/caire/env).",
+        )
     patch_p.add_argument("--save-id", type=Path, default=None, help="Write new route plan ID to this file (from-patch only).")
 
     args = ap.parse_args()
+    api_key = getattr(args, "api_key", None) or os.environ.get("TIMEFOLD_API_KEY", "")
+    if not api_key:
+        print(
+            "Error: Set TIMEFOLD_API_KEY, pass --api-key, or create ~/.config/caire/env",
+            file=sys.stderr,
+        )
+        return 1
 
     if args.mode == "solve":
         if not args.input.exists():
@@ -160,7 +221,11 @@ def main() -> int:
         if getattr(args, "configuration_id", None):
             print(f"Using configuration profile: {args.configuration_id}")
         try:
-            resp = submit_solve(payload, getattr(args, "configuration_id", None))
+            resp = submit_solve(
+                payload,
+                api_key,
+                getattr(args, "configuration_id", None),
+            )
         except RuntimeError as e:
             print(f"Error: {e}", file=sys.stderr)
             return 1
@@ -180,7 +245,10 @@ def main() -> int:
             print(f"Using configuration profile: {args.configuration_id}")
         try:
             resp = submit_from_patch(
-                payload, args.route_plan_id, getattr(args, "configuration_id", None)
+                payload,
+                args.route_plan_id,
+                api_key,
+                getattr(args, "configuration_id", None),
             )
         except RuntimeError as e:
             print(f"Error: {e}", file=sys.stderr)
@@ -199,7 +267,7 @@ def main() -> int:
     if args.wait:
         print(f"\nPolling for completion (route plan: {plan_id})...")
         try:
-            result = poll_until_done(plan_id)
+            result = poll_until_done(plan_id, api_key)
         except RuntimeError as e:
             print(f"Error: {e}", file=sys.stderr)
             return 1
