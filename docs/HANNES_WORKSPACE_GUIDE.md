@@ -4,10 +4,10 @@ A short guide for using your personal workspace bot on **Telegram only**. (Whats
 
 ---
 
-## What You Have
+## What You Have (Simple Mode)
 
 - **Your workspace:** `hannes-space` in shared iCloud (inbox, priorities, tasks, follow-ups, check-ins)
-- **Your assistant:** Telegram (@Appcaire_agent_bot) only
+- **Your assistant:** Telegram (@Appcaire_agent_bot) only (shared bot)
 - **Access:** iPhone (Telegram, Files app), PC (iCloud for Windows, icloud.com)
 
 Your workspace syncs via iCloud, so you can see and edit your files from any device.
@@ -23,7 +23,7 @@ Your workspace syncs via iCloud, so you can see and edit your files from any dev
 3. Send any message → copy your **numeric user ID** (e.g. `987654321`)
 4. Send the ID to pappa
 5. Pappa adds it to OpenClaw config and restarts
-6. Message **@Appcaire_agent_bot** — Darwin will respond (same bot as pappa, your own workspace)
+6. Message **@Appcaire_agent_bot** — the bot responds
 
 ---
 
@@ -40,7 +40,7 @@ Your workspace syncs via iCloud, so you can see and edit your files from any dev
 | "Process my input docs" | Converts input docs to inbox/priorities/tasks |
 | "Add notes to today" | Adds notes to today's check-in |
 | "Remember X" | Adds X to memory — Darwin remembers across sessions |
-| "Run compound" / "Implement" | *(If set up)* Picks Priority #1, creates PR in `hannes-projects` only |
+| "Run compound" / "Implement" | *(Simple mode)* Ask pappa to trigger compound manually for your repo key `hannes-projects` |
 | General questions | Answered from knowledge (loads memory first if relevant) |
 
 ---
@@ -54,22 +54,25 @@ Your workspace syncs via iCloud, so you can see and edit your files from any dev
 
 ---
 
-## What You Can't Do
+## What You Can't Do (Simple Mode)
 
-- **Trigger compound on other repos:** Darwin can **only** run compound on `hannes-projects` — never on pappa's repos (beta-appcaire, etc.).
+- **Trigger compound on other repos:** pappa should only run `hannes-projects` for your tasks.
 - **See parent's dashboard:** Your actions don't appear there. Your workspace is separate.
 
 ---
 
 ## Compound: Build Apps with Darwin (optional)
 
-If pappa has set up compound for you, Darwin can create PRs in your repo `hannes-projects` only. Before it works:
+If pappa has set up compound for you, he can trigger coding from your priorities into your repo. Before it works:
 
-1. **Create the repo** (with pappa): `~/HomeCare/hannes-projects`, init git, push to GitHub
+1. **Repo mapping** (with pappa): `hannes-projects` points to local clone `~/HomeCare/strength-stride-coach` and GitHub `hannes453/strength-stride-coach`
 2. **Add priorities** in your workspace (`priorities.md`) — compound picks Priority #1
-3. Say **"run compound"** or **"implement"** — Darwin creates a PR in your repo
+3. Say **"run compound"** or **"implement"** — pappa runs:
+   `./scripts/compound/auto-compound.sh hannes-projects`
 
 If compound isn't set up yet, the bot is for **planning and ideas** — use it for inbox, priorities, tasks. Code manually on your PC and push via GitHub Desktop or VS Code.
+
+> Note: In simple mode, Telegram is shared with pappa on one bot. Full hard isolation is a later upgrade (separate bot/profile).
 
 ---
 
