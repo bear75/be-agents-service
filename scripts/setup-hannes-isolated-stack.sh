@@ -6,7 +6,7 @@
 # - Separate OpenClaw runtime config/state + Telegram bot
 #
 # Usage:
-#   ./scripts/setup-hannes-isolated-stack.sh --hannes-id 7604480012 --bot-token "<HANNES_BOT_TOKEN>" [--owner-id 8399128208]
+#   ./scripts/setup-hannes-isolated-stack.sh --hannes-id 7604480012 --bot-token "<HANNES_BOT_TOKEN>"
 #
 
 set -euo pipefail
@@ -15,17 +15,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 HANNES_REPOS_CONFIG="$SERVICE_ROOT/config/repos.hannes.yaml"
 
-OWNER_ID=""
 HANNES_ID=""
 BOT_TOKEN="${HANNES_BOT_TOKEN:-}"
 SEND_TEST=true
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --owner-id)
-      OWNER_ID="${2:-}"
-      shift 2
-      ;;
     --hannes-id)
       HANNES_ID="${2:-}"
       shift 2
@@ -52,19 +47,7 @@ done
 export REPOS_CONFIG_PATH="$HANNES_REPOS_CONFIG"
 
 echo "[setup-hannes-isolated] Bootstrapping repo/workspace from $REPOS_CONFIG_PATH"
-if [[ "$SEND_TEST" == "true" ]]; then
-  "$SERVICE_ROOT/scripts/setup-hannes-simple.sh" \
-    hannes-projects \
-    --hannes-id "$HANNES_ID" \
-    ${OWNER_ID:+--owner-id "$OWNER_ID"} \
-    --send-telegram-test \
-    --telegram-token "$BOT_TOKEN"
-else
-  "$SERVICE_ROOT/scripts/setup-hannes-simple.sh" \
-    hannes-projects \
-    --hannes-id "$HANNES_ID" \
-    ${OWNER_ID:+--owner-id "$OWNER_ID"}
-fi
+"$SERVICE_ROOT/scripts/setup-hannes-simple.sh" hannes-projects
 
 echo
 echo "[setup-hannes-isolated] Configuring isolated OpenClaw runtime"
