@@ -52,10 +52,19 @@ echo "$MSG"
 # ─── Send via Telegram ───────────────────────────────────────────────────────
 
 if [[ -n "${TELEGRAM_BOT_TOKEN:-}" && -n "${TELEGRAM_CHAT_ID:-}" ]]; then
-  curl -s -X POST \
+  RESPONSE=$(curl -s -X POST \
     "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
     -d "chat_id=${TELEGRAM_CHAT_ID}" \
     -d "text=${MSG}" \
     -d "parse_mode=Markdown" \
-    >/dev/null 2>&1 || echo "⚠️  Failed to send Telegram notification"
+    2>/dev/null || echo '{"ok":false}')
+
+  if echo "$RESPONSE" | jq -r '.ok // false' 2>/dev/null | rg -q '^true$'; then
+    echo "✅ Sent Telegram session notification"
+  else
+    echo "⚠️  Failed to send Telegram session notification"
+    echo "$RESPONSE" | jq '.' 2>/dev/null || echo "$RESPONSE"
+  fi
+else
+  echo "⚠️  TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set. Notification not sent."
 fi
