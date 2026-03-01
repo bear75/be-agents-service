@@ -30,6 +30,7 @@
 | [setup/email-setup.md](setup/email-setup.md) | Email integration |
 | [SANDBOX_SETUP.md](SANDBOX_SETUP.md) | Sandbox/Hannes setup |
 | [HANNES_WORKSPACE_GUIDE.md](HANNES_WORKSPACE_GUIDE.md) | Hannes workspace & channels |
+| [HANNES_SIMPLE_SETUP.md](HANNES_SIMPLE_SETUP.md) | 90/10 simple setup (DARWIN + Hannes) |
 
 ### Architecture & Reference
 

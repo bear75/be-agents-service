@@ -1,6 +1,7 @@
 # Repository Configuration
 # Repos: path = git repo root. Optional workspace.path = shared markdown folder (inbox, priorities, memory).
-# One shared workspace for Cursor/compound/Telegram: AgentWorkspace/DARWIN (see "darwin" entry).
+# Primary shared workspace for Cursor/compound/Telegram: AgentWorkspace/DARWIN (see "darwin" entry).
+# Optional secondary workspace: AgentWorkspace/hannes-space (see "hannes-projects" entry).
 
 repos:
   # Workspace-only (no git repo): the shared folder for Telegram/Cursor/compound. Dashboard "workspace" = darwin.
@@ -67,11 +68,11 @@ repos:
       repo: be-agents-service
       default_branch: main
 
-  # Hannes sandbox (WORKSPACE_ALLOWED_REPOS=hannes-projects)
+  # Hannes sandbox (simple mode): separate workspace + repo; primary setup stays on DARWIN.
   hannes-projects:
-    path: ~/HomeCare/hannes-projects
+    path: ~/HomeCare/strength-stride-coach
     workspace:
-      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/DARWIN
+      path: ~/Library/Mobile Documents/com~apple~CloudDocs/AgentWorkspace/hannes-space
       enabled: true
     schedule:
       review: "22:30"
@@ -81,6 +82,6 @@ repos:
     tasks_dir: tasks/
     enabled: true
     github:
-      owner: bear75
-      repo: hannes-projects
+      owner: hannes453
+      repo: strength-stride-coach
       default_branch: main
