@@ -61,6 +61,7 @@ Runs with:
 - `PORT=3011`
 - `REPOS_CONFIG_PATH=config/repos.hannes.yaml`
 - `AGENT_DB_PATH=.compound-state/agent-service-hannes.db`
+- `APP_DISPLAY_NAME=Hannes AI`
 
 ### 3) Verify isolated stack
 
