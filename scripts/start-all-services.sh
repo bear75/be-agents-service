@@ -89,17 +89,38 @@ for job in "${JOBS[@]}"; do
 done
 
 if command -v openclaw >/dev/null 2>&1; then
-  if [[ -f "$HOME/.openclaw/openclaw.json" ]]; then
-    if openclaw gateway restart >/dev/null 2>&1; then
-      log "OpenClaw gateway restarted"
+  DUAL_OPENCLAW_SCRIPT="$SERVICE_ROOT/scripts/openclaw/setup-dual-launchd.sh"
+  if [[ -x "$DUAL_OPENCLAW_SCRIPT" ]]; then
+    if [[ -f "$HOME/.openclaw/openclaw.json" ]]; then
+      if [[ -f "$HOME/.openclaw-hannes/openclaw.json" ]]; then
+        if "$DUAL_OPENCLAW_SCRIPT" >/dev/null 2>&1; then
+          log "OpenClaw dual launchd services installed/restarted"
+        else
+          warn "OpenClaw dual launchd setup failed"
+        fi
+      else
+        if "$DUAL_OPENCLAW_SCRIPT" --darwin-only >/dev/null 2>&1; then
+          log "OpenClaw Darwin launchd service installed/restarted"
+        else
+          warn "OpenClaw Darwin launchd setup failed"
+        fi
+      fi
     else
-      warn "OpenClaw gateway restart failed"
+      warn "OpenClaw config missing: $HOME/.openclaw/openclaw.json"
     fi
   else
-    warn "OpenClaw config missing: $HOME/.openclaw/openclaw.json"
+    if [[ -f "$HOME/.openclaw/openclaw.json" ]]; then
+      if openclaw gateway restart >/dev/null 2>&1; then
+        log "OpenClaw gateway restarted"
+      else
+        warn "OpenClaw gateway restart failed"
+      fi
+    else
+      warn "OpenClaw config missing: $HOME/.openclaw/openclaw.json"
+    fi
   fi
 else
-  warn "OpenClaw CLI not installed (skip gateway restart)"
+  warn "OpenClaw CLI not installed (skip gateway setup)"
 fi
 
 if [[ "$SKIP_VERIFY" == "false" ]]; then

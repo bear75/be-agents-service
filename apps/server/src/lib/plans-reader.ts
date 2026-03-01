@@ -6,14 +6,17 @@
  */
 
 import { readFileSync, readdirSync, existsSync, statSync } from 'fs';
-import { join, basename } from 'path';
+import { join, basename, resolve, isAbsolute } from 'path';
 import type { PlanDocument, SetupStatus } from '../types/index.js';
 
 /**
- * Read all plan/PRD documents from docs/
+ * Read all plan/PRD documents from a docs directory.
+ * Accepts either:
+ * - a direct docs path, or
+ * - a service/repo root that contains docs/
  */
-export function readPlans(serviceRoot: string): PlanDocument[] {
-  const docsDir = join(serviceRoot, 'docs');
+export function readPlans(pathOrRoot: string): PlanDocument[] {
+  const docsDir = resolveDocsDir(pathOrRoot);
   if (!existsSync(docsDir)) return [];
 
   try {
@@ -81,7 +84,7 @@ export function checkSetupStatus(
   serviceRoot: string,
   workspacePath?: string
 ): SetupStatus {
-  const openclawConfigPath = join(serviceRoot, 'config', 'openclaw', 'openclaw.json');
+  const openclawConfigPath = resolveOpenClawConfigPath(serviceRoot);
   const openclawConfigExists = existsSync(openclawConfigPath);
 
   // Check if the openclaw config has real values (not just template)
@@ -89,7 +92,9 @@ export function checkSetupStatus(
   if (openclawConfigExists) {
     try {
       const config = readFileSync(openclawConfigPath, 'utf8');
-      openclawConfigured = !config.includes('YOUR_TELEGRAM_USER_ID');
+      openclawConfigured =
+        !config.includes('YOUR_TELEGRAM_USER_ID') &&
+        !config.includes('YOUR_TELEGRAM_BOT_TOKEN');
     } catch {
       // ignore
     }
@@ -177,4 +182,31 @@ function extractLimitations(content: string): string[] {
   }
 
   return limitations;
+}
+
+function resolveDocsDir(pathOrRoot: string): string {
+  const expanded = pathOrRoot.startsWith('~')
+    ? pathOrRoot.replace('~', process.env.HOME || '~')
+    : pathOrRoot;
+  const directDocsPath = resolve(expanded);
+  const nestedDocsPath = resolve(expanded, 'docs');
+  if (existsSync(directDocsPath) && basename(directDocsPath) === 'docs') {
+    return directDocsPath;
+  }
+  if (existsSync(nestedDocsPath)) {
+    return nestedDocsPath;
+  }
+  return directDocsPath;
+}
+
+function resolveOpenClawConfigPath(serviceRoot: string): string {
+  const configuredPath = (process.env.OPENCLAW_CONFIG_PATH || '').trim();
+  if (!configuredPath) {
+    return join(process.env.HOME || serviceRoot, '.openclaw', 'openclaw.json');
+  }
+
+  const expanded = configuredPath.startsWith('~')
+    ? configuredPath.replace('~', process.env.HOME || '~')
+    : configuredPath;
+  return isAbsolute(expanded) ? expanded : resolve(serviceRoot, expanded);
 }

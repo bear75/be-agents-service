@@ -8,8 +8,21 @@
 import { Router, Request, Response } from 'express';
 import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 import { readPlans, readPlan, checkSetupStatus } from '../lib/plans-reader.js';
+import { isAbsolute, resolve } from 'path';
 
 const router = Router();
+
+function resolvePlanDocsRoot(): string {
+  const serviceRoot = getServiceRoot();
+  const override = (process.env.PLAN_DOCS_ROOT || '').trim();
+  if (!override) {
+    return resolve(serviceRoot, 'docs');
+  }
+  const expanded = override.startsWith('~')
+    ? override.replace('~', process.env.HOME || '~')
+    : override;
+  return isAbsolute(expanded) ? expanded : resolve(serviceRoot, expanded);
+}
 
 /**
  * GET /api/plans/setup-status
@@ -19,7 +32,7 @@ const router = Router();
 router.get('/setup-status', (req: Request, res: Response) => {
   try {
     const serviceRoot = getServiceRoot();
-    const repoName = (req.query.repo as string) || 'beta-appcaire';
+    const repoName = (req.query.repo as string) || process.env.DEFAULT_TARGET_REPO || 'beta-appcaire';
     const config = getRepoConfig(repoName);
     const workspacePath = config?.workspace?.enabled ? config.workspace.path : undefined;
 
@@ -43,8 +56,8 @@ router.get('/setup-status', (req: Request, res: Response) => {
  */
 router.get('/', (req: Request, res: Response) => {
   try {
-    const serviceRoot = getServiceRoot();
-    const plans = readPlans(serviceRoot);
+    const plansRoot = resolvePlanDocsRoot();
+    const plans = readPlans(plansRoot);
 
     res.json({
       success: true,
@@ -74,8 +87,8 @@ router.get('/', (req: Request, res: Response) => {
 router.get('/:slug', (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
-    const serviceRoot = getServiceRoot();
-    const plan = readPlan(serviceRoot, slug);
+    const plansRoot = resolvePlanDocsRoot();
+    const plan = readPlan(plansRoot, slug);
 
     if (!plan) {
       res.status(404).json({

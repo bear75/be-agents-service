@@ -51,16 +51,42 @@ function resolveCanonicalAgentId(agentId: string): string | null {
   return null;
 }
 
-const ALLOWED_BASE_PATHS = [
-  getServiceRoot(),
-  path.join(getServiceRoot(), '..', 'beta-appcaire'),
-];
+function expandHome(filePath: string): string {
+  return filePath.startsWith('~')
+    ? filePath.replace('~', process.env.HOME || '~')
+    : filePath;
+}
+
+function resolveAllowedBasePaths(): string[] {
+  const raw = (process.env.FILE_ACCESS_ALLOWED_PATHS || '').trim();
+  if (!raw) {
+    return [getServiceRoot(), path.join(getServiceRoot(), '..', 'beta-appcaire')];
+  }
+  return raw
+    .split(',')
+    .map((entry) => expandHome(entry.trim()))
+    .filter(Boolean)
+    .map((entry) => (path.isAbsolute(entry) ? entry : path.resolve(getServiceRoot(), entry)));
+}
+
+function resolveDocsDir(): string {
+  const planDocsRoot = (process.env.PLAN_DOCS_ROOT || '').trim();
+  if (!planDocsRoot) {
+    return path.join(getServiceRoot(), 'docs');
+  }
+  const expanded = expandHome(planDocsRoot);
+  return path.isAbsolute(expanded)
+    ? expanded
+    : path.resolve(getServiceRoot(), expanded);
+}
+
+const ALLOWED_BASE_PATHS = resolveAllowedBasePaths();
 
 /** Serve docs from docs/ dir - used by both direct route and router */
 export function handleDocsRequest(req: Request, res: Response): void {
   const raw = (req.query.path as string) || '';
   const relativePath = raw.replace(/\.\./g, '').replace(/^\/+/, '').trim() || '';
-  const docsDir = path.join(getServiceRoot(), 'docs');
+  const docsDir = resolveDocsDir();
   const filePath = path.join(docsDir, relativePath);
 
   if (!path.resolve(filePath).startsWith(path.resolve(docsDir))) {
@@ -100,7 +126,10 @@ router.get('/agent-script', (req: Request, res: Response) => {
 router.get('/agent-prompt', (req: Request, res: Response) => {
   const rawId = (req.query.agentId as string)?.trim();
   const agentId = rawId ? resolveCanonicalAgentId(rawId) : null;
-  const repoName = (req.query.repo as string)?.trim() || 'appcaire';
+  const repoName =
+    (req.query.repo as string)?.trim() ||
+    process.env.DEFAULT_TARGET_REPO ||
+    'appcaire';
   if (!agentId || !AGENT_TO_FILES[agentId]) {
     return res.status(400).json({ error: 'Unknown agent ID' });
   }

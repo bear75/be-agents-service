@@ -18,6 +18,7 @@ HANNES_REPOS_CONFIG="$SERVICE_ROOT/config/repos.hannes.yaml"
 HANNES_ID=""
 BOT_TOKEN="${HANNES_BOT_TOKEN:-}"
 SEND_TEST=true
+INSTALL_DUAL_LAUNCHD=true
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -31,6 +32,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --no-test)
       SEND_TEST=false
+      shift
+      ;;
+    --no-dual-launchd)
+      INSTALL_DUAL_LAUNCHD=false
       shift
       ;;
     *)
@@ -56,6 +61,18 @@ if [[ "$SEND_TEST" == "true" ]]; then
   OPENCLAW_SETUP_ARGS+=(--send-test)
 fi
 "$SERVICE_ROOT/scripts/setup-hannes-isolated-openclaw.sh" "${OPENCLAW_SETUP_ARGS[@]}"
+
+if [[ "$INSTALL_DUAL_LAUNCHD" == "true" ]]; then
+  DUAL_SCRIPT="$SERVICE_ROOT/scripts/openclaw/setup-dual-launchd.sh"
+  if [[ -x "$DUAL_SCRIPT" ]]; then
+    echo
+    echo "[setup-hannes-isolated] Installing dual OpenClaw launchd services (Darwin + Hannes)"
+    "$DUAL_SCRIPT" || echo "[setup-hannes-isolated] WARNING: dual launchd setup reported issues"
+  else
+    echo
+    echo "[setup-hannes-isolated] WARNING: dual launchd script not found: $DUAL_SCRIPT"
+  fi
+fi
 
 echo
 echo "[setup-hannes-isolated] Done."

@@ -18,6 +18,7 @@ HANNES_ID=""
 BOT_TOKEN="${HANNES_BOT_TOKEN:-}"
 GATEWAY_PORT="${HANNES_GATEWAY_PORT:-19001}"
 SEND_TEST=false
+INSTALL_SERVICE=true
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -35,6 +36,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --send-test)
       SEND_TEST=true
+      shift
+      ;;
+    --no-service)
+      INSTALL_SERVICE=false
       shift
       ;;
     *)
@@ -96,9 +101,28 @@ if [[ "$SEND_TEST" == "true" ]]; then
   fi
 fi
 
+if [[ "$INSTALL_SERVICE" == "true" ]]; then
+  SERVICE_MANAGER="$SERVICE_ROOT/scripts/openclaw/manage-gateway-launchd.sh"
+  if [[ -x "$SERVICE_MANAGER" ]]; then
+    OPENCLAW_HANNES_CONFIG="$RUNTIME_CONFIG" \
+    OPENCLAW_HANNES_STATE="$RUNTIME_STATE" \
+    OPENCLAW_HANNES_PORT="$GATEWAY_PORT" \
+      "$SERVICE_MANAGER" hannes install
+  else
+    echo "[setup-hannes-openclaw] WARNING: missing service manager script: $SERVICE_MANAGER"
+    echo "[setup-hannes-openclaw] Falling back to manual/foreground usage."
+  fi
+fi
+
 echo
-echo "Start isolated Hannes gateway (foreground):"
-echo "  OPENCLAW_CONFIG_PATH=\"$RUNTIME_CONFIG\" OPENCLAW_STATE_DIR=\"$RUNTIME_STATE\" openclaw gateway --port \"$GATEWAY_PORT\""
+echo "Hannes OpenClaw runtime is configured."
 echo
-echo "If you prefer service mode (and your OpenClaw build supports it), run:"
-echo "  OPENCLAW_CONFIG_PATH=\"$RUNTIME_CONFIG\" OPENCLAW_STATE_DIR=\"$RUNTIME_STATE\" openclaw gateway restart"
+echo "Profile status:"
+if [[ -x "${SERVICE_ROOT}/scripts/openclaw/manage-gateway-launchd.sh" ]]; then
+  OPENCLAW_HANNES_CONFIG="$RUNTIME_CONFIG" \
+  OPENCLAW_HANNES_STATE="$RUNTIME_STATE" \
+  OPENCLAW_HANNES_PORT="$GATEWAY_PORT" \
+    "${SERVICE_ROOT}/scripts/openclaw/manage-gateway-launchd.sh" hannes status
+else
+  echo "  OPENCLAW_CONFIG_PATH=\"$RUNTIME_CONFIG\" OPENCLAW_STATE_DIR=\"$RUNTIME_STATE\" openclaw gateway --port \"$GATEWAY_PORT\""
+fi

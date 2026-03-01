@@ -19,7 +19,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 RESOLVER_SCRIPT="$SERVICE_ROOT/scripts/workspace/resolve-workspace.sh"
-OPENCLAW_CONFIG="$HOME/.openclaw/openclaw.json"
+OPENCLAW_CONFIG_RAW="${OPENCLAW_CONFIG_PATH:-$HOME/.openclaw/openclaw.json}"
+OPENCLAW_CONFIG=""
+OPENCLAW_LAUNCHD_LABEL="${OPENCLAW_LAUNCHD_LABEL:-}"
+OPENCLAW_WORKSPACE_REPO_KEY="${OPENCLAW_WORKSPACE_REPO_KEY:-darwin}"
 CAIRE_ENV="$HOME/.config/caire/env"
 
 REPO_NAME="appcaire"
@@ -70,6 +73,8 @@ expand_home_path() {
   p="${p%/}"
   echo "$p"
 }
+
+OPENCLAW_CONFIG="$(expand_home_path "$OPENCLAW_CONFIG_RAW")"
 
 require_cmd() {
   local cmd="$1"
@@ -188,15 +193,15 @@ if [[ -f "$OPENCLAW_CONFIG" ]]; then
   if [[ -f "$RESOLVER_SCRIPT" ]]; then
     # shellcheck source=/dev/null
     source "$RESOLVER_SCRIPT"
-    darwin_workspace="$(expand_home_path "$(get_workspace_path darwin 2>/dev/null || true)")"
-    if [[ -n "$darwin_workspace" ]]; then
-      if [[ "$darwin_workspace" == "$openclaw_workspace" ]]; then
-        ok "OpenClaw workspace matches darwin workspace path"
+    expected_workspace="$(expand_home_path "$(get_workspace_path "$OPENCLAW_WORKSPACE_REPO_KEY" 2>/dev/null || true)")"
+    if [[ -n "$expected_workspace" ]]; then
+      if [[ "$expected_workspace" == "$openclaw_workspace" ]]; then
+        ok "OpenClaw workspace matches $OPENCLAW_WORKSPACE_REPO_KEY workspace path"
       else
-        fail "Workspace mismatch: openclaw='$openclaw_workspace' darwin='$darwin_workspace'"
+        fail "Workspace mismatch: openclaw='$openclaw_workspace' $OPENCLAW_WORKSPACE_REPO_KEY='$expected_workspace'"
       fi
     else
-      warn "Could not resolve darwin workspace path from repos.yaml"
+      warn "Could not resolve $OPENCLAW_WORKSPACE_REPO_KEY workspace path from repos config"
     fi
   fi
 fi
@@ -208,10 +213,18 @@ else
 fi
 
 if command -v launchctl >/dev/null 2>&1; then
-  if launchctl list 2>/dev/null | grep -Eq 'ai\.openclaw\.gateway'; then
-    ok "OpenClaw gateway launchd job is loaded"
+  if [[ -n "$OPENCLAW_LAUNCHD_LABEL" ]]; then
+    if launchctl list 2>/dev/null | grep -Fq "$OPENCLAW_LAUNCHD_LABEL"; then
+      ok "OpenClaw gateway launchd job is loaded ($OPENCLAW_LAUNCHD_LABEL)"
+    else
+      warn "OpenClaw gateway launchd job not loaded ($OPENCLAW_LAUNCHD_LABEL)"
+    fi
   else
-    warn "OpenClaw gateway launchd job not loaded (ai.openclaw.gateway)"
+    if launchctl list 2>/dev/null | grep -Eq 'com\.appcaire\.openclaw-darwin|ai\.openclaw\.gateway'; then
+      ok "OpenClaw gateway launchd job is loaded"
+    else
+      warn "OpenClaw gateway launchd job not loaded (com.appcaire.openclaw-darwin or ai.openclaw.gateway)"
+    fi
   fi
 else
   warn "launchctl not found (non-macOS environment); skipping launchd checks"
@@ -269,14 +282,20 @@ fi
 
 section "macOS launchd jobs"
 if command -v launchctl >/dev/null 2>&1; then
-  required_jobs=(
-    "com.appcaire.agent-server"
-    "com.appcaire.auto-compound"
-    "com.appcaire.daily-compound-review"
-    "com.appcaire.morning-briefing"
-    "com.appcaire.weekly-review"
-  )
+  if [[ -n "${APP_REQUIRED_LAUNCHD_JOBS:-}" ]]; then
+    IFS=',' read -r -a required_jobs <<< "${APP_REQUIRED_LAUNCHD_JOBS}"
+  else
+    required_jobs=(
+      "com.appcaire.agent-server"
+      "com.appcaire.auto-compound"
+      "com.appcaire.daily-compound-review"
+      "com.appcaire.morning-briefing"
+      "com.appcaire.weekly-review"
+    )
+  fi
   for label in "${required_jobs[@]}"; do
+    label="$(echo "$label" | xargs)"
+    [[ -n "$label" ]] || continue
     if launchctl list 2>/dev/null | grep -Fq "$label"; then
       ok "launchd job loaded: $label"
     else
