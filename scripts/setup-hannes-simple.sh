@@ -19,6 +19,9 @@ SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONFIG_FILE="$SERVICE_ROOT/config/repos.yaml"
 INIT_WORKSPACE_SCRIPT="$SERVICE_ROOT/scripts/workspace/init-workspace.sh"
 TELEGRAM_TEST_SCRIPT="$SERVICE_ROOT/scripts/notifications/send-telegram-test.sh"
+OPENCLAW_TEMPLATE="$SERVICE_ROOT/config/openclaw/openclaw.json"
+OPENCLAW_CONFIG="$HOME/.openclaw/openclaw.json"
+ENV_FILE="$HOME/.config/caire/env"
 
 REPO_KEY="${1:-hannes-projects}"
 OWNER_ID=""
@@ -64,6 +67,11 @@ done
 log() { echo "[setup-hannes] $*"; }
 warn() { echo "[setup-hannes] WARNING: $*"; }
 fail() { echo "[setup-hannes] ERROR: $*" >&2; exit 1; }
+
+if [[ -f "$ENV_FILE" ]]; then
+  # shellcheck source=/dev/null
+  source "$ENV_FILE" || true
+fi
 
 [[ -f "$CONFIG_FILE" ]] || fail "Missing config file: $CONFIG_FILE"
 [[ -f "$INIT_WORKSPACE_SCRIPT" ]] || fail "Missing workspace init script: $INIT_WORKSPACE_SCRIPT"
@@ -113,8 +121,28 @@ if [[ -n "$OWNER_ID" || -n "$HANNES_ID" ]]; then
   [[ -n "$OWNER_ID" ]] && MERGED_IDS+=("$OWNER_ID")
   [[ -n "$HANNES_ID" ]] && MERGED_IDS+=("$HANNES_ID")
   if command -v openclaw >/dev/null 2>&1; then
+    if [[ -f "$OPENCLAW_CONFIG" ]] && grep -qE '^\s*agent:\s*$' "$OPENCLAW_CONFIG"; then
+      warn "Legacy OpenClaw config detected (agent:). Replacing with template."
+      mkdir -p "$HOME/.openclaw"
+      cp "$OPENCLAW_TEMPLATE" "$OPENCLAW_CONFIG"
+    fi
+
     log "Running OpenClaw doctor fix (safe no-op if already clean)"
     openclaw doctor --fix >/dev/null || true
+
+    ACTIVE_TELEGRAM_TOKEN="${TELEGRAM_TOKEN:-${TELEGRAM_BOT_TOKEN:-}}"
+    if [[ -n "$ACTIVE_TELEGRAM_TOKEN" ]]; then
+      log "Setting Telegram bot token in OpenClaw config"
+      openclaw config set channels.telegram.botToken "$ACTIVE_TELEGRAM_TOKEN" >/dev/null || true
+    else
+      warn "No Telegram token provided or found in env; bot may not reply to inbound messages"
+    fi
+
+    log "Ensuring OpenClaw gateway.mode=local"
+    openclaw config set gateway.mode local >/dev/null || true
+    log "Ensuring Telegram channel is enabled"
+    openclaw config set channels.telegram.enabled true >/dev/null || true
+
     IDS_JSON="$(printf '%s\n' "${MERGED_IDS[@]}" | jq -R . | jq -s .)"
     log "Updating Telegram allowFrom via openclaw config set"
     openclaw config set channels.telegram.allowFrom "$IDS_JSON" >/dev/null
