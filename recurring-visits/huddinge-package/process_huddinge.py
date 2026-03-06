@@ -15,8 +15,13 @@ Usage:
   # Full pipeline (expand + JSON) and send to prod
   python process_huddinge.py --weeks 2 --env prod --send
 
-  # With continuity: build manual pools, patch requiredVehicles (max 15 per client), write input_continuity_*.json and submit to prod
+  # With continuity: build manual pools, patch requiredVehicles (default max 15 per client), write input_continuity_*.json and submit to prod
   python process_huddinge.py --expanded-csv expanded/huddinge_2wk_expanded_20260224_043456.csv --weeks 2 --env prod --continuity --send
+  # Looser continuity (more vehicles per client) to reduce wait: --continuity-max-per-client 25 or 30
+  # Soft continuity (solver can assign outside pool): --continuity --continuity-preferred
+
+  # Use same vehicle/shift set as a base run (e.g. 5ff7929f with 42 vehicles, 412 shifts) so continuity input is comparable
+  python process_huddinge.py --expanded-csv expanded/huddinge_2wk_expanded_20260224_043456.csv --weeks 2 --base-input "continuity -3march/export-field-service-routing-v1-5ff7929f-738b-4cfa-9add-845c03089b0d-input.json" --continuity --send
 """
 
 import argparse
@@ -79,7 +84,13 @@ Examples:
         "--source-file",
         type=Path,
         default=None,
-        help="Source CSV filename under output-dir/source/ (e.g. source.csv for demo-data)",
+        help="Source CSV filename under output-dir/source/ (e.g. source.csv for demo-data). For --source-format attendo_4mars, use output-dir/huddinge-4mars-csv/ or pass path.",
+    )
+    parser.add_argument(
+        "--source-format",
+        choices=["huddinge", "attendo_4mars"],
+        default="huddinge",
+        help="Source CSV format: huddinge (default) or attendo_4mars (ATTENDO_DATABEHOV_PER_KUND_OCH_BESOK). For attendo_4mars, planning window is 2026-03-02 to 2026-03-15.",
     )
     parser.add_argument(
         "--expanded-csv",
@@ -101,12 +112,29 @@ Examples:
     parser.add_argument(
         "--continuity",
         action="store_true",
-        help="Build manual continuity pools from expanded CSV, patch FSR input with requiredVehicles (max 15 per client), write tf_input_continuity JSON; if --send, submit that continuity input.",
+        help="Build manual continuity pools from expanded CSV, patch FSR input with requiredVehicles (max per client from --continuity-max-per-client), write tf_input_continuity JSON; if --send, submit that continuity input.",
+    )
+    parser.add_argument(
+        "--continuity-max-per-client",
+        type=int,
+        default=15,
+        help="Max vehicle IDs per client for continuity pools (default 15). Use 25–30 to loosen and reduce wait.",
+    )
+    parser.add_argument(
+        "--continuity-preferred",
+        action="store_true",
+        help="Use preferredVehicles (soft) instead of requiredVehicles; solver can assign outside pool to reduce wait.",
     )
     parser.add_argument(
         "--config-id",
         default=None,
         help="Override Timefold configuration ID for --send (e.g. a43d4eec-9f53-40b3-82ad-f135adc8c7e3 for prod run with different profile)",
+    )
+    parser.add_argument(
+        "--base-input",
+        type=Path,
+        default=None,
+        help="Path to a base input JSON (e.g. 5ff7929f export). Use its modelInput.vehicles so shift count matches the base run (e.g. 412 instead of 1208). Visits and continuity still come from expanded CSV.",
     )
     args = parser.parse_args()
 
@@ -128,8 +156,38 @@ Examples:
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     use_expanded_csv = args.expanded_csv is not None
+    use_attendo_4mars = args.source_format == "attendo_4mars"
 
-    if use_expanded_csv:
+    if use_attendo_4mars:
+        # Attendo 4mars CSV: single script, planning 2026-03-02 to 2026-03-15
+        csv_name = (args.source_file and args.source_file.name) or "ATTENDO_DATABEHOV_PER_KUND_OCH_BESOK - data.csv"
+        input_csv = args.output_dir / "huddinge-4mars-csv" / csv_name
+        if not input_csv.exists() and args.source_file is not None:
+            input_csv = args.source_file if args.source_file.is_absolute() else args.output_dir / args.source_file
+        if not input_csv.exists():
+            print(f"Error: 4mars CSV not found: {input_csv}", file=sys.stderr)
+            return 1
+        output_json = solve_dir / f"input_4mars_{ts}.json"
+        run_name = "Huddinge 4mars 2-Week Schedule"
+        try:
+            from attendo_4mars_to_fsr import generate_fsr_json
+            payload = generate_fsr_json(
+                input_csv,
+                output_json,
+                start_date_str="2026-03-02",
+                end_date_str="2026-03-15",
+                run_name=run_name,
+                geocode=True,
+            )
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            import traceback
+            traceback.print_exc()
+            return 1
+        n_expanded = None
+        expanded_csv = input_csv  # for summary display
+        use_expanded_csv = True  # skip expand step below
+    elif use_expanded_csv:
         expanded_csv = args.expanded_csv if args.expanded_csv.is_absolute() else args.output_dir / args.expanded_csv
         if not expanded_csv.exists():
             print(f"Error: Expanded CSV not found: {expanded_csv}", file=sys.stderr)
@@ -193,32 +251,52 @@ Examples:
     else:
         n_expanded = None
 
-    # Step 2: Generate JSON
-    step_label = "[2/2]" if not use_expanded_csv else "[1/1]"
-    print(f"{step_label} Generating Timefold FSR JSON...")
-    try:
-        payload = generate_timefold_json(
-            expanded_csv,
-            output_json,
-            planning_weeks=args.weeks,
-            planning_start_date=args.start_date,
-            run_name=run_name,
-            delimiter=",",
-            source_csv_path=input_csv,
-        )
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        import traceback
+    # Step 2: Generate JSON (skip if already done by attendo_4mars path)
+    if not use_attendo_4mars:
+        step_label = "[2/2]" if not use_expanded_csv else "[1/1]"
+        print(f"{step_label} Generating Timefold FSR JSON...")
+        try:
+            payload = generate_timefold_json(
+                expanded_csv,
+                output_json,
+                planning_weeks=args.weeks,
+                planning_start_date=args.start_date,
+                run_name=run_name,
+                delimiter=",",
+                source_csv_path=input_csv,
+            )
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            import traceback
 
-        traceback.print_exc()
-        return 1
+            traceback.print_exc()
+            return 1
+
+    # Optional: use vehicle set from a base input so shift count matches (e.g. 412 vs 1208)
+    if args.base_input is not None:
+        base_path = args.base_input if args.base_input.is_absolute() else args.output_dir / args.base_input
+        if not base_path.exists():
+            print(f"Error: Base input file not found: {base_path}", file=sys.stderr)
+            return 1
+        with open(base_path, "r", encoding="utf-8") as f:
+            base_data = json.load(f)
+        base_mi = base_data.get("modelInput") or base_data
+        base_vehicles = base_mi.get("vehicles")
+        if not base_vehicles:
+            print(f"Error: Base input has no modelInput.vehicles: {base_path}", file=sys.stderr)
+            return 1
+        payload["modelInput"]["vehicles"] = base_vehicles
+        n_base_shifts = sum(len(v.get("shifts", [])) for v in base_vehicles)
+        print(f"  Replaced vehicles with base input: {len(base_vehicles)} vehicles, {n_base_shifts} shifts (from {base_path.name})")
 
     # Optional: continuity-patched input (expanded -> tf_input_continuity)
     payload_to_send = payload
     continuity_json_path = None
-    if args.continuity:
+    if args.continuity and use_attendo_4mars:
+        print("  Note: --continuity not supported for attendo_4mars source format (skipped).")
+    elif args.continuity:
         print()
-        print("[Continuity] Building manual pools and patching FSR input...")
+        print(f"[Continuity] Building manual pools (max {args.continuity_max_per_client} per client) and patching FSR input...")
         try:
             from build_continuity_pools import (
                 pools_from_manual,
@@ -232,16 +310,17 @@ Examples:
         valid_vehicle_ids = {str(v.get("id") or "") for v in mi.get("vehicles") or [] if v.get("id")}
         pools = pools_from_manual(
             expanded_csv,
-            max_per_client=15,
+            max_per_client=args.continuity_max_per_client,
             valid_vehicle_ids=valid_vehicle_ids,
         )
         visit_to_person = visit_to_person_from_model(mi)
-        patch_payload_with_pools(payload, pools, visit_to_person)
+        patch_payload_with_pools(payload, pools, visit_to_person, use_preferred=args.continuity_preferred)
         continuity_json_path = solve_dir / f"input_continuity_{ts}.json"
         with open(continuity_json_path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
         n_with_pool = sum(1 for p in pools.values() if p)
-        print(f"  Client pools: {len(pools)} clients, {n_with_pool} with non-empty pool (requiredVehicles set)")
+        constraint = "preferredVehicles" if args.continuity_preferred else "requiredVehicles"
+        print(f"  Client pools: {len(pools)} clients, {n_with_pool} with non-empty pool ({constraint} set)")
         print(f"  Wrote: {continuity_json_path}")
         payload_to_send = payload
 
@@ -285,7 +364,11 @@ Examples:
             print("  Using continuity-patched input (requiredVehicles per client).")
         try:
             from submit_to_timefold import submit_solve
-            resp = submit_solve(payload_to_send, configuration_id=config_id)
+            api_key = os.environ.get("TIMEFOLD_API_KEY", "")
+            if not api_key:
+                print("Error: Set TIMEFOLD_API_KEY when using --send", file=sys.stderr)
+                return 1
+            resp = submit_solve(payload_to_send, api_key, configuration_id=config_id)
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
             import traceback

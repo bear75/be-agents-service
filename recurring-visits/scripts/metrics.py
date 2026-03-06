@@ -3,7 +3,8 @@
 Measure efficiency, cost, and revenue metrics for a Timefold FSR output JSON.
 
 Key metrics:
-  - Shift time excl. breaks = paid salary time (what we pay for).
+  - Paid time = shift (includes break). Counts in salary cost; we pay for full shift.
+  - Assignable time = shift − break. Used for efficiency only; breaks are paid but not assignable to visits.
   - Visit time = value (care delivery; revenue).
   - Travel and wait = costs to minimize (paid but non-productive).
 
@@ -20,11 +21,11 @@ Every second is exactly one of: visit, travel, wait, break, or idle (mutually ex
                    Computed as: shift - visit - travel - wait - break
 
 Efficiency:
-  - Staffing = visit / (shift - break)  [visit share of paid time]
+  - Staffing = visit / (shift - break)  [visit share of assignable time; denominator excludes break]
   - Field = visit / (visit + travel)  [target >67.5% vs Slingor manual benchmark]
   - Field (incl. wait) = visit / (visit + travel + wait)
 
-Cost = shift_hours × 230 kr/h (paid salary); Revenue = visit_hours × 550 kr/h
+Cost = shift_hours × 230 kr/h (full shift, incl. break); Revenue = visit_hours × 550 kr/h
 
 Sanity check: warns if (visit+travel+wait+break+idle) differs from shift by >2%.
 See docs/PRIORITIES.md for metrics accuracy details.
@@ -523,8 +524,10 @@ def report_lines(
 
     lines.append("")
     lines.append("--- Key metrics ---")
-    paid_h = agg["shift_time_h"] - agg["break_time_h"]
-    lines.append(f"  Paid time (shift − break)  = {fmt_hm(paid_h)}  [salary cost]")
+    paid_h = agg["shift_time_h"]  # full shift (incl. break) = what we pay for
+    assignable_h = agg["shift_time_h"] - agg["break_time_h"]  # efficiency denominator
+    lines.append(f"  Paid time (shift, incl. break) = {fmt_hm(paid_h)}  [salary cost]")
+    lines.append(f"  Assignable time (shift − break) = {fmt_hm(assignable_h)}  [efficiency denominator; breaks paid but not assignable]")
     lines.append(f"  Visit time (value)         = {fmt_hm(agg['visit_time_h'])}  [care delivery / revenue]")
     lines.append(f"  Travel + wait (minimize)    = {fmt_hm(agg['travel_time_h'] + agg['wait_time_h'])}  [cost to minimize]")
 

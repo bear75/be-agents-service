@@ -11,8 +11,8 @@
     "solverStatus": "SOLVING_COMPLETED",
     "score": "0hard/-680000medium/-2011536soft",
     "tags": [
-      "test",
       "system.type:from-request",
+      "continuity",
       "system.profile:Caire_prod_v2"
     ],
     "validationResult": {
@@ -48432,8 +48432,8 @@
     "solverStatus": "SOLVING_COMPLETED",
     "score": "0hard/-680000medium/-2011536soft",
     "tags": [
-      "test",
       "system.type:from-request",
+      "continuity",
       "system.profile:Caire_prod_v2"
     ],
     "validationResult": {

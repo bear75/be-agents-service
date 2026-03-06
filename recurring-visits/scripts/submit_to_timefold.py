@@ -63,12 +63,15 @@ def _load_env_file(env_file: Path) -> None:
 
 
 def _bootstrap_env() -> None:
-    """Load ~/.config/caire/env (or CAIRE_ENV_FILE override) if present."""
+    """Load env: CAIRE_ENV_FILE override, else ~/.config/caire/env, else scripts/.env if no TIMEFOLD_API_KEY yet."""
     override = os.environ.get("CAIRE_ENV_FILE", "").strip()
     if override:
         _load_env_file(Path(override).expanduser())
         return
     _load_env_file(_DEFAULT_ENV_FILE)
+    if not os.environ.get("TIMEFOLD_API_KEY", "").strip():
+        script_env = Path(__file__).resolve().parent / ".env"
+        _load_env_file(script_env)
 
 
 def _headers(api_key: str) -> dict[str, str]:
@@ -87,6 +90,42 @@ def validate_shifts(model_input: dict) -> list[tuple[str, str]]:
             if not start or not end or start >= end:
                 bad.append((vid, sid))
     return bad
+
+
+def validate_visit_time_windows(model_input: dict) -> list[str]:
+    """
+    Check every visit (standalone + in visitGroups) has valid time windows:
+    minStartTime <= maxStartTime <= maxEndTime for each time window.
+    Returns list of error messages (same style as Timefold validation).
+    """
+    errors: list[str] = []
+
+    def check_visit(visit: dict) -> None:
+        vid = visit.get("id", "?")
+        for tw in visit.get("timeWindows") or []:
+            min_start = tw.get("minStartTime") or ""
+            max_start = tw.get("maxStartTime") or ""
+            max_end = tw.get("maxEndTime") or ""
+            if not min_start or not max_end:
+                continue
+            if max_start and not (min_start <= max_start <= max_end):
+                errors.append(
+                    f"The visit ({vid}) time window does not have "
+                    f"minStartTime ({min_start}) <= maxStartTime ({max_start}) <= maxEndTime ({max_end})."
+                )
+            elif not (min_start <= max_end):
+                errors.append(
+                    f"The visit ({vid}) time window does not have "
+                    f"minStartTime ({min_start}) <= maxEndTime ({max_end})."
+                )
+
+    for v in model_input.get("visits") or []:
+        check_visit(v)
+    for g in model_input.get("visitGroups") or []:
+        for v in g.get("visits") or []:
+            check_visit(v)
+
+    return errors
 
 
 def submit_solve(payload: dict, api_key: str, configuration_id: str | None = None) -> dict:
@@ -218,6 +257,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Submit to Timefold FSR API.")
     sub = ap.add_subparsers(dest="mode", required=True)
 
+    # Validate-only mode (no API key needed; same checks as pre-submit)
+    validate_p = sub.add_parser("validate", help="Validate input JSON (time windows, shifts). No submit.")
+    validate_p.add_argument("input", type=Path, help="Input JSON with modelInput.")
+
     # Solve mode
     solve_p = sub.add_parser("solve", help="Submit fresh solve (modelInput).")
     solve_p.add_argument("input", type=Path, help="Input JSON with modelInput.")
@@ -275,10 +318,37 @@ def main() -> int:
     patch_p.add_argument("--save-id", type=Path, default=None, help="Write new route plan ID to this file (from-patch only).")
 
     args = ap.parse_args()
+
+    if args.mode == "validate":
+        if not args.input.exists():
+            print(f"Error: not found {args.input}", file=sys.stderr)
+            return 1
+        with open(args.input) as f:
+            payload = json.load(f)
+        mi = payload.get("modelInput") or payload
+        bad_shifts = validate_shifts(mi)
+        tw_errors = validate_visit_time_windows(mi)
+        if bad_shifts:
+            print(f"Validation failed: {len(bad_shifts)} shift(s) with invalid minStartTime/maxEndTime.", file=sys.stderr)
+            for vid, sid in bad_shifts[:15]:
+                print(f"  vehicle={vid} shift={sid}", file=sys.stderr)
+            if len(bad_shifts) > 15:
+                print(f"  ... and {len(bad_shifts) - 15} more.", file=sys.stderr)
+            return 1
+        if tw_errors:
+            print(f"Validation failed: {len(tw_errors)} visit time window issue(s).", file=sys.stderr)
+            for msg in tw_errors[:20]:
+                print(f"  {msg}", file=sys.stderr)
+            if len(tw_errors) > 20:
+                print(f"  ... and {len(tw_errors) - 20} more.", file=sys.stderr)
+            return 1
+        print("Validation OK (shifts and visit time windows).")
+        return 0
+
     api_key = getattr(args, "api_key", None) or os.environ.get("TIMEFOLD_API_KEY", "")
     if not api_key:
         print(
-            "Error: Set TIMEFOLD_API_KEY, pass --api-key, or create ~/.config/caire/env",
+            "Error: Set TIMEFOLD_API_KEY, pass --api-key, create ~/.config/caire/env, or recurring-visits/scripts/.env (see .env.example)",
             file=sys.stderr,
         )
         return 1
@@ -301,6 +371,14 @@ def main() -> int:
                 print(f"Error: {len(bad)} shifts with zero/negative work time.", file=sys.stderr)
                 for vid, sid in bad[:10]:
                     print(f"  vehicle={vid} shift={sid}", file=sys.stderr)
+                return 1
+            tw_errors = validate_visit_time_windows(mi)
+            if tw_errors:
+                print(f"Error: {len(tw_errors)} visit time window validation issue(s).", file=sys.stderr)
+                for msg in tw_errors[:20]:
+                    print(f"  {msg}", file=sys.stderr)
+                if len(tw_errors) > 20:
+                    print(f"  ... and {len(tw_errors) - 20} more.", file=sys.stderr)
                 return 1
 
         if getattr(args, "configuration_id", None):
@@ -380,12 +458,14 @@ def main() -> int:
         )
 
         if args.save:
-            args.save.parent.mkdir(parents=True, exist_ok=True)
-            if getattr(args, "no_timestamp", False):
+            if args.save.exists() and args.save.is_dir() or args.save.suffix == "":
+                save_path = args.save / f"{plan_id}_output.json"
+            elif getattr(args, "no_timestamp", False):
                 save_path = args.save
             else:
                 ts = datetime.now().strftime("%Y%m%d_%H%M%S")
                 save_path = args.save.parent / f"{args.save.stem}_{ts}{args.save.suffix}"
+            save_path.parent.mkdir(parents=True, exist_ok=True)
             with open(save_path, "w") as f:
                 json.dump(result, f, indent=2, ensure_ascii=False)
             print(f"Output saved to {save_path}")

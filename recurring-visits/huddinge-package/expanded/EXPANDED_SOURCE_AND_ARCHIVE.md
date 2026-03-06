@@ -1,5 +1,14 @@
 # Expanded CSV: source for 28-feb solves and archive
 
+## Where visits vs vehicles/shifts come from
+
+- **Expanded CSV** (e.g. `huddinge_2wk_expanded_20260224_043456.csv`) contains **only visits**: one row per concrete visit in the planning window (date, client, time window, etc.). It has **no shift data**.
+- **Vehicles and shifts** are **not** in the expanded CSV. They are generated in `scripts/generate_employees.py` from the **source CSV** (`source/Huddinge_recurring_v2.csv`):
+  - One vehicle per unique `external_slinga_shiftName` (employee).
+  - For each vehicle, one shift per (working weekday × date in 2-week window × shift type day/evening).
+  - So with no trimming you get the **full** set (e.g. 38 vehicles × ~32 shifts each ≈ **1208 shifts**).
+- The **412-shift** input (e.g. 5ff7929f export) was built with **trimmed output**: only shifts that appeared in a previous solution are created. Use `--base-input` in `process_huddinge.py` to reuse that vehicle/shift set so continuity runs are comparable.
+
 ## Source for `solve/28-feb/5ff7929f/input.json`
 
 The FSR input for dataset **5ff7929f** (and the 28-feb prod runs) was built from the same 2-week Huddinge pipeline as the staging origin `c87d58dd` / `fa713a0d`. The **canonical expanded CSV** for that dataset is:

@@ -71,7 +71,3 @@ TIMEFOLD FSR METRICS REPORT
   Break:    21,505 kr  (93h 30min)
   Total:    229,862 kr  (39.94% of shift cost)
 ========================================================================
---- Continuity (distinct caregivers per client; target ≤15) ---
-  Clients: 81  |  Avg continuity: 2.5  |  Max: 6  |  Over 15: 0
-  Full CSV: /Users/bjornevers_MacPro/HomeCare/caire-platform/appcaire/docs_2.0/recurring-visits/huddinge-package/huddinge-datasets/28-feb/203cf1d6/continuity.csv
-========================================================================

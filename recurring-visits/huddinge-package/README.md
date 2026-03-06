@@ -2,7 +2,7 @@
 
 Self-contained package for converting Huddinge recurring visit data to Timefold Field Service Routing (FSR) input and running optimizations. **Nova** uses the same pipeline pattern: see [../nova/README.md](../nova/README.md) and `process_nova.py` with `nova/scripts/expand_nova_recurring_visits.py`; both use these scripts for JSON, solve, from-patch, and metrics.
 
-**Full pipeline:** Source CSV → Expanded CSV → **Input JSON** → Solve → Output JSON → Metrics → From-Patch (remove inactive) → Final Metrics
+**Full pipeline:** Source CSV → Expanded CSV → **Input JSON** → Solve (TF config) → Fetch solution → Analyze metrics & continuity → Trim empty/adjust shifts (config) → From-patch → Fetch → Analyze → Metrics. For **Attendo 4mars** CSV (`huddinge-4mars-csv/`), use `--source-format attendo_4mars`; see [huddinge-4mars-csv/README.md](huddinge-4mars-csv/README.md). For the full pipeline description and **test tenant API key**, see the [tf-fsr-prototype agent](beta-appcaire/.cursor/agents/tf-fsr-prototype.md) in beta-appcaire (when both repos are in workspace).
 
 **First priority is 0 unassigned.** From-patch only trims empty/inactive shifts; it does not add capacity. If the solve has unassigned visits, **update the input** (step 1 or 2) with the shifts required (e.g. add evening vehicles or shifts in source CSV), then regenerate input and solve again. Only after 0 unassigned (and optionally 0 empty) run from-patch and then metrics for efficiency.
 

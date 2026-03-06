@@ -77,8 +77,9 @@ def run_analysis(mi: dict, mo: dict) -> tuple[str, list[dict]]:
     unassigned_ids = set(str(u) for u in (mo.get("unassignedVisits") or []))
 
     # Build shift windows from input: (shift_id, vehicle_id, start, end)
-    # From output: which shifts are empty (no visits)
+    # From output: which shifts are empty (no visits) and shift_id -> visit time ranges in that shift
     output_shift_visit_count: dict[str, int] = {}
+    shift_visit_ranges: dict[str, list[tuple[datetime, datetime]]] = {}
     for v in mo.get("vehicles", []):
         for s in v.get("shifts", []):
             sid = s.get("id", "")
@@ -86,6 +87,14 @@ def run_analysis(mi: dict, mo: dict) -> tuple[str, list[dict]]:
             output_shift_visit_count[sid] = sum(
                 1 for x in it if isinstance(x, dict) and x.get("kind") == "VISIT"
             )
+            ranges = []
+            for x in it:
+                if isinstance(x, dict) and x.get("kind") == "VISIT":
+                    st = parse_iso_dt(x.get("startServiceTime"))
+                    et = parse_iso_dt(x.get("departureTime"))
+                    if st and et:
+                        ranges.append((st, et))
+            shift_visit_ranges[sid] = ranges
 
     shifts: list[tuple[str, str, datetime, datetime, bool]] = []
     for v in mi.get("vehicles", []):
@@ -129,12 +138,26 @@ def run_analysis(mi: dict, mo: dict) -> tuple[str, list[dict]]:
     by_date: dict[str, dict[str, int]] = defaultdict(lambda: {"supply": 0, "config": 0, "day": 0, "evening": 0, "both": 0})
     rows_for_csv: list[dict] = []
 
+    # Idle in window: overlapping shift has no visit scheduled in (tw_s, tw_e) → gap could fit unassigned
+    unassigned_with_idle_count = 0
     for uid, tw_s, tw_e in unassigned_windows:
         overlapping = [
             (sid, vid, st, et, is_empty)
             for sid, vid, st, et, is_empty in shifts
             if overlap(st, et, tw_s, tw_e)
         ]
+        # Count overlapping shifts that have idle/gap in (tw_s, tw_e): no visit in that shift overlaps window
+        with_idle = 0  # number of overlapping shifts that have no visit in the unassigned window
+        for sid, _vid, _st, _et, _ in overlapping:
+            ranges = shift_visit_ranges.get(sid, [])
+            if not ranges:
+                with_idle += 1  # empty shift = full idle in window
+            else:
+                has_visit_in_window = any(overlap(vs, ve, tw_s, tw_e) for vs, ve in ranges)
+                if not has_visit_in_window:
+                    with_idle += 1
+        if overlapping and with_idle > 0:
+            unassigned_with_idle_count += 1
         if not overlapping:
             supply_count += 1
             kind = "supply"
@@ -154,6 +177,7 @@ def run_analysis(mi: dict, mo: dict) -> tuple[str, list[dict]]:
             "issue": kind,
             "overlapping_empty_shifts": sum(1 for _, _, _, _, empty in overlapping if empty),
             "overlapping_shifts": len(overlapping),
+            "overlapping_shifts_with_idle_in_window": with_idle,
         })
 
     # Visit:travel ratio from output (assigned shifts only)
@@ -186,6 +210,10 @@ def run_analysis(mi: dict, mo: dict) -> tuple[str, list[dict]]:
         "--- Classification (per time-window slot) ---",
         f"  Supply (no overlapping shift):     {supply_count}  → add shifts for that day/period",
         f"  Config (≥1 overlapping shift):    {config_count}  → tune solver (travel, movable distribution)",
+        "",
+        "--- Idle in window (overlapping shifts with gap for unassigned) ---",
+        f"  Unassigned slots with ≥1 overlapping shift that has idle/gap in window: {unassigned_with_idle_count} / {len(unassigned_windows)}",
+        "  → Those shifts have capacity in the unassigned time window; solver did not assign (config/tuning).",
         "",
         "--- By date (demand bucket: day / evening / both) ---",
     ]

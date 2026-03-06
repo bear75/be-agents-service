@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "id": "ae7a2724-1b91-4e18-b0ba-1afd5573c6d5",
+    "originId": "ae7a2724-1b91-4e18-b0ba-1afd5573c6d5",
+    "name": "Huddinge 4mars 2-Week Schedule",
+    "submitDateTime": "2026-03-04T21:44:49.900117883Z",
+    "completeDateTime": "2026-03-04T21:44:55.9507304Z",
+    "shutdownDateTime": "2026-03-04T21:44:56.04234966Z",
+    "solverStatus": "SOLVING_FAILED",
+    "tags": [
+      "system.profile:huddinge-long",
+      "system.type:from-request"
+    ],
+    "validationResult": {
+      "summary": "OK"
+    },
+    "failureMessage": "Unable to convert and enrich solver model due to: loops not allowed"
+  },
+  "run": {
+    "id": "ae7a2724-1b91-4e18-b0ba-1afd5573c6d5",
+    "originId": "ae7a2724-1b91-4e18-b0ba-1afd5573c6d5",
+    "name": "Huddinge 4mars 2-Week Schedule",
+    "submitDateTime": "2026-03-04T21:44:49.900117883Z",
+    "completeDateTime": "2026-03-04T21:44:55.9507304Z",
+    "shutdownDateTime": "2026-03-04T21:44:56.04234966Z",
+    "solverStatus": "SOLVING_FAILED",
+    "tags": [
+      "system.profile:huddinge-long",
+      "system.type:from-request"
+    ],
+    "validationResult": {
+      "summary": "OK"
+    },
+    "failureMessage": "Unable to convert and enrich solver model due to: loops not allowed"
+  }
+}

@@ -64,12 +64,15 @@ def _load_env_file(env_file: Path) -> None:
 
 
 def _bootstrap_env() -> None:
-    """Load ~/.config/caire/env (or CAIRE_ENV_FILE override) if present."""
+    """Load env: CAIRE_ENV_FILE override, else ~/.config/caire/env, else scripts/.env if no TIMEFOLD_API_KEY yet."""
     override = os.environ.get("CAIRE_ENV_FILE", "").strip()
     if override:
         _load_env_file(Path(override).expanduser())
         return
     _load_env_file(_DEFAULT_ENV_FILE)
+    if not os.environ.get("TIMEFOLD_API_KEY", "").strip():
+        script_env = Path(__file__).resolve().parent / ".env"
+        _load_env_file(script_env)
 
 
 def fetch_solution(route_plan_id: str, api_key: str) -> dict:
@@ -135,7 +138,7 @@ def main() -> int:
 
     api_key = args.api_key or os.environ.get("TIMEFOLD_API_KEY", "")
     if not api_key:
-        print("Error: Set TIMEFOLD_API_KEY or pass --api-key", file=sys.stderr)
+        print("Error: Set TIMEFOLD_API_KEY, pass --api-key, or use ~/.config/caire/env / scripts/.env (see .env.example)", file=sys.stderr)
         return 1
 
     try:
@@ -148,6 +151,9 @@ def main() -> int:
     status = (meta.get("solverStatus") or data.get("solverStatus") or "?").upper()
     score = meta.get("score", "?")
     name = meta.get("name") or data.get("name") or "—"
+    parent_id = meta.get("parentId")
+    origin_id = meta.get("originId")
+    tags = meta.get("tags") or []
 
     out = data.get("modelOutput") or {}
     n_vehicles = len(out.get("vehicles", []))
@@ -160,6 +166,14 @@ def main() -> int:
     print(f"Score:         {score}")
     print(f"Vehicles:      {n_vehicles}")
     print(f"Unassigned:    {n_unassigned}")
+    if parent_id is not None:
+        print(f"Parent ID:     {parent_id}")
+    if origin_id is not None:
+        print(f"Origin ID:     {origin_id}")
+    if tags:
+        print(f"Tags:          {tags}")
+    if any("from-patch" in str(t) for t in tags):
+        print("(from-patch run; parent = plan patched, origin = first solve in chain)")
 
     status_completed = status == "SOLVING_COMPLETED"
 

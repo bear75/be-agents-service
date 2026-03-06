@@ -39,3 +39,41 @@ You do **not** need `MAC_MINI_HOST`, `MAC_MINI_USER`, or `MAC_MINI_SSH_KEY` for 
 
 - **Automatic:** push to `main`.
 - **Manual:** Actions → **Deploy main to Mac mini** → **Run workflow**.
+
+---
+
+## 4. Troubleshooting: runner not working
+
+### Workflow never runs / “No runner available”
+
+- **Runner offline:** On the Mac mini, the runner process must be running.
+  - If you used the service: `cd ~/actions-runner && ./svc.sh status` (or `sudo ./svc.sh status`). If stopped: `./svc.sh start`.
+  - If you run manually: `./run.sh` must be running in a Terminal (or under `screen`/`tmux`).
+- **Wrong repo or token:** The runner was configured with `./config.sh --url https://github.com/OWNER/REPO --token TOKEN`. It only picks up jobs for that repo. Re-run config (or add a new runner) from **Settings → Actions → Runners** for the correct repo.
+- **Labels:** The workflow uses `runs-on: [self-hosted, macOS]`. In **Settings → Actions → Runners**, the runner must show labels including `self-hosted` and `macOS` (and usually `ARM64` or `X64`). If you created a different runner group, either add the same labels or change the workflow to use that group.
+
+### Workflow runs but job fails
+
+- **Check the Actions run:** Open the failed run and read the **Deploy latest main** step log.
+- **Common causes:**
+  - **“Repository not found at $REPO_DIR”** – Set secret **MAC_MINI_REPO_DIR** to the repo path on the Mac mini (e.g. `/Users/be-agent-service/HomeCare/be-agents-service`), or ensure the default path exists and has a `.git` directory.
+  - **“git is required” / “yarn is required”** – The runner’s `PATH` may not include git/yarn. `deploy-main.sh` prepends Homebrew paths; if installs are elsewhere, set `PATH` in the runner’s environment (e.g. in the service or a wrapper script).
+  - **“Service did not become healthy”** – The script runs `restart-darwin.sh` then polls `HEALTH_URL` (default `http://localhost:3010/health`). If the server listens on another port, set the **HEALTH_URL** secret (e.g. `http://localhost:3030/health`). On the Mac mini, run `curl -s http://localhost:3010/health` after a manual deploy to confirm the server responds.
+
+### Quick checks on the Mac mini
+
+```bash
+# Runner process (if using svc)
+~/actions-runner/svc.sh status
+
+# Repo and deploy script
+ls -la /Users/be-agent-service/HomeCare/be-agents-service/.git
+ls -la /Users/be-agent-service/HomeCare/be-agents-service/scripts/deploy-main.sh
+
+# Manual deploy (same as the workflow step)
+export REPO_DIR=/Users/be-agent-service/HomeCare/be-agents-service
+"$REPO_DIR/scripts/deploy-main.sh"
+
+# Health after deploy
+curl -s http://localhost:3010/health
+```

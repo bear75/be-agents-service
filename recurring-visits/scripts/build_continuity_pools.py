@@ -42,10 +42,14 @@ from pathlib import Path
 
 
 def csv_shift_name_to_fsr_vehicle_id(shift_name: str) -> str:
-    """Map CSV external_slinga_shiftName to FSR vehicle id. E.g. 'Dag 01 Central 1' -> 'Dag_01_Central_1'."""
+    """Map CSV external_slinga_shiftName to FSR vehicle id. E.g. 'Dag 01 Central 1' -> 'Dag_01_Central_1'.
+    Strips characters like ⭐ so 'Dag 12 ⭐ Segeltorp 1' maps to 'Dag_12_Segeltorp_1' and matches FSR vehicles."""
     if not shift_name:
         return ""
-    return shift_name.strip().replace(" ", "_")
+    # Remove symbols (e.g. ⭐) but keep letters (including å, ä, ö), digits, spaces; collapse spaces, then match FSR id style
+    cleaned = re.sub(r"[^\w\s]", "", shift_name)
+    collapsed = " ".join(cleaned.split())
+    return collapsed.strip().replace(" ", "_")
 
 
 def visit_id_to_client(name: str, visit_id: str) -> str:
@@ -237,13 +241,16 @@ def pools_from_area(
     return pools
 
 
-def _set_required_vehicles_on_visits(
+def _set_vehicle_constraint_on_visits(
     model: dict,
     client_pools: dict[str, list[str]],
     visit_to_person: dict[str, str],
+    use_preferred: bool = False,
 ) -> None:
-    """Set requiredVehicles on visits in model (mutates in place)."""
-    def set_required_on_visit(v: dict) -> None:
+    """Set requiredVehicles or preferredVehicles on visits in model (mutates in place)."""
+    key = "preferredVehicles" if use_preferred else "requiredVehicles"
+
+    def set_on_visit(v: dict) -> None:
         vid = str(v.get("id") or "")
         person = visit_to_person.get(vid)
         if not person:
@@ -251,26 +258,32 @@ def _set_required_vehicles_on_visits(
         pool = client_pools.get(person)
         if not pool:
             return
-        v["requiredVehicles"] = pool
+        v[key] = pool
+        if use_preferred and "requiredVehicles" in v:
+            del v["requiredVehicles"]
+        elif not use_preferred and "preferredVehicles" in v:
+            del v["preferredVehicles"]
 
     for v in model.get("visits") or []:
-        set_required_on_visit(v)
+        set_on_visit(v)
     for g in model.get("visitGroups") or []:
         for v in g.get("visits") or []:
-            set_required_on_visit(v)
+            set_on_visit(v)
 
 
 def patch_payload_with_pools(
     payload: dict,
     client_pools: dict[str, list[str]],
     visit_to_person: dict[str, str],
+    use_preferred: bool = False,
 ) -> None:
     """
-    Set requiredVehicles on each visit in payload (mutates in place).
+    Set requiredVehicles (or preferredVehicles if use_preferred) on each visit in payload (mutates in place).
     payload must have modelInput with visits and optionally visitGroups.
+    preferredVehicles = soft constraint; solver can assign outside pool to reduce wait/travel.
     """
     model = payload.get("modelInput") or payload
-    _set_required_vehicles_on_visits(model, client_pools, visit_to_person)
+    _set_vehicle_constraint_on_visits(model, client_pools, visit_to_person, use_preferred=use_preferred)
 
 
 def patch_fsr_input_with_pools(
@@ -278,15 +291,16 @@ def patch_fsr_input_with_pools(
     client_pools: dict[str, list[str]],
     visit_to_person: dict[str, str],
     patched_path: Path,
+    use_preferred: bool = False,
 ) -> None:
     """
-    Read FSR input, set requiredVehicles on each visit from client_pools (by person), write to patched_path.
-    Visits without a pool (or empty pool) are left without requiredVehicles.
+    Read FSR input, set requiredVehicles (or preferredVehicles if use_preferred) on each visit from client_pools (by person), write to patched_path.
+    Visits without a pool (or empty pool) are left unchanged.
     """
     with open(fsr_input_path, encoding="utf-8") as f:
         data = json.load(f)
     model = data.get("modelInput") or data
-    _set_required_vehicles_on_visits(model, client_pools, visit_to_person)
+    _set_vehicle_constraint_on_visits(model, client_pools, visit_to_person, use_preferred=use_preferred)
     patched_path.parent.mkdir(parents=True, exist_ok=True)
     with open(patched_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
@@ -303,8 +317,9 @@ def main() -> int:
     parser.add_argument("--fsr-input", type=Path, help="FSR input (for vehicle list validation or area vehicle list)")
     parser.add_argument("--out", type=Path, required=True, help="Output JSON: client_id -> list of vehicle IDs")
     parser.add_argument("--max-per-client", type=int, default=15, help="Max vehicles per client (default 15)")
-    parser.add_argument("--patch-fsr-input", type=Path, help="If set, patch this FSR input with requiredVehicles")
+    parser.add_argument("--patch-fsr-input", type=Path, help="If set, patch this FSR input with requiredVehicles (or preferredVehicles if --use-preferred)")
     parser.add_argument("--patched-input", type=Path, help="Path to write patched FSR input (requires --patch-fsr-input)")
+    parser.add_argument("--use-preferred", action="store_true", help="Set preferredVehicles (soft) instead of requiredVehicles (hard); solver can assign outside pool to reduce wait")
     parser.add_argument("--area-column", type=str, default="serviceArea_address", help="CSV column for area (area source)")
     args = parser.parse_args()
 
@@ -343,8 +358,8 @@ def main() -> int:
             print(f"Error: FSR input not found: {args.patch_fsr_input}", file=sys.stderr)
             return 1
         visit_to_person = load_visit_to_person(args.patch_fsr_input)
-        patch_fsr_input_with_pools(args.patch_fsr_input, pools, visit_to_person, args.patched_input)
-        print(f"Patched FSR input written to {args.patched_input}")
+        patch_fsr_input_with_pools(args.patch_fsr_input, pools, visit_to_person, args.patched_input, use_preferred=args.use_preferred)
+        print(f"Patched FSR input written to {args.patched_input} ({'preferredVehicles' if args.use_preferred else 'requiredVehicles'})")
 
     return 0
 

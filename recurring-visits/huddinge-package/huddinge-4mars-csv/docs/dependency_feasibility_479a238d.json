@@ -1,0 +1,497 @@
+{
+  "dependencies": [
+    {
+      "dependent": "H034_r39_1",
+      "preceding": "H034_r38_1",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:57 > dep latest start 12:25 (date 2026-03-02)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_2",
+      "preceding": "H034_r38_2",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:57 > dep latest start 12:25 (date 2026-03-03)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_3",
+      "preceding": "H034_r38_4",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:57 > dep latest start 12:25 (date 2026-03-05)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_4",
+      "preceding": "H034_r38_6",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:57 > dep latest start 12:25 (date 2026-03-09)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_5",
+      "preceding": "H034_r38_7",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:57 > dep latest start 12:25 (date 2026-03-10)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_6",
+      "preceding": "H034_r38_9",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:57 > dep latest start 12:25 (date 2026-03-12)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r40_1",
+      "preceding": "H034_r37_1",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:07 > dep latest start 13:00 (date 2026-03-07)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r40_2",
+      "preceding": "H034_r37_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:07 > dep latest start 13:00 (date 2026-03-08)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r40_3",
+      "preceding": "H034_r37_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:07 > dep latest start 13:00 (date 2026-03-14)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r40_4",
+      "preceding": "H034_r37_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:07 > dep latest start 13:00 (date 2026-03-15)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_1",
+      "preceding": "H034_r39_1",
+      "delay": "PT1H30M",
+      "delay_min": 90,
+      "status": "infeasible",
+      "reason": "required 14:25 > dep latest start 13:10 (date 2026-03-02)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_2",
+      "preceding": "H034_r39_2",
+      "delay": "PT1H30M",
+      "delay_min": 90,
+      "status": "infeasible",
+      "reason": "required 14:25 > dep latest start 13:10 (date 2026-03-03)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_3",
+      "preceding": "H034_r38_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:27 > dep latest start 13:10 (date 2026-03-04)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_4",
+      "preceding": "H034_r39_3",
+      "delay": "PT1H30M",
+      "delay_min": 90,
+      "status": "infeasible",
+      "reason": "required 14:25 > dep latest start 13:10 (date 2026-03-05)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_5",
+      "preceding": "H034_r38_5",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:27 > dep latest start 13:10 (date 2026-03-06)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_6",
+      "preceding": "H034_r39_4",
+      "delay": "PT1H30M",
+      "delay_min": 90,
+      "status": "infeasible",
+      "reason": "required 14:25 > dep latest start 13:10 (date 2026-03-09)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_7",
+      "preceding": "H034_r39_5",
+      "delay": "PT1H30M",
+      "delay_min": 90,
+      "status": "infeasible",
+      "reason": "required 14:25 > dep latest start 13:10 (date 2026-03-10)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_8",
+      "preceding": "H034_r38_8",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:27 > dep latest start 13:10 (date 2026-03-11)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_9",
+      "preceding": "H034_r39_6",
+      "delay": "PT1H30M",
+      "delay_min": 90,
+      "status": "infeasible",
+      "reason": "required 14:25 > dep latest start 13:10 (date 2026-03-12)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r41_10",
+      "preceding": "H034_r38_10",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:27 > dep latest start 13:10 (date 2026-03-13)",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H038_r71_1",
+      "preceding": "H038_r65_2",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:30 > dep latest start 14:04 (date 2026-03-03)",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r71_2",
+      "preceding": "H038_r65_4",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:30 > dep latest start 14:04 (date 2026-03-05)",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r71_3",
+      "preceding": "H038_r65_7",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:30 > dep latest start 14:04 (date 2026-03-10)",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r71_4",
+      "preceding": "H038_r65_9",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 09:30 > dep latest start 14:04 (date 2026-03-12)",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H053_r102_1",
+      "preceding": "H053_r101_1",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:00 > dep latest start 10:00 (date 2026-03-02)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r102_2",
+      "preceding": "H053_r101_3",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:00 > dep latest start 10:00 (date 2026-03-04)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r102_3",
+      "preceding": "H053_r101_5",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:00 > dep latest start 10:00 (date 2026-03-06)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r102_4",
+      "preceding": "H053_r101_6",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:00 > dep latest start 10:00 (date 2026-03-09)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r102_5",
+      "preceding": "H053_r101_8",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:00 > dep latest start 10:00 (date 2026-03-11)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r102_6",
+      "preceding": "H053_r101_10",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:00 > dep latest start 10:00 (date 2026-03-13)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_1",
+      "preceding": "H053_r102_1",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 14:00 > dep latest start 12:50 (date 2026-03-02)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_2",
+      "preceding": "H053_r101_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:30 > dep latest start 12:50 (date 2026-03-03)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_3",
+      "preceding": "H053_r102_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 14:00 > dep latest start 12:50 (date 2026-03-04)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_4",
+      "preceding": "H053_r101_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:30 > dep latest start 12:50 (date 2026-03-05)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_5",
+      "preceding": "H053_r102_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 14:00 > dep latest start 12:50 (date 2026-03-06)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_6",
+      "preceding": "H053_r102_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 14:00 > dep latest start 12:50 (date 2026-03-09)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_7",
+      "preceding": "H053_r101_7",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:30 > dep latest start 12:50 (date 2026-03-10)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_8",
+      "preceding": "H053_r102_5",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 14:00 > dep latest start 12:50 (date 2026-03-11)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_9",
+      "preceding": "H053_r101_9",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:30 > dep latest start 12:50 (date 2026-03-12)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r103_10",
+      "preceding": "H053_r102_6",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 14:00 > dep latest start 12:50 (date 2026-03-13)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r105_1",
+      "preceding": "H053_r100_1",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:27 > dep latest start 12:40 (date 2026-03-07)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r105_2",
+      "preceding": "H053_r100_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:27 > dep latest start 12:40 (date 2026-03-08)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r105_3",
+      "preceding": "H053_r100_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:27 > dep latest start 12:40 (date 2026-03-14)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r105_4",
+      "preceding": "H053_r100_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "infeasible",
+      "reason": "required 13:27 > dep latest start 12:40 (date 2026-03-15)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r106_1",
+      "preceding": "H053_r103_1",
+      "delay": "PT1H5M",
+      "delay_min": 65,
+      "status": "infeasible",
+      "reason": "required 14:25 > dep latest start 13:00 (date 2026-03-02)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r106_2",
+      "preceding": "H053_r103_6",
+      "delay": "PT1H5M",
+      "delay_min": 65,
+      "status": "infeasible",
+      "reason": "required 14:25 > dep latest start 13:00 (date 2026-03-09)",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H026_r16_1",
+      "preceding": "H026_r13_2",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 08:35 > dep latest start 08:45 (date 2026-03-03)",
+      "kundnr": "H026"
+    },
+    {
+      "dependent": "H026_r16_2",
+      "preceding": "H026_r13_5",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 08:35 > dep latest start 08:45 (date 2026-03-06)",
+      "kundnr": "H026"
+    },
+    {
+      "dependent": "H026_r16_3",
+      "preceding": "H026_r13_7",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 08:35 > dep latest start 08:45 (date 2026-03-10)",
+      "kundnr": "H026"
+    },
+    {
+      "dependent": "H026_r16_4",
+      "preceding": "H026_r13_10",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 08:35 > dep latest start 08:45 (date 2026-03-13)",
+      "kundnr": "H026"
+    },
+    {
+      "dependent": "H035_r47_1",
+      "preceding": "H035_r46_1",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:45 > dep latest start 10:45 (date 2026-03-02)",
+      "kundnr": "H035"
+    },
+    {
+      "dependent": "H035_r47_2",
+      "preceding": "H035_r46_4",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:45 > dep latest start 10:45 (date 2026-03-05)",
+      "kundnr": "H035"
+    },
+    {
+      "dependent": "H035_r47_3",
+      "preceding": "H035_r46_6",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:45 > dep latest start 10:45 (date 2026-03-09)",
+      "kundnr": "H035"
+    },
+    {
+      "dependent": "H035_r47_4",
+      "preceding": "H035_r46_9",
+      "delay": "PT24H",
+      "delay_min": 1440,
+      "status": "infeasible",
+      "reason": "required 10:45 > dep latest start 10:45 (date 2026-03-12)",
+      "kundnr": "H035"
+    }
+  ],
+  "focus": [
+    "H034",
+    "H053",
+    "H035",
+    "H026",
+    "H038"
+  ]
+}

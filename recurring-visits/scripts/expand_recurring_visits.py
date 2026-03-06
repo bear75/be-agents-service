@@ -7,7 +7,8 @@ Uses frequency column and recurringVisit_id to determine expansion. Time window 
 - Daily: One time window per day (day-specific). Weekday from recurring_external / occurence.
 - Biweekly: Only *1 is biweekly; use full 2-week window; solver picks day.
 - Monthly: Only *1 is relevant; use full 4-week planning window.
-- Weekly x1: Full week window; solver picks the day.
+- Weekly x1: If recurring_external has a weekday (e.g. "Varje vecka, mån"), use day-specific window.
+  Only when no weekday is given do we use full-week window (solver picks day).
 - Weekly x2–x6: Weekday is in the data (recurring_external e.g. "Varje vecka, tor" → Thursday).
   One expanded row per occurrence. We use that weekday to set a day-specific time window:
   get_visit_date_from_weekday_index(planning_start, weekday_index, week) then
@@ -429,18 +430,22 @@ def expand_visits(
         freq_type, occ_per_period = parse_frequency(freq_str)
 
         # Daily: use occurence or recurring_external for weekday (e.g. "Varje vecka, tis" -> Tue).
-        # Weekly x2–x6: weekday is defined in source (recurring_external e.g. "Varje vecka, lör" / "lsön");
+        # Weekly x2–x6: weekday is defined in source (recurring_external e.g. "Varje vecka, lör");
         # use it so each row gets a single-day time window (no multiple occurrences on same day).
-        # Weekly x1, biweekly, monthly, etc.: full period window; solver picks day.
+        # Weekly x1: if recurring_external specifies a weekday (e.g. "Varje vecka, mån"), use that day
+        # so we get a day-specific window and avoid stacking two visits same day (e.g. H299).
+        # Only when weekly x1 has no weekday in source do we use full-period window (solver picks day).
+        # Biweekly, monthly: full period window; solver picks day.
         occ = str(row.get("occurence", "") or row.get("recurring_external", "")).strip()
         if freq_type == "daily":
             weekday_index = _parse_weekday_from_occurence(occ)
             if weekday_index is None:
                 weekday_index = 0  # fallback to Monday
-        elif freq_type == "weekly" and occ_per_period >= 2:
+        elif freq_type == "weekly":
             weekday_index = _parse_weekday_from_occurence(occ)
-            if weekday_index is None:
-                weekday_index = 0  # fallback to Monday
+            if weekday_index is None and occ_per_period >= 2:
+                weekday_index = 0  # fallback for x2–x6
+            # For weekly x1: if we got a weekday from occ, keep it (day-specific window); else None (full-period)
         else:
             weekday_index = None
 
