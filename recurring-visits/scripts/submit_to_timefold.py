@@ -128,6 +128,116 @@ def validate_visit_time_windows(model_input: dict) -> list[str]:
     return errors
 
 
+def _is_offset_datetime(s: str) -> bool:
+    """True if s looks like ISO 8601 datetime with offset (e.g. 2026-03-02T07:00:00+01:00)."""
+    if not s or not isinstance(s, str):
+        return False
+    return "+" in s or (s.count("-") >= 2 and "T" in s)
+
+
+def _is_duration(s: str) -> bool:
+    """True if s looks like ISO 8601 duration (e.g. PT30M, PT1H30M)."""
+    if not s or not isinstance(s, str):
+        return False
+    return s.startswith("PT") and len(s) > 2
+
+
+def validate_fsr_format(model_input: dict) -> list[str]:
+    """
+    Validate modelInput against Timefold FSR schema (RoutePlanInput, Visit, Vehicle, VehicleShift, TimeWindow).
+    Returns list of all format errors so caller can fix and re-run until clean.
+    """
+    err: list[str] = []
+    visit_ids: set[str] = set()
+
+    def check_location(loc: object, ctx: str) -> None:
+        if not isinstance(loc, list) or len(loc) != 2:
+            err.append(f"FSR {ctx}: location must be [lat, lon] (array of 2 numbers), got {type(loc).__name__}")
+            return
+        try:
+            a, b = float(loc[0]), float(loc[1])
+            if not (-90 <= a <= 90) or not (-180 <= b <= 180):
+                err.append(f"FSR {ctx}: location lat/lon out of range: [{a}, {b}]")
+            elif a == 0 and b == 0:
+                err.append(f"FSR {ctx}: geo koordinater missing (location is 0,0)")
+        except (TypeError, ValueError):
+            err.append(f"FSR {ctx}: location elements must be numbers, got {loc}")
+
+    def check_time_window(tw: dict, ctx: str) -> None:
+        min_s = tw.get("minStartTime")
+        max_s = tw.get("maxStartTime")
+        max_e = tw.get("maxEndTime")
+        if not min_s or not _is_offset_datetime(str(min_s)):
+            err.append(f"FSR {ctx}: timeWindow missing or invalid minStartTime (ISO 8601 with offset)")
+        if not max_e or not _is_offset_datetime(str(max_e)):
+            err.append(f"FSR {ctx}: timeWindow missing or invalid maxEndTime (ISO 8601 with offset)")
+        if min_s and max_e and str(min_s) > str(max_e):
+            err.append(f"FSR {ctx}: timeWindow minStartTime > maxEndTime")
+        if max_s and _is_offset_datetime(str(max_s)) and min_s and max_e:
+            if not (str(min_s) <= str(max_s) <= str(max_e)):
+                err.append(f"FSR {ctx}: timeWindow minStartTime <= maxStartTime <= maxEndTime required")
+
+    def check_visit(visit: dict, ctx: str) -> None:
+        vid = visit.get("id")
+        if not vid or not isinstance(vid, str) or not vid.strip():
+            err.append(f"FSR {ctx}: visit missing or empty id")
+        elif vid in visit_ids:
+            err.append(f"FSR {ctx}: duplicate visit id '{vid}'")
+        elif vid:
+            visit_ids.add(vid)
+        check_location(visit.get("location"), f"{ctx} visit id={visit.get('id', '?')}")
+        sd = visit.get("serviceDuration")
+        if not sd or not isinstance(sd, str) or not _is_duration(sd):
+            err.append(f"FSR {ctx}: visit id={visit.get('id', '?')} missing or invalid serviceDuration (e.g. PT30M)")
+        for i, tw in enumerate(visit.get("timeWindows") or []):
+            check_time_window(tw, f"{ctx} visit id={visit.get('id', '?')} timeWindow[{i}]")
+
+    for v in model_input.get("visits") or []:
+        check_visit(v, "visits")
+    for g in model_input.get("visitGroups") or []:
+        gid = g.get("id", "?")
+        for v in g.get("visits") or []:
+            check_visit(v, f"visitGroups id={gid}")
+
+    for veh in model_input.get("vehicles") or []:
+        vid = veh.get("id", "?")
+        shifts = veh.get("shifts") or []
+        if not shifts:
+            err.append(f"FSR vehicles: vehicle id={vid} has no shifts (minItems 1)")
+        for sh in shifts:
+            sid = sh.get("id", "?")
+            check_location(sh.get("startLocation"), f"vehicle id={vid} shift id={sid} startLocation")
+            min_start = sh.get("minStartTime")
+            max_end = sh.get("maxEndTime")
+            if not min_start or not _is_offset_datetime(str(min_start)):
+                err.append(f"FSR vehicles: vehicle id={vid} shift id={sid} missing or invalid minStartTime")
+            if not max_end or not _is_offset_datetime(str(max_end)):
+                err.append(f"FSR vehicles: vehicle id={vid} shift id={sid} missing or invalid maxEndTime")
+            if min_start and max_end and str(min_start) >= str(max_end):
+                err.append(f"FSR vehicles: vehicle id={vid} shift id={sid} minStartTime must be before maxEndTime")
+
+    def check_dep(dep: dict, visit_id: str) -> None:
+        pred = dep.get("precedingVisit")
+        if not pred or pred not in visit_ids:
+            if pred:
+                err.append(f"FSR visit id={visit_id}: visitDependencies precedingVisit '{pred}' not found in visits or visitGroups")
+            else:
+                err.append(f"FSR visit id={visit_id}: visitDependency missing precedingVisit")
+        delay = dep.get("minDelay")
+        if not delay or not isinstance(delay, str) or not _is_duration(delay):
+            err.append(f"FSR visit id={visit_id}: visitDependency (precedingVisit={pred or '?'}) delay fel: missing or invalid minDelay (ISO 8601 e.g. PT3H30M)")
+
+    for v in model_input.get("visits") or []:
+        for dep in v.get("visitDependencies") or []:
+            check_dep(dep, v.get("id", "?"))
+    for g in model_input.get("visitGroups") or []:
+        for v in g.get("visits") or []:
+            for dep in v.get("visitDependencies") or []:
+                check_dep(dep, v.get("id", "?"))
+
+    return err
+
+
 def submit_solve(payload: dict, api_key: str, configuration_id: str | None = None) -> dict:
     """POST a fresh solve request. Returns response JSON."""
     params = {}
@@ -328,6 +438,7 @@ def main() -> int:
         mi = payload.get("modelInput") or payload
         bad_shifts = validate_shifts(mi)
         tw_errors = validate_visit_time_windows(mi)
+        fsr_errors = validate_fsr_format(mi)
         if bad_shifts:
             print(f"Validation failed: {len(bad_shifts)} shift(s) with invalid minStartTime/maxEndTime.", file=sys.stderr)
             for vid, sid in bad_shifts[:15]:
@@ -342,7 +453,14 @@ def main() -> int:
             if len(tw_errors) > 20:
                 print(f"  ... and {len(tw_errors) - 20} more.", file=sys.stderr)
             return 1
-        print("Validation OK (shifts and visit time windows).")
+        if fsr_errors:
+            print(f"Validation failed: {len(fsr_errors)} FSR format error(s).", file=sys.stderr)
+            for msg in fsr_errors[:50]:
+                print(f"  {msg}", file=sys.stderr)
+            if len(fsr_errors) > 50:
+                print(f"  ... and {len(fsr_errors) - 50} more.", file=sys.stderr)
+            return 1
+        print("Validation OK (shifts, visit time windows, FSR schema).")
         return 0
 
     api_key = getattr(args, "api_key", None) or os.environ.get("TIMEFOLD_API_KEY", "")

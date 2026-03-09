@@ -220,12 +220,15 @@ def shift_metrics(
 
     # Prefer metrics block totals when present so shift = visit+travel+wait+break (no spurious idle).
     # Itinerary sums can diverge (e.g. effectiveServiceDuration vs totalServiceDuration rounding).
+    # For break-only shifts (no visits), API often returns totalBreakDuration PT0S; keep itinerary break.
     if metrics_block.get("totalServiceDuration"):
         visit_sec = parse_duration_seconds(metrics_block["totalServiceDuration"])
     if metrics_block.get("totalWaitingTime"):
         wait_sec = parse_duration_seconds(metrics_block["totalWaitingTime"])
-    if metrics_block.get("totalBreakDuration"):
-        break_sec = parse_duration_seconds(metrics_block["totalBreakDuration"])
+    api_break_sec = parse_duration_seconds(metrics_block.get("totalBreakDuration") or "PT0S")
+    if api_break_sec > 0:
+        break_sec = api_break_sec
+    # else: keep break_sec from itinerary (covers break-only shifts where API returns PT0S)
 
     # Shift duration
     if exclude_empty_shifts_only and visit_count == 0:
@@ -420,11 +423,20 @@ def aggregate(
     solver_status = meta.get("solverStatus", "N/A")
     route_plan_id = meta.get("id") or (output_data.get("run") or {}).get("id") or "unknown"
 
+    # Variant label for reports (A=all shifts, B=active shifts, C=field time)
+    if visit_span_only:
+        variant_label = "C_field_time"
+    elif exclude_empty_shifts_only:
+        variant_label = "B_active_shifts"
+    else:
+        variant_label = "A_all_shifts"
+
     out = {
         "metrics_sanity_diff_pct": diff_pct,
         "route_plan_id": route_plan_id,
         "score": score,
         "solver_status": solver_status,
+        "variant_label": variant_label,
         "visit_span_only": visit_span_only,
         "exclude_empty_shifts_only": exclude_empty_shifts_only,
         "total_visits_assigned": total_visits,
@@ -498,10 +510,12 @@ def report_lines(
     w = 72
     lines: list[str] = []
     title = "TIMEFOLD FSR METRICS REPORT"
+    if agg.get("variant_label"):
+        title += f"  [{agg['variant_label']}]"
     if agg.get("visit_span_only"):
-        title += "  (Variant 2: visit-span; tomma delar borttagna)"
+        title += "  (C: field time; break only if visit after)"
     elif agg.get("exclude_empty_shifts_only"):
-        title += "  (Variant 1: endast helt tomma skift borttagna)"
+        title += "  (B: active shifts; break if shift has visits, any order)"
     elif exclude_inactive:
         title += "  (EXCLUDING INACTIVE)"
     lines.append("=" * w)

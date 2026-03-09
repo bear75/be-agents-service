@@ -8,6 +8,7 @@ This folder contains the **Attendo** export and all 4mars artifacts: scripts, do
 |------|----------|
 | `ATTENDO_DATABEHOV_PER_KUND_OCH_BESOK - data.csv` | Source CSV (Attendo databehov). |
 | `export-field-service-routing-v1-4mars-input.json` | Latest FSR input (from CSV→JSON script). |
+| **full-csv/** | Full 81-clients CSV: `ATTENDO_DATABEHOV_ALL_81_CLIENTS.csv` (same columns, optional leading Column-0). |
 | **scripts/** | 4mars scripts + README: `attendo_4mars_to_fsr.py`, `analyze_4mars_csv_to_json.py`, `map_visits_time_windows.py`. |
 | **docs/** | `CSV_TO_INPUT_VERIFICATION.md`, `CSV_TILL_INPUT_VERIFIERING.md`, `RECURRING_VISITS_HANDLING.md`. |
 | `input/` | Timestamped or alternate input JSONs (e.g. `input_4mars_YYYYMMDD_HHMMSS.json`). |
@@ -111,6 +112,57 @@ After each run the script prints a summary to stderr:
 - **JSON:** Besök standalone, antal visit groups + besök i grupper, besök totalt, vehicles, shifts.
 
 Besök totalt i JSON motsvarar utökade besök som har adress/koordinat (vid geocoding). Vehicles = en per Slinga. Shifts = vehicle_id + datum + typ (dag/helg/kväll).
+
+## Full-csv (81 clients) → JSON → solve
+
+From **recurring-visits/** (requires `TIMEFOLD_API_KEY` in env or `~/.config/caire/env`).
+
+**ALLA CSV RADER SKA HA ADDRESSER → KOORDINATER.** The script now **fails** if any address has no coordinates (no silent drop). Use an address-coordinates file so every unique CSV address resolves (Nominatim + built-in fallback + file).
+
+**1. Build address → coordinates map (run once, with network)**
+
+```bash
+cd huddinge-package/huddinge-4mars-csv/scripts
+python build_address_coordinates.py ../full-csv/ATTENDO_DATABEHOV_ALL_81_CLIENTS.csv -o ../full-csv/address_coordinates.json
+```
+
+If any address fails (Nominatim + fallback), the script lists them and exits. Add those to `_FALLBACK_COORDINATES` in `attendo_4mars_to_fsr.py` or fix the CSV, then re-run until all addresses geocode. The CSV should have clean street names (same normalization as `full-csv/convert_original_to_new.py`: Diagnosvägen, Sågstuvägen, etc.).
+
+**2. Generate FSR input (with geocoding; pass the coordinates file)**
+
+```bash
+# From recurring-visits/
+python huddinge-package/huddinge-4mars-csv/scripts/attendo_4mars_to_fsr.py \
+  huddinge-package/huddinge-4mars-csv/full-csv/ATTENDO_DATABEHOV_ALL_81_CLIENTS.csv \
+  -o huddinge-package/huddinge-4mars-csv/full-csv/input_81_2w.json \
+  --start-date 2026-03-02 --end-date 2026-03-15 \
+  --address-coordinates huddinge-package/huddinge-4mars-csv/full-csv/address_coordinates.json
+```
+
+Optional: CSV columns **Lat** and **Lon** (or Latitud, Longitud) are used when present so those rows skip geocoding.
+
+**3. Validate JSON against FSR schema**
+
+```bash
+cd scripts
+python submit_to_timefold.py validate "../huddinge-package/huddinge-4mars-csv/full-csv/input_81_2w.json"
+```
+
+**4. Send to solve**
+
+```bash
+python submit_to_timefold.py solve "../huddinge-package/huddinge-4mars-csv/full-csv/input_81_2w.json" --configuration-id "" --wait --save "../huddinge-package/huddinge-4mars-csv/output"
+```
+
+`validate` checks shifts, visit time windows, and full FSR schema (Visit: id, location, serviceDuration, timeWindows; Vehicle/Shift: id, startLocation, minStartTime, maxEndTime; dependency refs). Use `--no-geocode` only to quickly check that the CSV parses; that output has 0 visits and will not solve.
+
+**Depå och genomsnittlig restid:** Startdepån är samma som i gamla inputen (`DEFAULT_OFFICE` = [59.2368721, 17.9942601]). Om genomsnittlig restid blir cirka 2× gamla körningen beror det på **antal fordon**: utan `--no-supplementary-vehicles` lägger scriptet till många Extra_Kvall/Extra_Dag-fordon (272 fordon vs 38 i gamla inputen), så varje fordon får färre besök och fler depot-turer per besök. Använd `--no-supplementary-vehicles` för att få fordonantal nära gamla (ca 26 Slingor) och jämförbar restid.
+
+**Vilken CSV har korrekta koordinater och adresser?**  
+- **Adresser:** `full-csv/ATTENDO_DATABEHOV_ALL_81_CLIENTS.csv` — rensade och normaliserade (Diagnosvägen, Sågstuvägen, ingen LGH/våning) via `full-csv/convert_original_to_new.py`.  
+- **Koordinater:** CSV:en har kolumnerna **Lat** och **Lon** (efter Ort), ifyllda från `full-csv/address_coordinates.json` via `full-csv/add_coordinates_to_csv.py`. Kör `python add_coordinates_to_csv.py` från `full-csv/` (eller med path från recurring-visits) efter att du uppdaterat `address_coordinates.json`. Scriptet `attendo_4mars_to_fsr.py` använder CSV:ens Lat/Lon när de finns, annars geocoding + `--address-coordinates`.
+
+**Antal besök:** Nya full-csv-pipelinen ger 3555 besök (3315 standalone + 240 i visit groups). Gamla solve-inputen `solve/input_20260303_162640.json` har 3622 besök (annan planeringsperiod, 16 feb, och annan källa). Skillnaden (67 färre) kommer av: (1) annan planeringsfönster (2–15 mars vs 16 feb), (2) 142 förekomster droppas i nya körningen pga saknade koordinater (4 adresser som geocoding misslyckades för). För att komma närmare 3622: åtgärda de adresser som inte får koordinat eller använd samma CSV/period som gamla körningen.
 
 ## Related: full FSR pipeline and API key
 

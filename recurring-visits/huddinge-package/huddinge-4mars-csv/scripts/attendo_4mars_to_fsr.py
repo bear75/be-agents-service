@@ -141,10 +141,31 @@ def _auto_planning_window() -> Tuple[str, str]:
 # ---- Address and geocoding ----
 
 
+# Same split-street normalization as full-csv/convert_original_to_new.py so address_key matches.
+_STREET_NAME_FIXES: Dict[str, str] = {
+    "DAL VÄGEN": "Dalvägen",
+    "DAMMTORPS VÄGEN": "Dammtorpsvägen",
+    "DIAGNOS VÄGEN": "Diagnosvägen",
+    "FRIMANS VÄG": "Frimans väg",
+    "KVARNBERGS PLAN": "Kvarnbergsplan",
+    "LAGMANS VÄGEN": "Lagmansvägen",
+    "SANDSTENS VÄGEN": "Sandstensvägen",
+    "SJÖDALS VÄGEN": "Sjödalsvägen",
+    "SMÅBRUKETS BACKE": "Småbruksbacken",
+    "SÅGSTU VÄGEN": "Sågstuvägen",
+    "Tekniker vägen": "Teknikervägen",
+    "URBERGS VÄGEN": "Urbergsvägen",
+    "VISÄTTRA VÄGEN": "Visättravägen",
+    "ÄNGSNÄS VÄGEN": "Ängsnäsvägen",
+    "UVVÄGEN": "Uvvägen",
+}
+
+
 def _normalize_gata(gata: str) -> str:
     """
     Normalize street field before geocoding: remove apartment/suite (LGH, Lägenhet, etc.)
-    so the geocoder gets building-level address only. Applied to every address before use.
+    and apply split-street fixes (DIAGNOS VÄGEN -> Diagnosvägen) so the geocoder gets
+    building-level address only. Applied to every address before use.
     """
     if not gata:
         return ""
@@ -152,9 +173,16 @@ def _normalize_gata(gata: str) -> str:
     # Remove LGH + number (and anything after): "Gatuadress LGH 1002" -> "Gatuadress"
     s = re.sub(r"\s*LGH\s+\S+.*$", "", s, flags=re.IGNORECASE)
     # Also remove ", LGH ..." or " Lägenhet 5" style suffixes
-    s = re.sub(r",?\s*(LGH|Lägenhet|Lgh)\s+\S+.*$", "", s, flags=re.IGNORECASE)
+    s = re.sub(r",?\s*(LGH|Lägenhet|Lgh|våning|Våning|trappor)\s+\S+.*$", "", s, flags=re.IGNORECASE)
     s = re.sub(r",\s*$", "", s)
-    return re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\s+", " ", s).strip()
+    # Normalize split street names (same as convert_original_to_new.py)
+    for wrong, correct in _STREET_NAME_FIXES.items():
+        if s.upper().startswith(wrong.upper()):
+            rest = s[len(wrong) :].strip()
+            s = (correct + " " + rest).strip()
+            break
+    return s
 
 
 def _address_string_4mars(row: Dict[str, Any]) -> str:
@@ -179,6 +207,15 @@ _FALLBACK_COORDINATES: Dict[str, Tuple[float, float]] = {
     "teknikervägen 32, 14173 segeltorp": (59.261515033030534, 17.9625241689952),
     "tekniker vägen 32, 14173 segeltorp, sweden": (59.261515033030534, 17.9625241689952),
     "teknikervägen 32, 14173 segeltorp, sweden": (59.261515033030534, 17.9625241689952),
+    # Nominatim misses; coordinates from Address/Lat/Lon source
+    "fullerstatorget 14, 14135 huddinge": (59.241738, 17.986285),
+    "fullerstatorget 14, 14135 huddinge, sweden": (59.241738, 17.986285),
+    "myrstuguvägen 47, 14332 vårby": (59.250483, 17.847689),
+    "myrstuguvägen 47, 14332 vårby, sweden": (59.250483, 17.847689),
+    "rådsstigen 5c, 14148 huddinge": (59.238917, 18.016969),
+    "rådsstigen 5c, 14148 huddinge, sweden": (59.238917, 18.016969),
+    "småbruksbacken 37, 14158 huddinge": (59.214313, 17.955013),
+    "småbruksbacken 37, 14158 huddinge, sweden": (59.214313, 17.955013),
 }
 
 
@@ -190,9 +227,13 @@ def _normalize_address_for_fallback_lookup(addr: str) -> str:
 
 
 def _geocode_nominatim(
-    address: str, cache: Dict[str, Tuple[Optional[float], Optional[float]]]
+    address: str,
+    cache: Dict[str, Tuple[Optional[float], Optional[float]]],
+    external_coordinates: Optional[Dict[str, Tuple[float, float]]] = None,
 ) -> Tuple[Optional[float], Optional[float]]:
-    """Geocode one address via Nominatim (OSM). Uses cache; 1 req/sec."""
+    """Geocode one address via Nominatim (OSM). Uses cache; 1 req/sec.
+    Falls back to built-in _FALLBACK_COORDINATES then to external_coordinates (--address-coordinates file).
+    """
     if not address or not address.strip():
         return (None, None)
     key = address.strip()
@@ -221,6 +262,16 @@ def _geocode_nominatim(
     if lookup_no_country in _FALLBACK_COORDINATES:
         cache[key] = _FALLBACK_COORDINATES[lookup_no_country]
         return _FALLBACK_COORDINATES[lookup_no_country]
+    # External address→coordinates file (e.g. from build_address_coordinates.py)
+    if external_coordinates:
+        if lookup in external_coordinates:
+            coords = external_coordinates[lookup]
+            cache[key] = coords
+            return coords
+        if lookup_no_country in external_coordinates:
+            coords = external_coordinates[lookup_no_country]
+            cache[key] = coords
+            return coords
     cache[key] = (None, None)
     return (None, None)
 
@@ -228,8 +279,11 @@ def _geocode_nominatim(
 def _fill_coordinates_4mars(
     occurrences: List[Dict[str, Any]],
     geocode_rate_sec: float = 1.0,
+    external_coordinates: Optional[Dict[str, Tuple[float, float]]] = None,
 ) -> None:
-    """Geocode occurrences that have address but no lat/lon. Mutates in place."""
+    """Geocode occurrences that have address but no lat/lon. Mutates in place.
+    Uses Nominatim, then built-in fallback, then external_coordinates (--address-coordinates file).
+    """
     address_to_indices: Dict[str, List[int]] = defaultdict(list)
     for i, occ in enumerate(occurrences):
         lat = _parse_float(occ.get("lat"), 0)
@@ -247,7 +301,7 @@ def _fill_coordinates_4mars(
     print(f"Geocoding {n_unique} unique address(es)...", file=sys.stderr)
     cache: Dict[str, Tuple[Optional[float], Optional[float]]] = {}
     for addr, indices in address_to_indices.items():
-        lat, lon = _geocode_nominatim(addr, cache)
+        lat, lon = _geocode_nominatim(addr, cache, external_coordinates=external_coordinates)
         if lat is not None and lon is not None:
             for i in indices:
                 occurrences[i]["lat"] = lat
@@ -372,6 +426,12 @@ def _expand_row_to_occurrences(
     ort = str(row.get("Ort", "") or "").strip()
     address_key = f"{gata}, {postnr} {ort}, Sweden".strip(" ,") if (gata or postnr or ort) else ""
 
+    # Use CSV Lat/Lon if present so every row has coordinates (no geocode needed for those)
+    csv_lat = _parse_float(row.get("Lat") or row.get("Latitud"), 0)
+    csv_lon = _parse_float(row.get("Lon") or row.get("Longitud"), 0)
+    base_lat = csv_lat if (csv_lat != 0 or csv_lon != 0) else 0.0
+    base_lon = csv_lon if (csv_lat != 0 or csv_lon != 0) else 0.0
+
     base: Dict[str, Any] = {
         "kundnr": str(row.get("Kundnr", "") or "").strip(),
         "address_key": address_key,
@@ -389,8 +449,8 @@ def _expand_row_to_occurrences(
         "row_index": row_index,
         "recurrence_type": recurrence,
         "weekdays": weekdays,  # for pinning: list of 0-6 or None
-        "lat": 0.0,
-        "lon": 0.0,
+        "lat": base_lat,
+        "lon": base_lon,
     }
 
     dates_in_window = _dates_in_window(start_date, end_date)
@@ -871,9 +931,11 @@ def _build_visits_and_groups(
     #    e.g. dusch (48h) gets no same-day dep and can be placed directly next to lunch.
     # 2) Spread: same insats (same row), flexible_day, multiple occurrences (week 2,3,4) with
     #    minDelay from CSV (e.g. 48h) or 18h default.
+    # Include ALL occurrences (pinned + flexible_day) per (kundnr, date_iso) so we can add
+    # "dusch after morgon" same-day dependency for Bad/Dusch with long delay (e.g. 42h).
     per_client_date: Dict[Tuple[str, str], List[Dict[str, Any]]] = defaultdict(list)
     for occ in occurrences:
-        if occ.get("_visit") is None or occ.get("flexible_day"):
+        if occ.get("_visit") is None:
             continue
         key = (occ["kundnr"], occ["date_iso"])
         per_client_date[key].append(occ)
@@ -893,6 +955,56 @@ def _build_visits_and_groups(
             # Use actual delay (e.g. PT3H30M). Timefold measures from departure of prev to start of next;
             # solver will place visits so constraint is satisfied (no slot-length subtraction).
             preceding_map[occ["visit_id"]] = (occs[i - 1]["visit_id"], delay_str)
+
+    # Same-day "dusch dikt med morgon": only when the two visit insatser (rows) are a true pair:
+    # - same client, same date, same återkommande dag (recurrence), same när på dagen och skift,
+    # - and starttid/före/efter place both within the same time window (slot bounds overlap).
+    # Effect of delay=0 is the same as combining to one long visit (less travel). If Timefold has
+    # issues with delay=0, consider merging the two visits into one long visit instead.
+    def _recurrence_key(occ: Dict[str, Any]) -> tuple:
+        """Same recurrence = same weekdays so they fall on same dates."""
+        wd = occ.get("weekdays")
+        return (tuple(sorted(wd)) if wd else ())
+
+    def _time_window_bounds_overlap(occ_a: Dict[str, Any], occ_b: Dict[str, Any]) -> bool:
+        """True if the two occurrences' start-time windows (min_start, max_start) overlap."""
+        min_a, max_a, _ = _compute_slot_bounds(occ_a)
+        min_b, max_b, _ = _compute_slot_bounds(occ_b)
+        return min_a < max_b and min_b < max_a
+
+    # Group by (client, date, när_på_dagen, skift, recurrence) so we only pair same-slot same-recurrence visits.
+    per_client_date_slot: Dict[Tuple[Any, ...], List[Dict[str, Any]]] = defaultdict(list)
+    for occ in occurrences:
+        if occ.get("_visit") is None:
+            continue
+        key = (
+            occ["kundnr"],
+            occ["date_iso"],
+            (occ.get("när_på_dagen") or "").strip(),
+            (occ.get("schift") or "").strip(),
+            _recurrence_key(occ),
+        )
+        per_client_date_slot[key].append(occ)
+
+    for _key, occs in per_client_date_slot.items():
+        occs_sorted = sorted(occs, key=lambda o: (_day_slot_order(o["när_på_dagen"]), o.get("starttid", "")))
+        morgon_occs = [o for o in occs_sorted if "morgon" in (o.get("när_på_dagen") or "").lower()]
+        for occ in occs_sorted:
+            if occ["visit_id"] in preceding_map:
+                continue
+            insats_lower = (occ.get("insatser") or "").lower()
+            if "bad/dusch" not in insats_lower and "dusch" not in insats_lower:
+                continue
+            delay_str = _parse_min_delay_hours(occ.get("antal_tim_mellan", ""))
+            if not delay_str:
+                continue
+            if _iso_duration_to_minutes(delay_str) <= SAME_DAY_DELAY_MAX_MINUTES:
+                continue
+            # Find a morgon in this group whose time window overlaps this dusch (same time window).
+            for m_occ in morgon_occs:
+                if _time_window_bounds_overlap(m_occ, occ):
+                    preceding_map[occ["visit_id"]] = (m_occ["visit_id"], "PT0M")
+                    break
 
     # Spread dependencies: N flexible_day visits in same (row, period). When N >= 2 we need a delay
     # between them. If "Antal tim mellan besöken" is filled we use it; if empty we use 18h default
@@ -1321,6 +1433,20 @@ def _verify_all_visits_have_flex(model_input: Dict[str, Any]) -> Tuple[bool, Lis
 # ---- Main pipeline ----
 
 
+def _load_address_coordinates(path: Path) -> Dict[str, Tuple[float, float]]:
+    """Load JSON map normalized_address -> [lat, lon]. Keys normalized with _normalize_address_for_fallback_lookup."""
+    with open(path, encoding="utf-8") as f:
+        raw = json.load(f)
+    out: Dict[str, Tuple[float, float]] = {}
+    for addr, coords in raw.items():
+        if isinstance(coords, (list, tuple)) and len(coords) >= 2:
+            lat, lon = float(coords[0]), float(coords[1])
+            norm = _normalize_address_for_fallback_lookup(addr)
+            if norm:
+                out[norm] = (lat, lon)
+    return out
+
+
 def generate_fsr_json(
     csv_path: Path,
     output_path: Path,
@@ -1330,6 +1456,7 @@ def generate_fsr_json(
     geocode: bool = True,
     geocode_rate_sec: float = 1.0,
     no_supplementary_vehicles: bool = False,
+    address_coordinates_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     """
     Read 4mars CSV, expand, geocode, build visits and vehicles, write FSR JSON.
@@ -1370,15 +1497,34 @@ def generate_fsr_json(
         occs = _expand_row_to_occurrences(row, i, start_date, end_date)
         occurrences.extend(occs)
 
+    external_coordinates: Optional[Dict[str, Tuple[float, float]]] = None
+    if address_coordinates_path and address_coordinates_path.exists():
+        external_coordinates = _load_address_coordinates(address_coordinates_path)
+        print(f"Loaded {len(external_coordinates)} address(es) from {address_coordinates_path}", file=sys.stderr)
+
     if geocode:
-        _fill_coordinates_4mars(occurrences, geocode_rate_sec=geocode_rate_sec)
+        _fill_coordinates_4mars(
+            occurrences,
+            geocode_rate_sec=geocode_rate_sec,
+            external_coordinates=external_coordinates,
+        )
 
     n_no_coords = sum(1 for o in occurrences if _parse_float(o.get("lat"), 0) == 0 and _parse_float(o.get("lon"), 0) == 0)
     if n_no_coords:
         failed_addrs = {o.get("address_key", "(no address)") for o in occurrences
-                        if _parse_float(o.get("lat"), 0) == 0 and _parse_float(o.get("lon"), 0) == 0}
+                        if _parse_float(o.get("lat"), 0) == 0 and _parse_float(o.get("lon"), 0) == 0
+                        and (o.get("address_key") or "").strip()}
+        if geocode and failed_addrs:
+            raise ValueError(
+                "ALLA CSV RADER MÅSTE HA ADDRESSER -> KOORDINATER. "
+                "Följande adresser saknar koordinat (Nominatim + fallback):\n  " +
+                "\n  ".join(sorted(failed_addrs)) +
+                "\nKör build_address_coordinates.py för att generera en komplett address_coordinates.json, "
+                "eller lägg till adresserna i fallback/CSV."
+            )
         print(f"WARNING: {n_no_coords} occurrences have no coordinates — these visits will be DROPPED.", file=sys.stderr)
-        for addr in sorted(failed_addrs):
+        for addr in sorted({o.get("address_key", "(no address)") for o in occurrences
+                           if _parse_float(o.get("lat"), 0) == 0 and _parse_float(o.get("lon"), 0) == 0}):
             print(f"  - {addr}", file=sys.stderr)
 
     _assign_visit_ids_kundnr_lopnr(occurrences)
@@ -1476,6 +1622,12 @@ def main() -> int:
     parser.add_argument("--no-geocode", action="store_true", help="Skip geocoding (use if addresses pre-filled)")
     parser.add_argument("--geocode-rate", type=float, default=1.0, help="Seconds between geocode requests")
     parser.add_argument(
+        "--address-coordinates",
+        type=Path,
+        default=None,
+        help="JSON file mapping address -> [lat, lon] for addresses Nominatim misses (from build_address_coordinates.py)",
+    )
+    parser.add_argument(
         "--no-supplementary-vehicles",
         action="store_true",
         help="Do not add extra Kväll/Dag vehicles (match reference 26 vehicles for 2w)",
@@ -1498,6 +1650,7 @@ def main() -> int:
             geocode=not args.no_geocode,
             geocode_rate_sec=args.geocode_rate,
             no_supplementary_vehicles=args.no_supplementary_vehicles,
+            address_coordinates_path=args.address_coordinates,
         )
         print(f"Wrote: {out}", file=sys.stderr)
     except Exception as e:
