@@ -1,0 +1,78 @@
+========================================================================
+TIMEFOLD FSR METRICS REPORT  [A_all_shifts]
+========================================================================
+
+--- Key metrics ---
+  Paid time (shift, incl. break) = 3328h 0min  [salary cost]
+  Assignable time (shift − break) = 3160h 0min  [efficiency denominator; breaks paid but not assignable]
+  Visit time (value)         = 1533h 43min  [care delivery / revenue]
+  Travel + wait (minimize)    = 328h 36min  [cost to minimize]
+
+--- KPI: Efficiency % ---
+  Efficiency (visit / (shift − break))     48.54%  [staffing]
+  Travel efficiency (visit / (visit+travel))  84.48%  [field, target >67.5%]
+  Wait efficiency (visit / (visit+travel+wait))  82.36%
+  Idle efficiency (visit / (visit+travel+idle))  49.26%  [≈ efficiency]
+  System efficiency (visit / all provisioned)  48.54%  [incl. 136 empty shifts]
+
+--- Times (h:min) ---
+  shift   = 3328h 0min
+  visit   = 1533h 43min
+  travel  = 281h 48min
+  wait    = 46h 47min
+  break   = 168h 0min
+  idle    = 1297h 41min  [inactive / empty shift time]
+  sum     = 3328h 0min  (visit+travel+wait+break+idle)
+
+--- Counts ---
+  Employees (vehicles):  46  (empty: 4)
+  Shifts:                448  (with visits: 312, empty: 136)
+  Visits assigned:       3693 / 3697
+  Unassigned:            4
+
+--- Input ---
+  Care visits: 3573 (3457 solo + 116 double-employee)
+  Timefold visits: 3697 (3457 solo + 240 in 116 groups)
+  Time window slots: 4390 (movable across weeks)
+  Vehicles: 46  Shifts: 448
+
+--- Solver ---
+  Plan:  9945ccf2-b36d-4470-be63-d73ceee42822
+  Score: 0hard/-40000medium/-4394842soft
+
+--- Time equation: shift = visit + travel + wait + break + idle ---
+  shift  = 3328h 0min  (100.00%)
+  visit  = 1533h 43min  (46.09%)
+  travel = 281h 48min  (8.47%)
+  wait   = 46h 47min  (1.41%)
+  break  = 168h 0min  (5.05%)
+  idle   = 1297h 41min  (38.99%)
+  sum    = 3328h 0min
+  visit/shift = 46.09%
+
+--- Time & Cost Breakdown ---
+  Category                     Time   % shift   Cost (kr)    Rev (kr)
+  ──────────────────── ────────────  ────────  ──────────  ──────────
+  Shift time             3328h 0min   100.00%     765,440            
+    Visit time          1533h 43min    46.09%     352,755     843,544
+    Travel time          281h 48min     8.47%      64,815            
+    Wait time             46h 47min     1.41%      10,762            
+    Break time            168h 0min     5.05%      38,640            
+    Inactive time       1297h 41min    38.99%     298,469            
+
+--- Margin ---
+  Revenue:  843,544 kr
+  Cost:     765,440 kr
+  Margin:   78,104 kr  (9.26%)
+
+--- Costs to minimize (travel, wait) + other non-visit ---
+  Travel:   64,815 kr  (281h 48min)  [minimize]
+  Wait:     10,762 kr  (46h 47min)  [minimize]
+  Inactive: 298,469 kr  (1297h 41min)
+  Break:    38,640 kr  (168h 0min)
+  Total:    412,685 kr  (53.91% of shift cost)
+========================================================================
+--- Continuity (distinct caregivers per client; target ≤15) ---
+  Clients: 969  |  Avg continuity: 2.9  |  Max: 9  |  Over 15: 0
+  Full CSV: /Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/9march/shower-compare/continuity.csv
+========================================================================

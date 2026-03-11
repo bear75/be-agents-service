@@ -60,10 +60,27 @@ def visit_id_to_client(name: str, visit_id: str) -> str:
 
 
 def visit_name_client_to_person(visit_name_client: str) -> str:
-    """Map visit-name client to person. E.g. 'H026_24' -> 'H026'."""
+    """Map visit-name client to person (Kundnr). E.g. 'H026_24' -> 'H026', 'H015_r1' -> 'H015'."""
     if not visit_name_client:
         return visit_name_client
-    return re.sub(r"_\d+$", "", visit_name_client)
+    s = re.sub(r"_r\d+$", "", visit_name_client)
+    s = re.sub(r"_\d+$", "", s)
+    return s or visit_name_client
+
+
+def name_to_person_kolada(name: str, visit_id: str) -> str:
+    """
+    Derive person (Kundnr) from visit name for v1 and v2.
+    v1: 'H026_24 - Bad/Dusch' -> H026; v2: 'H015 Morgon Dag Tillsyn' -> H015.
+    """
+    if not name:
+        return visit_id
+    name = name.strip()
+    if " - " in name:
+        prefix = name.split(" - ")[0].strip()
+        return visit_name_client_to_person(prefix) or prefix
+    m = re.match(r"^(H\d+)\s*", name)
+    return m.group(1) if m else visit_id
 
 
 def load_fsr_vehicle_ids(fsr_input_path: Path) -> set[str]:
@@ -76,19 +93,19 @@ def load_fsr_vehicle_ids(fsr_input_path: Path) -> set[str]:
 
 
 def visit_to_person_from_model(model: dict) -> dict[str, str]:
-    """Build visit_id -> person client from model dict (visits + visitGroups)."""
+    """Build visit_id -> person (Kundnr) from model. Uses KOLADA-style name parsing (v1 and v2)."""
     out: dict[str, str] = {}
     for v in model.get("visits") or []:
         vid = str(v.get("id") or "")
         name = (v.get("name") or "").strip()
         if vid:
-            out[vid] = visit_name_client_to_person(visit_id_to_client(name, vid))
+            out[vid] = name_to_person_kolada(name, vid)
     for g in model.get("visitGroups") or []:
         for v in g.get("visits") or []:
             vid = str(v.get("id") or "")
             name = (v.get("name") or "").strip()
             if vid:
-                out[vid] = visit_name_client_to_person(visit_id_to_client(name, vid))
+                out[vid] = name_to_person_kolada(name, vid)
     return out
 
 

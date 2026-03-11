@@ -2,23 +2,23 @@
 """
 Compute per-client continuity over the 2-week schedule.
 
+KOLADA (default): one row per person (Kundnr). v1 = 81 clients, v2 = 115 clients.
+  - Visit names v1: "H026_24 - Bad/Dusch" -> person H026.
+  - Visit names v2: "H015 Morgon Dag Tillsyn" -> person H015.
+
 Uses:
-  - FSR input JSON: visit id -> client id (from visit name, e.g. "H026_24 - ..." -> client H026_24)
+  - FSR input JSON: visit id -> person (Kundnr) from visit name
   - FSR output JSON: visit id -> vehicle (caregiver) per occurrence in itinerary
 
-Naming:
-  - "Person client" (e.g. H026): unique person; strip trailing _NN from visit name → 81 clients (report rows).
-  - "Visit-name" (e.g. H026_24): recurring movable visit type; used only for aggregation.
-
-Output: 81 rows — client (person id), nr_visits, continuity (number of distinct caregivers; lower is better).
-Summary: total visits, client count, per-vehicle stats.
+Output: one row per person — client (Kundnr), nr_visits, continuity (distinct caregivers; lower is better).
+Use --no-kolada for legacy aggregation by visit-name stream (more rows, lower average).
 
 Usage:
   python continuity_report.py \\
     --input path/to/export-*-input.json \\
     --output path/to/export-*-output.json \\
     [--report path/to/continuity.csv]
-    [--summary]  # print total visits, client counts, per-vehicle summary
+    [--no-kolada]  # legacy: aggregate by visit-name (e.g. H026_r24) instead of person (H026)
 """
 
 from __future__ import annotations
@@ -39,14 +39,33 @@ def visit_id_to_client(name: str, visit_id: str) -> str:
 
 
 def visit_name_client_to_person(visit_name_client: str) -> str:
-    """Map visit-name client to person client. E.g. 'H026_24' -> 'H026', 'H015_1' -> 'H015'."""
+    """Map visit-name client to person client. E.g. 'H026_24' -> 'H026', 'H015_r1' -> 'H015'."""
     if not visit_name_client:
         return visit_name_client
-    return re.sub(r"_\d+$", "", visit_name_client)
+    # Strip _rNN (v2 recurrence) then _NN (v1 recurrence)
+    s = re.sub(r"_r\d+$", "", visit_name_client)
+    s = re.sub(r"_\d+$", "", s)
+    return s or visit_name_client
+
+
+def name_to_person_kolada(name: str, visit_id: str) -> str:
+    """
+    Derive person (Kundnr) for KOLADA continuity from visit name.
+    v1: 'H026_24 - Bad/Dusch' -> H026; v2: 'H015 Morgon Dag Tillsyn' -> H015.
+    """
+    if not name:
+        return visit_id
+    name = name.strip()
+    if " - " in name:
+        prefix = name.split(" - ")[0].strip()
+        return visit_name_client_to_person(prefix) or prefix
+    # v2-style: "H015 Morgon ..." or "H026   Insats"
+    m = re.match(r"^(H\d+)\s*", name)
+    return m.group(1) if m else visit_id
 
 
 def load_visit_to_client(input_path: Path) -> dict[str, str]:
-    """Build visit_id -> client_id from FSR input (visits + visitGroups)."""
+    """Build visit_id -> client_id from FSR input (visits + visitGroups). Legacy: visit-name or vid."""
     with open(input_path, encoding="utf-8") as f:
         data = json.load(f)
     model = data.get("modelInput") or data
@@ -64,6 +83,29 @@ def load_visit_to_client(input_path: Path) -> dict[str, str]:
             name = (v.get("name") or "").strip()
             if vid:
                 out[vid] = visit_id_to_client(name, vid)
+
+    return out
+
+
+def load_visit_to_person_kolada(input_path: Path) -> dict[str, str]:
+    """Build visit_id -> person (Kundnr) for KOLADA continuity. v1 and v2 name formats supported."""
+    with open(input_path, encoding="utf-8") as f:
+        data = json.load(f)
+    model = data.get("modelInput") or data
+    out: dict[str, str] = {}
+
+    for v in model.get("visits") or []:
+        vid = str(v.get("id") or "")
+        name = (v.get("name") or "").strip()
+        if vid:
+            out[vid] = name_to_person_kolada(name, vid)
+
+    for g in model.get("visitGroups") or []:
+        for v in g.get("visits") or []:
+            vid = str(v.get("id") or "")
+            name = (v.get("name") or "").strip()
+            if vid:
+                out[vid] = name_to_person_kolada(name, vid)
 
     return out
 
@@ -97,12 +139,43 @@ def load_visit_vehicle_assignments(
     return out, n_vehicles, n_shifts
 
 
+def _assignments_by_person(
+    visit_to_person: dict[str, str],
+    output_path: Path,
+) -> dict[str, list[tuple[str, str]]]:
+    """Group (visit_id, vehicle_id) by person (Kundnr) from output."""
+    visit_vehicle_list, _, _ = load_visit_vehicle_assignments(output_path)
+    person_assignments: dict[str, list[tuple[str, str]]] = {}
+    for vid, vehicle_id in visit_vehicle_list:
+        person = visit_to_person.get(vid, vid)
+        person_assignments.setdefault(person, []).append((vid, vehicle_id))
+    return person_assignments
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Per-client continuity from FSR input + output")
     parser.add_argument("--input", type=Path, required=True, help="FSR input JSON (for visit -> client)")
     parser.add_argument("--output", type=Path, required=True, help="FSR output JSON (for visit -> vehicle)")
     parser.add_argument("--report", type=Path, default=None, help="Optional: write CSV to this path")
+    parser.add_argument(
+        "--kolada",
+        action="store_true",
+        default=True,
+        help="Use KOLADA: aggregate by person (Kundnr). v2 = 115 clients (default: True)",
+    )
+    parser.add_argument(
+        "--no-kolada",
+        action="store_true",
+        help="Legacy: aggregate by visit-name stream (e.g. H026_r24); more rows, lower avg.",
+    )
+    parser.add_argument(
+        "--only-kundnr",
+        action="store_true",
+        default=False,
+        help="KOLADA: include only clients matching Kundnr (H001, H002, ...). Use for 115 clients from DB/input.",
+    )
     args = parser.parse_args()
+    use_kolada = args.kolada and not args.no_kolada
 
     if not args.input.exists():
         print(f"Error: input not found: {args.input}", file=sys.stderr)
@@ -111,22 +184,32 @@ def main() -> int:
         print(f"Error: output not found: {args.output}", file=sys.stderr)
         return 1
 
-    visit_to_client = load_visit_to_client(args.input)
+    visit_to_person_map: dict[str, str] | None = None
+    if use_kolada:
+        visit_to_person_map = load_visit_to_person_kolada(args.input)
+        person_assignments = _assignments_by_person(visit_to_person_map, args.output)
+        if args.only_kundnr:
+            # Restrict to DB clients: only H-prefixed Kundnr (115)
+            person_assignments = {
+                p: a for p, a in person_assignments.items()
+                if re.match(r"^H\d+$", p)
+            }
+    else:
+        visit_to_client = load_visit_to_client(args.input)
+        visit_vehicle_list, n_vehicles, n_shifts = load_visit_vehicle_assignments(args.output)
+        client_assignments = {}
+        for vid, vehicle_id in visit_vehicle_list:
+            client = visit_to_client.get(vid, vid)
+            client_assignments.setdefault(client, []).append((vid, vehicle_id))
+        person_assignments = {}
+        for visit_name_client, assignments in client_assignments.items():
+            person = visit_name_client_to_person(visit_name_client)
+            person_assignments.setdefault(person, []).extend(assignments)
+
     visit_vehicle_list, n_vehicles, n_shifts = load_visit_vehicle_assignments(args.output)
+    visit_to_client = load_visit_to_client(args.input)
 
-    # visit-name client -> list of (visit_id, vehicle_id)
-    client_assignments: dict[str, list[tuple[str, str]]] = {}
-    for vid, vehicle_id in visit_vehicle_list:
-        client = visit_to_client.get(vid, vid)
-        client_assignments.setdefault(client, []).append((vid, vehicle_id))
-
-    # Aggregate by person (81 clients): person -> all (visit_id, vehicle_id) across visit-names
-    person_assignments: dict[str, list[tuple[str, str]]] = {}
-    for visit_name_client, assignments in client_assignments.items():
-        person = visit_name_client_to_person(visit_name_client)
-        person_assignments.setdefault(person, []).extend(assignments)
-
-    # Build rows: one per person — client, nr_visits, continuity (nr of distinct caregivers)
+    # Build rows: one per person (KOLADA = one per Kundnr, e.g. 115 for v2) — client, nr_visits, continuity (nr of distinct caregivers)
     rows: list[tuple[str, int, int]] = []
     for person in sorted(person_assignments.keys()):
         assignments = person_assignments[person]
@@ -162,8 +245,11 @@ def main() -> int:
     vehicle_stats: list[tuple[str, int, int]] = []
     for v_id in sorted(vehicle_ids):
         v_assignments = [(vid, c) for vid, c in visit_vehicle_list if c == v_id]
-        v_clients = {visit_to_client.get(vid, vid) for vid, _ in v_assignments}
-        v_persons = {visit_name_client_to_person(c) for c in v_clients}
+        if visit_to_person_map is not None:
+            v_persons = {visit_to_person_map.get(vid, vid) for vid, _ in v_assignments}
+        else:
+            v_clients = {visit_to_client.get(vid, vid) for vid, _ in v_assignments}
+            v_persons = {visit_name_client_to_person(c) for c in v_clients}
         vehicle_stats.append((v_id, len(v_assignments), len(v_persons)))
     print("\n  Per vehicle (vehicle_id, visits, clients):")
     for v_id, n_visits, n_clients in vehicle_stats:

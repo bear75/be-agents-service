@@ -1,0 +1,1310 @@
+{
+  "dependencies": [
+    {
+      "dependent": "H015_r4_1",
+      "preceding": "H015_r0_1",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_2",
+      "preceding": "H015_r0_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_3",
+      "preceding": "H015_r0_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_4",
+      "preceding": "H015_r0_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_5",
+      "preceding": "H015_r0_5",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_6",
+      "preceding": "H015_r0_6",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_7",
+      "preceding": "H015_r0_7",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_8",
+      "preceding": "H015_r0_8",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_9",
+      "preceding": "H015_r0_9",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H015_r4_10",
+      "preceding": "H015_r0_10",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 109 min",
+      "kundnr": "H015"
+    },
+    {
+      "dependent": "H025_r6_2",
+      "preceding": "H025_r8_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 555 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_3",
+      "preceding": "H025_r8_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 555 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_4",
+      "preceding": "H025_r8_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 555 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_5",
+      "preceding": "H025_r8_5",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 555 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_6",
+      "preceding": "H025_r9_1",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_7",
+      "preceding": "H025_r9_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_9",
+      "preceding": "H025_r8_7",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 555 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_10",
+      "preceding": "H025_r8_8",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 555 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_11",
+      "preceding": "H025_r8_9",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 555 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_12",
+      "preceding": "H025_r8_10",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 555 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_13",
+      "preceding": "H025_r9_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r6_14",
+      "preceding": "H025_r9_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r9_1",
+      "preceding": "H025_r7_1",
+      "delay": "PT3H",
+      "delay_min": 180,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r9_2",
+      "preceding": "H025_r7_2",
+      "delay": "PT3H",
+      "delay_min": 180,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r9_3",
+      "preceding": "H025_r7_3",
+      "delay": "PT3H",
+      "delay_min": 180,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r9_4",
+      "preceding": "H025_r7_4",
+      "delay": "PT3H",
+      "delay_min": 180,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r10_1",
+      "preceding": "H025_r8_1",
+      "delay": "PT3H",
+      "delay_min": 180,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r10_2",
+      "preceding": "H025_r10_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r10_3",
+      "preceding": "H025_r10_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r10_4",
+      "preceding": "H025_r10_3",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r10_5",
+      "preceding": "H025_r8_6",
+      "delay": "PT3H",
+      "delay_min": 180,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r10_6",
+      "preceding": "H025_r10_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r10_7",
+      "preceding": "H025_r10_6",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H025_r10_8",
+      "preceding": "H025_r10_7",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 351 min",
+      "kundnr": "H025"
+    },
+    {
+      "dependent": "H029_r30_1",
+      "preceding": "H029_r34_1",
+      "delay": "PT18M",
+      "delay_min": 18,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_1",
+      "preceding": "H029_r31_1",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_2",
+      "preceding": "H029_r31_2",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_3",
+      "preceding": "H029_r31_3",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_4",
+      "preceding": "H029_r31_4",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_5",
+      "preceding": "H029_r31_5",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_6",
+      "preceding": "H029_r31_6",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_7",
+      "preceding": "H029_r31_7",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_8",
+      "preceding": "H029_r31_8",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_9",
+      "preceding": "H029_r31_9",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_10",
+      "preceding": "H029_r31_10",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_11",
+      "preceding": "H029_r31_11",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_12",
+      "preceding": "H029_r31_12",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_13",
+      "preceding": "H029_r31_13",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H029_r32_14",
+      "preceding": "H029_r31_14",
+      "delay": "PT1H14M",
+      "delay_min": 74,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H029"
+    },
+    {
+      "dependent": "H034_r39_1",
+      "preceding": "H034_r44_1",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_2",
+      "preceding": "H034_r44_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_3",
+      "preceding": "H034_r44_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_4",
+      "preceding": "H034_r44_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_5",
+      "preceding": "H034_r44_5",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_6",
+      "preceding": "H034_r42_1",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 235 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_7",
+      "preceding": "H034_r42_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 235 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_8",
+      "preceding": "H034_r44_6",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_9",
+      "preceding": "H034_r44_7",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_10",
+      "preceding": "H034_r44_8",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_11",
+      "preceding": "H034_r44_9",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_12",
+      "preceding": "H034_r44_10",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 225 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_13",
+      "preceding": "H034_r42_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 235 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r39_14",
+      "preceding": "H034_r42_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 235 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r42_1",
+      "preceding": "H034_r40_1",
+      "delay": "PT3H8M",
+      "delay_min": 188,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r42_2",
+      "preceding": "H034_r40_2",
+      "delay": "PT3H8M",
+      "delay_min": 188,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r42_3",
+      "preceding": "H034_r40_3",
+      "delay": "PT3H8M",
+      "delay_min": 188,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r42_4",
+      "preceding": "H034_r40_4",
+      "delay": "PT3H8M",
+      "delay_min": 188,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r43_2",
+      "preceding": "H034_r43_1",
+      "delay": "PT23H15M",
+      "delay_min": 1395,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r43_3",
+      "preceding": "H034_r43_2",
+      "delay": "PT23H15M",
+      "delay_min": 1395,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r43_5",
+      "preceding": "H034_r43_4",
+      "delay": "PT23H15M",
+      "delay_min": 1395,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H034_r43_6",
+      "preceding": "H034_r43_5",
+      "delay": "PT23H15M",
+      "delay_min": 1395,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H034"
+    },
+    {
+      "dependent": "H037_r64_1",
+      "preceding": "H037_r59_1",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 92 min",
+      "kundnr": "H037"
+    },
+    {
+      "dependent": "H037_r64_2",
+      "preceding": "H037_r59_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 92 min",
+      "kundnr": "H037"
+    },
+    {
+      "dependent": "H037_r64_3",
+      "preceding": "H037_r59_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 92 min",
+      "kundnr": "H037"
+    },
+    {
+      "dependent": "H037_r64_4",
+      "preceding": "H037_r59_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 92 min",
+      "kundnr": "H037"
+    },
+    {
+      "dependent": "H038_r66_2",
+      "preceding": "H038_r73_2",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 211 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r66_3",
+      "preceding": "H038_r73_3",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 211 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r66_4",
+      "preceding": "H038_r73_4",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 211 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r66_5",
+      "preceding": "H038_r73_5",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 211 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r66_9",
+      "preceding": "H038_r73_7",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 211 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r66_10",
+      "preceding": "H038_r73_8",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 211 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r66_11",
+      "preceding": "H038_r73_9",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 211 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r66_12",
+      "preceding": "H038_r73_10",
+      "delay": "PT3H30M",
+      "delay_min": 210,
+      "status": "ok",
+      "reason": "slack 211 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r68_2",
+      "preceding": "H038_r68_1",
+      "delay": "PT23H15M",
+      "delay_min": 1395,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r68_3",
+      "preceding": "H038_r68_2",
+      "delay": "PT23H15M",
+      "delay_min": 1395,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r68_5",
+      "preceding": "H038_r68_4",
+      "delay": "PT23H15M",
+      "delay_min": 1395,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H038_r68_6",
+      "preceding": "H038_r68_5",
+      "delay": "PT23H15M",
+      "delay_min": 1395,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H038"
+    },
+    {
+      "dependent": "H041_r86_1",
+      "preceding": "H041_r85_1",
+      "delay": "PT2H",
+      "delay_min": 120,
+      "status": "ok",
+      "reason": "slack 76 min",
+      "kundnr": "H041"
+    },
+    {
+      "dependent": "H041_r86_2",
+      "preceding": "H041_r85_2",
+      "delay": "PT2H",
+      "delay_min": 120,
+      "status": "ok",
+      "reason": "slack 76 min",
+      "kundnr": "H041"
+    },
+    {
+      "dependent": "H041_r86_3",
+      "preceding": "H041_r85_3",
+      "delay": "PT2H",
+      "delay_min": 120,
+      "status": "ok",
+      "reason": "slack 76 min",
+      "kundnr": "H041"
+    },
+    {
+      "dependent": "H041_r86_4",
+      "preceding": "H041_r85_4",
+      "delay": "PT2H",
+      "delay_min": 120,
+      "status": "ok",
+      "reason": "slack 76 min",
+      "kundnr": "H041"
+    },
+    {
+      "dependent": "H053_r106_1",
+      "preceding": "H053_r102_1",
+      "delay": "PT2H28M",
+      "delay_min": 148,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r106_2",
+      "preceding": "H053_r102_2",
+      "delay": "PT2H28M",
+      "delay_min": 148,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r106_3",
+      "preceding": "H053_r102_3",
+      "delay": "PT2H28M",
+      "delay_min": 148,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H053_r106_4",
+      "preceding": "H053_r102_4",
+      "delay": "PT2H28M",
+      "delay_min": 148,
+      "status": "ok",
+      "reason": "slack 15 min",
+      "kundnr": "H053"
+    },
+    {
+      "dependent": "H072_r122_2",
+      "preceding": "H072_r122_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H072"
+    },
+    {
+      "dependent": "H072_r122_3",
+      "preceding": "H072_r122_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H072"
+    },
+    {
+      "dependent": "H072_r122_5",
+      "preceding": "H072_r122_4",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H072"
+    },
+    {
+      "dependent": "H072_r122_6",
+      "preceding": "H072_r122_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H072"
+    },
+    {
+      "dependent": "H095_r159_2",
+      "preceding": "H095_r159_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H095"
+    },
+    {
+      "dependent": "H095_r159_3",
+      "preceding": "H095_r159_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H095"
+    },
+    {
+      "dependent": "H095_r159_5",
+      "preceding": "H095_r159_4",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H095"
+    },
+    {
+      "dependent": "H095_r159_6",
+      "preceding": "H095_r159_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H095"
+    },
+    {
+      "dependent": "H172_r240_2",
+      "preceding": "H172_r240_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 335 min",
+      "kundnr": "H172"
+    },
+    {
+      "dependent": "H172_r240_3",
+      "preceding": "H172_r240_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 335 min",
+      "kundnr": "H172"
+    },
+    {
+      "dependent": "H172_r240_5",
+      "preceding": "H172_r240_4",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 335 min",
+      "kundnr": "H172"
+    },
+    {
+      "dependent": "H172_r240_6",
+      "preceding": "H172_r240_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 335 min",
+      "kundnr": "H172"
+    },
+    {
+      "dependent": "H172_r245_2",
+      "preceding": "H172_r245_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 340 min",
+      "kundnr": "H172"
+    },
+    {
+      "dependent": "H172_r245_3",
+      "preceding": "H172_r245_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 340 min",
+      "kundnr": "H172"
+    },
+    {
+      "dependent": "H172_r245_5",
+      "preceding": "H172_r245_4",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 340 min",
+      "kundnr": "H172"
+    },
+    {
+      "dependent": "H172_r245_6",
+      "preceding": "H172_r245_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 340 min",
+      "kundnr": "H172"
+    },
+    {
+      "dependent": "H182_r258_2",
+      "preceding": "H182_r258_1",
+      "delay": "PT21H29M",
+      "delay_min": 1289,
+      "status": "ok",
+      "reason": "slack 106 min",
+      "kundnr": "H182"
+    },
+    {
+      "dependent": "H182_r258_3",
+      "preceding": "H182_r258_2",
+      "delay": "PT21H29M",
+      "delay_min": 1289,
+      "status": "ok",
+      "reason": "slack 106 min",
+      "kundnr": "H182"
+    },
+    {
+      "dependent": "H182_r258_5",
+      "preceding": "H182_r258_4",
+      "delay": "PT21H29M",
+      "delay_min": 1289,
+      "status": "ok",
+      "reason": "slack 106 min",
+      "kundnr": "H182"
+    },
+    {
+      "dependent": "H182_r258_6",
+      "preceding": "H182_r258_5",
+      "delay": "PT21H29M",
+      "delay_min": 1289,
+      "status": "ok",
+      "reason": "slack 106 min",
+      "kundnr": "H182"
+    },
+    {
+      "dependent": "H244_r307_2",
+      "preceding": "H244_r307_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 335 min",
+      "kundnr": "H244"
+    },
+    {
+      "dependent": "H244_r307_3",
+      "preceding": "H244_r307_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 335 min",
+      "kundnr": "H244"
+    },
+    {
+      "dependent": "H244_r307_5",
+      "preceding": "H244_r307_4",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 335 min",
+      "kundnr": "H244"
+    },
+    {
+      "dependent": "H244_r307_6",
+      "preceding": "H244_r307_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 335 min",
+      "kundnr": "H244"
+    },
+    {
+      "dependent": "H244_r313_2",
+      "preceding": "H244_r313_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 340 min",
+      "kundnr": "H244"
+    },
+    {
+      "dependent": "H244_r313_3",
+      "preceding": "H244_r313_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 340 min",
+      "kundnr": "H244"
+    },
+    {
+      "dependent": "H244_r313_5",
+      "preceding": "H244_r313_4",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 340 min",
+      "kundnr": "H244"
+    },
+    {
+      "dependent": "H244_r313_6",
+      "preceding": "H244_r313_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 340 min",
+      "kundnr": "H244"
+    },
+    {
+      "dependent": "H270_r338_2",
+      "preceding": "H270_r338_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 325 min",
+      "kundnr": "H270"
+    },
+    {
+      "dependent": "H270_r338_4",
+      "preceding": "H270_r338_3",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 325 min",
+      "kundnr": "H270"
+    },
+    {
+      "dependent": "H284_r344_2",
+      "preceding": "H284_r344_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 350 min",
+      "kundnr": "H284"
+    },
+    {
+      "dependent": "H284_r344_3",
+      "preceding": "H284_r344_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 350 min",
+      "kundnr": "H284"
+    },
+    {
+      "dependent": "H284_r344_5",
+      "preceding": "H284_r344_4",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 350 min",
+      "kundnr": "H284"
+    },
+    {
+      "dependent": "H284_r344_6",
+      "preceding": "H284_r344_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 350 min",
+      "kundnr": "H284"
+    },
+    {
+      "dependent": "H299_r383_2",
+      "preceding": "H299_r383_1",
+      "delay": "PT19H28M",
+      "delay_min": 1168,
+      "status": "ok",
+      "reason": "slack 122 min",
+      "kundnr": "H299"
+    },
+    {
+      "dependent": "H299_r383_3",
+      "preceding": "H299_r383_2",
+      "delay": "PT19H28M",
+      "delay_min": 1168,
+      "status": "ok",
+      "reason": "slack 122 min",
+      "kundnr": "H299"
+    },
+    {
+      "dependent": "H299_r383_4",
+      "preceding": "H299_r383_3",
+      "delay": "PT19H28M",
+      "delay_min": 1168,
+      "status": "ok",
+      "reason": "slack 122 min",
+      "kundnr": "H299"
+    },
+    {
+      "dependent": "H299_r383_6",
+      "preceding": "H299_r383_5",
+      "delay": "PT19H28M",
+      "delay_min": 1168,
+      "status": "ok",
+      "reason": "slack 122 min",
+      "kundnr": "H299"
+    },
+    {
+      "dependent": "H299_r383_7",
+      "preceding": "H299_r383_6",
+      "delay": "PT19H28M",
+      "delay_min": 1168,
+      "status": "ok",
+      "reason": "slack 122 min",
+      "kundnr": "H299"
+    },
+    {
+      "dependent": "H299_r383_8",
+      "preceding": "H299_r383_7",
+      "delay": "PT19H28M",
+      "delay_min": 1168,
+      "status": "ok",
+      "reason": "slack 122 min",
+      "kundnr": "H299"
+    },
+    {
+      "dependent": "H327_r456_2",
+      "preceding": "H327_r456_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 300 min",
+      "kundnr": "H327"
+    },
+    {
+      "dependent": "H327_r456_3",
+      "preceding": "H327_r456_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 300 min",
+      "kundnr": "H327"
+    },
+    {
+      "dependent": "H327_r456_4",
+      "preceding": "H327_r456_3",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 300 min",
+      "kundnr": "H327"
+    },
+    {
+      "dependent": "H327_r456_6",
+      "preceding": "H327_r456_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 300 min",
+      "kundnr": "H327"
+    },
+    {
+      "dependent": "H327_r456_7",
+      "preceding": "H327_r456_6",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 300 min",
+      "kundnr": "H327"
+    },
+    {
+      "dependent": "H327_r456_8",
+      "preceding": "H327_r456_7",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 300 min",
+      "kundnr": "H327"
+    },
+    {
+      "dependent": "H369_r579_2",
+      "preceding": "H369_r579_1",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H369"
+    },
+    {
+      "dependent": "H369_r579_3",
+      "preceding": "H369_r579_2",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H369"
+    },
+    {
+      "dependent": "H369_r579_5",
+      "preceding": "H369_r579_4",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H369"
+    },
+    {
+      "dependent": "H369_r579_6",
+      "preceding": "H369_r579_5",
+      "delay": "PT18H",
+      "delay_min": 1080,
+      "status": "ok",
+      "reason": "slack 330 min",
+      "kundnr": "H369"
+    }
+  ],
+  "focus": null
+}

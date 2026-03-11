@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
 Build a JSON file mapping every unique CSV address -> [lat, lon] for use with
-attendo_4mars_to_fsr.py --address-coordinates. Ensures ALL CSV rows can get coordinates
-(Nominatim + built-in fallback + this file). Run once with network; then pass the
-output to --address-coordinates so no addresses are dropped.
+attendo_4mars_to_fsr.py --address-coordinates. All addresses must resolve via Nominatim;
+no fallback. If any address fails, clean Gata in CSV (remove LGH, VÅN, våning, etc.) and re-run.
 
 Usage:
   python build_address_coordinates.py full-csv/ATTENDO_DATABEHOV_ALL_81_CLIENTS.csv -o full-csv/address_coordinates.json
@@ -36,6 +35,12 @@ def main() -> int:
     parser.add_argument("csv_path", type=Path, help="Input CSV (same columns as 4mars)")
     parser.add_argument("-o", "--output", type=Path, required=True, help="Output JSON path")
     parser.add_argument("--geocode-rate", type=float, default=1.0, help="Seconds between Nominatim requests")
+    parser.add_argument(
+        "--merge-existing",
+        type=Path,
+        default=None,
+        help="Existing address_coordinates.json to reuse for addresses Nominatim misses (same normalized keys)",
+    )
     args = parser.parse_args()
 
     if not args.csv_path.exists():
@@ -56,13 +61,20 @@ def main() -> int:
         print("No addresses found in CSV.", file=sys.stderr)
         return 1
 
+    external_coordinates: Optional[dict[str, Tuple[float, float]]] = None
+    if args.merge_existing and args.merge_existing.exists():
+        with open(args.merge_existing, encoding="utf-8") as f:
+            raw = json.load(f)
+        external_coordinates = {k: (float(v[0]), float(v[1])) for k, v in raw.items() if isinstance(v, list) and len(v) >= 2}
+        print(f"Loaded {len(external_coordinates)} existing coordinates from {args.merge_existing}", file=sys.stderr)
+
     print(f"Geocoding {len(unique_addresses)} unique address(es)...", file=sys.stderr)
     cache: dict[str, Tuple[Optional[float], Optional[float]]] = {}
     out: dict[str, list[float]] = {}
     failed: list[str] = []
 
     for i, addr in enumerate(sorted(unique_addresses)):
-        lat, lon = _geocode_nominatim(addr, cache, external_coordinates=None)
+        lat, lon = _geocode_nominatim(addr, cache, external_coordinates=external_coordinates)
         if lat is not None and lon is not None:
             norm = _normalize_address_for_fallback_lookup(addr)
             if norm:
@@ -73,10 +85,10 @@ def main() -> int:
             time.sleep(args.geocode_rate)
 
     if failed:
-        print("ERROR: The following addresses have no coordinates (Nominatim + fallback failed):", file=sys.stderr)
+        print("ERROR: The following addresses have no coordinates (Nominatim failed). No fallback allowed.", file=sys.stderr)
         for a in sorted(failed):
             print(f"  - {a}", file=sys.stderr)
-        print("Add them to _FALLBACK_COORDINATES in attendo_4mars_to_fsr.py or fix the CSV.", file=sys.stderr)
+        print("Clean Gata in CSV (remove LGH, VÅN, våning, lägenhet, trappor, etc.) and re-run.", file=sys.stderr)
         return 1
 
     args.output.parent.mkdir(parents=True, exist_ok=True)

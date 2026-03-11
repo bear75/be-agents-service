@@ -376,8 +376,8 @@ def main() -> int:
     solve_p.add_argument("input", type=Path, help="Input JSON with modelInput.")
     solve_p.add_argument(
         "--configuration-id",
-        default=os.environ.get("TIMEFOLD_CONFIGURATION_ID", "6a4e6b5f-8767-48f8-9365-7091f7e74a37"),
-        help="Timefold configuration profile ID (or set TIMEFOLD_CONFIGURATION_ID). Default: 6a4e6b5f-8767-48f8-9365-7091f7e74a37",
+        default=os.environ.get("TIMEFOLD_CONFIGURATION_ID", ""),
+        help="Timefold configuration profile ID (or set TIMEFOLD_CONFIGURATION_ID). Omit to use payload config only.",
     )
     solve_p.add_argument("--skip-validate", action="store_true")
 
@@ -387,8 +387,8 @@ def main() -> int:
     patch_p.add_argument("--route-plan-id", required=True, help="Route plan ID to patch.")
     patch_p.add_argument(
         "--configuration-id",
-        default=os.environ.get("TIMEFOLD_CONFIGURATION_ID", "6a4e6b5f-8767-48f8-9365-7091f7e74a37"),
-        help="Timefold configuration profile ID (or set TIMEFOLD_CONFIGURATION_ID).",
+        default=os.environ.get("TIMEFOLD_CONFIGURATION_ID", ""),
+        help="Timefold configuration profile ID (or set TIMEFOLD_CONFIGURATION_ID). Omit to use payload config only.",
     )
 
     # Common args

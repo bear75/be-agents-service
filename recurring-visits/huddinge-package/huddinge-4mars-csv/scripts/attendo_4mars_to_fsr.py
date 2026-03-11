@@ -40,11 +40,15 @@ RECURRENCE_DAYS = {"daily": 7, "weekly": 14, "biweekly": 14, "3weekly": 21, "4we
 DEFAULT_OFFICE = [59.2368721, 17.9942601]
 
 # När på dagen (visit slot) -> (slot_start, slot_end) as "HH:MM"
-# Morgon 07-10:30, Lunch 11-13:30, Kväll 16-19
-# Tomt/annat = inget snävt fönster -> heldag 07-22 (långa flexibla fönster, t.ex. flexible_day med 14d/4v period)
-SLOT_MORGON = ("07:00", "10:30")
+# v2 Lathund: Morgon 07:00-10:00, Förmiddag 10:00-11:00, Lunch 11:00-13:30, Eftermiddag 13:30-15:00,
+#             Middag 16:00-19:00, Kväll 19:00-22:00. Flex 09-10:30 / 13:30-14:30 = Förmiddag/Eftermiddag.
+# Tomt/annat = heldag 07-22.
+SLOT_MORGON = ("07:00", "10:00")
+SLOT_FORMIDDAG = ("10:00", "11:00")
 SLOT_LUNCH = ("11:00", "13:30")
-SLOT_KVALL = ("16:00", "19:00")
+SLOT_EFTERMIDDAG = ("13:30", "15:00")
+SLOT_MIDDAG = ("16:00", "19:00")
+SLOT_KVALL = ("19:00", "22:00")
 SLOT_HELDAG = ("07:00", "22:00")  # Fritt tidsfönster (När på dagen tom eller annat)
 
 # Skift (vehicle shift): Helg 07-14:30 Sat-Sun, Dag 07-15 Mon-Fri, Kväll 16-22 all 7 days
@@ -163,26 +167,45 @@ _STREET_NAME_FIXES: Dict[str, str] = {
 
 def _normalize_gata(gata: str) -> str:
     """
-    Normalize street field before geocoding: remove apartment/suite (LGH, Lägenhet, etc.)
-    and apply split-street fixes (DIAGNOS VÄGEN -> Diagnosvägen) so the geocoder gets
-    building-level address only. Applied to every address before use.
+    Normalize street field before geocoding: trim all whitespace, remove apartment/suite
+    noise (LGH, VÅN, våning, etc.), collapse space before street suffixes (gatan, vägen),
+    and apply split-street fixes. No fallback coordinates — if geocoding fails, fix CSV.
     """
     if not gata:
         return ""
     s = str(gata).strip()
-    # Remove LGH + number (and anything after): "Gatuadress LGH 1002" -> "Gatuadress"
-    s = re.sub(r"\s*LGH\s+\S+.*$", "", s, flags=re.IGNORECASE)
-    # Also remove ", LGH ..." or " Lägenhet 5" style suffixes
-    s = re.sub(r",?\s*(LGH|Lägenhet|Lgh|våning|Våning|trappor)\s+\S+.*$", "", s, flags=re.IGNORECASE)
-    s = re.sub(r",\s*$", "", s)
+    # Remove apartment/suite suffixes (order matters: longer patterns first)
+    # LGH / Lgh: "LGH 1002", "LGH nr 1002", "LGH1002"
+    s = re.sub(r",?\s*LGH\s*nr?\s*\d+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r",?\s*LGH\s*\d+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r",?\s*LGH\s+\S+.*$", "", s, flags=re.IGNORECASE).strip()
+    # VÅN / våning: "VÅN 3", "våning 2", "Vån 1"
+    s = re.sub(r",?\s*VÅN\s*\d+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r",?\s*våning\s*\d+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r",?\s*Vån\s*\d+.*$", "", s, flags=re.IGNORECASE).strip()
+    # Lägenhet, trappor, tr (abbrev. for trappor)
+    s = re.sub(r",?\s*Lägenhet\s*\d+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r",?\s*trappor\s*[A-Za-z0-9]*.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r",?\s*tr\s*\d+.*$", "", s, flags=re.IGNORECASE).strip()
+    # Generic "LGH <anything>" or "våning <anything>" remainder
+    s = re.sub(r"\s+LGH\s+\S+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r"\s+(våning|Våning|VÅN|Vån)\s+\S+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r"\s+Lägenhet\s+\S+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r"\s+trappor\s+\S+.*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r"\s+tr\s+\S+.*$", "", s, flags=re.IGNORECASE).strip()
+    # Trailing comma, collapse all whitespace to single space, trim
+    s = re.sub(r",\s*$", "", s).strip()
     s = re.sub(r"\s+", " ", s).strip()
-    # Normalize split street names (same as convert_original_to_new.py)
+    # Normalize split street names first (e.g. SMÅBRUKETS BACKE -> Småbruksbacken) so suffix merge doesn't break them
     for wrong, correct in _STREET_NAME_FIXES.items():
         if s.upper().startswith(wrong.upper()):
             rest = s[len(wrong) :].strip()
             s = (correct + " " + rest).strip()
             break
-    return s
+    # Remove space before Swedish street-type suffixes (e.g. "bergs gatan" -> "bergsgatan", "X vägen" -> "Xvägen")
+    for suffix in ("gatan", "vägen", "väg", "gränd", "stigen", "backen", "backe", "plan", "torget"):
+        s = re.sub(r"\s+" + suffix + r"\b", suffix, s, flags=re.IGNORECASE)
+    return s.strip()
 
 
 def _address_string_4mars(row: Dict[str, Any]) -> str:
@@ -197,26 +220,9 @@ def _address_string_4mars(row: Dict[str, Any]) -> str:
     return f"{postnr} {ort}, Sweden".strip(" ,")
 
 
-# Fallback coordinates when Nominatim fails (e.g. OSM missing street).
-# Key: normalized address (lowercase, single space, no "Sweden" required for match).
-# Add entries as needed for known-good addresses.
-_FALLBACK_COORDINATES: Dict[str, Tuple[float, float]] = {
-    "brovaktarvägen 28, 14173 segeltorp": (59.2633464764949, 17.963422468995333),
-    "brovaktarvägen 28, 14173 segeltorp, sweden": (59.2633464764949, 17.963422468995333),
-    "tekniker vägen 32, 14173 segeltorp": (59.261515033030534, 17.9625241689952),
-    "teknikervägen 32, 14173 segeltorp": (59.261515033030534, 17.9625241689952),
-    "tekniker vägen 32, 14173 segeltorp, sweden": (59.261515033030534, 17.9625241689952),
-    "teknikervägen 32, 14173 segeltorp, sweden": (59.261515033030534, 17.9625241689952),
-    # Nominatim misses; coordinates from Address/Lat/Lon source
-    "fullerstatorget 14, 14135 huddinge": (59.241738, 17.986285),
-    "fullerstatorget 14, 14135 huddinge, sweden": (59.241738, 17.986285),
-    "myrstuguvägen 47, 14332 vårby": (59.250483, 17.847689),
-    "myrstuguvägen 47, 14332 vårby, sweden": (59.250483, 17.847689),
-    "rådsstigen 5c, 14148 huddinge": (59.238917, 18.016969),
-    "rådsstigen 5c, 14148 huddinge, sweden": (59.238917, 18.016969),
-    "småbruksbacken 37, 14158 huddinge": (59.214313, 17.955013),
-    "småbruksbacken 37, 14158 huddinge, sweden": (59.214313, 17.955013),
-}
+# No built-in fallback coordinates. If geocoding fails, fix Gata in CSV (remove LGH, VÅN, etc.)
+# and re-run build_address_coordinates.py until all addresses resolve via Nominatim or
+# --address-coordinates file.
 
 
 def _normalize_address_for_fallback_lookup(addr: str) -> str:
@@ -231,14 +237,26 @@ def _geocode_nominatim(
     cache: Dict[str, Tuple[Optional[float], Optional[float]]],
     external_coordinates: Optional[Dict[str, Tuple[float, float]]] = None,
 ) -> Tuple[Optional[float], Optional[float]]:
-    """Geocode one address via Nominatim (OSM). Uses cache; 1 req/sec.
-    Falls back to built-in _FALLBACK_COORDINATES then to external_coordinates (--address-coordinates file).
+    """Geocode one address: cache, then Nominatim, then --address-coordinates file only.
+    No built-in fallback. If resolution fails, fix Gata in CSV (remove LGH, VÅN, etc.) and re-run.
     """
     if not address or not address.strip():
         return (None, None)
     key = address.strip()
     if key in cache:
         return cache[key]
+    lookup = _normalize_address_for_fallback_lookup(key)
+    lookup_no_country = lookup.replace(", sweden", "").strip() if lookup else ""
+    # External address→coordinates file (from build_address_coordinates.py) checked first
+    if external_coordinates:
+        if lookup in external_coordinates:
+            coords = external_coordinates[lookup]
+            cache[key] = coords
+            return coords
+        if lookup_no_country in external_coordinates:
+            coords = external_coordinates[lookup_no_country]
+            cache[key] = coords
+            return coords
     try:
         url = "https://nominatim.openstreetmap.org/search?" + urlencode(
             {"q": key, "format": "json", "limit": 1}
@@ -252,26 +270,6 @@ def _geocode_nominatim(
             return (lat, lon)
     except Exception as e:
         print(f"WARNING: geocode failed for '{key}': {e}", file=sys.stderr)
-    # Try fallback table (known addresses where Nominatim fails)
-    lookup = _normalize_address_for_fallback_lookup(key)
-    if lookup in _FALLBACK_COORDINATES:
-        cache[key] = _FALLBACK_COORDINATES[lookup]
-        return _FALLBACK_COORDINATES[lookup]
-    # Match without trailing ", sweden" in case address_key was built without it
-    lookup_no_country = lookup.replace(", sweden", "").strip()
-    if lookup_no_country in _FALLBACK_COORDINATES:
-        cache[key] = _FALLBACK_COORDINATES[lookup_no_country]
-        return _FALLBACK_COORDINATES[lookup_no_country]
-    # External address→coordinates file (e.g. from build_address_coordinates.py)
-    if external_coordinates:
-        if lookup in external_coordinates:
-            coords = external_coordinates[lookup]
-            cache[key] = coords
-            return coords
-        if lookup_no_country in external_coordinates:
-            coords = external_coordinates[lookup_no_country]
-            cache[key] = coords
-            return coords
     cache[key] = (None, None)
     return (None, None)
 
@@ -282,7 +280,7 @@ def _fill_coordinates_4mars(
     external_coordinates: Optional[Dict[str, Tuple[float, float]]] = None,
 ) -> None:
     """Geocode occurrences that have address but no lat/lon. Mutates in place.
-    Uses Nominatim, then built-in fallback, then external_coordinates (--address-coordinates file).
+    Uses external_coordinates (--address-coordinates file) then Nominatim. No fallback; failures must be fixed in CSV.
     """
     address_to_indices: Dict[str, List[int]] = defaultdict(list)
     for i, occ in enumerate(occurrences):
@@ -439,7 +437,7 @@ def _expand_row_to_occurrences(
         "starttid": str(row.get("Starttid", "") or "08:00").strip(),
         "längd": _parse_int(row.get("Längd"), 0),
         "när_på_dagen": str(row.get("När på dagen", "") or "").strip(),
-        "schift": str(row.get("Schift", "") or "").strip(),
+        "schift": str(row.get("Skift", "") or row.get("Schift", "") or "").strip(),
         "insatser": str(row.get("Insatser", "") or "").strip(),
         "före": _parse_int(row.get("Före"), 0),
         "efter": _parse_int(row.get("Efter"), 0),
@@ -583,8 +581,16 @@ def _slot_for_nar_pa_dagen(nar: str, schift: str = "") -> Tuple[str, str]:
     n = (nar or "").strip().lower()
     if "morgon" in n:
         return SLOT_MORGON
+    if "lördag" in n:
+        return SLOT_MORGON  # weekend morning slot (10-mars)
+    if "förmiddag" in n:
+        return SLOT_FORMIDDAG
     if "lunch" in n:
         return SLOT_LUNCH
+    if "eftermiddag" in n:
+        return SLOT_EFTERMIDDAG
+    if "middag" in n:
+        return SLOT_MIDDAG
     if "kväll" in n:
         return SLOT_KVALL
     s = (schift or "").strip().lower()
@@ -602,7 +608,7 @@ def _compute_slot_bounds(occ: Dict[str, Any]) -> Tuple[int, int, bool]:
     Return (min_start_minutes, max_start_minutes, is_heldag) for one occurrence.
 
     REGEL: Alla besök ska ha flex — antingen inom dagen (tid) eller över dagar/veckor.
-    - Före=Efter=0: alltid hela sloten (Morgon 07–10:30, Lunch 11–13:30, Kväll 16–19, Heldag 07–22).
+    - Före=Efter=0: alltid hela sloten (Morgon 07–10, Förmiddag 10–11, Lunch 11:30–13:30, Eftermiddag 13:30–14:30, Middag 16–18:30, Kväll 19–22, Heldag 07–22).
     - Före/Efter ifyllda: starttid ± före/efter (tid-flex).
     - Säkerhetsnät: om beräkning ger min==max används sloten så att flex alltid > 0.
     """
@@ -1517,10 +1523,10 @@ def generate_fsr_json(
         if geocode and failed_addrs:
             raise ValueError(
                 "ALLA CSV RADER MÅSTE HA ADDRESSER -> KOORDINATER. "
-                "Följande adresser saknar koordinat (Nominatim + fallback):\n  " +
+                "Följande adresser saknar koordinat (Nominatim):\n  " +
                 "\n  ".join(sorted(failed_addrs)) +
-                "\nKör build_address_coordinates.py för att generera en komplett address_coordinates.json, "
-                "eller lägg till adresserna i fallback/CSV."
+                "\nRensa Gata i CSV från LGH, VÅN, våning etc. Kör sedan build_address_coordinates.py "
+                "tills alla adresser löses; ingen fallback tillåten."
             )
         print(f"WARNING: {n_no_coords} occurrences have no coordinates — these visits will be DROPPED.", file=sys.stderr)
         for addr in sorted({o.get("address_key", "(no address)") for o in occurrences

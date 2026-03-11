@@ -1,0 +1,2479 @@
+{
+  "config": {
+    "run": {
+      "name": "VISIT_DEPENDENCY Demo",
+      "tags": []
+    },
+    "model": {}
+  },
+  "modelInput": {
+    "vehicles": [
+      {
+        "id": "Ann",
+        "vehicleType": "VAN",
+        "shifts": [
+          {
+            "id": "fc5077d2",
+            "startLocation": [
+              33.771758735816796,
+              -84.37174927400983
+            ],
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "electrician",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "fc5077d2 Lunch",
+                "minStartTime": "2026-03-09T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "e06f2475",
+            "startLocation": [
+              33.771758735816796,
+              -84.37174927400983
+            ],
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "electrician",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "e06f2475 Lunch",
+                "minStartTime": "2026-03-10T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "ec2a105f",
+            "startLocation": [
+              33.771758735816796,
+              -84.37174927400983
+            ],
+            "minStartTime": "2026-03-11T08:00:00-04:00",
+            "maxEndTime": "2026-03-11T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "electrician",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "ec2a105f Lunch",
+                "minStartTime": "2026-03-11T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "5af26658",
+            "startLocation": [
+              33.771758735816796,
+              -84.37174927400983
+            ],
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "electrician",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "5af26658 Lunch",
+                "minStartTime": "2026-03-12T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "58c1c094",
+            "startLocation": [
+              33.771758735816796,
+              -84.37174927400983
+            ],
+            "minStartTime": "2026-03-13T08:00:00-04:00",
+            "maxEndTime": "2026-03-13T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "electrician",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "58c1c094 Lunch",
+                "minStartTime": "2026-03-13T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          }
+        ],
+        "historicalTimeUtilized": "PT0S",
+        "historicalTimeCapacity": "PT0S"
+      },
+      {
+        "id": "Beth",
+        "vehicleType": "VAN",
+        "shifts": [
+          {
+            "id": "b8e663eb",
+            "startLocation": [
+              33.77346199634465,
+              -84.37637206574306
+            ],
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "b8e663eb Lunch",
+                "minStartTime": "2026-03-09T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "e833e222",
+            "startLocation": [
+              33.77346199634465,
+              -84.37637206574306
+            ],
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "e833e222 Lunch",
+                "minStartTime": "2026-03-10T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "e5bb1514",
+            "startLocation": [
+              33.77346199634465,
+              -84.37637206574306
+            ],
+            "minStartTime": "2026-03-11T08:00:00-04:00",
+            "maxEndTime": "2026-03-11T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "e5bb1514 Lunch",
+                "minStartTime": "2026-03-11T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "54e25d69",
+            "startLocation": [
+              33.77346199634465,
+              -84.37637206574306
+            ],
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "54e25d69 Lunch",
+                "minStartTime": "2026-03-12T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "41b42e3b",
+            "startLocation": [
+              33.77346199634465,
+              -84.37637206574306
+            ],
+            "minStartTime": "2026-03-13T08:00:00-04:00",
+            "maxEndTime": "2026-03-13T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "41b42e3b Lunch",
+                "minStartTime": "2026-03-13T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          }
+        ],
+        "historicalTimeUtilized": "PT0S",
+        "historicalTimeCapacity": "PT0S"
+      },
+      {
+        "id": "Carl",
+        "vehicleType": "VAN",
+        "shifts": [
+          {
+            "id": "668a8c1e",
+            "startLocation": [
+              33.703380778442835,
+              -84.4410901812753
+            ],
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "668a8c1e Lunch",
+                "minStartTime": "2026-03-09T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "9ee7cc91",
+            "startLocation": [
+              33.703380778442835,
+              -84.4410901812753
+            ],
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "9ee7cc91 Lunch",
+                "minStartTime": "2026-03-10T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "b4f917a4",
+            "startLocation": [
+              33.703380778442835,
+              -84.4410901812753
+            ],
+            "minStartTime": "2026-03-11T08:00:00-04:00",
+            "maxEndTime": "2026-03-11T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "b4f917a4 Lunch",
+                "minStartTime": "2026-03-11T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "7cae9eab",
+            "startLocation": [
+              33.703380778442835,
+              -84.4410901812753
+            ],
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "7cae9eab Lunch",
+                "minStartTime": "2026-03-12T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "7162c6a1",
+            "startLocation": [
+              33.703380778442835,
+              -84.4410901812753
+            ],
+            "minStartTime": "2026-03-13T08:00:00-04:00",
+            "maxEndTime": "2026-03-13T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "7162c6a1 Lunch",
+                "minStartTime": "2026-03-13T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          }
+        ],
+        "historicalTimeUtilized": "PT0S",
+        "historicalTimeCapacity": "PT0S"
+      },
+      {
+        "id": "Dan",
+        "vehicleType": "VAN",
+        "shifts": [
+          {
+            "id": "9485d104",
+            "startLocation": [
+              33.78166220821765,
+              -84.41899292324051
+            ],
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "painter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "9485d104 Lunch",
+                "minStartTime": "2026-03-09T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "021fda9d",
+            "startLocation": [
+              33.78166220821765,
+              -84.41899292324051
+            ],
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "painter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "021fda9d Lunch",
+                "minStartTime": "2026-03-10T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "86a7881e",
+            "startLocation": [
+              33.78166220821765,
+              -84.41899292324051
+            ],
+            "minStartTime": "2026-03-11T08:00:00-04:00",
+            "maxEndTime": "2026-03-11T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "painter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "86a7881e Lunch",
+                "minStartTime": "2026-03-11T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "5864deb9",
+            "startLocation": [
+              33.78166220821765,
+              -84.41899292324051
+            ],
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "painter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "5864deb9 Lunch",
+                "minStartTime": "2026-03-12T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "0d72a0ed",
+            "startLocation": [
+              33.78166220821765,
+              -84.41899292324051
+            ],
+            "minStartTime": "2026-03-13T08:00:00-04:00",
+            "maxEndTime": "2026-03-13T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "painter",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "0d72a0ed Lunch",
+                "minStartTime": "2026-03-13T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          }
+        ],
+        "historicalTimeUtilized": "PT0S",
+        "historicalTimeCapacity": "PT0S"
+      },
+      {
+        "id": "Elsa",
+        "vehicleType": "VAN",
+        "shifts": [
+          {
+            "id": "42643660",
+            "startLocation": [
+              33.71924537788731,
+              -84.3048117115059
+            ],
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              },
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "42643660 Lunch",
+                "minStartTime": "2026-03-09T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "da2e9c7f",
+            "startLocation": [
+              33.71924537788731,
+              -84.3048117115059
+            ],
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              },
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "da2e9c7f Lunch",
+                "minStartTime": "2026-03-10T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "8cd3374f",
+            "startLocation": [
+              33.71924537788731,
+              -84.3048117115059
+            ],
+            "minStartTime": "2026-03-11T08:00:00-04:00",
+            "maxEndTime": "2026-03-11T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              },
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "8cd3374f Lunch",
+                "minStartTime": "2026-03-11T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "8a562caa",
+            "startLocation": [
+              33.71924537788731,
+              -84.3048117115059
+            ],
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              },
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "8a562caa Lunch",
+                "minStartTime": "2026-03-12T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          },
+          {
+            "id": "1a488d80",
+            "startLocation": [
+              33.71924537788731,
+              -84.3048117115059
+            ],
+            "minStartTime": "2026-03-13T08:00:00-04:00",
+            "maxEndTime": "2026-03-13T17:00:00-04:00",
+            "skills": [
+              {
+                "name": "carpenter",
+                "level": 1
+              },
+              {
+                "name": "plumber",
+                "level": 1
+              }
+            ],
+            "tags": [],
+            "requiredBreaks": [
+              {
+                "id": "1a488d80 Lunch",
+                "minStartTime": "2026-03-13T12:00:00-04:00",
+                "duration": "PT1H",
+                "costImpact": "PAID",
+                "type": "FLOATING"
+              }
+            ],
+            "temporarySkillSets": [],
+            "temporaryTagSets": [],
+            "itinerary": []
+          }
+        ],
+        "historicalTimeUtilized": "PT0S",
+        "historicalTimeCapacity": "PT0S"
+      }
+    ],
+    "visits": [
+      {
+        "id": "f8d325e4",
+        "name": "Cole Inc.",
+        "location": [
+          33.78274408955548,
+          -84.44417603571051
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "10",
+        "pinningRequested": false
+      },
+      {
+        "id": "06a82837",
+        "name": "Fox GP",
+        "location": [
+          33.80458740934444,
+          -84.3455918148543
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT2H30M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "1379bb45",
+        "name": "Robinson LP",
+        "location": [
+          33.703226888202124,
+          -84.44737319032417
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T10:00:00-04:00",
+            "maxEndTime": "2026-03-09T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT40M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "7",
+        "pinningRequested": false
+      },
+      {
+        "id": "30f9ceb1",
+        "name": "Green JV",
+        "location": [
+          33.79611408141638,
+          -84.26660561261669
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T14:00:00-04:00",
+            "maxEndTime": "2026-03-09T20:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "4b705927",
+        "name": "Jones LLP",
+        "location": [
+          33.67323296259626,
+          -84.4841056479024
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:30:00-04:00",
+            "maxEndTime": "2026-03-09T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "7",
+        "pinningRequested": false
+      },
+      {
+        "id": "f5b256fb",
+        "name": "King PC",
+        "location": [
+          33.67938360864614,
+          -84.33302196661943
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT3H",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "c09af240",
+        "name": "Li LLC",
+        "location": [
+          33.787836922992014,
+          -84.3373420597635
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T11:30:00-04:00",
+            "maxEndTime": "2026-03-09T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT30M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "eec5d2c7",
+        "name": "Fox Market",
+        "location": [
+          33.809053978780575,
+          -84.27075283822751
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T17:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "visitDependencies": [
+          {
+            "id": "47737551_after_73eae426",
+            "precedingVisit": "73eae426",
+            "minDelay": "PT0S",
+            "coordination": "NONE"
+          }
+        ],
+        "pinningRequested": false
+      },
+      {
+        "id": "73eae426",
+        "name": "Poe Corp",
+        "location": [
+          33.6827909862924,
+          -84.33183523375008
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T11:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "56066dce",
+        "name": "Rye C-Corp",
+        "location": [
+          33.720182464482,
+          -84.46949947358138
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT2H30M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "701cf321",
+        "name": "Smith B-Corp",
+        "location": [
+          33.66464557763112,
+          -84.32361466502167
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T10:30:00-04:00",
+            "maxEndTime": "2026-03-09T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT30M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "79460a06",
+        "name": "Watt Co-op",
+        "location": [
+          33.73257005631345,
+          -84.4765127980971
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T13:30:00-04:00",
+            "maxEndTime": "2026-03-09T19:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT40M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "10",
+        "pinningRequested": false
+      },
+      {
+        "id": "4192d23f",
+        "name": "Zane NPO",
+        "location": [
+          33.73057910877341,
+          -84.25930059409318
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T09:00:00-04:00",
+            "maxEndTime": "2026-03-09T17:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "7cd74d68",
+        "name": "Young Mutual",
+        "location": [
+          33.705949933736264,
+          -84.28050283038291
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T09:00:00-04:00",
+            "maxEndTime": "2026-03-09T17:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT2H30M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "a35d1f01",
+        "name": "Zhang Holding",
+        "location": [
+          33.76397640173133,
+          -84.30022000043225
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T10:00:00-04:00",
+            "maxEndTime": "2026-03-09T15:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "de6ab9d5",
+        "name": "Cole Franchise",
+        "location": [
+          33.665082433909156,
+          -84.44107549391548
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T13:30:00-04:00",
+            "maxEndTime": "2026-03-09T21:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT30M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "cbbecccf",
+        "name": "Robinson S-Corp",
+        "location": [
+          33.78274408955548,
+          -84.44417603571051
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:00:00-04:00",
+            "maxEndTime": "2026-03-09T15:00:00-04:00"
+          },
+          {
+            "minStartTime": "2026-03-10T13:30:00-04:00",
+            "maxEndTime": "2026-03-10T19:30:00-04:00"
+          },
+          {
+            "minStartTime": "2026-03-11T12:30:00-04:00",
+            "maxEndTime": "2026-03-11T18:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "visitDependencies": [
+          {
+            "id": "1fbdb47f_after_f8d325e4",
+            "precedingVisit": "f8d325e4",
+            "minDelay": "PT24H",
+            "coordination": "NONE"
+          }
+        ],
+        "pinningRequested": false
+      },
+      {
+        "id": "10fc4c37",
+        "name": "Green QSSS",
+        "location": [
+          33.6827909862924,
+          -84.33183523375008
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-09T08:30:00-04:00",
+            "maxEndTime": "2026-03-09T16:30:00-04:00"
+          },
+          {
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T16:00:00-04:00"
+          },
+          {
+            "minStartTime": "2026-03-11T08:30:00-04:00",
+            "maxEndTime": "2026-03-11T16:30:00-04:00"
+          },
+          {
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "visitDependencies": [
+          {
+            "id": "23a416ed_after_73eae426",
+            "precedingVisit": "73eae426",
+            "minDelay": "PT48H",
+            "coordination": "NONE"
+          }
+        ],
+        "pinningRequested": false
+      },
+      {
+        "id": "999b2926",
+        "name": "Cole Inc. Follow-up",
+        "location": [
+          33.78274408955548,
+          -84.44417603571051
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T17:00:00-04:00"
+          },
+          {
+            "minStartTime": "2026-03-11T13:30:00-04:00",
+            "maxEndTime": "2026-03-11T21:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "visitDependencies": [
+          {
+            "id": "f8d325e4_followup_1",
+            "precedingVisit": "f8d325e4",
+            "minDelay": "PT24H",
+            "coordination": "SAME_VEHICLE"
+          }
+        ],
+        "pinningRequested": false
+      },
+      {
+        "id": "5ae38cf3",
+        "name": "King GP",
+        "location": [
+          33.73303996786757,
+          -84.34138772614668
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T12:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "10",
+        "pinningRequested": false
+      },
+      {
+        "id": "31007dcf",
+        "name": "Li LP",
+        "location": [
+          33.72340331367036,
+          -84.34028464193982
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T12:00:00-04:00",
+            "maxEndTime": "2026-03-10T19:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT3H",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "8",
+        "pinningRequested": false
+      },
+      {
+        "id": "ebf14628",
+        "name": "Poe JV",
+        "location": [
+          33.73907800932394,
+          -84.40099838734817
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T11:00:00-04:00",
+            "maxEndTime": "2026-03-10T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT40M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "ad517533",
+        "name": "Rye LLP",
+        "location": [
+          33.75097898674654,
+          -84.41090391443575
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T12:30:00-04:00",
+            "maxEndTime": "2026-03-10T17:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT40M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "56911e66",
+        "name": "Smith PC",
+        "location": [
+          33.81448948547569,
+          -84.33186550745052
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "8",
+        "pinningRequested": false
+      },
+      {
+        "id": "a86b2cdd",
+        "name": "Watt LLC",
+        "location": [
+          33.72953639774306,
+          -84.25390719300067
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T15:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT2H30M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "7",
+        "pinningRequested": false
+      },
+      {
+        "id": "adb441a3",
+        "name": "Zane Corp",
+        "location": [
+          33.68584054568529,
+          -84.26258016102926
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T11:00:00-04:00",
+            "maxEndTime": "2026-03-10T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "e7347967",
+        "name": "Young C-Corp",
+        "location": [
+          33.80091639490139,
+          -84.25885837057
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T12:30:00-04:00",
+            "maxEndTime": "2026-03-10T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "721c844a",
+        "name": "Zhang B-Corp",
+        "location": [
+          33.72858004217323,
+          -84.41922710607938
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T09:00:00-04:00",
+            "maxEndTime": "2026-03-10T13:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "4b6dbfe9",
+        "name": "Cole Co-op",
+        "location": [
+          33.79310257560092,
+          -84.43060595295206
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T09:00:00-04:00",
+            "maxEndTime": "2026-03-10T17:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT3H",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "8",
+        "pinningRequested": false
+      },
+      {
+        "id": "87d22cbf",
+        "name": "Fox NPO",
+        "location": [
+          33.74969475799522,
+          -84.33499687345056
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T09:00:00-04:00",
+            "maxEndTime": "2026-03-10T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "8fa59007",
+        "name": "Robinson Mutual",
+        "location": [
+          33.74389207577455,
+          -84.34043004304507
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T13:00:00-04:00",
+            "maxEndTime": "2026-03-10T18:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "10",
+        "pinningRequested": false
+      },
+      {
+        "id": "6a07c249",
+        "name": "Poe QSSS",
+        "location": [
+          33.6599309895602,
+          -84.30882602652407
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T08:00:00-04:00",
+            "maxEndTime": "2026-03-11T17:00:00-04:00"
+          },
+          {
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T17:00:00-04:00"
+          },
+          {
+            "minStartTime": "2026-03-13T08:00:00-04:00",
+            "maxEndTime": "2026-03-13T17:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "8",
+        "visitDependencies": [
+          {
+            "id": "e58d7f71_after_31007dcf",
+            "precedingVisit": "31007dcf",
+            "minDelay": "PT0S",
+            "minDelayTo": {
+              "minStartDateAdjuster": "NEXT_FRIDAY",
+              "minStartDateAdjusterIncrement": 1,
+              "minStartTime": "10:00:00"
+            },
+            "coordination": "NONE"
+          }
+        ],
+        "pinningRequested": false
+      },
+      {
+        "id": "51e203ca",
+        "name": "Green Holding",
+        "location": [
+          33.680714398215365,
+          -84.41387474782384
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T08:00:00-04:00",
+            "maxEndTime": "2026-03-10T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "675caa23",
+        "name": "Jones Franchise",
+        "location": [
+          33.675829234297886,
+          -84.4759511318675
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T08:30:00-04:00",
+            "maxEndTime": "2026-03-10T16:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "a56dcd75",
+        "name": "King Market",
+        "location": [
+          33.81373424343357,
+          -84.39852836954418
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T11:30:00-04:00",
+            "maxEndTime": "2026-03-10T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "de27bd4e",
+        "name": "Li S-Corp",
+        "location": [
+          33.692288542787146,
+          -84.2634913488513
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-10T14:00:00-04:00",
+            "maxEndTime": "2026-03-10T21:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT3H",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "d33d02ef",
+        "name": "Rye Inc.",
+        "location": [
+          33.78285005833465,
+          -84.27345852024675
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T09:00:00-04:00",
+            "maxEndTime": "2026-03-11T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "10",
+        "pinningRequested": false
+      },
+      {
+        "id": "8494f26a",
+        "name": "Smith GP",
+        "location": [
+          33.65998581435023,
+          -84.26422789667889
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T09:00:00-04:00",
+            "maxEndTime": "2026-03-11T17:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT2H30M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "103b45b0",
+        "name": "Watt LP",
+        "location": [
+          33.765306912721634,
+          -84.43515724681104
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T11:00:00-04:00",
+            "maxEndTime": "2026-03-11T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "7",
+        "pinningRequested": false
+      },
+      {
+        "id": "eccfe03b",
+        "name": "Zane JV",
+        "location": [
+          33.800840475412066,
+          -84.4685704538626
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T14:00:00-04:00",
+            "maxEndTime": "2026-03-11T22:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT30M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "68353b64",
+        "name": "Young LLP",
+        "location": [
+          33.66950449428868,
+          -84.31933053447328
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T08:30:00-04:00",
+            "maxEndTime": "2026-03-11T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT40M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "7",
+        "pinningRequested": false
+      },
+      {
+        "id": "a12eabd4",
+        "name": "Zhang PC",
+        "location": [
+          33.7439579899683,
+          -84.3169895926625
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T08:30:00-04:00",
+            "maxEndTime": "2026-03-11T16:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT3H",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "481071f8",
+        "name": "Cole LLC",
+        "location": [
+          33.75424067832775,
+          -84.36000130668312
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T08:00:00-04:00",
+            "maxEndTime": "2026-03-11T12:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "13795b47",
+        "name": "Fox Corp",
+        "location": [
+          33.787612479256246,
+          -84.46217317199556
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T08:00:00-04:00",
+            "maxEndTime": "2026-03-11T15:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT2H",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "397b280d",
+        "name": "Robinson C-Corp",
+        "location": [
+          33.67779283736352,
+          -84.4105972399419
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T09:00:00-04:00",
+            "maxEndTime": "2026-03-11T13:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT30M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "7a2798c9",
+        "name": "Green B-Corp",
+        "location": [
+          33.665262820125335,
+          -84.39798381420024
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T09:00:00-04:00",
+            "maxEndTime": "2026-03-11T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "68d0e368",
+        "name": "Jones Co-op",
+        "location": [
+          33.75080124109333,
+          -84.26610803761892
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T08:30:00-04:00",
+            "maxEndTime": "2026-03-11T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "aff342c4",
+        "name": "King NPO",
+        "location": [
+          33.73976443247762,
+          -84.414688817361
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-11T10:30:00-04:00",
+            "maxEndTime": "2026-03-11T14:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "761e6016",
+        "name": "Li Mutual",
+        "location": [
+          33.68323693237767,
+          -84.33279560797956
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T09:00:00-04:00",
+            "maxEndTime": "2026-03-12T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "10",
+        "pinningRequested": false
+      },
+      {
+        "id": "38abba47",
+        "name": "Poe Holding",
+        "location": [
+          33.80894862736387,
+          -84.31374349182816
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT3H",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "18867ab3",
+        "name": "Rye Franchise",
+        "location": [
+          33.77716976406113,
+          -84.35215581751643
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T12:00:00-04:00",
+            "maxEndTime": "2026-03-12T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT40M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "7",
+        "pinningRequested": false
+      },
+      {
+        "id": "eadb3f37",
+        "name": "Smith Market",
+        "location": [
+          33.72076774276103,
+          -84.47672910275175
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T14:00:00-04:00",
+            "maxEndTime": "2026-03-12T22:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "31a16cd1",
+        "name": "Watt S-Corp",
+        "location": [
+          33.66774374015329,
+          -84.39919218287633
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T08:30:00-04:00",
+            "maxEndTime": "2026-03-12T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "7",
+        "pinningRequested": false
+      },
+      {
+        "id": "e616d5a2",
+        "name": "Zane QSSS",
+        "location": [
+          33.71568660730104,
+          -84.44142301474221
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T08:30:00-04:00",
+            "maxEndTime": "2026-03-12T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "a9cb3060",
+        "name": "Zane QSSS Follow-up",
+        "location": [
+          33.71568660730104,
+          -84.44142301474221
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T09:00:00-04:00",
+            "maxEndTime": "2026-03-12T14:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "visitDependencies": [
+          {
+            "id": "a9cb3060_followup_1",
+            "precedingVisit": "e616d5a2",
+            "minDelay": "PT0S",
+            "coordination": "SAME_VEHICLE"
+          }
+        ],
+        "pinningRequested": false
+      },
+      {
+        "id": "80e820d0",
+        "name": "Zhang GP",
+        "location": [
+          33.754337305266276,
+          -84.471139666327
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T09:00:00-04:00",
+            "maxEndTime": "2026-03-12T12:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "b20aebbd",
+        "name": "Cole LP",
+        "location": [
+          33.78936699929475,
+          -84.30741738464093
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T08:00:00-04:00",
+            "maxEndTime": "2026-03-12T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "fd93485b",
+        "name": "Fox JV",
+        "location": [
+          33.72121514094817,
+          -84.47095234901674
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T10:00:00-04:00",
+            "maxEndTime": "2026-03-12T18:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT30M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "7c2fb313",
+        "name": "Robinson LLP",
+        "location": [
+          33.72290977150055,
+          -84.46030415000612
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T09:00:00-04:00",
+            "maxEndTime": "2026-03-12T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT3H",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "9d9c260e",
+        "name": "Green PC",
+        "location": [
+          33.80098257394937,
+          -84.39648846497536
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T10:00:00-04:00",
+            "maxEndTime": "2026-03-12T13:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT30M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "65798ba5",
+        "name": "Jones LLC",
+        "location": [
+          33.71320844107699,
+          -84.39482406132863
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-12T13:30:00-04:00",
+            "maxEndTime": "2026-03-12T19:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "452ff474",
+        "name": "King Corp",
+        "location": [
+          33.65851383939827,
+          -84.4841001669017
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T08:30:00-04:00",
+            "maxEndTime": "2026-03-13T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "8",
+        "pinningRequested": false
+      },
+      {
+        "id": "0010965b",
+        "name": "Li C-Corp",
+        "location": [
+          33.76841159652973,
+          -84.29584963118242
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T08:30:00-04:00",
+            "maxEndTime": "2026-03-13T15:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT2H",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "04571c6d",
+        "name": "Poe B-Corp",
+        "location": [
+          33.77455739976942,
+          -84.30766706470112
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T12:00:00-04:00",
+            "maxEndTime": "2026-03-13T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT30M",
+        "requiredSkills": [
+          {
+            "name": "plumber"
+          }
+        ],
+        "priority": "10",
+        "pinningRequested": false
+      },
+      {
+        "id": "cbe04d9c",
+        "name": "Rye Co-op",
+        "location": [
+          33.69479652390434,
+          -84.45714920617012
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T08:30:00-04:00",
+            "maxEndTime": "2026-03-13T14:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT3H",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "8",
+        "pinningRequested": false
+      },
+      {
+        "id": "223faa00",
+        "name": "Smith NPO",
+        "location": [
+          33.752289353942615,
+          -84.3886888847766
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T08:00:00-04:00",
+            "maxEndTime": "2026-03-13T15:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "d3fe4383",
+        "name": "Watt Mutual",
+        "location": [
+          33.66233280348795,
+          -84.47812162168331
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T14:00:00-04:00",
+            "maxEndTime": "2026-03-13T20:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "carpenter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "62d148e1",
+        "name": "Zane Holding",
+        "location": [
+          33.7739272888729,
+          -84.27803184491789
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T09:00:00-04:00",
+            "maxEndTime": "2026-03-13T13:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H15M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "cba299dc",
+        "name": "Young Franchise",
+        "location": [
+          33.74405119166275,
+          -84.34809469380579
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T08:30:00-04:00",
+            "maxEndTime": "2026-03-13T14:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT2H30M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "35cbafb1",
+        "name": "Zhang Market",
+        "location": [
+          33.69658244876583,
+          -84.27200292205154
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T12:00:00-04:00",
+            "maxEndTime": "2026-03-13T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT20M",
+        "requiredSkills": [
+          {
+            "name": "electrician"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "8596962f",
+        "name": "Cole S-Corp",
+        "location": [
+          33.79392449126868,
+          -84.48726631440137
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T08:00:00-04:00",
+            "maxEndTime": "2026-03-13T16:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "bc851940",
+        "name": "Fox QSSS",
+        "location": [
+          33.74859233499919,
+          -84.32349004922264
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T08:30:00-04:00",
+            "maxEndTime": "2026-03-13T14:30:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      },
+      {
+        "id": "01aadfd0",
+        "name": "Robinson Inc.",
+        "location": [
+          33.71976709073039,
+          -84.44813635532572
+        ],
+        "timeWindows": [
+          {
+            "minStartTime": "2026-03-13T10:00:00-04:00",
+            "maxEndTime": "2026-03-13T18:00:00-04:00"
+          }
+        ],
+        "serviceDuration": "PT1H30M",
+        "requiredSkills": [
+          {
+            "name": "painter"
+          }
+        ],
+        "priority": "6",
+        "pinningRequested": false
+      }
+    ],
+    "visitGroups": [],
+    "skills": [
+      "electrician",
+      "plumber",
+      "carpenter",
+      "painter"
+    ],
+    "tags": [],
+    "planningWindow": {
+      "startDate": "2026-03-09T00:00:00-04:00",
+      "endDate": "2026-03-14T00:00:00-04:00"
+    },
+    "pinNextVisitDuringFreeze": "ALWAYS"
+  }
+}

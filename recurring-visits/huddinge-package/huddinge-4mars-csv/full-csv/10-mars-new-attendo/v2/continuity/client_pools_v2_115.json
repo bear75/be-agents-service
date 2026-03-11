@@ -1,0 +1,1501 @@
+{
+  "H015": [
+    "Dag_00_Central_1",
+    "Dag_11_Snättringe",
+    "Kväll_02_Kvarnen",
+    "Kväll_04_Flemingsberg",
+    "Kväll_07_Vårby",
+    "Dag_07_Flemingsberg_3",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "städ",
+    "Dag_02_Central_2",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra_2"
+  ],
+  "H025": [
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_05_Stuvsta_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "städ",
+    "Dag_00_Central_1",
+    "Dag_06_Flemingsberg_2",
+    "Matlådor_Måndagar",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_02_Central_2",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_11_Snättringe"
+  ],
+  "H026": [
+    "Kväll_01_Central",
+    "Kväll_04_Flemingsberg",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_03_Visättra",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_12_Segeltorp_1",
+    "Kväll_07_Vårby",
+    "Dag_00_Central_1",
+    "Dag_06_Flemingsberg_2",
+    "TVÄTT_PÅ_KONTORET",
+    "städ",
+    "Dag_02_Central_2",
+    "Dag_05_Flemingsberg_1"
+  ],
+  "H027": [
+    "Dag_06_Flemingsberg_2",
+    "Dag_16_Vårby_1",
+    "TVÄTT_PÅ_KONTORET"
+  ],
+  "H029": [
+    "Kväll_01_Central",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_03_Visättra",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_00_Central_1",
+    "Dag_07_Flemingsberg_3",
+    "Dag_13_Stuvsta_1",
+    "Kväll_07_Vårby",
+    "Dag_01_Central_1",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra",
+    "Dag_02_Central_2",
+    "Dag_04_Visättra_2",
+    "Dag_05_Flemingsberg_1"
+  ],
+  "H031": [
+    "Dag_03_Fullersta",
+    "Dag_11_Snättringe",
+    "städ"
+  ],
+  "H034": [
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Dag_12_Segeltorp_1",
+    "Dag_5_Flemingsberg_3",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_11_Snättringe",
+    "Kväll_04_Flemingsberg",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Matlådor_Måndagar",
+    "TVÄTT_PÅ_KONTORET",
+    "städ",
+    "Dag_02_Central_2",
+    "Dag_04_Visättra_2",
+    "Dag_08_Kvarnbergsplan_1"
+  ],
+  "H035": [
+    "Kväll_02_Kvarnen",
+    "Kväll_03_Visättra",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_01_Central",
+    "Kväll_04_Flemingsberg",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_13_Stuvsta_1",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_07_Vårby",
+    "Dag_06_Flemingsberg_2",
+    "Dag_16_Vårby_1",
+    "Dag_17_Vårby_2_Janet",
+    "Matlådor_Måndagar",
+    "Dag_02_Central_2",
+    "Dag_07_Flemingsberg_3"
+  ],
+  "H037": [
+    "Dag_06_Flemingsberg_2",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_13_Stuvsta_1",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Dag_04_Visättra",
+    "Dag_05_Flemingsberg_1",
+    "Dag_16_Vårby_1",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_03_Visättra",
+    "Dag_01_Central_1",
+    "Dag_02_Central_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_08_Kvarnbergsplan_1"
+  ],
+  "H038": [
+    "Dag_12_Segeltorp_1",
+    "Kväll_02_Kvarnen",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_04_Visättra",
+    "Dag_14_Stuvsta_2",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_07_Vårby",
+    "Dag_00_Central_1",
+    "Dag_10_Abbe",
+    "Dag_17_Vårby_2_Janet",
+    "Helg_03_Central_1",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Matlådor_Måndagar",
+    "städ"
+  ],
+  "H039": [
+    "Kväll_05_Stuvsta_1",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Kväll_07_Vårby",
+    "Kväll_01_Central",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_10_Abbe",
+    "Kväll_02_Kvarnen",
+    "Matlådor_Måndagar",
+    "städ",
+    "Dag_01_Central_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_13_Stuvsta_1",
+    "Dag_15_Masmo",
+    "Dag_16_Vårby_1"
+  ],
+  "H041": [
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Dag_03_Fullersta",
+    "Dag_13_Stuvsta_1",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Dag_00_Central_1",
+    "Matlådor_Måndagar",
+    "Dag_04_Visättra",
+    "Dag_04_Visättra_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Kväll_07_Vårby",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_02_Central_2"
+  ],
+  "H047": [
+    "Dag_12_Segeltorp_1",
+    "Kväll_01_Central",
+    "Dag_03_Fullersta",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_07_Vårby",
+    "Dag_01_Central_1",
+    "Dag_04_Visättra",
+    "Dag_10_Abbe",
+    "Dag_13_Stuvsta_1",
+    "Dag_17_Vårby_2_Janet",
+    "Dag_5_Flemingsberg_3",
+    "Helg_07_Visättra_TJEJ",
+    "Helg_09_Stuvsta_2_Kille"
+  ],
+  "H048": [
+    "Dag_06_Flemingsberg_2",
+    "Kväll_04_Flemingsberg",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_07_Vårby",
+    "Dag_03_Fullersta",
+    "Dag_13_Stuvsta_1",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Dag_00_Central_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_15_Masmo"
+  ],
+  "H053": [
+    "Dag_12_Segeltorp_1",
+    "Dag_07_Flemingsberg_3",
+    "Dag_11_Snättringe",
+    "Matlådor_Måndagar",
+    "Dag_05_Flemingsberg_1",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_5_Flemingsberg_3",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_01_Central_1",
+    "Dag_04_Visättra",
+    "Dag_04_Visättra_2",
+    "Dag_06_Flemingsberg_2",
+    "Dag_14_Stuvsta_2"
+  ],
+  "H055": [
+    "Dag_06_Flemingsberg_2",
+    "Kväll_07_Vårby",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_02_Kvarnen",
+    "Matlådor_Måndagar",
+    "Dag_12_Segeltorp_1",
+    "Dag_11_Snättringe",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_04_Visättra_2",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_14_Stuvsta_2"
+  ],
+  "H061": [
+    "Dag_12_Segeltorp_1"
+  ],
+  "H072": [
+    "Kväll_02_Kvarnen",
+    "Dag_07_Flemingsberg_3",
+    "Dag_10_Abbe",
+    "Dag_02_Central_2",
+    "Dag_04_Visättra",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_14_Stuvsta_2",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_01_Central",
+    "Kväll_04_Flemingsberg",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Matlådor_Måndagar",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra_2"
+  ],
+  "H077": [
+    "Dag_14_Stuvsta_2",
+    "Dag_02_Central_2",
+    "Dag_03_Fullersta",
+    "Dag_05_Flemingsberg_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_11_Snättringe",
+    "Dag_12_Segeltorp_1",
+    "Dag_5_Flemingsberg_3",
+    "Helg_00_Flempan_1",
+    "Matlådor_Måndagar",
+    "TVÄTT_PÅ_KONTORET"
+  ],
+  "H081": [
+    "Dag_05_Flemingsberg_1",
+    "Kväll_04_Flemingsberg",
+    "Kväll_02_Kvarnen",
+    "Kväll_03_Visättra",
+    "Kväll_07_Vårby",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra",
+    "Dag_06_Flemingsberg_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_11_Snättringe",
+    "Dag_13_Stuvsta_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_15_Masmo",
+    "Helg_03_Central_1"
+  ],
+  "H086": [
+    "Dag_06_Flemingsberg_2",
+    "Dag_04_Visättra",
+    "Dag_13_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_04_Visättra_2",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_16_Vårby_1",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_07_Vårby",
+    "Dag_02_Central_2",
+    "Dag_17_Vårby_2_Janet"
+  ],
+  "H087": [
+    "Dag_06_Flemingsberg_2",
+    "Dag_08_Kvarnbergsplan_1"
+  ],
+  "H092": [
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_13_Stuvsta_1",
+    "Dag_16_Vårby_1",
+    "Dag_04_Visättra",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_10_Abbe",
+    "Dag_5_Flemingsberg_3",
+    "Dag_01_Central_1",
+    "Dag_02_Central_2",
+    "Dag_04_Visättra_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_11_Snättringe",
+    "Dag_12_Segeltorp_1",
+    "Dag_17_Vårby_2_Janet"
+  ],
+  "H095": [
+    "Dag_04_Visättra",
+    "Kväll_02_Kvarnen",
+    "Kväll_07_Vårby",
+    "Kväll_05_Stuvsta_1",
+    "Dag_04_Visättra_2",
+    "Dag_14_Stuvsta_2",
+    "Dag_16_Vårby_1",
+    "Kväll_03_Visättra",
+    "Matlådor_Måndagar",
+    "Dag_00_Central_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Kväll_04_Flemingsberg",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_07_Flemingsberg_3"
+  ],
+  "H096": [
+    "Dag_06_Flemingsberg_2",
+    "Dag_5_Flemingsberg_3",
+    "Dag_01_Central_1",
+    "Dag_07_Flemingsberg_3",
+    "Dag_14_Stuvsta_2",
+    "Dag_12_Segeltorp_1",
+    "Dag_13_Stuvsta_1",
+    "Dag_02_Central_2",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_11_Snättringe",
+    "Dag_16_Vårby_1"
+  ],
+  "H097": [
+    "Kväll_02_Kvarnen",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_01_Central_1",
+    "Kväll_04_Flemingsberg",
+    "Dag_05_Flemingsberg_1",
+    "Dag_12_Segeltorp_1",
+    "Kväll_01_Central",
+    "Dag_02_Central_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_16_Vårby_1",
+    "Dag_17_Vårby_2_Janet",
+    "Matlådor_Måndagar",
+    "TVÄTT_PÅ_KONTORET",
+    "städ",
+    "Dag_04_Visättra"
+  ],
+  "H107": [
+    "Dag_13_Stuvsta_1",
+    "Dag_01_Central_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_11_Snättringe",
+    "Dag_12_Segeltorp_1",
+    "Dag_16_Vårby_1",
+    "Matlådor_Måndagar"
+  ],
+  "H113": [
+    "Dag_10_Abbe",
+    "Dag_07_Flemingsberg_3",
+    "Dag_5_Flemingsberg_3"
+  ],
+  "H114": [
+    "Kväll_01_Central",
+    "Kväll_07_Vårby",
+    "Dag_03_Fullersta",
+    "Helg_07_Visättra_TJEJ",
+    "Kväll_02_Kvarnen",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Kväll_06_Segeltorp_TJEJ",
+    "städ",
+    "Dag_00_Central_1",
+    "Dag_04_Visättra_2",
+    "Dag_11_Snättringe",
+    "Dag_12_Segeltorp_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_5_Flemingsberg_3"
+  ],
+  "H125": [
+    "Dag_02_Central_2",
+    "Dag_07_Flemingsberg_3",
+    "Kväll_01_Central",
+    "Kväll_04_Flemingsberg",
+    "Kväll_05_Stuvsta_1",
+    "Dag_01_Central_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_13_Stuvsta_1",
+    "Kväll_02_Kvarnen",
+    "Kväll_06_Segeltorp_TJEJ",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_04_Visättra",
+    "Dag_11_Snättringe",
+    "Dag_12_Segeltorp_1",
+    "Dag_16_Vårby_1"
+  ],
+  "H145": [
+    "Kväll_05_Stuvsta_1",
+    "Kväll_03_Visättra",
+    "Dag_00_Central_1",
+    "Dag_03_Fullersta",
+    "Dag_07_Flemingsberg_3",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_14_Stuvsta_2",
+    "Kväll_02_Kvarnen",
+    "Kväll_04_Flemingsberg",
+    "Kväll_07_Vårby",
+    "städ",
+    "Dag_05_Flemingsberg_1",
+    "Dag_11_Snättringe",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Matlådor_Måndagar"
+  ],
+  "H154": [
+    "Kväll_07_Vårby",
+    "Dag_14_Stuvsta_2",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_01_Central_1",
+    "Dag_04_Visättra",
+    "Dag_16_Vårby_1",
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Matlådor_Måndagar",
+    "Dag_02_Central_2",
+    "Dag_06_Flemingsberg_2"
+  ],
+  "H155": [
+    "Dag_01_Central_1",
+    "Dag_10_Abbe",
+    "Dag_14_Stuvsta_2",
+    "Dag_15_Masmo",
+    "Dag_17_Vårby_2_Janet",
+    "städ",
+    "Dag_04_Visättra",
+    "Dag_09_Kvarnbergsplan_2",
+    "Kväll_02_Kvarnen",
+    "TVÄTT_PÅ_KONTORET"
+  ],
+  "H157": [
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_02_Kvarnen",
+    "städ",
+    "Dag_06_Flemingsberg_2",
+    "Dag_12_Segeltorp_1",
+    "Dag_13_Stuvsta_1",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_01_Central",
+    "Kväll_04_Flemingsberg",
+    "Kväll_03_Visättra",
+    "Kväll_07_Vårby",
+    "Dag_01_Central_1",
+    "Dag_04_Visättra",
+    "Dag_07_Flemingsberg_3"
+  ],
+  "H160": [
+    "Dag_02_Central_2",
+    "Dag_17_Vårby_2_Janet"
+  ],
+  "H164": [
+    "Dag_04_Visättra"
+  ],
+  "H172": [
+    "Dag_11_Snättringe",
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Dag_12_Segeltorp_1",
+    "Kväll_07_Vårby",
+    "Dag_14_Stuvsta_2",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_03_Fullersta",
+    "Dag_06_Flemingsberg_2",
+    "Dag_10_Abbe",
+    "Helg_10_Segeltorp",
+    "Kväll_03_Visättra",
+    "Matlådor_Måndagar"
+  ],
+  "H181": [
+    "Dag_05_Flemingsberg_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_17_Vårby_2_Janet",
+    "Dag_06_Flemingsberg_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_11_Snättringe",
+    "Dag_16_Vårby_1",
+    "Dag_5_Flemingsberg_3",
+    "Helg_04_Central_3",
+    "Matlådor_Måndagar"
+  ],
+  "H182": [
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Dag_04_Visättra",
+    "Dag_15_Masmo",
+    "Helg_07_Visättra_TJEJ",
+    "Kväll_07_Vårby",
+    "städ",
+    "Dag_00_Central_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_16_Vårby_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Matlådor_Måndagar",
+    "Dag_04_Visättra_2",
+    "Dag_11_Snättringe"
+  ],
+  "H194": [
+    "Dag_12_Segeltorp_1",
+    "Dag_16_Vårby_1"
+  ],
+  "H200": [
+    "Dag_04_Visättra",
+    "Dag_13_Stuvsta_1",
+    "Dag_03_Fullersta",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_10_Abbe",
+    "Dag_12_Segeltorp_1",
+    "Dag_15_Masmo",
+    "Dag_17_Vårby_2_Janet",
+    "Dag_5_Flemingsberg_3",
+    "Dag_00_Central_1",
+    "Dag_04_Visättra_2",
+    "Dag_11_Snättringe",
+    "Dag_14_Stuvsta_2"
+  ],
+  "H230": [
+    "Dag_01_Central_1",
+    "Dag_11_Snättringe",
+    "Dag_02_Central_2",
+    "Dag_04_Visättra_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_12_Segeltorp_1",
+    "Helg_10_Segeltorp",
+    "Kväll_02_Kvarnen",
+    "TVÄTT_PÅ_KONTORET",
+    "städ"
+  ],
+  "H235": [
+    "Dag_5_Flemingsberg_3",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_12_Segeltorp_1",
+    "Dag_16_Vårby_1",
+    "Helg_07_Visättra_TJEJ",
+    "Dag_03_Fullersta",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_10_Abbe",
+    "Dag_11_Snättringe",
+    "Dag_13_Stuvsta_1",
+    "Dag_14_Stuvsta_2",
+    "TVÄTT_PÅ_KONTORET"
+  ],
+  "H238": [
+    "Kväll_02_Kvarnen",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_01_Central_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_12_Segeltorp_1",
+    "Kväll_05_Stuvsta_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_15_Masmo",
+    "Kväll_04_Flemingsberg",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_02_Central_2",
+    "Dag_03_Fullersta"
+  ],
+  "H239": [
+    "Kväll_03_Visättra",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_11_Snättringe",
+    "Dag_02_Central_2",
+    "Kväll_07_Vårby",
+    "städ",
+    "Dag_00_Central_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_13_Stuvsta_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_17_Vårby_2_Janet",
+    "Helg_10_Segeltorp",
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1"
+  ],
+  "H240": [
+    "Dag_17_Vårby_2_Janet"
+  ],
+  "H243": [
+    "Dag_16_Vårby_1",
+    "städ",
+    "Dag_04_Visättra",
+    "Dag_07_Flemingsberg_3",
+    "Dag_00_Central_1",
+    "Dag_13_Stuvsta_1",
+    "Dag_14_Stuvsta_2",
+    "Matlådor_Måndagar",
+    "Dag_01_Central_1",
+    "Dag_02_Central_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_10_Abbe",
+    "Dag_11_Snättringe",
+    "Dag_12_Segeltorp_1"
+  ],
+  "H244": [
+    "Kväll_02_Kvarnen",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_12_Segeltorp_1",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Kväll_07_Vårby",
+    "Dag_03_Fullersta",
+    "Dag_05_Flemingsberg_1",
+    "Dag_16_Vårby_1",
+    "Kväll_01_Central",
+    "Dag_01_Central_1",
+    "Dag_04_Visättra_2",
+    "Dag_11_Snättringe",
+    "Dag_13_Stuvsta_1",
+    "Dag_14_Stuvsta_2"
+  ],
+  "H248": [
+    "Dag_15_Masmo",
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_13_Stuvsta_1",
+    "Dag_17_Vårby_2_Janet",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_04_Flemingsberg",
+    "Dag_02_Central_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_11_Snättringe"
+  ],
+  "H269": [
+    "Kväll_04_Flemingsberg",
+    "Dag_07_Flemingsberg_3",
+    "Dag_11_Snättringe",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_07_Vårby",
+    "städ"
+  ],
+  "H270": [
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_04_Visättra_2",
+    "Dag_02_Central_2",
+    "Dag_03_Fullersta",
+    "Dag_07_Flemingsberg_3",
+    "Dag_16_Vårby_1",
+    "Dag_17_Vårby_2_Janet",
+    "Dag_5_Flemingsberg_3",
+    "Dag_00_Central_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_11_Snättringe",
+    "Dag_15_Masmo",
+    "Dag_01_Central_1",
+    "Dag_09_Kvarnbergsplan_2"
+  ],
+  "H284": [
+    "Kväll_05_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_02_Kvarnen",
+    "Kväll_04_Flemingsberg",
+    "Dag_00_Central_1",
+    "Dag_01_Central_1",
+    "Dag_13_Stuvsta_1",
+    "Kväll_03_Visättra",
+    "Dag_05_Flemingsberg_1",
+    "Dag_15_Masmo",
+    "Dag_17_Vårby_2_Janet",
+    "Helg_09_Stuvsta_2_Kille",
+    "Kväll_01_Central",
+    "Kväll_07_Vårby",
+    "Dag_04_Visättra_2"
+  ],
+  "H287": [
+    "Dag_07_Flemingsberg_3"
+  ],
+  "H288": [
+    "Dag_02_Central_2",
+    "Dag_04_Visättra_2",
+    "Dag_01_Central_1",
+    "Dag_12_Segeltorp_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_15_Masmo",
+    "Kväll_02_Kvarnen"
+  ],
+  "H289": [
+    "Dag_13_Stuvsta_1",
+    "Dag_02_Central_2",
+    "Dag_06_Flemingsberg_2",
+    "Dag_14_Stuvsta_2",
+    "Kväll_03_Visättra",
+    "Kväll_06_Segeltorp_TJEJ"
+  ],
+  "H290": [
+    "Dag_04_Visättra",
+    "Dag_16_Vårby_1",
+    "Kväll_02_Kvarnen",
+    "Dag_05_Flemingsberg_1",
+    "Dag_14_Stuvsta_2",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Dag_13_Stuvsta_1",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_07_Vårby",
+    "Dag_06_Flemingsberg_2",
+    "Dag_12_Segeltorp_1",
+    "Kväll_01_Central",
+    "Matlådor_Måndagar"
+  ],
+  "H293": [
+    "Kväll_02_Kvarnen",
+    "Kväll_03_Visättra",
+    "Kväll_05_Stuvsta_1",
+    "Dag_15_Masmo",
+    "Kväll_04_Flemingsberg",
+    "Kväll_07_Vårby",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_00_Central_1",
+    "Dag_03_Fullersta",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_12_Segeltorp_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_16_Vårby_1"
+  ],
+  "H295": [
+    "Dag_06_Flemingsberg_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_16_Vårby_1",
+    "städ"
+  ],
+  "H297": [
+    "Dag_15_Masmo"
+  ],
+  "H299": [
+    "Dag_01_Central_1",
+    "Dag_07_Flemingsberg_3",
+    "städ",
+    "Dag_03_Fullersta",
+    "Dag_05_Flemingsberg_1",
+    "Kväll_02_Kvarnen",
+    "Matlådor_Måndagar"
+  ],
+  "H300": [
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "Kväll_03_Visättra",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_07_Vårby",
+    "Dag_10_Abbe",
+    "Dag_12_Segeltorp_1",
+    "Dag_15_Masmo",
+    "Kväll_04_Flemingsberg",
+    "Dag_01_Central_1",
+    "Dag_04_Visättra_2",
+    "Dag_11_Snättringe",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Matlådor_Måndagar"
+  ],
+  "H301": [
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "Dag_03_Fullersta",
+    "Kväll_03_Visättra",
+    "Dag_08_Kvarnbergsplan_1",
+    "Kväll_07_Vårby",
+    "Dag_04_Visättra_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_10_Abbe",
+    "Dag_15_Masmo",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_04_Flemingsberg",
+    "Kväll_05_Stuvsta_1",
+    "Matlådor_Måndagar",
+    "städ"
+  ],
+  "H302": [
+    "Matlådor_Måndagar",
+    "Dag_13_Stuvsta_1",
+    "Dag_16_Vårby_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_10_Abbe",
+    "städ",
+    "Dag_07_Flemingsberg_3",
+    "Dag_14_Stuvsta_2",
+    "Dag_01_Central_1",
+    "Dag_02_Central_2",
+    "Dag_04_Visättra_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_11_Snättringe",
+    "Dag_15_Masmo",
+    "Dag_17_Vårby_2_Janet"
+  ],
+  "H312": [
+    "TVÄTT_PÅ_KONTORET"
+  ],
+  "H314": [
+    "Dag_13_Stuvsta_1",
+    "Dag_00_Central_1",
+    "Dag_04_Visättra",
+    "Dag_04_Visättra_2",
+    "Dag_06_Flemingsberg_2",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_14_Stuvsta_2",
+    "Kväll_02_Kvarnen",
+    "Dag_01_Central_1",
+    "Dag_02_Central_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_07_Flemingsberg_3",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_11_Snättringe",
+    "Dag_12_Segeltorp_1"
+  ],
+  "H315": [
+    "Kväll_02_Kvarnen",
+    "Kväll_03_Visättra",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_07_Vårby",
+    "Dag_03_Fullersta",
+    "Kväll_05_Stuvsta_1",
+    "Matlådor_Måndagar",
+    "Dag_00_Central_1",
+    "Dag_13_Stuvsta_1",
+    "Dag_15_Masmo",
+    "Dag_16_Vårby_1",
+    "Dag_5_Flemingsberg_3",
+    "städ",
+    "Dag_01_Central_1",
+    "Dag_05_Flemingsberg_1"
+  ],
+  "H322": [
+    "Kväll_04_Flemingsberg",
+    "Kväll_07_Vårby",
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "Kväll_03_Visättra",
+    "Dag_07_Flemingsberg_3",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_11_Snättringe",
+    "Dag_16_Vårby_1",
+    "Dag_17_Vårby_2_Janet",
+    "Dag_5_Flemingsberg_3",
+    "Matlådor_Måndagar",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra",
+    "Dag_04_Visättra_2"
+  ],
+  "H323": [
+    "Kväll_03_Visättra",
+    "TVÄTT_PÅ_KONTORET",
+    "Kväll_07_Vårby",
+    "Kväll_01_Central",
+    "Kväll_04_Flemingsberg",
+    "Dag_07_Flemingsberg_3",
+    "Kväll_02_Kvarnen",
+    "Dag_03_Fullersta",
+    "Dag_13_Stuvsta_1",
+    "Dag_01_Central_1",
+    "Dag_04_Visättra",
+    "Dag_04_Visättra_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_08_Kvarnbergsplan_1",
+    "Kväll_06_Segeltorp_TJEJ"
+  ],
+  "H324": [
+    "Dag_02_Central_2",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_11_Snättringe",
+    "Dag_05_Flemingsberg_1",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_03_Visättra",
+    "Kväll_07_Vårby",
+    "Dag_06_Flemingsberg_2",
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "Kväll_04_Flemingsberg",
+    "Kväll_06_Segeltorp_TJEJ",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_12_Segeltorp_1"
+  ],
+  "H326": [
+    "Dag_03_Fullersta",
+    "Dag_06_Flemingsberg_2"
+  ],
+  "H327": [
+    "Kväll_02_Kvarnen",
+    "Dag_05_Flemingsberg_1",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra",
+    "Dag_04_Visättra_2",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_12_Segeltorp_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_15_Masmo",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_01_Central",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_07_Vårby"
+  ],
+  "H328": [
+    "Dag_04_Visättra_2",
+    "städ"
+  ],
+  "H331": [
+    "Dag_10_Abbe",
+    "Dag_13_Stuvsta_1",
+    "Dag_16_Vårby_1",
+    "Dag_02_Central_2",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra_2",
+    "Dag_09_Kvarnbergsplan_2",
+    "Kväll_02_Kvarnen",
+    "Dag_04_Visättra",
+    "Dag_06_Flemingsberg_2",
+    "Dag_11_Snättringe",
+    "Dag_12_Segeltorp_1",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg"
+  ],
+  "H332": [
+    "Dag_07_Flemingsberg_3",
+    "Dag_11_Snättringe",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Kväll_07_Vårby",
+    "Dag_03_Fullersta",
+    "Dag_08_Kvarnbergsplan_1",
+    "Kväll_02_Kvarnen",
+    "Kväll_04_Flemingsberg",
+    "Dag_02_Central_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_15_Masmo",
+    "Kväll_06_Segeltorp_TJEJ",
+    "TVÄTT_PÅ_KONTORET"
+  ],
+  "H333": [
+    "Dag_05_Flemingsberg_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "TVÄTT_PÅ_KONTORET"
+  ],
+  "H334": [
+    "Dag_04_Visättra_2",
+    "Dag_04_Visättra",
+    "Dag_05_Flemingsberg_1",
+    "Dag_13_Stuvsta_1",
+    "Helg_07_Visättra_TJEJ",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_00_Central_1",
+    "Dag_03_Fullersta",
+    "Dag_16_Vårby_1",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_04_Flemingsberg",
+    "Matlådor_Måndagar",
+    "städ"
+  ],
+  "H335": [
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_11_Snättringe"
+  ],
+  "H337": [
+    "Kväll_01_Central",
+    "Kväll_07_Vårby",
+    "Dag_09_Kvarnbergsplan_2",
+    "Kväll_02_Kvarnen",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_04_Visättra_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_11_Snättringe",
+    "Dag_13_Stuvsta_1",
+    "Dag_03_Fullersta",
+    "Dag_06_Flemingsberg_2",
+    "Dag_16_Vårby_1",
+    "Matlådor_Måndagar"
+  ],
+  "H339": [
+    "Dag_04_Visättra"
+  ],
+  "H341": [
+    "Dag_00_Central_1"
+  ],
+  "H342": [
+    "Dag_12_Segeltorp_1"
+  ],
+  "H346": [
+    "Dag_03_Fullersta",
+    "Dag_16_Vårby_1"
+  ],
+  "H349": [
+    "Dag_04_Visättra_2",
+    "Dag_06_Flemingsberg_2",
+    "Dag_14_Stuvsta_2",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_03_Visättra",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_02_Central_2",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_04_Flemingsberg",
+    "Kväll_07_Vårby",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra"
+  ],
+  "H351": [
+    "Dag_11_Snättringe",
+    "Kväll_03_Visättra",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_07_Vårby",
+    "Dag_01_Central_1",
+    "Dag_04_Visättra",
+    "Dag_09_Kvarnbergsplan_2",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_00_Central_1",
+    "Dag_07_Flemingsberg_3",
+    "Dag_16_Vårby_1",
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "Kväll_04_Flemingsberg",
+    "Dag_03_Fullersta"
+  ],
+  "H354": [
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_05_Stuvsta_1",
+    "Dag_16_Vårby_1",
+    "Kväll_03_Visättra",
+    "Dag_11_Snättringe",
+    "Kväll_04_Flemingsberg",
+    "Kväll_07_Vårby",
+    "Dag_06_Flemingsberg_2",
+    "Dag_10_Abbe",
+    "Dag_13_Stuvsta_1",
+    "Dag_17_Vårby_2_Janet",
+    "Kväll_01_Central",
+    "Kväll_02_Kvarnen",
+    "städ",
+    "Dag_00_Central_1"
+  ],
+  "H355": [
+    "Dag_04_Visättra_2",
+    "Dag_07_Flemingsberg_3",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_14_Stuvsta_2",
+    "städ"
+  ],
+  "H357": [
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_16_Vårby_1"
+  ],
+  "H358": [
+    "Dag_01_Central_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_5_Flemingsberg_3",
+    "städ"
+  ],
+  "H360": [
+    "Kväll_05_Stuvsta_1",
+    "Matlådor_Måndagar",
+    "Dag_00_Central_1",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_12_Segeltorp_1",
+    "Kväll_02_Kvarnen",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_04_Visättra",
+    "Dag_07_Flemingsberg_3",
+    "Dag_09_Kvarnbergsplan_2",
+    "Dag_10_Abbe",
+    "Dag_11_Snättringe",
+    "Kväll_07_Vårby",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_04_Visättra_2"
+  ],
+  "H361": [
+    "Dag_17_Vårby_2_Janet"
+  ],
+  "H362": [
+    "Dag_13_Stuvsta_1",
+    "Kväll_02_Kvarnen",
+    "Dag_04_Visättra_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "städ",
+    "Dag_15_Masmo",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_00_Central_1",
+    "Dag_03_Fullersta",
+    "Dag_05_Flemingsberg_1",
+    "Dag_10_Abbe",
+    "Kväll_04_Flemingsberg"
+  ],
+  "H363": [
+    "Dag_04_Visättra",
+    "Kväll_02_Kvarnen",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_06_Flemingsberg_2",
+    "Kväll_04_Flemingsberg",
+    "Dag_05_Flemingsberg_1",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_15_Masmo",
+    "Kväll_07_Vårby",
+    "Dag_00_Central_1",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra_2",
+    "Kväll_01_Central",
+    "Kväll_03_Visättra",
+    "Kväll_05_Stuvsta_1"
+  ],
+  "H364": [
+    "Kväll_02_Kvarnen"
+  ],
+  "H365": [
+    "Kväll_01_Central",
+    "Dag_12_Segeltorp_1",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_07_Vårby",
+    "TVÄTT_PÅ_KONTORET",
+    "Dag_05_Flemingsberg_1",
+    "Dag_06_Flemingsberg_2",
+    "Dag_11_Snättringe",
+    "Dag_13_Stuvsta_1",
+    "Dag_14_Stuvsta_2",
+    "Dag_5_Flemingsberg_3",
+    "Kväll_02_Kvarnen",
+    "städ"
+  ],
+  "H366": [
+    "Dag_12_Segeltorp_1",
+    "Dag_05_Flemingsberg_1",
+    "Dag_16_Vårby_1",
+    "Dag_00_Central_1",
+    "Dag_01_Central_1",
+    "Dag_02_Central_2",
+    "Dag_04_Visättra_2",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_10_Abbe",
+    "Dag_11_Snättringe",
+    "Dag_17_Vårby_2_Janet",
+    "Helg_01_Flempan_3",
+    "Helg_07_Visättra_TJEJ",
+    "Helg_10_Segeltorp",
+    "Matlådor_Måndagar"
+  ],
+  "H367": [
+    "Kväll_06_Segeltorp_TJEJ",
+    "Kväll_02_Kvarnen",
+    "Dag_08_Kvarnbergsplan_1",
+    "Dag_11_Snättringe",
+    "Dag_13_Stuvsta_1",
+    "Dag_14_Stuvsta_2",
+    "Kväll_03_Visättra",
+    "Kväll_04_Flemingsberg",
+    "Dag_01_Central_1",
+    "Dag_03_Fullersta",
+    "Dag_04_Visättra_2",
+    "Dag_05_Flemingsberg_1",
+    "Dag_10_Abbe",
+    "Dag_12_Segeltorp_1",
+    "Dag_16_Vårby_1"
+  ],
+  "H369": [
+    "Kväll_02_Kvarnen",
+    "Kväll_05_Stuvsta_1",
+    "Kväll_01_Central",
+    "Kväll_06_Segeltorp_TJEJ",
+    "Dag_07_Flemingsberg_3",
+    "Dag_11_Snättringe",
+    "Dag_05_Flemingsberg_1",
+    "Dag_13_Stuvsta_1",
+    "Dag_5_Flemingsberg_3",
+    "Matlådor_Måndagar",
+    "Dag_00_Central_1",
+    "Dag_04_Visättra",
+    "Dag_10_Abbe",
+    "Dag_12_Segeltorp_1",
+    "Kväll_04_Flemingsberg"
+  ],
+  "HN01_r637_1": [
+    "Helg_09_Stuvsta_2_Kille"
+  ],
+  "HN02_r638_1": [
+    "Dag_02_Central_2"
+  ],
+  "HN03_r639_1": [
+    "Dag_00_Central_1"
+  ],
+  "HN04_r640_1": [
+    "Dag_04_Visättra_2"
+  ],
+  "HN05_r641_1": [
+    "Dag_16_Vårby_1"
+  ],
+  "HN07_r642_1": [
+    "Dag_12_Segeltorp_1"
+  ],
+  "HN08_r643_1": [
+    "Dag_07_Flemingsberg_3"
+  ],
+  "HN12_r644_1": [
+    "Dag_02_Central_2"
+  ],
+  "HN13_r645_1": [
+    "Dag_12_Segeltorp_1"
+  ],
+  "HN13_r645_10": [
+    "Dag_13_Stuvsta_1"
+  ],
+  "HN13_r645_2": [
+    "Dag_17_Vårby_2_Janet"
+  ],
+  "HN13_r645_3": [
+    "Dag_16_Vårby_1"
+  ],
+  "HN13_r645_4": [
+    "Dag_02_Central_2"
+  ],
+  "HN13_r645_5": [
+    "Dag_12_Segeltorp_1"
+  ],
+  "HN13_r645_6": [
+    "Dag_10_Abbe"
+  ],
+  "HN13_r645_7": [
+    "Dag_11_Snättringe"
+  ],
+  "HN13_r645_8": [
+    "Dag_07_Flemingsberg_3"
+  ],
+  "HN13_r645_9": [
+    "Dag_10_Abbe"
+  ],
+  "HN13_r646_1": [
+    "Helg_09_Stuvsta_2_Kille"
+  ],
+  "HN13_r646_2": [
+    "Dag_07_Flemingsberg_3"
+  ],
+  "HN13_r646_3": [
+    "Helg_07_Visättra_TJEJ"
+  ],
+  "HN13_r646_4": [
+    "Dag_08_Kvarnbergsplan_1"
+  ],
+  "HN13_r647_1": [
+    "Dag_16_Vårby_1"
+  ],
+  "HN13_r647_2": [
+    "Kväll_02_Kvarnen"
+  ],
+  "HN13_r648_1": [
+    "Kväll_07_Vårby"
+  ],
+  "HN13_r649_1": [
+    "Dag_17_Vårby_2_Janet"
+  ],
+  "HN13_r649_2": [
+    "Dag_04_Visättra"
+  ],
+  "HN13_r649_3": [
+    "Dag_05_Flemingsberg_1"
+  ],
+  "HN13_r649_4": [
+    "Matlådor_Måndagar"
+  ],
+  "HN13_r650_1": [
+    "Dag_16_Vårby_1"
+  ],
+  "HN13_r650_10": [
+    "Dag_02_Central_2"
+  ],
+  "HN13_r650_2": [
+    "Dag_07_Flemingsberg_3"
+  ],
+  "HN13_r650_3": [
+    "Matlådor_Måndagar"
+  ],
+  "HN13_r650_4": [
+    "Dag_07_Flemingsberg_3"
+  ],
+  "HN13_r650_5": [
+    "Dag_14_Stuvsta_2"
+  ],
+  "HN13_r650_6": [
+    "Dag_09_Kvarnbergsplan_2"
+  ],
+  "HN13_r650_7": [
+    "Dag_05_Flemingsberg_1"
+  ],
+  "HN13_r650_8": [
+    "Dag_08_Kvarnbergsplan_1"
+  ],
+  "HN13_r650_9": [
+    "städ"
+  ],
+  "HN13_r651_1": [
+    "Dag_14_Stuvsta_2"
+  ],
+  "HN13_r651_2": [
+    "Dag_10_Abbe"
+  ],
+  "HN13_r652_1": [
+    "Dag_11_Snättringe"
+  ],
+  "HN13_r653_1": [
+    "Kväll_02_Kvarnen"
+  ],
+  "HN13_r653_10": [
+    "Kväll_03_Visättra"
+  ],
+  "HN13_r653_11": [
+    "Kväll_01_Central"
+  ],
+  "HN13_r653_12": [
+    "Kväll_01_Central"
+  ],
+  "HN13_r653_13": [
+    "Kväll_04_Flemingsberg"
+  ],
+  "HN13_r653_14": [
+    "Kväll_07_Vårby"
+  ],
+  "HN13_r653_2": [
+    "Kväll_06_Segeltorp_TJEJ"
+  ],
+  "HN13_r653_3": [
+    "Kväll_05_Stuvsta_1"
+  ],
+  "HN13_r653_4": [
+    "Kväll_03_Visättra"
+  ],
+  "HN13_r653_5": [
+    "Kväll_07_Vårby"
+  ],
+  "HN13_r653_6": [
+    "Kväll_03_Visättra"
+  ],
+  "HN13_r653_7": [
+    "Kväll_02_Kvarnen"
+  ],
+  "HN13_r653_8": [
+    "Kväll_06_Segeltorp_TJEJ"
+  ],
+  "HN13_r653_9": [
+    "Kväll_07_Vårby"
+  ],
+  "HN13_r654_1": [
+    "Kväll_02_Kvarnen"
+  ],
+  "HN13_r654_10": [
+    "Kväll_04_Flemingsberg"
+  ],
+  "HN13_r654_11": [
+    "Kväll_04_Flemingsberg"
+  ],
+  "HN13_r654_12": [
+    "Kväll_04_Flemingsberg"
+  ],
+  "HN13_r654_13": [
+    "Kväll_04_Flemingsberg"
+  ],
+  "HN13_r654_14": [
+    "Kväll_03_Visättra"
+  ],
+  "HN13_r654_2": [
+    "Kväll_02_Kvarnen"
+  ],
+  "HN13_r654_3": [
+    "Kväll_05_Stuvsta_1"
+  ],
+  "HN13_r654_4": [
+    "Kväll_05_Stuvsta_1"
+  ],
+  "HN13_r654_5": [
+    "Kväll_06_Segeltorp_TJEJ"
+  ],
+  "HN13_r654_6": [
+    "Kväll_03_Visättra"
+  ],
+  "HN13_r654_7": [
+    "Kväll_07_Vårby"
+  ],
+  "HN13_r654_8": [
+    "Kväll_07_Vårby"
+  ],
+  "HN13_r654_9": [
+    "Kväll_04_Flemingsberg"
+  ],
+  "HN15_r655_1": [
+    "Dag_03_Fullersta"
+  ],
+  "HN16_r656_1": [
+    "Helg_01_Flempan_3"
+  ],
+  "HN17_r657_1": [
+    "Dag_15_Masmo"
+  ],
+  "HN19_r658_1": [
+    "Dag_06_Flemingsberg_2"
+  ],
+  "HN20_r659_1": [
+    "Dag_01_Central_1"
+  ],
+  "HN22_r660_1": [
+    "Dag_5_Flemingsberg_3"
+  ],
+  "HN23_r661_1": [
+    "Dag_16_Vårby_1"
+  ],
+  "HN24_r662_1": [
+    "Dag_07_Flemingsberg_3"
+  ],
+  "HN25_r663_1": [
+    "Dag_15_Masmo"
+  ]
+}

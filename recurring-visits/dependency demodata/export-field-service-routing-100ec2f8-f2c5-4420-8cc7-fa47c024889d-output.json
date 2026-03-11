@@ -1,0 +1,1655 @@
+{
+  "metadata": {
+    "id": "100ec2f8-f2c5-4420-8cc7-fa47c024889d",
+    "originId": "100ec2f8-f2c5-4420-8cc7-fa47c024889d",
+    "name": "VISIT_DEPENDENCY Demo",
+    "submitDateTime": "2026-03-10T17:20:25.19176792Z",
+    "startDateTime": "2026-03-10T17:20:33.064364685Z",
+    "activeDateTime": "2026-03-10T17:20:33.150376735Z",
+    "completeDateTime": "2026-03-10T17:21:17.160147231Z",
+    "shutdownDateTime": "2026-03-10T17:21:17.160151341Z",
+    "solverStatus": "SOLVING_COMPLETED",
+    "score": "0hard/-10000medium/-81869soft",
+    "tags": [
+      "system.type:from-request",
+      "system.profile:Standard profile"
+    ],
+    "validationResult": {
+      "summary": "OK"
+    }
+  },
+  "modelOutput": {
+    "vehicles": [
+      {
+        "id": "Ann",
+        "shifts": [
+          {
+            "id": "fc5077d2",
+            "startTime": "2026-03-09T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "73eae426",
+                "arrivalTime": "2026-03-09T08:17:30-04:00",
+                "startServiceTime": "2026-03-09T08:17:30-04:00",
+                "departureTime": "2026-03-09T09:47:30-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT17M30S",
+                "travelDistanceMetersFromPreviousStandstill": 12844,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "701cf321",
+                "arrivalTime": "2026-03-09T09:59:34-04:00",
+                "startServiceTime": "2026-03-09T10:30:00-04:00",
+                "departureTime": "2026-03-09T11:00:00-04:00",
+                "effectiveServiceDuration": "PT30M",
+                "travelTimeFromPreviousStandstill": "PT12M4S",
+                "travelDistanceMetersFromPreviousStandstill": 6925,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "56066dce",
+                "arrivalTime": "2026-03-09T11:25:03-04:00",
+                "startServiceTime": "2026-03-09T11:25:03-04:00",
+                "departureTime": "2026-03-09T13:55:03-04:00",
+                "effectiveServiceDuration": "PT2H30M",
+                "travelTimeFromPreviousStandstill": "PT25M3S",
+                "travelDistanceMetersFromPreviousStandstill": 19552,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "fc5077d2 Lunch",
+                "startTime": "2026-03-09T13:58:58-04:00",
+                "endTime": "2026-03-09T14:58:58-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "79460a06",
+                "arrivalTime": "2026-03-09T13:58:58-04:00",
+                "startServiceTime": "2026-03-09T14:58:58-04:00",
+                "departureTime": "2026-03-09T15:38:58-04:00",
+                "effectiveServiceDuration": "PT40M",
+                "travelTimeFromPreviousStandstill": "PT3M55S",
+                "travelDistanceMetersFromPreviousStandstill": 2409,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT5H10M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT30M26S",
+              "totalTravelTime": "PT1H15M59S",
+              "travelTimeFromStartLocationToFirstVisit": "PT17M30S",
+              "travelTimeBetweenVisits": "PT41M2S",
+              "travelTimeFromLastVisitToEndLocation": "PT17M27S",
+              "totalTravelDistanceMeters": 55888,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 12844,
+              "travelDistanceBetweenVisitsMeters": 28886,
+              "travelDistanceFromLastVisitToEndLocationMeters": 14158,
+              "endLocationArrivalTime": "2026-03-09T15:56:25-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "e06f2475",
+            "startTime": "2026-03-10T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "721c844a",
+                "arrivalTime": "2026-03-10T08:09:25-04:00",
+                "startServiceTime": "2026-03-10T09:00:00-04:00",
+                "departureTime": "2026-03-10T10:15:00-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT9M25S",
+                "travelDistanceMetersFromPreviousStandstill": 7883,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "87d22cbf",
+                "arrivalTime": "2026-03-10T10:25:29-04:00",
+                "startServiceTime": "2026-03-10T10:25:29-04:00",
+                "departureTime": "2026-03-10T11:40:29-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT10M29S",
+                "travelDistanceMetersFromPreviousStandstill": 10391,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "e06f2475 Lunch",
+                "startTime": "2026-03-10T12:00:00-04:00",
+                "endTime": "2026-03-10T13:00:00-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "8fa59007",
+                "arrivalTime": "2026-03-10T11:43:09-04:00",
+                "startServiceTime": "2026-03-10T13:00:00-04:00",
+                "departureTime": "2026-03-10T13:20:00-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT2M40S",
+                "travelDistanceMetersFromPreviousStandstill": 1325,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "4b6dbfe9",
+                "arrivalTime": "2026-03-10T13:36:17-04:00",
+                "startServiceTime": "2026-03-10T13:36:17-04:00",
+                "departureTime": "2026-03-10T16:36:17-04:00",
+                "effectiveServiceDuration": "PT3H",
+                "travelTimeFromPreviousStandstill": "PT16M17S",
+                "travelDistanceMetersFromPreviousStandstill": 15072,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT5H50M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT1H7M26S",
+              "totalTravelTime": "PT48M32S",
+              "travelTimeFromStartLocationToFirstVisit": "PT9M25S",
+              "travelTimeBetweenVisits": "PT29M26S",
+              "travelTimeFromLastVisitToEndLocation": "PT9M41S",
+              "totalTravelDistanceMeters": 42573,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 7883,
+              "travelDistanceBetweenVisitsMeters": 26788,
+              "travelDistanceFromLastVisitToEndLocationMeters": 7902,
+              "endLocationArrivalTime": "2026-03-10T16:45:58-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "ec2a105f",
+            "startTime": "2026-03-11T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "481071f8",
+                "arrivalTime": "2026-03-11T08:04:27-04:00",
+                "startServiceTime": "2026-03-11T08:04:27-04:00",
+                "departureTime": "2026-03-11T09:34:27-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT4M27S",
+                "travelDistanceMetersFromPreviousStandstill": 3189,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "397b280d",
+                "arrivalTime": "2026-03-11T09:47:15-04:00",
+                "startServiceTime": "2026-03-11T09:47:15-04:00",
+                "departureTime": "2026-03-11T10:17:15-04:00",
+                "effectiveServiceDuration": "PT30M",
+                "travelTimeFromPreviousStandstill": "PT12M48S",
+                "travelDistanceMetersFromPreviousStandstill": 12338,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "13795b47",
+                "arrivalTime": "2026-03-11T10:39:10-04:00",
+                "startServiceTime": "2026-03-11T10:39:10-04:00",
+                "departureTime": "2026-03-11T12:39:10-04:00",
+                "effectiveServiceDuration": "PT2H",
+                "travelTimeFromPreviousStandstill": "PT21M55S",
+                "travelDistanceMetersFromPreviousStandstill": 17142,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "ec2a105f Lunch",
+                "startTime": "2026-03-11T12:39:10-04:00",
+                "endTime": "2026-03-11T13:39:10-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT4H",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT0S",
+              "totalTravelTime": "PT50M55S",
+              "travelTimeFromStartLocationToFirstVisit": "PT4M27S",
+              "travelTimeBetweenVisits": "PT34M43S",
+              "travelTimeFromLastVisitToEndLocation": "PT11M45S",
+              "totalTravelDistanceMeters": 42484,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 3189,
+              "travelDistanceBetweenVisitsMeters": 29480,
+              "travelDistanceFromLastVisitToEndLocationMeters": 9815,
+              "endLocationArrivalTime": "2026-03-11T13:50:55-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "5af26658",
+            "startTime": "2026-03-12T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "80e820d0",
+                "arrivalTime": "2026-03-12T08:13:05-04:00",
+                "startServiceTime": "2026-03-12T09:00:00-04:00",
+                "departureTime": "2026-03-12T10:15:00-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT13M5S",
+                "travelDistanceMetersFromPreviousStandstill": 12166,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "fd93485b",
+                "arrivalTime": "2026-03-12T10:24:39-04:00",
+                "startServiceTime": "2026-03-12T10:24:39-04:00",
+                "departureTime": "2026-03-12T10:54:39-04:00",
+                "effectiveServiceDuration": "PT30M",
+                "travelTimeFromPreviousStandstill": "PT9M39S",
+                "travelDistanceMetersFromPreviousStandstill": 6136,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "b20aebbd",
+                "arrivalTime": "2026-03-12T11:19:20-04:00",
+                "startServiceTime": "2026-03-12T11:19:20-04:00",
+                "departureTime": "2026-03-12T12:49:20-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT24M41S",
+                "travelDistanceMetersFromPreviousStandstill": 20255,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "5af26658 Lunch",
+                "startTime": "2026-03-12T12:49:20-04:00",
+                "endTime": "2026-03-12T13:49:20-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT3H15M",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT46M55S",
+              "totalTravelTime": "PT57M58S",
+              "travelTimeFromStartLocationToFirstVisit": "PT13M5S",
+              "travelTimeBetweenVisits": "PT34M20S",
+              "travelTimeFromLastVisitToEndLocation": "PT10M33S",
+              "totalTravelDistanceMeters": 46110,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 12166,
+              "travelDistanceBetweenVisitsMeters": 26391,
+              "travelDistanceFromLastVisitToEndLocationMeters": 7553,
+              "endLocationArrivalTime": "2026-03-12T13:59:53-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "58c1c094",
+            "startTime": "2026-03-13T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "cba299dc",
+                "arrivalTime": "2026-03-13T08:06:30-04:00",
+                "startServiceTime": "2026-03-13T08:30:00-04:00",
+                "departureTime": "2026-03-13T11:00:00-04:00",
+                "effectiveServiceDuration": "PT2H30M",
+                "travelTimeFromPreviousStandstill": "PT6M30S",
+                "travelDistanceMetersFromPreviousStandstill": 5127,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "62d148e1",
+                "arrivalTime": "2026-03-13T11:10:58-04:00",
+                "startServiceTime": "2026-03-13T11:10:58-04:00",
+                "departureTime": "2026-03-13T12:25:58-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT10M58S",
+                "travelDistanceMetersFromPreviousStandstill": 9875,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "58c1c094 Lunch",
+                "startTime": "2026-03-13T12:38:30-04:00",
+                "endTime": "2026-03-13T13:38:30-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "35cbafb1",
+                "arrivalTime": "2026-03-13T12:38:30-04:00",
+                "startServiceTime": "2026-03-13T13:38:30-04:00",
+                "departureTime": "2026-03-13T13:58:30-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT12M32S",
+                "travelDistanceMetersFromPreviousStandstill": 10457,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "6a07c249",
+                "arrivalTime": "2026-03-13T14:08:44-04:00",
+                "startServiceTime": "2026-03-13T14:08:44-04:00",
+                "departureTime": "2026-03-13T15:08:44-04:00",
+                "effectiveServiceDuration": "PT1H",
+                "travelTimeFromPreviousStandstill": "PT10M14S",
+                "travelDistanceMetersFromPreviousStandstill": 8450,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT5H5M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT23M30S",
+              "totalTravelTime": "PT1H2M22S",
+              "travelTimeFromStartLocationToFirstVisit": "PT6M30S",
+              "travelTimeBetweenVisits": "PT33M44S",
+              "travelTimeFromLastVisitToEndLocation": "PT22M8S",
+              "totalTravelDistanceMeters": 52121,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 5127,
+              "travelDistanceBetweenVisitsMeters": 28782,
+              "travelDistanceFromLastVisitToEndLocationMeters": 18212,
+              "endLocationArrivalTime": "2026-03-13T15:30:52-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          }
+        ],
+        "metrics": {
+          "activatedShifts": 5,
+          "assignedVisits": 18,
+          "totalShiftDuration": "PT36H4M3S",
+          "totalServiceDuration": "PT23H20M",
+          "totalTravelTime": "PT4H55M46S",
+          "totalTravelDistanceMeters": 239176,
+          "totalBreakTime": "PT3H",
+          "totalWaitingTime": "PT2H48M17S",
+          "totalOvertime": "PT0S",
+          "availableOvertime": "PT0S"
+        }
+      },
+      {
+        "id": "Beth",
+        "shifts": [
+          {
+            "id": "b8e663eb",
+            "startTime": "2026-03-09T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "06a82837",
+                "arrivalTime": "2026-03-09T08:09:42-04:00",
+                "startServiceTime": "2026-03-09T08:09:42-04:00",
+                "departureTime": "2026-03-09T10:39:42-04:00",
+                "effectiveServiceDuration": "PT2H30M",
+                "travelTimeFromPreviousStandstill": "PT9M42S",
+                "travelDistanceMetersFromPreviousStandstill": 5686,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "f8d325e4",
+                "arrivalTime": "2026-03-09T10:59:11-04:00",
+                "startServiceTime": "2026-03-09T10:59:11-04:00",
+                "departureTime": "2026-03-09T12:29:11-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT19M29S",
+                "travelDistanceMetersFromPreviousStandstill": 11895,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "b8e663eb Lunch",
+                "startTime": "2026-03-09T12:29:11-04:00",
+                "endTime": "2026-03-09T13:29:11-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT4H",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT0S",
+              "totalTravelTime": "PT40M38S",
+              "travelTimeFromStartLocationToFirstVisit": "PT9M42S",
+              "travelTimeBetweenVisits": "PT19M29S",
+              "travelTimeFromLastVisitToEndLocation": "PT11M27S",
+              "totalTravelDistanceMeters": 25851,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 5686,
+              "travelDistanceBetweenVisitsMeters": 11895,
+              "travelDistanceFromLastVisitToEndLocationMeters": 8270,
+              "endLocationArrivalTime": "2026-03-09T13:40:38-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "e833e222",
+            "startTime": "2026-03-10T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "ebf14628",
+                "arrivalTime": "2026-03-10T08:08:08-04:00",
+                "startServiceTime": "2026-03-10T11:00:00-04:00",
+                "departureTime": "2026-03-10T11:40:00-04:00",
+                "effectiveServiceDuration": "PT40M",
+                "travelTimeFromPreviousStandstill": "PT8M8S",
+                "travelDistanceMetersFromPreviousStandstill": 5537,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "e833e222 Lunch",
+                "startTime": "2026-03-10T12:00:00-04:00",
+                "endTime": "2026-03-10T13:00:00-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "ad517533",
+                "arrivalTime": "2026-03-10T11:44:29-04:00",
+                "startServiceTime": "2026-03-10T13:00:00-04:00",
+                "departureTime": "2026-03-10T13:40:00-04:00",
+                "effectiveServiceDuration": "PT40M",
+                "travelTimeFromPreviousStandstill": "PT4M29S",
+                "travelDistanceMetersFromPreviousStandstill": 2407,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "999b2926",
+                "arrivalTime": "2026-03-10T13:51:06-04:00",
+                "startServiceTime": "2026-03-10T13:51:06-04:00",
+                "departureTime": "2026-03-10T15:06:06-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT11M6S",
+                "travelDistanceMetersFromPreviousStandstill": 7134,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT2H35M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT3H7M23S",
+              "totalTravelTime": "PT35M10S",
+              "travelTimeFromStartLocationToFirstVisit": "PT8M8S",
+              "travelTimeBetweenVisits": "PT15M35S",
+              "travelTimeFromLastVisitToEndLocation": "PT11M27S",
+              "totalTravelDistanceMeters": 23348,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 5537,
+              "travelDistanceBetweenVisitsMeters": 9541,
+              "travelDistanceFromLastVisitToEndLocationMeters": 8270,
+              "endLocationArrivalTime": "2026-03-10T15:17:33-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "e5bb1514",
+            "startTime": "2026-03-11T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "d33d02ef",
+                "arrivalTime": "2026-03-11T08:14:33-04:00",
+                "startServiceTime": "2026-03-11T09:00:00-04:00",
+                "departureTime": "2026-03-11T10:30:00-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT14M33S",
+                "travelDistanceMetersFromPreviousStandstill": 11679,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "103b45b0",
+                "arrivalTime": "2026-03-11T10:51:27-04:00",
+                "startServiceTime": "2026-03-11T11:00:00-04:00",
+                "departureTime": "2026-03-11T11:20:00-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT21M27S",
+                "travelDistanceMetersFromPreviousStandstill": 16884,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "e5bb1514 Lunch",
+                "startTime": "2026-03-11T12:00:00-04:00",
+                "endTime": "2026-03-11T13:00:00-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "eccfe03b",
+                "arrivalTime": "2026-03-11T11:30:17-04:00",
+                "startServiceTime": "2026-03-11T14:00:00-04:00",
+                "departureTime": "2026-03-11T14:30:00-04:00",
+                "effectiveServiceDuration": "PT30M",
+                "travelTimeFromPreviousStandstill": "PT10M17S",
+                "travelDistanceMetersFromPreviousStandstill": 6266,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT2H20M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT2H23M43S",
+              "totalTravelTime": "PT1H1M7S",
+              "travelTimeFromStartLocationToFirstVisit": "PT14M33S",
+              "travelTimeBetweenVisits": "PT31M44S",
+              "travelTimeFromLastVisitToEndLocation": "PT14M50S",
+              "totalTravelDistanceMeters": 46239,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 11679,
+              "travelDistanceBetweenVisitsMeters": 23150,
+              "travelDistanceFromLastVisitToEndLocationMeters": 11410,
+              "endLocationArrivalTime": "2026-03-11T14:44:50-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "54e25d69",
+            "startTime": "2026-03-12T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "38abba47",
+                "arrivalTime": "2026-03-12T08:14:12-04:00",
+                "startServiceTime": "2026-03-12T08:14:12-04:00",
+                "departureTime": "2026-03-12T11:14:12-04:00",
+                "effectiveServiceDuration": "PT3H",
+                "travelTimeFromPreviousStandstill": "PT14M12S",
+                "travelDistanceMetersFromPreviousStandstill": 10266,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "18867ab3",
+                "arrivalTime": "2026-03-12T11:24:44-04:00",
+                "startServiceTime": "2026-03-12T12:00:00-04:00",
+                "departureTime": "2026-03-12T12:40:00-04:00",
+                "effectiveServiceDuration": "PT40M",
+                "travelTimeFromPreviousStandstill": "PT10M32S",
+                "travelDistanceMetersFromPreviousStandstill": 7919,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "54e25d69 Lunch",
+                "startTime": "2026-03-12T12:40:00-04:00",
+                "endTime": "2026-03-12T13:40:00-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT3H40M",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT35M16S",
+              "totalTravelTime": "PT29M20S",
+              "travelTimeFromStartLocationToFirstVisit": "PT14M12S",
+              "travelTimeBetweenVisits": "PT10M32S",
+              "travelTimeFromLastVisitToEndLocation": "PT4M36S",
+              "totalTravelDistanceMeters": 20995,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 10266,
+              "travelDistanceBetweenVisitsMeters": 7919,
+              "travelDistanceFromLastVisitToEndLocationMeters": 2810,
+              "endLocationArrivalTime": "2026-03-12T13:44:36-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "41b42e3b",
+            "startTime": "2026-03-13T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "0010965b",
+                "arrivalTime": "2026-03-13T08:11:48-04:00",
+                "startServiceTime": "2026-03-13T08:30:00-04:00",
+                "departureTime": "2026-03-13T10:30:00-04:00",
+                "effectiveServiceDuration": "PT2H",
+                "travelTimeFromPreviousStandstill": "PT11M48S",
+                "travelDistanceMetersFromPreviousStandstill": 8984,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "04571c6d",
+                "arrivalTime": "2026-03-13T10:33:33-04:00",
+                "startServiceTime": "2026-03-13T12:00:00-04:00",
+                "departureTime": "2026-03-13T12:30:00-04:00",
+                "effectiveServiceDuration": "PT30M",
+                "travelTimeFromPreviousStandstill": "PT3M33S",
+                "travelDistanceMetersFromPreviousStandstill": 1791,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "41b42e3b Lunch",
+                "startTime": "2026-03-13T12:30:00-04:00",
+                "endTime": "2026-03-13T13:30:00-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT2H30M",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT1H44M39S",
+              "totalTravelTime": "PT25M52S",
+              "travelTimeFromStartLocationToFirstVisit": "PT11M48S",
+              "travelTimeBetweenVisits": "PT3M33S",
+              "travelTimeFromLastVisitToEndLocation": "PT10M31S",
+              "totalTravelDistanceMeters": 17717,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 8984,
+              "travelDistanceBetweenVisitsMeters": 1791,
+              "travelDistanceFromLastVisitToEndLocationMeters": 6942,
+              "endLocationArrivalTime": "2026-03-13T13:40:31-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          }
+        ],
+        "metrics": {
+          "activatedShifts": 5,
+          "assignedVisits": 12,
+          "totalShiftDuration": "PT31H8M8S",
+          "totalServiceDuration": "PT15H5M",
+          "totalTravelTime": "PT3H12M7S",
+          "totalTravelDistanceMeters": 134150,
+          "totalBreakTime": "PT2H",
+          "totalWaitingTime": "PT7H51M1S",
+          "totalOvertime": "PT0S",
+          "availableOvertime": "PT0S"
+        }
+      },
+      {
+        "id": "Carl",
+        "shifts": [
+          {
+            "id": "668a8c1e",
+            "startTime": "2026-03-09T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "4b705927",
+                "arrivalTime": "2026-03-09T08:12:40-04:00",
+                "startServiceTime": "2026-03-09T08:30:00-04:00",
+                "departureTime": "2026-03-09T09:30:00-04:00",
+                "effectiveServiceDuration": "PT1H",
+                "travelTimeFromPreviousStandstill": "PT12M40S",
+                "travelDistanceMetersFromPreviousStandstill": 7579,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "668a8c1e Lunch",
+                "startTime": "2026-03-09T12:00:00-04:00",
+                "endTime": "2026-03-09T13:00:00-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT1H",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT17M20S",
+              "totalTravelTime": "PT25M15S",
+              "travelTimeFromStartLocationToFirstVisit": "PT12M40S",
+              "travelTimeBetweenVisits": "PT0S",
+              "travelTimeFromLastVisitToEndLocation": "PT12M35S",
+              "totalTravelDistanceMeters": 15160,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 7579,
+              "travelDistanceBetweenVisitsMeters": 0,
+              "travelDistanceFromLastVisitToEndLocationMeters": 7581,
+              "endLocationArrivalTime": "2026-03-09T13:12:35-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "9ee7cc91",
+            "startTime": "2026-03-10T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "a86b2cdd",
+                "arrivalTime": "2026-03-10T08:25:34-04:00",
+                "startServiceTime": "2026-03-10T08:25:34-04:00",
+                "departureTime": "2026-03-10T10:55:34-04:00",
+                "effectiveServiceDuration": "PT2H30M",
+                "travelTimeFromPreviousStandstill": "PT25M34S",
+                "travelDistanceMetersFromPreviousStandstill": 22070,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "56911e66",
+                "arrivalTime": "2026-03-10T11:16:11-04:00",
+                "startServiceTime": "2026-03-10T11:16:11-04:00",
+                "departureTime": "2026-03-10T12:46:11-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT20M37S",
+                "travelDistanceMetersFromPreviousStandstill": 15272,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "9ee7cc91 Lunch",
+                "startTime": "2026-03-10T12:58:36-04:00",
+                "endTime": "2026-03-10T13:58:36-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "e7347967",
+                "arrivalTime": "2026-03-10T12:58:36-04:00",
+                "startServiceTime": "2026-03-10T13:58:36-04:00",
+                "departureTime": "2026-03-10T14:58:36-04:00",
+                "effectiveServiceDuration": "PT1H",
+                "travelTimeFromPreviousStandstill": "PT12M25S",
+                "travelDistanceMetersFromPreviousStandstill": 9233,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "adb441a3",
+                "arrivalTime": "2026-03-10T15:17:14-04:00",
+                "startServiceTime": "2026-03-10T15:17:14-04:00",
+                "departureTime": "2026-03-10T15:37:14-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT18M38S",
+                "travelDistanceMetersFromPreviousStandstill": 18036,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT5H20M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT0S",
+              "totalTravelTime": "PT1H46M6S",
+              "travelTimeFromStartLocationToFirstVisit": "PT25M34S",
+              "travelTimeBetweenVisits": "PT51M40S",
+              "travelTimeFromLastVisitToEndLocation": "PT28M52S",
+              "totalTravelDistanceMeters": 91397,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 22070,
+              "travelDistanceBetweenVisitsMeters": 42541,
+              "travelDistanceFromLastVisitToEndLocationMeters": 26786,
+              "endLocationArrivalTime": "2026-03-10T16:06:06-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "b4f917a4",
+            "startTime": "2026-03-11T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "b4f917a4 Lunch",
+                "startTime": "2026-03-11T12:00:00-04:00",
+                "endTime": "2026-03-11T13:00:00-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT0S",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT0S",
+              "totalTravelTime": "PT0S",
+              "travelTimeFromStartLocationToFirstVisit": "PT0S",
+              "travelTimeBetweenVisits": "PT0S",
+              "travelTimeFromLastVisitToEndLocation": "PT0S",
+              "totalTravelDistanceMeters": 0,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 0,
+              "travelDistanceBetweenVisitsMeters": 0,
+              "travelDistanceFromLastVisitToEndLocationMeters": 0,
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "7cae9eab",
+            "startTime": "2026-03-12T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "e616d5a2",
+                "arrivalTime": "2026-03-12T08:03:47-04:00",
+                "startServiceTime": "2026-03-12T08:30:00-04:00",
+                "departureTime": "2026-03-12T10:00:00-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT3M47S",
+                "travelDistanceMetersFromPreviousStandstill": 1977,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "a9cb3060",
+                "arrivalTime": "2026-03-12T10:00:00-04:00",
+                "startServiceTime": "2026-03-12T10:00:00-04:00",
+                "departureTime": "2026-03-12T10:20:00-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT0S",
+                "travelDistanceMetersFromPreviousStandstill": 0,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "7cae9eab Lunch",
+                "startTime": "2026-03-12T12:00:00-04:00",
+                "endTime": "2026-03-12T13:00:00-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT1H50M",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT26M13S",
+              "totalTravelTime": "PT7M34S",
+              "travelTimeFromStartLocationToFirstVisit": "PT3M47S",
+              "travelTimeBetweenVisits": "PT0S",
+              "travelTimeFromLastVisitToEndLocation": "PT3M47S",
+              "totalTravelDistanceMeters": 3954,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 1977,
+              "travelDistanceBetweenVisitsMeters": 0,
+              "travelDistanceFromLastVisitToEndLocationMeters": 1977,
+              "endLocationArrivalTime": "2026-03-12T13:03:47-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "7162c6a1",
+            "startTime": "2026-03-13T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "7162c6a1 Lunch",
+                "startTime": "2026-03-13T12:00:00-04:00",
+                "endTime": "2026-03-13T13:00:00-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT0S",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT0S",
+              "totalTravelTime": "PT0S",
+              "travelTimeFromStartLocationToFirstVisit": "PT0S",
+              "travelTimeBetweenVisits": "PT0S",
+              "travelTimeFromLastVisitToEndLocation": "PT0S",
+              "totalTravelDistanceMeters": 0,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 0,
+              "travelDistanceBetweenVisitsMeters": 0,
+              "travelDistanceFromLastVisitToEndLocationMeters": 0,
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          }
+        ],
+        "metrics": {
+          "activatedShifts": 3,
+          "assignedVisits": 7,
+          "totalShiftDuration": "PT18H22M28S",
+          "totalServiceDuration": "PT8H10M",
+          "totalTravelTime": "PT2H18M55S",
+          "totalTravelDistanceMeters": 110511,
+          "totalBreakTime": "PT1H",
+          "totalWaitingTime": "PT43M33S",
+          "totalOvertime": "PT0S",
+          "availableOvertime": "PT0S"
+        }
+      },
+      {
+        "id": "Dan",
+        "shifts": [
+          {
+            "id": "9485d104",
+            "startTime": "2026-03-09T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "a35d1f01",
+                "arrivalTime": "2026-03-09T08:18:15-04:00",
+                "startServiceTime": "2026-03-09T10:00:00-04:00",
+                "departureTime": "2026-03-09T10:20:00-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT18M15S",
+                "travelDistanceMetersFromPreviousStandstill": 14212,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "4192d23f",
+                "arrivalTime": "2026-03-09T10:31:24-04:00",
+                "startServiceTime": "2026-03-09T10:31:24-04:00",
+                "departureTime": "2026-03-09T12:01:24-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT11M24S",
+                "travelDistanceMetersFromPreviousStandstill": 8342,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "9485d104 Lunch",
+                "startTime": "2026-03-09T12:10:10-04:00",
+                "endTime": "2026-03-09T13:10:10-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "7cd74d68",
+                "arrivalTime": "2026-03-09T12:10:10-04:00",
+                "startServiceTime": "2026-03-09T13:10:10-04:00",
+                "departureTime": "2026-03-09T15:40:10-04:00",
+                "effectiveServiceDuration": "PT2H30M",
+                "travelTimeFromPreviousStandstill": "PT8M46S",
+                "travelDistanceMetersFromPreviousStandstill": 6246,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "de6ab9d5",
+                "arrivalTime": "2026-03-09T16:03:29-04:00",
+                "startServiceTime": "2026-03-09T16:03:29-04:00",
+                "departureTime": "2026-03-09T16:33:29-04:00",
+                "effectiveServiceDuration": "PT30M",
+                "travelTimeFromPreviousStandstill": "PT23M19S",
+                "travelDistanceMetersFromPreviousStandstill": 23467,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT4H50M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT1H41M45S",
+              "totalTravelTime": "PT1H20M",
+              "travelTimeFromStartLocationToFirstVisit": "PT18M15S",
+              "travelTimeBetweenVisits": "PT43M29S",
+              "travelTimeFromLastVisitToEndLocation": "PT18M16S",
+              "totalTravelDistanceMeters": 66855,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 14212,
+              "travelDistanceBetweenVisitsMeters": 38055,
+              "travelDistanceFromLastVisitToEndLocationMeters": 14588,
+              "endLocationArrivalTime": "2026-03-09T16:51:45-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "021fda9d",
+            "startTime": "2026-03-10T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "675caa23",
+                "arrivalTime": "2026-03-10T08:21:02-04:00",
+                "startServiceTime": "2026-03-10T08:30:00-04:00",
+                "departureTime": "2026-03-10T09:45:00-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT21M2S",
+                "travelDistanceMetersFromPreviousStandstill": 16592,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "51e203ca",
+                "arrivalTime": "2026-03-10T09:54:38-04:00",
+                "startServiceTime": "2026-03-10T09:54:38-04:00",
+                "departureTime": "2026-03-10T11:24:38-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT9M38S",
+                "travelDistanceMetersFromPreviousStandstill": 6660,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "a56dcd75",
+                "arrivalTime": "2026-03-10T11:43:07-04:00",
+                "startServiceTime": "2026-03-10T11:43:07-04:00",
+                "departureTime": "2026-03-10T12:43:07-04:00",
+                "effectiveServiceDuration": "PT1H",
+                "travelTimeFromPreviousStandstill": "PT18M29S",
+                "travelDistanceMetersFromPreviousStandstill": 18263,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "021fda9d Lunch",
+                "startTime": "2026-03-10T12:57:22-04:00",
+                "endTime": "2026-03-10T13:57:22-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "cbbecccf",
+                "arrivalTime": "2026-03-10T12:57:22-04:00",
+                "startServiceTime": "2026-03-10T13:57:22-04:00",
+                "departureTime": "2026-03-10T15:27:22-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT14M15S",
+                "travelDistanceMetersFromPreviousStandstill": 8926,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT5H15M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT8M58S",
+              "totalTravelTime": "PT1H9M52S",
+              "travelTimeFromStartLocationToFirstVisit": "PT21M2S",
+              "travelTimeBetweenVisits": "PT42M22S",
+              "travelTimeFromLastVisitToEndLocation": "PT6M28S",
+              "totalTravelDistanceMeters": 53630,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 16592,
+              "travelDistanceBetweenVisitsMeters": 33849,
+              "travelDistanceFromLastVisitToEndLocationMeters": 3189,
+              "endLocationArrivalTime": "2026-03-10T15:33:50-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "86a7881e",
+            "startTime": "2026-03-11T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "68d0e368",
+                "arrivalTime": "2026-03-11T08:21:58-04:00",
+                "startServiceTime": "2026-03-11T08:30:00-04:00",
+                "departureTime": "2026-03-11T09:45:00-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT21M58S",
+                "travelDistanceMetersFromPreviousStandstill": 20396,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "10fc4c37",
+                "arrivalTime": "2026-03-11T10:04:54-04:00",
+                "startServiceTime": "2026-03-11T10:04:54-04:00",
+                "departureTime": "2026-03-11T11:04:54-04:00",
+                "effectiveServiceDuration": "PT1H",
+                "travelTimeFromPreviousStandstill": "PT19M54S",
+                "travelDistanceMetersFromPreviousStandstill": 17282,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "7a2798c9",
+                "arrivalTime": "2026-03-11T11:22:49-04:00",
+                "startServiceTime": "2026-03-11T11:22:49-04:00",
+                "departureTime": "2026-03-11T12:37:49-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT17M55S",
+                "travelDistanceMetersFromPreviousStandstill": 11056,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "86a7881e Lunch",
+                "startTime": "2026-03-11T12:51:21-04:00",
+                "endTime": "2026-03-11T13:51:21-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "aff342c4",
+                "arrivalTime": "2026-03-11T12:51:21-04:00",
+                "startServiceTime": "2026-03-11T13:51:21-04:00",
+                "departureTime": "2026-03-11T14:11:21-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT13M32S",
+                "travelDistanceMetersFromPreviousStandstill": 10043,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT3H50M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT8M2S",
+              "totalTravelTime": "PT1H21M25S",
+              "travelTimeFromStartLocationToFirstVisit": "PT21M58S",
+              "travelTimeBetweenVisits": "PT51M21S",
+              "travelTimeFromLastVisitToEndLocation": "PT8M6S",
+              "totalTravelDistanceMeters": 64276,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 20396,
+              "travelDistanceBetweenVisitsMeters": 38381,
+              "travelDistanceFromLastVisitToEndLocationMeters": 5499,
+              "endLocationArrivalTime": "2026-03-11T14:19:27-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "5864deb9",
+            "startTime": "2026-03-12T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "9d9c260e",
+                "arrivalTime": "2026-03-12T08:09:22-04:00",
+                "startServiceTime": "2026-03-12T10:00:00-04:00",
+                "departureTime": "2026-03-12T10:30:00-04:00",
+                "effectiveServiceDuration": "PT30M",
+                "travelTimeFromPreviousStandstill": "PT9M22S",
+                "travelDistanceMetersFromPreviousStandstill": 4772,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "7c2fb313",
+                "arrivalTime": "2026-03-12T10:47:36-04:00",
+                "startServiceTime": "2026-03-12T10:47:36-04:00",
+                "departureTime": "2026-03-12T13:47:36-04:00",
+                "effectiveServiceDuration": "PT3H",
+                "travelTimeFromPreviousStandstill": "PT17M36S",
+                "travelDistanceMetersFromPreviousStandstill": 15905,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "5864deb9 Lunch",
+                "startTime": "2026-03-12T13:59:44-04:00",
+                "endTime": "2026-03-12T14:59:44-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "65798ba5",
+                "arrivalTime": "2026-03-12T13:59:44-04:00",
+                "startServiceTime": "2026-03-12T14:59:44-04:00",
+                "departureTime": "2026-03-12T15:19:44-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT12M8S",
+                "travelDistanceMetersFromPreviousStandstill": 8678,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT3H50M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT1H50M38S",
+              "totalTravelTime": "PT53M32S",
+              "travelTimeFromStartLocationToFirstVisit": "PT9M22S",
+              "travelTimeBetweenVisits": "PT29M44S",
+              "travelTimeFromLastVisitToEndLocation": "PT14M26S",
+              "totalTravelDistanceMeters": 39878,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 4772,
+              "travelDistanceBetweenVisitsMeters": 24583,
+              "travelDistanceFromLastVisitToEndLocationMeters": 10523,
+              "endLocationArrivalTime": "2026-03-12T15:34:10-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "0d72a0ed",
+            "startTime": "2026-03-13T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "bc851940",
+                "arrivalTime": "2026-03-13T08:15:26-04:00",
+                "startServiceTime": "2026-03-13T08:30:00-04:00",
+                "departureTime": "2026-03-13T10:00:00-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT15M26S",
+                "travelDistanceMetersFromPreviousStandstill": 14392,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "01aadfd0",
+                "arrivalTime": "2026-03-13T10:14:46-04:00",
+                "startServiceTime": "2026-03-13T10:14:46-04:00",
+                "departureTime": "2026-03-13T11:44:46-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT14M46S",
+                "travelDistanceMetersFromPreviousStandstill": 14078,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "8596962f",
+                "arrivalTime": "2026-03-13T11:57:48-04:00",
+                "startServiceTime": "2026-03-13T11:57:48-04:00",
+                "departureTime": "2026-03-13T12:57:48-04:00",
+                "effectiveServiceDuration": "PT1H",
+                "travelTimeFromPreviousStandstill": "PT13M2S",
+                "travelDistanceMetersFromPreviousStandstill": 13017,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "0d72a0ed Lunch",
+                "startTime": "2026-03-13T12:57:48-04:00",
+                "endTime": "2026-03-13T13:57:48-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT4H",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT14M34S",
+              "totalTravelTime": "PT56M54S",
+              "travelTimeFromStartLocationToFirstVisit": "PT15M26S",
+              "travelTimeBetweenVisits": "PT27M48S",
+              "travelTimeFromLastVisitToEndLocation": "PT13M40S",
+              "totalTravelDistanceMeters": 52527,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 14392,
+              "travelDistanceBetweenVisitsMeters": 27095,
+              "travelDistanceFromLastVisitToEndLocationMeters": 11040,
+              "endLocationArrivalTime": "2026-03-13T14:11:28-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          }
+        ],
+        "metrics": {
+          "activatedShifts": 5,
+          "assignedVisits": 18,
+          "totalShiftDuration": "PT36H30M40S",
+          "totalServiceDuration": "PT21H45M",
+          "totalTravelTime": "PT5H41M43S",
+          "totalTravelDistanceMeters": 277166,
+          "totalBreakTime": "PT4H",
+          "totalWaitingTime": "PT4H3M57S",
+          "totalOvertime": "PT0S",
+          "availableOvertime": "PT0S"
+        }
+      },
+      {
+        "id": "Elsa",
+        "shifts": [
+          {
+            "id": "42643660",
+            "startTime": "2026-03-09T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "f5b256fb",
+                "arrivalTime": "2026-03-09T08:13:40-04:00",
+                "startServiceTime": "2026-03-09T08:13:40-04:00",
+                "departureTime": "2026-03-09T11:13:40-04:00",
+                "effectiveServiceDuration": "PT3H",
+                "travelTimeFromPreviousStandstill": "PT13M40S",
+                "travelDistanceMetersFromPreviousStandstill": 7903,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "1379bb45",
+                "arrivalTime": "2026-03-09T11:31:51-04:00",
+                "startServiceTime": "2026-03-09T11:31:51-04:00",
+                "departureTime": "2026-03-09T12:11:51-04:00",
+                "effectiveServiceDuration": "PT40M",
+                "travelTimeFromPreviousStandstill": "PT18M11S",
+                "travelDistanceMetersFromPreviousStandstill": 13295,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "42643660 Lunch",
+                "startTime": "2026-03-09T12:32:43-04:00",
+                "endTime": "2026-03-09T13:32:43-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "c09af240",
+                "arrivalTime": "2026-03-09T12:32:43-04:00",
+                "startServiceTime": "2026-03-09T13:32:43-04:00",
+                "departureTime": "2026-03-09T14:02:43-04:00",
+                "effectiveServiceDuration": "PT30M",
+                "travelTimeFromPreviousStandstill": "PT20M52S",
+                "travelDistanceMetersFromPreviousStandstill": 18852,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "30f9ceb1",
+                "arrivalTime": "2026-03-09T14:12:35-04:00",
+                "startServiceTime": "2026-03-09T14:12:35-04:00",
+                "departureTime": "2026-03-09T14:32:35-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT9M52S",
+                "travelDistanceMetersFromPreviousStandstill": 7482,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "eec5d2c7",
+                "arrivalTime": "2026-03-09T14:39:43-04:00",
+                "startServiceTime": "2026-03-09T14:39:43-04:00",
+                "departureTime": "2026-03-09T15:39:43-04:00",
+                "effectiveServiceDuration": "PT1H",
+                "travelTimeFromPreviousStandstill": "PT7M8S",
+                "travelDistanceMetersFromPreviousStandstill": 6216,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT5H30M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT0S",
+              "totalTravelTime": "PT1H26M5S",
+              "travelTimeFromStartLocationToFirstVisit": "PT13M40S",
+              "travelTimeBetweenVisits": "PT56M3S",
+              "travelTimeFromLastVisitToEndLocation": "PT16M22S",
+              "totalTravelDistanceMeters": 67222,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 7903,
+              "travelDistanceBetweenVisitsMeters": 45845,
+              "travelDistanceFromLastVisitToEndLocationMeters": 13474,
+              "endLocationArrivalTime": "2026-03-09T15:56:05-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "da2e9c7f",
+            "startTime": "2026-03-10T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "5ae38cf3",
+                "arrivalTime": "2026-03-10T08:08:24-04:00",
+                "startServiceTime": "2026-03-10T08:08:24-04:00",
+                "departureTime": "2026-03-10T09:23:24-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT8M24S",
+                "travelDistanceMetersFromPreviousStandstill": 4929,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "31007dcf",
+                "arrivalTime": "2026-03-10T09:27:56-04:00",
+                "startServiceTime": "2026-03-10T12:00:00-04:00",
+                "departureTime": "2026-03-10T15:00:00-04:00",
+                "effectiveServiceDuration": "PT3H",
+                "travelTimeFromPreviousStandstill": "PT4M32S",
+                "travelDistanceMetersFromPreviousStandstill": 1626,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "da2e9c7f Lunch",
+                "startTime": "2026-03-10T15:00:00-04:00",
+                "endTime": "2026-03-10T16:00:00-04:00",
+                "kind": "BREAK"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT4H15M",
+              "totalBreakDuration": "PT0S",
+              "totalWaitingTime": "PT2H32M4S",
+              "totalTravelTime": "PT23M54S",
+              "travelTimeFromStartLocationToFirstVisit": "PT8M24S",
+              "travelTimeBetweenVisits": "PT4M32S",
+              "travelTimeFromLastVisitToEndLocation": "PT10M58S",
+              "totalTravelDistanceMeters": 12540,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 4929,
+              "travelDistanceBetweenVisitsMeters": 1626,
+              "travelDistanceFromLastVisitToEndLocationMeters": 5985,
+              "endLocationArrivalTime": "2026-03-10T16:10:58-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "8cd3374f",
+            "startTime": "2026-03-11T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "68353b64",
+                "arrivalTime": "2026-03-11T08:13:39-04:00",
+                "startServiceTime": "2026-03-11T08:30:00-04:00",
+                "departureTime": "2026-03-11T09:10:00-04:00",
+                "effectiveServiceDuration": "PT40M",
+                "travelTimeFromPreviousStandstill": "PT13M39S",
+                "travelDistanceMetersFromPreviousStandstill": 8601,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "8494f26a",
+                "arrivalTime": "2026-03-11T09:28:19-04:00",
+                "startServiceTime": "2026-03-11T09:28:19-04:00",
+                "departureTime": "2026-03-11T11:58:19-04:00",
+                "effectiveServiceDuration": "PT2H30M",
+                "travelTimeFromPreviousStandstill": "PT18M19S",
+                "travelDistanceMetersFromPreviousStandstill": 8229,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "8cd3374f Lunch",
+                "startTime": "2026-03-11T12:24:18-04:00",
+                "endTime": "2026-03-11T13:24:18-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "a12eabd4",
+                "arrivalTime": "2026-03-11T12:24:18-04:00",
+                "startServiceTime": "2026-03-11T13:24:18-04:00",
+                "departureTime": "2026-03-11T16:24:18-04:00",
+                "effectiveServiceDuration": "PT3H",
+                "travelTimeFromPreviousStandstill": "PT25M59S",
+                "travelDistanceMetersFromPreviousStandstill": 16591,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT6H10M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT16M21S",
+              "totalTravelTime": "PT1H4M49S",
+              "travelTimeFromStartLocationToFirstVisit": "PT13M39S",
+              "travelTimeBetweenVisits": "PT44M18S",
+              "travelTimeFromLastVisitToEndLocation": "PT6M52S",
+              "totalTravelDistanceMeters": 37330,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 8601,
+              "travelDistanceBetweenVisitsMeters": 24820,
+              "travelDistanceFromLastVisitToEndLocationMeters": 3909,
+              "endLocationArrivalTime": "2026-03-11T16:31:10-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "8a562caa",
+            "startTime": "2026-03-12T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "761e6016",
+                "arrivalTime": "2026-03-12T08:13:34-04:00",
+                "startServiceTime": "2026-03-12T09:00:00-04:00",
+                "departureTime": "2026-03-12T10:15:00-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT13M34S",
+                "travelDistanceMetersFromPreviousStandstill": 7879,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "31a16cd1",
+                "arrivalTime": "2026-03-12T10:31:15-04:00",
+                "startServiceTime": "2026-03-12T10:31:15-04:00",
+                "departureTime": "2026-03-12T12:01:15-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT16M15S",
+                "travelDistanceMetersFromPreviousStandstill": 10305,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "8a562caa Lunch",
+                "startTime": "2026-03-12T12:18:12-04:00",
+                "endTime": "2026-03-12T13:18:12-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "eadb3f37",
+                "arrivalTime": "2026-03-12T12:18:12-04:00",
+                "startServiceTime": "2026-03-12T14:00:00-04:00",
+                "departureTime": "2026-03-12T14:20:00-04:00",
+                "effectiveServiceDuration": "PT20M",
+                "travelTimeFromPreviousStandstill": "PT16M57S",
+                "travelDistanceMetersFromPreviousStandstill": 13241,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT3H5M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT1H28M14S",
+              "totalTravelTime": "PT1H7M20S",
+              "travelTimeFromStartLocationToFirstVisit": "PT13M34S",
+              "travelTimeBetweenVisits": "PT33M12S",
+              "travelTimeFromLastVisitToEndLocation": "PT20M34S",
+              "totalTravelDistanceMeters": 51935,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 7879,
+              "travelDistanceBetweenVisitsMeters": 23546,
+              "travelDistanceFromLastVisitToEndLocationMeters": 20510,
+              "endLocationArrivalTime": "2026-03-12T14:40:34-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          },
+          {
+            "id": "1a488d80",
+            "startTime": "2026-03-13T08:00:00-04:00",
+            "itinerary": [
+              {
+                "id": "223faa00",
+                "arrivalTime": "2026-03-13T08:13:21-04:00",
+                "startServiceTime": "2026-03-13T08:13:21-04:00",
+                "departureTime": "2026-03-13T09:13:21-04:00",
+                "effectiveServiceDuration": "PT1H",
+                "travelTimeFromPreviousStandstill": "PT13M21S",
+                "travelDistanceMetersFromPreviousStandstill": 11747,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "cbe04d9c",
+                "arrivalTime": "2026-03-13T09:25:34-04:00",
+                "startServiceTime": "2026-03-13T09:25:34-04:00",
+                "departureTime": "2026-03-13T12:25:34-04:00",
+                "effectiveServiceDuration": "PT3H",
+                "travelTimeFromPreviousStandstill": "PT12M13S",
+                "travelDistanceMetersFromPreviousStandstill": 10395,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "1a488d80 Lunch",
+                "startTime": "2026-03-13T12:34:30-04:00",
+                "endTime": "2026-03-13T13:34:30-04:00",
+                "kind": "BREAK"
+              },
+              {
+                "id": "452ff474",
+                "arrivalTime": "2026-03-13T12:34:30-04:00",
+                "startServiceTime": "2026-03-13T13:34:30-04:00",
+                "departureTime": "2026-03-13T15:04:30-04:00",
+                "effectiveServiceDuration": "PT1H30M",
+                "travelTimeFromPreviousStandstill": "PT8M56S",
+                "travelDistanceMetersFromPreviousStandstill": 5618,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              },
+              {
+                "id": "d3fe4383",
+                "arrivalTime": "2026-03-13T15:06:34-04:00",
+                "startServiceTime": "2026-03-13T15:06:34-04:00",
+                "departureTime": "2026-03-13T16:21:34-04:00",
+                "effectiveServiceDuration": "PT1H15M",
+                "travelTimeFromPreviousStandstill": "PT2M4S",
+                "travelDistanceMetersFromPreviousStandstill": 938,
+                "minStartTravelTime": "2026-03-09T00:00:00-04:00",
+                "kind": "VISIT"
+              }
+            ],
+            "metrics": {
+              "totalServiceDuration": "PT6H45M",
+              "totalBreakDuration": "PT1H",
+              "totalWaitingTime": "PT0S",
+              "totalTravelTime": "PT1H4M13S",
+              "travelTimeFromStartLocationToFirstVisit": "PT13M21S",
+              "travelTimeBetweenVisits": "PT23M13S",
+              "travelTimeFromLastVisitToEndLocation": "PT27M39S",
+              "totalTravelDistanceMeters": 54765,
+              "travelDistanceFromStartLocationToFirstVisitMeters": 11747,
+              "travelDistanceBetweenVisitsMeters": 16951,
+              "travelDistanceFromLastVisitToEndLocationMeters": 26067,
+              "endLocationArrivalTime": "2026-03-13T16:49:13-04:00",
+              "overtime": "PT0S",
+              "availableOvertime": "PT0S"
+            }
+          }
+        ],
+        "metrics": {
+          "activatedShifts": 5,
+          "assignedVisits": 17,
+          "totalShiftDuration": "PT40H8M",
+          "totalServiceDuration": "PT25H45M",
+          "totalTravelTime": "PT5H6M21S",
+          "totalTravelDistanceMeters": 223792,
+          "totalBreakTime": "PT4H",
+          "totalWaitingTime": "PT4H16M39S",
+          "totalOvertime": "PT0S",
+          "availableOvertime": "PT0S"
+        }
+      }
+    ],
+    "unassignedVisits": [
+      "de27bd4e"
+    ]
+  },
+  "inputMetrics": {
+    "visits": 73,
+    "visitGroups": 0,
+    "visitDependencies": 6,
+    "mandatoryVisits": 73,
+    "optionalVisits": 0,
+    "vehicles": 5,
+    "vehicleShifts": 25,
+    "visitsWithSla": 0,
+    "movableVisits": 4,
+    "pinnedVisits": 0,
+    "excludedVisits": 0
+  },
+  "kpis": {
+    "averageTravelTimePerVisit": "PT17M42S",
+    "totalTravelTime": "PT21H14M52S",
+    "travelTimeFromStartLocationToFirstVisit": "PT5H2S",
+    "travelTimeBetweenVisits": "PT11H1M50S",
+    "travelTimeFromLastVisitToEndLocation": "PT5H13M",
+    "averageTravelDistanceMetersPerVisit": 13678,
+    "totalTravelDistanceMeters": 984795,
+    "travelDistanceFromStartLocationToFirstVisitMeters": 226410,
+    "travelDistanceBetweenVisitsMeters": 511915,
+    "travelDistanceFromLastVisitToEndLocationMeters": 246470,
+    "totalUnassignedVisits": 1,
+    "totalAssignedVisits": 72,
+    "assignedMandatoryVisits": 72,
+    "unassignedMandatoryVisits": 1,
+    "totalActivatedVehicles": 5,
+    "workingTimeFairnessPercentage": 88.29,
+    "totalOvertime": "PT0S",
+    "availableOvertime": "PT0S"
+  },
+  "run": {
+    "id": "100ec2f8-f2c5-4420-8cc7-fa47c024889d",
+    "originId": "100ec2f8-f2c5-4420-8cc7-fa47c024889d",
+    "name": "VISIT_DEPENDENCY Demo",
+    "submitDateTime": "2026-03-10T17:20:25.19176792Z",
+    "startDateTime": "2026-03-10T17:20:33.064364685Z",
+    "activeDateTime": "2026-03-10T17:20:33.150376735Z",
+    "completeDateTime": "2026-03-10T17:21:17.160147231Z",
+    "shutdownDateTime": "2026-03-10T17:21:17.160151341Z",
+    "solverStatus": "SOLVING_COMPLETED",
+    "score": "0hard/-10000medium/-81869soft",
+    "tags": [
+      "system.type:from-request",
+      "system.profile:Standard profile"
+    ],
+    "validationResult": {
+      "summary": "OK"
+    }
+  }
+}

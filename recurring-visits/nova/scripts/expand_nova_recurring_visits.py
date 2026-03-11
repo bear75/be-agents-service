@@ -26,6 +26,12 @@ Nova expanded output uses comma delimiter by default (dashboard upload compatibl
   shift_type, shift_start, shift_end, slinga_break_* -> same
   office_lat/lon          -> serviceArea_lat/lon
 
+  When Återkommande is "Varje dag" (or lists all weekdays), one source row is
+  expanded to 7 rows (one per weekday) with frequency "daily" so the planning
+  window gets 7 evening/day visits per week instead of 1.
+  When Slinga contains "Kväll" or shift_start >= 15:00, shift_type is set to
+  "evening" so downstream (generate_employees, dashboard) create evening shifts.
+
 Usage:
   python expand_nova_recurring_visits.py input.csv -o expanded.csv --weeks 2
 """
@@ -69,6 +75,9 @@ NOVA_TO_HUDDINGE: Dict[str, str] = {
 # Columns that exist in both (same name)
 SHARED_COLS = {"shift_type", "shift_start", "shift_end", "frequency", "client_lat", "client_lon"}
 
+# Weekdays for "Varje dag" expansion (Nova uses these in recurring_external)
+WEEKDAYS = ("mån", "tis", "ons", "tor", "fre", "lör", "sön")
+
 # Nova break columns
 NOVA_BREAK_MAP = {
     "slinga_break_duration": "shift_break_duration",
@@ -85,6 +94,22 @@ def _format_weekday_as_recurring(weekday: str) -> str:
     return f"Varje vecka, {wd}"
 
 
+def _is_evening_shift(row: Dict[str, Any]) -> bool:
+    """True if this row is an evening shift (Slinga contains Kväll or shift starts at/after 15:00)."""
+    slinga = str(row.get("Slinga", "") or "").lower()
+    if "kväll" in slinga or "kvallen" in slinga:
+        return True
+    shift_start = str(row.get("shift_start", "") or "").strip()
+    if not shift_start:
+        return False
+    try:
+        parts = shift_start.split(":")
+        h = int(parts[0])
+        return h >= 15
+    except (ValueError, IndexError):
+        return False
+
+
 def _map_nova_row_to_huddinge(row: Dict[str, Any]) -> Dict[str, Any]:
     """Map Nova CSV row to Huddinge-format row."""
     out: Dict[str, Any] = {}
@@ -99,6 +124,9 @@ def _map_nova_row_to_huddinge(row: Dict[str, Any]) -> Dict[str, Any]:
     for nova_col, huddinge_col in NOVA_BREAK_MAP.items():
         if nova_col in row:
             out[huddinge_col] = row[nova_col]
+    # So downstream (generate_employees, dashboard) get evening shifts: set shift_type to "evening"
+    if _is_evening_shift(row):
+        out["shift_type"] = "evening"
     return out
 
 
@@ -109,6 +137,19 @@ def _is_inactive_nova(row: Dict[str, Any]) -> bool:
         return True
     st = str(row.get("shift_type", "")).strip().lower()
     return st == "inactive"
+
+
+def _is_varje_dag(aterkommande: str) -> bool:
+    """True if Återkommande means every day (Varje dag or all weekdays listed)."""
+    if not aterkommande:
+        return False
+    s = str(aterkommande).strip().lower()
+    if "varje dag" in s:
+        return True
+    # "Varje vecka, mån tis ons tor fre lör sön"
+    if "mån" in s and "tis" in s and "ons" in s and "tor" in s and "fre" in s and "lör" in s and "sön" in s:
+        return True
+    return False
 
 
 def normalize_nova_to_huddinge(
@@ -132,7 +173,17 @@ def normalize_nova_to_huddinge(
         # Ensure visit_id for ordering
         if not h.get("visit_id"):
             h["visit_id"] = row.get("visitid", len(huddinge_rows) + 1)
-        huddinge_rows.append(h)
+
+        aterkommande = str(row.get("Återkommande", "") or "").strip()
+        if _is_varje_dag(aterkommande):
+            # Emit one row per weekday with frequency "daily" so expand produces 7 visits per week
+            for wd in WEEKDAYS:
+                row_copy = dict(h)
+                row_copy["recurring_external"] = _format_weekday_as_recurring(wd)
+                row_copy["frequency"] = "daily"
+                huddinge_rows.append(row_copy)
+        else:
+            huddinge_rows.append(h)
 
     if not huddinge_rows:
         return 0

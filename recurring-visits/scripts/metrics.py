@@ -142,9 +142,10 @@ def _visit_span_seconds(shift: dict) -> tuple[float, float]:
     if not visit_items:
         return 0.0, 0.0
 
-    # Use actual first/last by time (minStartTravelTime can be global 00:00, not shift start)
+    # Use startServiceTime for span start (not arrivalTime): from-patch API often returns
+    # arrivalTime at midnight, which would make span span multiple days. Span = care start → care end.
     def _visit_start(it: dict):
-        return parse_iso_dt(it.get("arrivalTime") or it.get("startServiceTime"))
+        return parse_iso_dt(it.get("startServiceTime") or it.get("arrivalTime"))
 
     def _visit_end(it: dict):
         et = parse_iso_dt(it.get("startServiceTime") or it.get("arrivalTime"))
@@ -244,6 +245,8 @@ def shift_metrics(
             span_sec, break_inside_sec = _visit_span_seconds(shift)
             total_shift_sec = span_sec
             break_sec = break_inside_sec
+            # Derive wait so shift = visit + travel + wait + break (API totalWaitingTime is often wrong for from-patch).
+            wait_sec = max(0.0, total_shift_sec - visit_sec - travel_sec - break_sec)
     elif scheduled_sec is not None and scheduled_sec > 0:
         # Use SCHEDULED time from input (what we pay for)
         total_shift_sec = scheduled_sec
@@ -255,6 +258,14 @@ def shift_metrics(
         total_shift_sec = (
             visit_sec + travel_sec + wait_sec + break_sec
         )
+        # From-patch API often returns shift startTime=00:00 and inflated totalWaitingTime, making shift ~100h+.
+        # If shift would be > 20h, use visit span instead and derive wait as the remainder.
+        if total_shift_sec > 20 * 3600 and visit_count > 0:
+            span_sec, break_inside_sec = _visit_span_seconds(shift)
+            if span_sec > 0:
+                total_shift_sec = span_sec
+                break_sec = break_inside_sec
+                wait_sec = max(0.0, total_shift_sec - visit_sec - travel_sec - break_sec)
     else:
         # Fall back to output endLocationArrivalTime
         end_s = metrics_block.get("endLocationArrivalTime")
@@ -751,13 +762,17 @@ def main() -> int:
                     help="Directory to save timestamped metrics JSON.")
     ap.add_argument("--csv", type=Path, default=None,
                     help="Write per-shift metrics to CSV.")
-    ap.add_argument("--exclude-inactive", action="store_true",
-                    help="Exclude inactive time from shift/cost (ESS simulation: only travel, visit, break, wait). Use for from-patch outputs.")
+    ap.add_argument("--exclude-inactive", action="store_true", default=True,
+                    help="Exclude inactive (idle) time from shift/cost and efficiency denominator (default: True). Set to False to include idle.")
+    ap.add_argument("--include-idle", action="store_true",
+                    help="Include idle in metrics (overrides --exclude-inactive).")
     ap.add_argument("--exclude-empty-shifts-only", action="store_true",
                     help="Variant 1: Helt tomma skift/medarbetare bidrar 0 skifttimmar; idle = endast slutet av skift med besök.")
     ap.add_argument("--visit-span-only", action="store_true",
                     help="Variant 2: Som variant 1 + skifttid = första besök start -> sista besök slut (inga tomma delar).")
     args = ap.parse_args()
+    if getattr(args, "include_idle", False):
+        args.exclude_inactive = False
 
     if not args.output.exists():
         print(f"Error: not found {args.output}", file=sys.stderr)
