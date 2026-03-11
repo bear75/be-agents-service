@@ -10,7 +10,9 @@ Uses:
   - FSR input JSON: visit id -> person (Kundnr) from visit name
   - FSR output JSON: visit id -> vehicle (caregiver) per occurrence in itinerary
 
-Output: one row per person — client (Kundnr), nr_visits, continuity (distinct caregivers; lower is better).
+Output: one row per person — client (Kundnr), nr_visits, continuity (distinct caregivers; lower is better),
+optionally cci (Continuity of Care Index; higher is better). Use --no-cci to omit CCI.
+
 Use --no-kolada for legacy aggregation by visit-name stream (more rows, lower average).
 
 Usage:
@@ -19,6 +21,7 @@ Usage:
     --output path/to/export-*-output.json \\
     [--report path/to/continuity.csv]
     [--no-kolada]  # legacy: aggregate by visit-name (e.g. H026_r24) instead of person (H026)
+    [--no-cci]     # omit CCI column and summary (default: include CCI)
 """
 
 from __future__ import annotations
@@ -152,6 +155,21 @@ def _assignments_by_person(
     return person_assignments
 
 
+def compute_cci(assignments: list[tuple[str, str]]) -> float:
+    """
+    Compute Continuity of Care Index: sum over caregivers of (n_i/N)^2.
+    n_i = visits from caregiver i, N = total visits. Higher = better (more concentration).
+    Returns 0.0 if no assignments.
+    """
+    if not assignments:
+        return 0.0
+    n = len(assignments)
+    counts: dict[str, int] = {}
+    for _, vehicle_id in assignments:
+        counts[vehicle_id] = counts.get(vehicle_id, 0) + 1
+    return sum((c / n) ** 2 for c in counts.values())
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Per-client continuity from FSR input + output")
     parser.add_argument("--input", type=Path, required=True, help="FSR input JSON (for visit -> client)")
@@ -174,7 +192,14 @@ def main() -> int:
         default=False,
         help="KOLADA: include only clients matching Kundnr (H001, H002, ...). Use for 115 clients from DB/input.",
     )
+    parser.add_argument(
+        "--no-cci",
+        action="store_true",
+        default=False,
+        help="Omit CCI column and CCI summary (default: include CCI).",
+    )
     args = parser.parse_args()
+    include_cci = not args.no_cci
     use_kolada = args.kolada and not args.no_kolada
 
     if not args.input.exists():
@@ -209,28 +234,55 @@ def main() -> int:
     visit_vehicle_list, n_vehicles, n_shifts = load_visit_vehicle_assignments(args.output)
     visit_to_client = load_visit_to_client(args.input)
 
-    # Build rows: one per person (KOLADA = one per Kundnr, e.g. 115 for v2) — client, nr_visits, continuity (nr of distinct caregivers)
-    rows: list[tuple[str, int, int]] = []
+    # Build rows: one per person — client, nr_visits, continuity (unique count), optional cci
+    rows: list[tuple[str, int, int, float | None]] = []
     for person in sorted(person_assignments.keys()):
         assignments = person_assignments[person]
         nr_visits = len(assignments)
         nr_caregivers = len({v for _, v in assignments})
-        rows.append((person, nr_visits, nr_caregivers))
+        cci = compute_cci(assignments) if include_cci else None
+        rows.append((person, nr_visits, nr_caregivers, cci))
 
     # Print table
-    print("client,nr_visits,continuity")
-    print("(continuity = number of distinct caregivers; lower is better)")
+    if include_cci:
+        print("client,nr_visits,continuity,cci")
+        print("(continuity = distinct caregivers, lower better; cci = Continuity of Care Index, higher better)")
+    else:
+        print("client,nr_visits,continuity")
+        print("(continuity = number of distinct caregivers; lower is better)")
     print("-" * 50)
-    for client, nr_visits, continuity in rows:
-        print(f"{client},{nr_visits},{continuity}")
+    for row in rows:
+        client, nr_visits, continuity = row[0], row[1], row[2]
+        if include_cci and row[3] is not None:
+            print(f"{client},{nr_visits},{continuity},{row[3]:.4f}")
+        else:
+            print(f"{client},{nr_visits},{continuity}")
 
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         with open(args.report, "w", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
-            w.writerow(["client", "nr_visits", "continuity"])
-            w.writerows(rows)
+            if include_cci:
+                w.writerow(["client", "nr_visits", "continuity", "cci"])
+                w.writerows([(r[0], r[1], r[2], f"{r[3]:.4f}" if r[3] is not None else "") for r in rows])
+            else:
+                w.writerow(["client", "nr_visits", "continuity"])
+                w.writerows([(r[0], r[1], r[2]) for r in rows])
         print(f"\nWrote {args.report}")
+
+    # Summary: average unique count and average CCI
+    if rows:
+        avg_continuity = sum(r[2] for r in rows) / len(rows)
+        print("\n" + "=" * 50)
+        print("Summary (continuity = unique caregivers per client)")
+        print("=" * 50)
+        print(f"  Clients:              {len(rows)}")
+        print(f"  Average unique count:  {avg_continuity:.2f}")
+        if include_cci and any(r[3] is not None for r in rows):
+            cci_vals = [r[3] for r in rows if r[3] is not None]
+            avg_cci = sum(cci_vals) / len(cci_vals) if cci_vals else 0.0
+            print(f"  Average CCI:           {avg_cci:.4f}")
+        print("=" * 50)
 
     # Summary from vehicle.id and visits.name
     total_visits = len(visit_vehicle_list)

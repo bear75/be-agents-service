@@ -3,14 +3,15 @@
 Prepare test variant payloads from a continuity (da2de902-style) FSR input for test-tenant runs.
 
 Variants:
-  1. preferred: requiredVehicles -> preferredVehicles, preferVisitVehicleMatchPreferredVehiclesWeight=2
+  1. preferred (weight W): requiredVehicles -> preferredVehicles, preferVisitVehicleMatchPreferredVehiclesWeight=W (default W=2; use --preferred-weights 2 10 20 for campaign)
   2. wait-min:  same input, minimizeWaitingTimeWeight=3
-  3. combo:     preferred + preferVisitVehicleMatchPreferredVehiclesWeight=2 + minimizeWaitingTimeWeight=3
+  3. combo:     preferred + weight 2 + minimizeWaitingTimeWeight=3
 
 Writes JSON files to --out-dir for submission with submit_to_timefold.py (test tenant API key).
 
 Usage:
   python prepare_continuity_test_variants.py --input path/to/da2de902-input.json --out-dir path/to/out
+  python prepare_continuity_test_variants.py --input patched.json --out-dir out --preferred-weights 2 10 20
 """
 
 from __future__ import annotations
@@ -60,6 +61,14 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Prepare continuity test variant payloads.")
     ap.add_argument("--input", type=Path, required=True, help="Path to da2de902-style input JSON.")
     ap.add_argument("--out-dir", type=Path, required=True, help="Directory to write variant JSONs.")
+    ap.add_argument(
+        "--preferred-weights",
+        type=int,
+        nargs="*",
+        default=[2],
+        metavar="W",
+        help="Preferred-vehicles weight(s) to emit (default: 2). E.g. 2 10 20 for campaign matrix.",
+    )
     args = ap.parse_args()
 
     if not args.input.exists():
@@ -74,15 +83,16 @@ def main() -> int:
     config = payload.get("config") or {}
     model_input = payload.get("modelInput") or payload
 
-    # 1) preferred: required -> preferred, weight 2
-    p_preferred = json.loads(json.dumps(payload))
-    mi_pref = p_preferred.get("modelInput") or p_preferred
-    convert_required_to_preferred(mi_pref)
-    set_overrides(p_preferred, preferVisitVehicleMatchPreferredVehiclesWeight=2)
-    out_preferred = args.out_dir / "input_preferred_vehicles_weight2.json"
-    with open(out_preferred, "w", encoding="utf-8") as f:
-        json.dump(p_preferred, f, indent=2, ensure_ascii=False)
-    print(f"Wrote {out_preferred}")
+    # 1) preferred: required -> preferred, one file per weight
+    for weight in args.preferred_weights:
+        p_preferred = json.loads(json.dumps(payload))
+        mi_pref = p_preferred.get("modelInput") or p_preferred
+        convert_required_to_preferred(mi_pref)
+        set_overrides(p_preferred, preferVisitVehicleMatchPreferredVehiclesWeight=weight)
+        out_preferred = args.out_dir / f"input_preferred_vehicles_weight{weight}.json"
+        with open(out_preferred, "w", encoding="utf-8") as f:
+            json.dump(p_preferred, f, indent=2, ensure_ascii=False)
+        print(f"Wrote {out_preferred}")
 
     # 2) wait-min: same input, wait weight 3
     p_wait = json.loads(json.dumps(payload))

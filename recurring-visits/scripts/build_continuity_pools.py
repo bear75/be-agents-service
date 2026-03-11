@@ -29,6 +29,8 @@ Usage:
   # Patch FSR input with requiredVehicles from pool (any source)
   python build_continuity_pools.py ... --out pools.json --patch-fsr-input path/to/input.json \\
     --patched-input path/to/input_with_required_vehicles.json
+
+  # Campaign: use --max-per-client 5, 8, or 10 (default 15). See docs/plans/2026-03-11-campaign-matrix.md.
 """
 
 from __future__ import annotations
