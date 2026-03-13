@@ -1,0 +1,14 @@
+[
+  {
+    "strategy": "preferred_2_pool5",
+    "route_plan_id": null,
+    "submitted_at": "20:54:34",
+    "error": "HTTP 429: {\"id\":\"f6bad192-5df7-49e2-b435-db13d04de2b3\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}"
+  },
+  {
+    "strategy": "preferred_10_pool5",
+    "route_plan_id": null,
+    "submitted_at": "20:56:34",
+    "error": "HTTP 429: {\"id\":\"acde9fa5-0968-4875-a745-27dd39ec8112\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}"
+  }
+]

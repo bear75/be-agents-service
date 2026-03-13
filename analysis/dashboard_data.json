@@ -1,0 +1,357 @@
+{
+  "summary": {
+    "total_jobs": 7,
+    "completed_jobs": 7,
+    "test_jobs": 2,
+    "prod_jobs": 5,
+    "perfect_continuity_jobs": 7,
+    "avg_continuity": 5.778571428571429,
+    "avg_cci": 0.36424285714285715,
+    "avg_efficiency": 71.45285714285714,
+    "avg_field_efficiency": 77.93857142857142,
+    "input_clients": 115,
+    "input_employees": 41,
+    "input_visits": 3832,
+    "input_visit_groups": 152,
+    "generated_at": "2026-03-12T09:50:20.269270",
+    "best_continuity": 3.92,
+    "best_cci": 0.4351,
+    "best_efficiency": 73.59
+  },
+  "jobs": [
+    {
+      "env": "test",
+      "job_id": "8092f87c-5b53-4424-9439-bb49d45a",
+      "name": "Huddinge 4mars Schedule",
+      "algorithm": "Från Begäran",
+      "status": "SOLVING_COMPLETED",
+      "score": "0hard/-2500000medium/-9207806soft",
+      "metrics": {
+        "visits_total": 3832,
+        "visit_groups": 152,
+        "visits_assigned": 3582,
+        "visits_unassigned": 250,
+        "vehicles_used": 41,
+        "vehicles_total": 41,
+        "shifts_total": 474,
+        "shifts_no_visits": 84,
+        "shift_time_hours": 2464.331388888889,
+        "travel_time_hours": 477.57972222222224,
+        "wait_time_hours": 215.80166666666668,
+        "field_efficiency": 76.82,
+        "efficiency_excl_idle": 69.54,
+        "route_plan_id": "8092f87c-5b53-4424-9439-bb49d45aa700",
+        "score": "0hard/-2500000medium/-9207806soft",
+        "solver_status": "SOLVING_COMPLETED"
+      },
+      "continuity": {
+        "clients": 96,
+        "avg_continuity": 3.9375,
+        "max_continuity": 5.0,
+        "min_continuity": 1.0,
+        "over_15": 0,
+        "avg_cci": 0.43080416666666665
+      },
+      "efficiency_pct": 69.54,
+      "field_efficiency_pct": 76.82,
+      "average_unique_count": 3.94,
+      "average_cci": 0.4308,
+      "unassigned_visits": 250,
+      "ranking_score": 66.64,
+      "rank": 1
+    },
+    {
+      "env": "test",
+      "job_id": "70eb56bf-933a-45b3-84a0-30eeae68",
+      "name": "Huddinge 4mars Schedule",
+      "algorithm": "Från Begäran",
+      "status": "SOLVING_COMPLETED",
+      "score": "0hard/-2600000medium/-8501548soft",
+      "metrics": {
+        "visits_total": 3832,
+        "visit_groups": 152,
+        "visits_assigned": 3572,
+        "visits_unassigned": 260,
+        "vehicles_used": 41,
+        "vehicles_total": 41,
+        "shifts_total": 474,
+        "shifts_no_visits": 84,
+        "shift_time_hours": 2496.973611111111,
+        "travel_time_hours": 454.34694444444443,
+        "wait_time_hours": 272.07666666666665,
+        "field_efficiency": 77.69,
+        "efficiency_excl_idle": 68.54,
+        "route_plan_id": "70eb56bf-933a-45b3-84a0-30eeae6838a5",
+        "score": "0hard/-2600000medium/-8501548soft",
+        "solver_status": "SOLVING_COMPLETED"
+      },
+      "continuity": {
+        "clients": 97,
+        "avg_continuity": 3.917525773195876,
+        "max_continuity": 5.0,
+        "min_continuity": 1.0,
+        "over_15": 0,
+        "avg_cci": 0.4351082474226804
+      },
+      "efficiency_pct": 68.54,
+      "field_efficiency_pct": 77.69,
+      "average_unique_count": 3.92,
+      "average_cci": 0.4351,
+      "unassigned_visits": 260,
+      "ranking_score": 66.43,
+      "rank": 2
+    },
+    {
+      "env": "prod",
+      "job_id": "ec236968-e08c-47b4-be19-0553f0f7",
+      "name": "Huddinge 4mars Schedule",
+      "algorithm": "Från Begäran",
+      "status": "SOLVING_COMPLETED",
+      "score": "0hard/-620000medium/-8042569soft",
+      "metrics": {
+        "visits_total": 3832,
+        "visit_groups": 152,
+        "visits_assigned": 3770,
+        "visits_unassigned": 62,
+        "vehicles_used": 41,
+        "vehicles_total": 41,
+        "shifts_total": 474,
+        "shifts_no_visits": 97,
+        "shift_time_hours": 2421.8858333333333,
+        "travel_time_hours": 463.88944444444445,
+        "wait_time_hours": 126.16305555555556,
+        "field_efficiency": 77.99,
+        "efficiency_excl_idle": 73.59,
+        "route_plan_id": "ec236968-e08c-47b4-be19-0553f0f7a7e4",
+        "score": "0hard/-620000medium/-8042569soft",
+        "solver_status": "SOLVING_COMPLETED"
+      },
+      "continuity": {
+        "clients": 97,
+        "avg_continuity": 5.783505154639175,
+        "max_continuity": 8.0,
+        "min_continuity": 1.0,
+        "over_15": 0,
+        "avg_cci": 0.34817319587628864
+      },
+      "efficiency_pct": 73.59,
+      "field_efficiency_pct": 77.99,
+      "average_unique_count": 5.78,
+      "average_cci": 0.3482,
+      "unassigned_visits": 62,
+      "ranking_score": 65.57,
+      "rank": 3
+    },
+    {
+      "env": "prod",
+      "job_id": "a17a8eab-478b-49fe-b994-0257527d",
+      "name": "Huddinge 4mars Schedule",
+      "algorithm": "Från Begäran",
+      "status": "SOLVING_COMPLETED",
+      "score": "0hard/-560000medium/-8958322soft",
+      "metrics": {
+        "visits_total": 3832,
+        "visit_groups": 152,
+        "visits_assigned": 3776,
+        "visits_unassigned": 56,
+        "vehicles_used": 41,
+        "vehicles_total": 41,
+        "shifts_total": 474,
+        "shifts_no_visits": 70,
+        "shift_time_hours": 2597.8966666666665,
+        "travel_time_hours": 485.59805555555556,
+        "wait_time_hours": 273.0152777777778,
+        "field_efficiency": 77.28,
+        "efficiency_excl_idle": 68.52,
+        "route_plan_id": "a17a8eab-478b-49fe-b994-0257527da786",
+        "score": "0hard/-560000medium/-8958322soft",
+        "solver_status": "SOLVING_COMPLETED"
+      },
+      "continuity": {
+        "clients": 97,
+        "avg_continuity": 5.927835051546392,
+        "max_continuity": 8.0,
+        "min_continuity": 1.0,
+        "over_15": 0,
+        "avg_cci": 0.3395020618556701
+      },
+      "efficiency_pct": 68.52,
+      "field_efficiency_pct": 77.28,
+      "average_unique_count": 5.93,
+      "average_cci": 0.3395,
+      "unassigned_visits": 56,
+      "ranking_score": 63.85,
+      "rank": 4
+    },
+    {
+      "env": "prod",
+      "job_id": "117a4aa3-a657-43ad-b8f4-e997bba3",
+      "name": "Huddinge 4mars Schedule",
+      "algorithm": "Från Begäran",
+      "status": "SOLVING_COMPLETED",
+      "score": "0hard/-410000medium/-7445044soft",
+      "metrics": {
+        "visits_total": 3832,
+        "visit_groups": 152,
+        "visits_assigned": 3791,
+        "visits_unassigned": 41,
+        "vehicles_used": 41,
+        "vehicles_total": 41,
+        "shifts_total": 474,
+        "shifts_no_visits": 102,
+        "shift_time_hours": 2437.85,
+        "travel_time_hours": 438.0338888888889,
+        "wait_time_hours": 157.9661111111111,
+        "field_efficiency": 79.06,
+        "efficiency_excl_idle": 73.51,
+        "route_plan_id": "117a4aa3-a657-43ad-b8f4-e997bba39757",
+        "score": "0hard/-410000medium/-7445044soft",
+        "solver_status": "SOLVING_COMPLETED"
+      },
+      "continuity": {
+        "clients": 97,
+        "avg_continuity": 6.917525773195877,
+        "max_continuity": 10.0,
+        "min_continuity": 1.0,
+        "over_15": 0,
+        "avg_cci": 0.3330742268041237
+      },
+      "efficiency_pct": 73.51,
+      "field_efficiency_pct": 79.06,
+      "average_unique_count": 6.92,
+      "average_cci": 0.3331,
+      "unassigned_visits": 41,
+      "ranking_score": 63.42,
+      "rank": 5
+    },
+    {
+      "env": "prod",
+      "job_id": "6ce4509b-b27f-4547-8135-43f9f59f",
+      "name": "Huddinge 4mars Schedule",
+      "algorithm": "Från Begäran",
+      "status": "SOLVING_COMPLETED",
+      "score": "0hard/-410000medium/-7445044soft",
+      "metrics": {
+        "visits_total": 3832,
+        "visit_groups": 152,
+        "visits_assigned": 3791,
+        "visits_unassigned": 41,
+        "vehicles_used": 41,
+        "vehicles_total": 41,
+        "shifts_total": 474,
+        "shifts_no_visits": 102,
+        "shift_time_hours": 2437.85,
+        "travel_time_hours": 438.0338888888889,
+        "wait_time_hours": 157.9661111111111,
+        "field_efficiency": 79.06,
+        "efficiency_excl_idle": 73.51,
+        "route_plan_id": "6ce4509b-b27f-4547-8135-43f9f59f94ab",
+        "score": "0hard/-410000medium/-7445044soft",
+        "solver_status": "SOLVING_COMPLETED"
+      },
+      "continuity": {
+        "clients": 97,
+        "avg_continuity": 6.917525773195877,
+        "max_continuity": 10.0,
+        "min_continuity": 1.0,
+        "over_15": 0,
+        "avg_cci": 0.3330742268041237
+      },
+      "efficiency_pct": 73.51,
+      "field_efficiency_pct": 79.06,
+      "average_unique_count": 6.92,
+      "average_cci": 0.3331,
+      "unassigned_visits": 41,
+      "ranking_score": 63.42,
+      "rank": 6
+    },
+    {
+      "env": "prod",
+      "job_id": "9c89f76c-a6aa-467d-82a0-c392b04c",
+      "name": "Huddinge 4mars Schedule",
+      "algorithm": "Från Begäran",
+      "status": "SOLVING_COMPLETED",
+      "score": "0hard/-530000medium/-8317965soft",
+      "metrics": {
+        "visits_total": 3832,
+        "visit_groups": 152,
+        "visits_assigned": 3779,
+        "visits_unassigned": 53,
+        "vehicles_used": 41,
+        "vehicles_total": 41,
+        "shifts_total": 474,
+        "shifts_no_visits": 92,
+        "shift_time_hours": 2451.1005555555557,
+        "travel_time_hours": 474.7941666666667,
+        "wait_time_hours": 137.12305555555557,
+        "field_efficiency": 77.67,
+        "efficiency_excl_idle": 72.96,
+        "route_plan_id": "9c89f76c-a6aa-467d-82a0-c392b04c18e0",
+        "score": "0hard/-530000medium/-8317965soft",
+        "solver_status": "SOLVING_COMPLETED"
+      },
+      "continuity": {
+        "clients": 97,
+        "avg_continuity": 7.041237113402062,
+        "max_continuity": 10.0,
+        "min_continuity": 1.0,
+        "over_15": 0,
+        "avg_cci": 0.3298680412371134
+      },
+      "efficiency_pct": 72.96,
+      "field_efficiency_pct": 77.67,
+      "average_unique_count": 7.04,
+      "average_cci": 0.3299,
+      "unassigned_visits": 53,
+      "ranking_score": 62.64,
+      "rank": 7
+    }
+  ],
+  "top_performers": {
+    "by_ranking": [
+      {
+        "job_id": "8092f87c",
+        "rank": 1,
+        "score": 66.64
+      },
+      {
+        "job_id": "70eb56bf",
+        "rank": 2,
+        "score": 66.43
+      },
+      {
+        "job_id": "ec236968",
+        "rank": 3,
+        "score": 65.57
+      }
+    ],
+    "by_continuity": [
+      {
+        "job_id": "70eb56bf",
+        "avg_unique": 3.92
+      },
+      {
+        "job_id": "8092f87c",
+        "avg_unique": 3.94
+      },
+      {
+        "job_id": "ec236968",
+        "avg_unique": 5.78
+      }
+    ],
+    "by_efficiency": [
+      {
+        "job_id": "ec236968",
+        "efficiency": 73.59
+      },
+      {
+        "job_id": "117a4aa3",
+        "efficiency": 73.51
+      },
+      {
+        "job_id": "6ce4509b",
+        "efficiency": 73.51
+      }
+    ]
+  }
+}

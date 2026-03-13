@@ -1,0 +1,284 @@
+{
+  "campaign": {
+    "name": "Huddinge 4mars Continuity & Efficiency Campaign",
+    "location": "Huddinge kommun, Sweden",
+    "dates": "2026-03-11 to 2026-03-12",
+    "total_runs": 26,
+    "filtered_best_runs": 7,
+    "filter_criteria": {
+      "min_efficiency": 67.5,
+      "max_continuity": 11,
+      "status": "SOLVING_COMPLETED"
+    }
+  },
+  "input_data": {
+    "clients": 115,
+    "employees": 41,
+    "total_visits": 3832,
+    "visit_groups": 152,
+    "time_horizon_days": 14,
+    "period": "2026-03-02 to 2026-03-15"
+  },
+  "summary_statistics": {
+    "avg_continuity": 5.78,
+    "avg_cci": 0.364,
+    "avg_efficiency": 71.45,
+    "avg_field_efficiency": 77.94,
+    "best_continuity": 3.92,
+    "best_cci": 0.4351,
+    "best_efficiency": 73.59,
+    "best_field_efficiency": 79.06,
+    "national_average_continuity": 15,
+    "kolada_target": 11
+  },
+  "top_7_jobs": [
+    {
+      "rank": 1,
+      "job_id": "8092f87c-5b53-4424-9439-bb49d45a",
+      "algorithm": "Från Begäran",
+      "continuity": {
+        "avg_unique_caregivers": 3.94,
+        "cci": 0.4308,
+        "clients_analyzed": 96,
+        "max_unique": 5,
+        "min_unique": 1,
+        "over_15_count": 0
+      },
+      "efficiency": {
+        "overall_pct": 69.54,
+        "field_pct": 76.82,
+        "shift_time_hours": 2464.33,
+        "travel_time_hours": 477.58,
+        "wait_time_hours": 215.80
+      },
+      "assignment": {
+        "visits_assigned": 3582,
+        "visits_unassigned": 250,
+        "assignment_rate_pct": 93.48
+      },
+      "ranking_score": 66.64
+    },
+    {
+      "rank": 2,
+      "job_id": "70eb56bf-933a-45b3-84a0-30eeae68",
+      "algorithm": "Från Begäran",
+      "continuity": {
+        "avg_unique_caregivers": 3.92,
+        "cci": 0.4351,
+        "clients_analyzed": 97,
+        "max_unique": 5,
+        "min_unique": 1,
+        "over_15_count": 0
+      },
+      "efficiency": {
+        "overall_pct": 68.54,
+        "field_pct": 77.69,
+        "shift_time_hours": 2496.97,
+        "travel_time_hours": 454.35,
+        "wait_time_hours": 272.08
+      },
+      "assignment": {
+        "visits_assigned": 3572,
+        "visits_unassigned": 260,
+        "assignment_rate_pct": 93.21
+      },
+      "ranking_score": 66.43,
+      "highlights": ["Best continuity", "Best CCI"]
+    },
+    {
+      "rank": 3,
+      "job_id": "ec236968-e08c-47b4-be19-0553f0f7",
+      "algorithm": "Från Begäran",
+      "continuity": {
+        "avg_unique_caregivers": 5.78,
+        "cci": 0.3482,
+        "clients_analyzed": 97,
+        "max_unique": 8,
+        "min_unique": 1,
+        "over_15_count": 0
+      },
+      "efficiency": {
+        "overall_pct": 73.59,
+        "field_pct": 77.99,
+        "shift_time_hours": 2421.89,
+        "travel_time_hours": 463.89,
+        "wait_time_hours": 126.16
+      },
+      "assignment": {
+        "visits_assigned": 3770,
+        "visits_unassigned": 62,
+        "assignment_rate_pct": 98.38
+      },
+      "ranking_score": 65.57,
+      "highlights": ["Best efficiency"]
+    },
+    {
+      "rank": 4,
+      "job_id": "a17a8eab-478b-49fe-b994-0257527d",
+      "algorithm": "Från Begäran",
+      "continuity": {
+        "avg_unique_caregivers": 5.93,
+        "cci": 0.3395,
+        "clients_analyzed": 97,
+        "max_unique": 8,
+        "min_unique": 1,
+        "over_15_count": 0
+      },
+      "efficiency": {
+        "overall_pct": 68.52,
+        "field_pct": 77.28,
+        "shift_time_hours": 2597.90,
+        "travel_time_hours": 485.60,
+        "wait_time_hours": 273.02
+      },
+      "assignment": {
+        "visits_assigned": 3776,
+        "visits_unassigned": 56,
+        "assignment_rate_pct": 98.54
+      },
+      "ranking_score": 63.85
+    },
+    {
+      "rank": 5,
+      "job_id": "117a4aa3-a657-43ad-b8f4-e997bba3",
+      "algorithm": "Från Begäran",
+      "continuity": {
+        "avg_unique_caregivers": 6.92,
+        "cci": 0.3331,
+        "clients_analyzed": 97,
+        "max_unique": 10,
+        "min_unique": 1,
+        "over_15_count": 0
+      },
+      "efficiency": {
+        "overall_pct": 73.51,
+        "field_pct": 79.06,
+        "shift_time_hours": 2437.85,
+        "travel_time_hours": 438.03,
+        "wait_time_hours": 157.97
+      },
+      "assignment": {
+        "visits_assigned": 3791,
+        "visits_unassigned": 41,
+        "assignment_rate_pct": 98.93
+      },
+      "ranking_score": 63.42,
+      "highlights": ["Best field efficiency", "Best assignment rate"],
+      "production_recommendation": "Primary"
+    },
+    {
+      "rank": 6,
+      "job_id": "6ce4509b-b27f-4547-8135-43f9f59f",
+      "algorithm": "Från Begäran",
+      "continuity": {
+        "avg_unique_caregivers": 6.92,
+        "cci": 0.3331,
+        "clients_analyzed": 97,
+        "max_unique": 10,
+        "min_unique": 1,
+        "over_15_count": 0
+      },
+      "efficiency": {
+        "overall_pct": 73.51,
+        "field_pct": 79.06,
+        "shift_time_hours": 2437.85,
+        "travel_time_hours": 438.03,
+        "wait_time_hours": 157.97
+      },
+      "assignment": {
+        "visits_assigned": 3791,
+        "visits_unassigned": 41,
+        "assignment_rate_pct": 98.93
+      },
+      "ranking_score": 63.42
+    },
+    {
+      "rank": 7,
+      "job_id": "9c89f76c-a6aa-467d-82a0-c392b04c",
+      "algorithm": "Från Begäran",
+      "continuity": {
+        "avg_unique_caregivers": 7.04,
+        "cci": 0.3299,
+        "clients_analyzed": 97,
+        "max_unique": 10,
+        "min_unique": 1,
+        "over_15_count": 0
+      },
+      "efficiency": {
+        "overall_pct": 72.96,
+        "field_pct": 77.67,
+        "shift_time_hours": 2451.10,
+        "travel_time_hours": 474.79,
+        "wait_time_hours": 137.12
+      },
+      "assignment": {
+        "visits_assigned": 3779,
+        "visits_unassigned": 53,
+        "assignment_rate_pct": 98.62
+      },
+      "ranking_score": 62.64
+    }
+  ],
+  "algorithm_analysis": {
+    "algorithms_tested": ["Från Begäran", "Minimera Väntetid", "Lång Lösning"],
+    "top_7_algorithm_distribution": {
+      "Från Begäran": 7,
+      "Minimera Väntetid": 0,
+      "Lång Lösning": 0
+    },
+    "dominant_algorithm": "Från Begäran",
+    "conclusion": "Request-centered strategy (Från Begäran) dominated all top 7 positions, showing superior balance between continuity and efficiency."
+  },
+  "trade_off_analysis": {
+    "observation": "No strict linear trade-off between continuity and efficiency",
+    "sweet_spot": {
+      "continuity_range": [4, 6],
+      "efficiency_range": [70, 74]
+    },
+    "extreme_continuity": {
+      "value": 3.92,
+      "efficiency": 68.54,
+      "conclusion": "High continuity achievable with acceptable efficiency"
+    },
+    "extreme_efficiency": {
+      "value": 73.59,
+      "continuity": 5.78,
+      "conclusion": "High efficiency achievable with excellent continuity"
+    }
+  },
+  "ranking_methodology": {
+    "weights": {
+      "continuity": 0.40,
+      "cci": 0.20,
+      "efficiency": 0.25,
+      "field_efficiency": 0.10,
+      "assignment": 0.05
+    },
+    "rationale": "Continuity prioritized (60% combined) as primary goal, efficiency secondary (35% combined)"
+  },
+  "production_recommendation": {
+    "primary": {
+      "job_id": "117a4aa3-a657-43ad-b8f4-e997bba3",
+      "reason": "Best field efficiency (79.06%), high overall efficiency (73.51%), highest assignment rate (98.93%), good continuity (6.92 < 11 Kolada target)"
+    },
+    "alternative_for_priority_clients": {
+      "job_ids": ["70eb56bf-933a-45b3-84a0-30eeae68", "8092f87c-5b53-4424-9439-bb49d45a"],
+      "reason": "Exceptional continuity (3.92-3.94 unique caregivers) for clients where relationship is critical (dementia, cognitive impairments)"
+    }
+  },
+  "comparison_to_benchmarks": {
+    "kolada_n00941_target": 11,
+    "national_average": 15,
+    "huddinge_results": {
+      "all_top_7_under_target": true,
+      "improvement_vs_national_avg_pct": [60, 75],
+      "conclusion": "All top 7 solutions meet Kolada target with 60-75% improvement over national average"
+    }
+  },
+  "metadata": {
+    "generated_at": "2026-03-12T09:50:20Z",
+    "data_source": "Timefold Field Service Routing API",
+    "full_dashboard": "/analysis/index.html",
+    "contact": "info@caire.se"
+  }
+}

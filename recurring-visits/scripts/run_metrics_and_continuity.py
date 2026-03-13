@@ -173,6 +173,7 @@ def main() -> int:
     summary = {
         "route_plan_id": route_id,
         "efficiency_pct": metrics_data.get("efficiency_pct"),
+        "field_efficiency_pct": metrics_data.get("field_efficiency_pct"),
         "unassigned_visits": metrics_data.get("unassigned_visits"),
         "average_unique_count": round(avg_unique, 2),
         "average_cci": round(avg_cci, 4) if avg_cci is not None else None,
@@ -188,7 +189,8 @@ def main() -> int:
         "# Run summary",
         "",
         f"- **Plan ID:** {route_id}",
-        f"- **Efficiency (visit / assignable):** {summary['efficiency_pct']}%",
+        f"- **Efficiency (visit / assignable, excl. idle):** {summary['efficiency_pct']}%",
+        f"- **Field efficiency (visit / (visit+travel), no wait):** {(str(summary['field_efficiency_pct']) + '%') if summary.get('field_efficiency_pct') is not None else '—'}",
         f"- **Unassigned visits:** {summary['unassigned_visits']}",
         f"- **Average unique caregivers per client:** {summary['average_unique_count']}",
     ]

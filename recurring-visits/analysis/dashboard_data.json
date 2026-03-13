@@ -1,0 +1,12 @@
+{
+  "summary": {
+    "total_jobs": 0,
+    "test_jobs": 0,
+    "prod_jobs": 0,
+    "perfect_continuity_jobs": 0,
+    "avg_continuity": 0,
+    "total_visits": 0,
+    "generated_at": "generate_dashboard_data.py"
+  },
+  "jobs": []
+}

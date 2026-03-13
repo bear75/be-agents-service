@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timefold FSR Schedule Analytics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .controls {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        select, input {
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .table-container {
+            padding: 40px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        th:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+        }
+
+        th.sorted-asc::after {
+            content: " ▲";
+            font-size: 0.8em;
+        }
+
+        th.sorted-desc::after {
+            content: " ▼";
+            font-size: 0.8em;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .good {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .warning {
+            color: #ffc107;
+            font-weight: 600;
+        }
+
+        .bad {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .definitions {
+            padding: 40px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .definitions h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .definition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .definition-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .definition-card h3 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .definition-card p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .formula {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .footer {
+            padding: 30px 40px;
+            text-align: center;
+            background: #343a40;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+
+        .metric-excellent { background: #d4edda; }
+        .metric-good { background: #fff3cd; }
+        .metric-poor { background: #f8d7da; }
+
+        .truncate {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .number {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .highlight-row {
+            background: #e7f3ff !important;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Timefold FSR Schedule Analytics</h1>
+            <p>Comprehensive analysis of home care scheduling optimization results</p>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalJobs">-</div>
+                <div class="stat-label">Total Jobs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgContinuity">-</div>
+                <div class="stat-label">Avg Continuity</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgEfficiency">-</div>
+                <div class="stat-label">Avg Field Eff</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalVisits">-</div>
+                <div class="stat-label">Total Visits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="perfectJobs">-</div>
+                <div class="stat-label">Perfect Continuity</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Environment:</label>
+                <select id="envFilter">
+                    <option value="all">All Environments</option>
+                    <option value="test">Test Only</option>
+                    <option value="prod">Production Only</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Search:</label>
+                <input type="text" id="searchBox" placeholder="Search job ID or name...">
+            </div>
+            <div class="control-group">
+                <label>Min Visits:</label>
+                <input type="number" id="minVisits" placeholder="0" style="width: 100px;">
+            </div>
+            <div class="control-group">
+                <label>Show Empty Shifts:</label>
+                <input type="checkbox" id="showEmpty" checked>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                Loading analytics data...
+            </div>
+            <table id="analyticsTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th data-sort="env">Env</th>
+                        <th data-sort="id">Job ID</th>
+                        <th data-sort="name">Name</th>
+                        <th data-sort="visits">Visits</th>
+                        <th data-sort="visitGroups">Groups</th>
+                        <th data-sort="assigned">Assigned</th>
+                        <th data-sort="unassigned">Unassigned</th>
+                        <th data-sort="employees">Employees</th>
+                        <th data-sort="shifts">Shifts</th>
+                        <th data-sort="emptyShifts">Empty</th>
+                        <th data-sort="shiftTime">Shift Time</th>
+                        <th data-sort="travel">Travel</th>
+                        <th data-sort="wait">Wait</th>
+                        <th data-sort="fieldEff">Field Eff %</th>
+                        <th data-sort="exclIdle">Excl Idle %</th>
+                        <th data-sort="continuity">Avg Cont</th>
+                        <th data-sort="maxCont">Max Cont</th>
+                        <th data-sort="over15">Over 15</th>
+                        <th data-sort="cci">Avg CCI</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div class="no-data" id="noData" style="display: none;">
+                No jobs match the current filters.
+            </div>
+        </div>
+
+        <div class="definitions">
+            <h2>📖 Metrics Definitions</h2>
+            <div class="definition-grid">
+                <div class="definition-card">
+                    <h3>Continuity</h3>
+                    <p>Number of distinct caregivers (vehicles) assigned to each client over the scheduling period. Lower is better for quality of care.</p>
+                    <div class="formula">Target: ≤ 15 caregivers per client</div>
+                    <p><strong>Excellent:</strong> ≤5 | <strong>Good:</strong> 6-10 | <strong>Acceptable:</strong> 11-15 | <strong>Poor:</strong> >15</p>
+                </div>
+
+                <div class="definition-card">
+                    <h3>CCI (Continuity of Care Index)</h3>
+                    <p>Measures consistency of caregiver-client relationships. Calculated as the probability that two consecutive visits are by the same caregiver.</p>
+                    <div class="formula">CCI = (n<sub>c</sub> - 1) / (n<sub>v</sub> - 1)</div>
+                    <p>where n<sub>c</sub> = visits by most frequent caregiver, n<sub>v</sub> = total visits</p>
+                    <p><strong>Range:</strong> 0.0 (no continuity) to 1.0 (perfect continuity)</p>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Field Efficiency</h3>
+                    <p>Percentage of field time spent delivering care vs traveling between clients. Key performance indicator for operational efficiency.</p>
+                    <div class="formula">Visit Time / (Visit Time + Travel Time)</div>
+                    <p><strong>Target:</strong> >67.5% (Slingor benchmark)</p>
+                    <p><strong>Excellent:</strong> >75% | <strong>Good:</strong> 68-75% | <strong>Poor:</strong> <68%</p>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Efficiency (Excl Idle)</h3>
+                    <p>Overall staffing efficiency excluding empty shifts and idle time. Shows productive time as percentage of paid time.</p>
+                    <div class="formula">Visit Time / (Shift Time - Idle Time)</div>
+                    <p>Higher values indicate better capacity utilization.</p>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Empty Shifts</h3>
+                    <p>Shifts with no assigned visits. Represents wasted capacity and labor cost with no value delivery.</p>
+                    <div class="formula">Target: 0 empty shifts (0%)</div>
+                    <p><strong>Solution:</strong> Use from-patch to trim empty shifts after initial solve.</p>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Unassigned Visits</h3>
+                    <p>Care visits that could not be assigned to any caregiver shift. Indicates capacity shortfall or constraint conflicts.</p>
+                    <div class="formula">Target: <5% unassigned</div>
+                    <p><strong>Causes:</strong> Insufficient capacity, time window conflicts, geography constraints, or continuity requirements.</p>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Visit Groups</h3>
+                    <p>Multiple visits that must be performed together (e.g., two-person care). Each group counts as one scheduling unit.</p>
+                    <p>Example: 152 visit groups with 2 visits each = 304 total visits in groups.</p>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Kolada Continuity</h3>
+                    <p>Swedish national quality indicator for home care continuity. Measures percentage of clients receiving care from ≤15 different personnel.</p>
+                    <div class="formula">Clients with ≤15 caregivers / Total clients</div>
+                    <p><strong>National target:</strong> >85% of clients</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated on <span id="timestamp"></span> | Timefold FSR Analytics Dashboard v1.0</p>
+            <p style="margin-top: 10px; opacity: 0.7;">Data sources: Timefold API Test & Production Environments</p>
+        </div>
+    </div>
+
+    <script>
+        // Sample data structure - will be loaded from actual job data
+        let allJobs = [];
+        let currentSort = { column: 'continuity', direction: 'asc' };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+            loadJobData();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Sort headers
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => sortTable(th.dataset.sort));
+            });
+
+            // Filters
+            document.getElementById('envFilter').addEventListener('change', applyFilters);
+            document.getElementById('searchBox').addEventListener('input', applyFilters);
+            document.getElementById('minVisits').addEventListener('input', applyFilters);
+            document.getElementById('showEmpty').addEventListener('change', applyFilters);
+        }
+
+        async function loadJobData() {
+            try {
+                // Load test environment jobs
+                const testJobs = await loadBatchResults('continuity_batch_test');
+                // Load prod environment jobs
+                const prodJobs = await loadBatchResults('continuity_batch_prod');
+
+                allJobs = [
+                    ...testJobs.map(j => ({...j, env: 'test'})),
+                    ...prodJobs.map(j => ({...j, env: 'prod'}))
+                ];
+
+                updateStats();
+                renderTable(allJobs);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('analyticsTable').style.display = 'table';
+            } catch (error) {
+                console.error('Error loading job data:', error);
+                document.getElementById('loading').innerHTML =
+                    '<p style="color: #dc3545;">Error loading data. Using sample data for demonstration.</p>';
+
+                // Load sample data for demonstration
+                setTimeout(() => {
+                    loadSampleData();
+                }, 2000);
+            }
+        }
+
+        async function loadBatchResults(folder) {
+            try {
+                const response = await fetch(`${folder}/batch_results.json`);
+                if (!response.ok) throw new Error('Not found');
+                return await response.json();
+            } catch {
+                return [];
+            }
+        }
+
+        function loadSampleData() {
+            // Sample data based on our actual analysis
+            allJobs = [
+                {
+                    env: 'prod',
+                    job_id: '117a4aa3-a657-43ad-b8f4-e997bba39757',
+                    name: 'Huddinge 4mars Schedule',
+                    metrics: {
+                        visits_total: 3832,
+                        visit_groups: 152,
+                        visits_assigned: 3791,
+                        visits_unassigned: 41,
+                        vehicles_used: 33,
+                        shifts_total: 474,
+                        shifts_no_visits: 102,
+                        shift_time_hours: 3616,
+                        travel_time_hours: 438,
+                        wait_time_hours: 0,
+                        field_efficiency: 76.5,
+                        efficiency_excl_idle: 42.3
+                    },
+                    continuity: {
+                        avg_continuity: 4.3,
+                        max_continuity: 10,
+                        over_15: 0,
+                        avg_cci: 0.82
+                    }
+                },
+                {
+                    env: 'test',
+                    job_id: '6d2d0476-53f5-49ed-846d-bc505444eac3',
+                    name: 'Huddinge 4mars Schedule',
+                    metrics: {
+                        visits_total: 3832,
+                        visit_groups: 152,
+                        visits_assigned: 3807,
+                        visits_unassigned: 25,
+                        vehicles_used: 39,
+                        shifts_total: 474,
+                        shifts_no_visits: 27,
+                        shift_time_hours: 3616,
+                        travel_time_hours: 605,
+                        wait_time_hours: 0,
+                        field_efficiency: 72.8,
+                        efficiency_excl_idle: 40.5
+                    },
+                    continuity: {
+                        avg_continuity: 6.1,
+                        max_continuity: 29,
+                        over_15: 18,
+                        avg_cci: 0.65
+                    }
+                },
+                {
+                    env: 'test',
+                    job_id: 'fe962cd8-b650-4bec-afdc-667570018ca8',
+                    name: 'from-patch-trim-empty',
+                    metrics: {
+                        visits_total: 3832,
+                        visit_groups: 152,
+                        visits_assigned: 3816,
+                        visits_unassigned: 16,
+                        vehicles_used: 39,
+                        shifts_total: 447,
+                        shifts_no_visits: 0,
+                        shift_time_hours: 76905,
+                        travel_time_hours: 606,
+                        wait_time_hours: 74088,
+                        field_efficiency: 73.3,
+                        efficiency_excl_idle: 60.9
+                    },
+                    continuity: {
+                        avg_continuity: 6.11,
+                        max_continuity: 31,
+                        over_15: 18,
+                        avg_cci: 0.60
+                    }
+                }
+            ];
+
+            updateStats();
+            renderTable(allJobs);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('analyticsTable').style.display = 'table';
+        }
+
+        function updateStats() {
+            const totalJobs = allJobs.length;
+            const avgCont = allJobs.reduce((sum, j) => sum + (j.continuity?.avg_continuity || 0), 0) / totalJobs;
+            const avgEff = allJobs.reduce((sum, j) => sum + (j.metrics?.field_efficiency || 0), 0) / totalJobs;
+            const totalVis = allJobs.reduce((sum, j) => sum + (j.metrics?.visits_total || 0), 0);
+            const perfect = allJobs.filter(j => (j.continuity?.over_15 || 0) === 0).length;
+
+            document.getElementById('totalJobs').textContent = totalJobs;
+            document.getElementById('avgContinuity').textContent = avgCont.toFixed(1);
+            document.getElementById('avgEfficiency').textContent = avgEff.toFixed(1) + '%';
+            document.getElementById('totalVisits').textContent = totalVis.toLocaleString();
+            document.getElementById('perfectJobs').textContent = perfect;
+        }
+
+        function renderTable(jobs) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (jobs.length === 0) {
+                document.getElementById('analyticsTable').style.display = 'none';
+                document.getElementById('noData').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('analyticsTable').style.display = 'table';
+            document.getElementById('noData').style.display = 'none';
+
+            jobs.forEach(job => {
+                const row = createTableRow(job);
+                tbody.appendChild(row);
+            });
+        }
+
+        function createTableRow(job) {
+            const tr = document.createElement('tr');
+            const m = job.metrics || {};
+            const c = job.continuity || {};
+
+            // Highlight perfect continuity jobs
+            if (c.over_15 === 0) {
+                tr.classList.add('highlight-row');
+            }
+
+            tr.innerHTML = `
+                <td><span class="badge badge-${job.env === 'prod' ? 'success' : 'info'}">${job.env.toUpperCase()}</span></td>
+                <td class="truncate" title="${job.job_id}">${job.job_id.substring(0, 8)}...</td>
+                <td class="truncate" title="${job.name}">${job.name}</td>
+                <td class="number">${(m.visits_total || 0).toLocaleString()}</td>
+                <td class="number">${(m.visit_groups || 0).toLocaleString()}</td>
+                <td class="number ${getAssignedClass(m.visits_assigned, m.visits_total)}">${(m.visits_assigned || 0).toLocaleString()}</td>
+                <td class="number ${m.visits_unassigned > 0 ? 'bad' : 'good'}">${(m.visits_unassigned || 0).toLocaleString()}</td>
+                <td class="number">${(m.vehicles_used || 0).toLocaleString()}</td>
+                <td class="number">${(m.shifts_total || 0).toLocaleString()}</td>
+                <td class="number ${getEmptyShiftsClass(m.shifts_no_visits)}">${(m.shifts_no_visits || 0).toLocaleString()}</td>
+                <td class="number">${formatHours(m.shift_time_hours || 0)}</td>
+                <td class="number">${formatHours(m.travel_time_hours || 0)}</td>
+                <td class="number">${formatHours(m.wait_time_hours || 0)}</td>
+                <td class="number ${getEfficiencyClass(m.field_efficiency)}">${(m.field_efficiency || 0).toFixed(1)}%</td>
+                <td class="number">${(m.efficiency_excl_idle || 0).toFixed(1)}%</td>
+                <td class="number ${getContinuityClass(c.avg_continuity)}">${(c.avg_continuity || 0).toFixed(1)}</td>
+                <td class="number ${getContinuityClass(c.max_continuity)}">${(c.max_continuity || 0)}</td>
+                <td class="number ${c.over_15 === 0 ? 'good' : 'bad'}">${(c.over_15 || 0)}</td>
+                <td class="number">${(c.avg_cci || 0).toFixed(2)}</td>
+            `;
+
+            return tr;
+        }
+
+        function formatHours(hours) {
+            if (hours < 100) return hours.toFixed(1) + 'h';
+            return Math.round(hours).toLocaleString() + 'h';
+        }
+
+        function getAssignedClass(assigned, total) {
+            const rate = assigned / total;
+            if (rate >= 0.99) return 'good';
+            if (rate >= 0.95) return 'warning';
+            return 'bad';
+        }
+
+        function getEmptyShiftsClass(empty) {
+            if (empty === 0) return 'good';
+            if (empty < 10) return 'warning';
+            return 'bad';
+        }
+
+        function getEfficiencyClass(eff) {
+            if (eff >= 75) return 'good';
+            if (eff >= 67.5) return 'warning';
+            return 'bad';
+        }
+
+        function getContinuityClass(cont) {
+            if (cont <= 5) return 'good';
+            if (cont <= 10) return 'warning';
+            return 'bad';
+        }
+
+        function sortTable(column) {
+            const direction = currentSort.column === column && currentSort.direction === 'asc' ? 'desc' : 'asc';
+            currentSort = { column, direction };
+
+            // Update header indicators
+            document.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+            });
+            const th = document.querySelector(`th[data-sort="${column}"]`);
+            th.classList.add(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+            // Sort data
+            allJobs.sort((a, b) => {
+                let valA, valB;
+
+                switch(column) {
+                    case 'env':
+                        valA = a.env;
+                        valB = b.env;
+                        break;
+                    case 'id':
+                        valA = a.job_id;
+                        valB = b.job_id;
+                        break;
+                    case 'name':
+                        valA = a.name;
+                        valB = b.name;
+                        break;
+                    case 'continuity':
+                        valA = a.continuity?.avg_continuity || 0;
+                        valB = b.continuity?.avg_continuity || 0;
+                        break;
+                    case 'maxCont':
+                        valA = a.continuity?.max_continuity || 0;
+                        valB = b.continuity?.max_continuity || 0;
+                        break;
+                    case 'over15':
+                        valA = a.continuity?.over_15 || 0;
+                        valB = b.continuity?.over_15 || 0;
+                        break;
+                    case 'cci':
+                        valA = a.continuity?.avg_cci || 0;
+                        valB = b.continuity?.avg_cci || 0;
+                        break;
+                    default:
+                        valA = a.metrics?.[column] || 0;
+                        valB = b.metrics?.[column] || 0;
+                }
+
+                if (typeof valA === 'string') {
+                    return direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+
+                return direction === 'asc' ? valA - valB : valB - valA;
+            });
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const envFilter = document.getElementById('envFilter').value;
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const minVisits = parseInt(document.getElementById('minVisits').value) || 0;
+            const showEmpty = document.getElementById('showEmpty').checked;
+
+            let filtered = allJobs.filter(job => {
+                if (envFilter !== 'all' && job.env !== envFilter) return false;
+                if (searchTerm && !job.job_id.toLowerCase().includes(searchTerm) && !job.name.toLowerCase().includes(searchTerm)) return false;
+                if ((job.metrics?.visits_total || 0) < minVisits) return false;
+                if (!showEmpty && (job.metrics?.shifts_no_visits || 0) === 0) return false;
+                return true;
+            });
+
+            renderTable(filtered);
+        }
+    </script>
+</body>
+</html>

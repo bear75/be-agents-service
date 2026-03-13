@@ -1,0 +1,70 @@
+========================================================================
+TIMEFOLD FSR METRICS REPORT  [A_all_shifts]  (EXCLUDING INACTIVE)
+========================================================================
+
+--- Key metrics ---
+  Paid time (shift, incl. break) = 3074h 14min  [salary cost]
+  Assignable time (shift − break) = 2886h 14min  [efficiency denominator; breaks paid but not assignable]
+  Visit time (value)         = 1655h 16min  [care delivery / revenue]
+  Travel + wait (minimize)    = 1230h 58min  [cost to minimize]
+
+--- KPI: Efficiency % ---
+  Efficiency (visit / assignable, excl. idle)  57.35%  [staffing_assignable_used]
+  Field efficiency (visit / (visit+travel), no wait)  72.72%  [field, target >67.5%]
+  System efficiency (visit / all provisioned)  57.35%  [incl. 1 empty shifts]
+
+--- Times (h:min) ---
+  shift   = 3074h 14min
+  visit   = 1655h 16min
+  travel  = 620h 51min
+  wait    = 610h 7min
+  break   = 188h 0min
+  idle    = 0h 0min  [inactive / empty shift time]
+  sum     = 3074h 14min  (visit+travel+wait+break+idle)
+
+--- Counts ---
+  Employees (vehicles):  41  (empty: 0)
+  Shifts:                474  (with visits: 473, empty: 1)
+  Visits assigned:       3799 / 3832
+  Unassigned:            33
+
+--- Input ---
+  Care visits: 3660 (3508 solo + 152 double-employee)
+  Timefold visits: 3832 (3508 solo + 324 in 152 groups)
+  Time window slots: 5283 (movable across weeks)
+  Vehicles: 41  Shifts: 474
+
+--- Solver ---
+  Plan:  eb063029-cd72-4ec7-9051-413ae3a76bac
+  Score: 0hard/-330000medium/82324639soft
+
+--- Time equation: shift = visit + travel + wait + break + idle ---
+  shift  = 3074h 14min  (100.00%)
+  visit  = 1655h 16min  (53.84%)
+  travel = 620h 51min  (20.20%)
+  wait   = 610h 7min  (19.85%)
+  break  = 188h 0min  (6.12%)
+  idle   = 0h 0min  (0.00%)
+  sum    = 3074h 14min
+  visit/shift = 53.84%
+
+--- Time & Cost Breakdown (inactive removed: 0h 0min / 0 kr) ---
+  Category                     Time   % shift   Cost (kr)    Rev (kr)
+  ──────────────────── ────────────  ────────  ──────────  ──────────
+  Active shift          3074h 14min   100.00%     707,073            
+    Visit time          1655h 16min    53.84%     380,711     910,397
+    Travel time          620h 51min    20.20%     142,794            
+    Wait time             610h 7min    19.85%     140,327            
+    Break time            188h 0min     6.12%      43,240            
+
+--- Margin (excluding inactive) ---
+  Revenue:  910,397 kr
+  Cost:     707,073 kr
+  Margin:   203,324 kr  (22.33%)
+
+--- Costs to minimize (travel, wait) + break ---
+  Travel:   142,794 kr  (620h 51min)  [minimize]
+  Wait:     140,327 kr  (610h 7min)  [minimize]
+  Break:    43,240 kr  (188h 0min)
+  Total:    326,361 kr  (46.16% of active cost)
+========================================================================

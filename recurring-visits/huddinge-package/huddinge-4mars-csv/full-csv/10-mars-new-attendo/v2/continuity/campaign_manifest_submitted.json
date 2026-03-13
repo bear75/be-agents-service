@@ -1,0 +1,122 @@
+[
+  {
+    "strategy": "preferred_2_pool5",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"00405253-a157-4b73-aed3-2c498c5f2c53\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "preferred_10_pool5",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"d4a5f099-5d2d-44c3-9c31-82374d41a558\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "preferred_20_pool5",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"d845c1fd-9c3c-4794-bd39-7b31fec54b71\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "wait_min_pool5",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"73726951-f229-48a0-85fe-b51e56371075\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "combo_pool5",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"240fb575-5c86-4ef2-94d2-a46f6adb45cc\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "required_pool5",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"9033ef34-52ce-4a51-99d9-4060c8c8ecf7\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "preferred_2_pool8",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"a3c3aa7e-b790-4c7b-9080-963e673651d0\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "preferred_10_pool8",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"acdd30bb-af30-4602-a6ad-cf9d849450c2\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "preferred_20_pool8",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"40579ba9-8277-426f-850c-c67e29a5ff25\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "wait_min_pool8",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"a7a51879-03ae-4987-9d7f-733994e07e05\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "combo_pool8",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"42da6717-5727-4484-a410-c1ae9a6968d9\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "required_pool8",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"624cf77a-7b60-41eb-9776-984ce09a272e\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "preferred_2_pool10",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"0485f585-9dda-4ba8-9d0c-f246e9b8e15b\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "preferred_10_pool10",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"a2b3da06-c768-4498-bb70-f4875ab7e426\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "preferred_20_pool10",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"50334b8e-8ce1-4e7e-b3ed-4459793d6192\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "wait_min_pool10",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"dba411f0-1585-4210-acf8-3ec233180323\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "combo_pool10",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"772d48e6-7b21-48e6-97ab-9ce0c16d9ca8\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "required_pool10",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"b9c061de-7855-48e1-b744-157d3597aa5f\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "roster_preferred",
+    "route_plan_id": null,
+    "tenant": "caire-test",
+    "error": "Error: HTTP 429: {\"id\":\"0054987c-5023-473a-af1a-f6ec12241dc3\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  },
+  {
+    "strategy": "roster_required",
+    "route_plan_id": null,
+    "tenant": "caire-production",
+    "error": "Error: HTTP 429: {\"id\":\"2d83e28b-4136-4f7d-92bf-cc7a0774a0bf\",\"code\":\"TFP-11002\",\"message\":\"Too many concurrent request (currently queued: 48, requested for this run: 4, limit: 50)\"}\n"
+  }
+]

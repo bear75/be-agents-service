@@ -565,13 +565,18 @@ def report_lines(
     sum_h = vh + th + wh + bh + ih
     inactive_h = agg["inactive_time_h"]
 
-    # ─── 1. KPI: Efficiency % (README: Staffing, Field, Wait efficiency) ───────
+    # ─── 1. KPI: Efficiency % (README: Staffing assignable used + Field) ───────
     lines.append("")
     lines.append("--- KPI: Efficiency % ---")
-    lines.append(f"  Efficiency (visit / (shift − break))     {fmt_pct(agg['efficiency_pct'])}  [staffing]")
-    lines.append(f"  Travel efficiency (visit / (visit+travel))  {fmt_pct(agg.get('field_efficiency_pct', 0))}  [field, target >67.5%]")
-    lines.append(f"  Wait efficiency (visit / (visit+travel+wait))  {fmt_pct(agg.get('field_incl_wait_pct', 0))}")
-    lines.append(f"  Idle efficiency (visit / (visit+travel+idle))  {fmt_pct(agg.get('idle_efficiency_pct', 0))}  [≈ efficiency]")
+    if exclude_inactive:
+        lines.append(f"  Efficiency (visit / assignable, excl. idle)  {fmt_pct(agg['efficiency_assignable_used_pct'])}  [staffing_assignable_used]")
+        lines.append(f"  Field efficiency (visit / (visit+travel), no wait)  {fmt_pct(agg.get('field_efficiency_pct', 0))}  [field, target >67.5%]")
+    else:
+        lines.append(f"  Efficiency (visit / (shift − break))     {fmt_pct(agg['efficiency_pct'])}  [staffing]")
+        lines.append(f"  Field efficiency (visit / (visit+travel), no wait)  {fmt_pct(agg.get('field_efficiency_pct', 0))}  [field, target >67.5%]")
+    if not exclude_inactive:
+        lines.append(f"  Wait efficiency (visit / (visit+travel+wait))  {fmt_pct(agg.get('field_incl_wait_pct', 0))}")
+        lines.append(f"  Idle efficiency (visit / (visit+travel+idle))  {fmt_pct(agg.get('idle_efficiency_pct', 0))}  [≈ efficiency]")
     if agg.get("shifts_no_visits", 0) > 0:
         lines.append(f"  System efficiency (visit / all provisioned)  {fmt_pct(agg.get('system_efficiency_pct', 0))}  [incl. {agg['shifts_no_visits']} empty shifts]")
 
@@ -738,6 +743,9 @@ def save_metrics(
         out["cost_active_kr"] = agg["active_cost_kr"]
         out["margin_active_kr"] = agg["visit_revenue_kr"] - agg["active_cost_kr"]
         out["margin_active_pct"] = agg["active_margin_pct"]
+        # Primary efficiency = staffing assignable used (excl. idle); field = visit/(visit+travel), no wait
+        out["efficiency_pct"] = round(agg["efficiency_assignable_used_pct"], 2)
+        out["efficiency_staffing_pct"] = round(agg["efficiency_pct"], 2)
 
     with open(filepath, "w") as f:
         json.dump(out, f, indent=2, ensure_ascii=False)

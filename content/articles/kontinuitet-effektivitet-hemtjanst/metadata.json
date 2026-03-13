@@ -1,0 +1,184 @@
+{
+  "title": "Kontinuitet och Effektivitet i Hemtjänsten: Forskningsbaserad Optimering med AI",
+  "slug": "kontinuitet-effektivitet-hemtjanst-ai-optimering",
+  "metaDescription": "Forskningsartikel om AI-optimering av hemtjänst. Uppnå <11 unika vårdgivare per klient och 73% effektivitet. Resultat från Huddinge kommun 2026.",
+  "author": "Björn Evers",
+  "authorTitle": "CEO, Caire.se & Eirtech.ai",
+  "publishDate": "2026-03-12",
+  "lastModified": "2026-03-12",
+  "category": "Forskning",
+  "tags": [
+    "AI",
+    "Hemtjänst",
+    "Schemaläggning",
+    "Kontinuitet",
+    "Optimering",
+    "Kolada",
+    "Effektivitet",
+    "Timefold",
+    "HHCRSP",
+    "Huddinge"
+  ],
+  "language": "sv",
+  "primaryKeywords": [
+    "hemtjänst schemaläggning AI",
+    "kontinuitet i hemtjänsten",
+    "optimering av hemtjänst"
+  ],
+  "secondaryKeywords": [
+    "färre unika vårdgivare hemtjänst",
+    "Kolada N00941 kontinuitet",
+    "effektiv schemaläggning hemtjänst",
+    "AI schemaläggning vård",
+    "automatisk ruttplanering hemtjänst"
+  ],
+  "estimatedReadTime": 12,
+  "featured": true,
+  "heroImage": "/images/articles/kontinuitet-effektivitet/hero.png",
+  "heroImageAlt": "AI-optimerad hemtjänstschemaläggning med dashboard och dataviz för kontinuitet och effektivitet",
+  "socialImage": "/images/articles/kontinuitet-effektivitet/social.png",
+  "schema": {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Kontinuitet och Effektivitet i Hemtjänsten: Forskningsbaserad Optimering med AI",
+    "description": "Forskningsartikel om AI-optimering av hemtjänst. Uppnå <11 unika vårdgivare per klient och 73% effektivitet. Resultat från Huddinge kommun 2026.",
+    "image": "https://www.caire.se/images/articles/kontinuitet-effektivitet/hero.png",
+    "author": {
+      "@type": "Person",
+      "name": "Björn Evers",
+      "jobTitle": "CEO",
+      "affiliation": [
+        {
+          "@type": "Organization",
+          "name": "Caire.se"
+        },
+        {
+          "@type": "Organization",
+          "name": "Eirtech.ai"
+        }
+      ]
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Caire.se",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.caire.se/logo.png"
+      }
+    },
+    "datePublished": "2026-03-12",
+    "dateModified": "2026-03-12",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.caire.se/forskning/kontinuitet-effektivitet-hemtjanst-ai-optimering"
+    },
+    "keywords": "hemtjänst schemaläggning AI, kontinuitet i hemtjänsten, optimering av hemtjänst, Kolada N00941",
+    "articleSection": "Forskning",
+    "inLanguage": "sv"
+  },
+  "canonicalUrl": "https://www.caire.se/forskning/kontinuitet-effektivitet-hemtjanst-ai-optimering",
+  "alternateUrls": {
+    "en": "https://www.caire.se/en/research/continuity-efficiency-homecare-ai-optimization"
+  },
+  "relatedArticles": [],
+  "citations": [
+    {
+      "id": "ref1",
+      "title": "Kvalitetsindikatorer för hemtjänst: N00941",
+      "authors": ["Socialstyrelsen", "Kolada"],
+      "year": 2025,
+      "url": "https://www.kolada.se"
+    },
+    {
+      "id": "ref2",
+      "title": "The Home Care Crew Scheduling Problem",
+      "authors": ["Rasmussen, M. S.", "et al."],
+      "year": 2012,
+      "journal": "European Journal of Operational Research",
+      "volume": "219(3)",
+      "pages": "598-610"
+    },
+    {
+      "id": "ref3",
+      "title": "Mathematical model and exact algorithm for the home care worker scheduling",
+      "authors": ["Liu, R.", "et al."],
+      "year": 2017,
+      "journal": "International Journal of Production Research",
+      "volume": "55(2)",
+      "pages": "558-575"
+    },
+    {
+      "id": "ref4",
+      "title": "A bi-objective home care scheduling problem",
+      "authors": ["Braekers, K.", "Hartl, R. F.", "Parragh, S. N.", "Tricoire, F."],
+      "year": 2016,
+      "journal": "European Journal of Operational Research",
+      "volume": "248(2)",
+      "pages": "428-443"
+    },
+    {
+      "id": "ref5",
+      "title": "OR problems related to Home Health Care: A review",
+      "authors": ["Cissé, M.", "et al."],
+      "year": 2017,
+      "journal": "Operations Research for Health Care",
+      "volume": "13-14",
+      "pages": "1-22"
+    },
+    {
+      "id": "ref6",
+      "title": "Home health care routing and scheduling: A review",
+      "authors": ["Fikar, C.", "Hirsch, P."],
+      "year": 2017,
+      "journal": "Computers & Operations Research",
+      "volume": "77",
+      "pages": "86-95"
+    },
+    {
+      "id": "ref7",
+      "title": "Field Service Routing Documentation",
+      "authors": ["Timefold"],
+      "year": 2025,
+      "url": "https://docs.timefold.ai"
+    }
+  ],
+  "metrics": {
+    "wordCount": 5847,
+    "paragraphs": 142,
+    "headings": {
+      "h1": 1,
+      "h2": 6,
+      "h3": 22,
+      "h4": 8
+    }
+  },
+  "seo": {
+    "focusKeyword": "hemtjänst schemaläggning AI",
+    "keywordDensity": 1.8,
+    "readabilityScore": "medium",
+    "internalLinks": [
+      "/produkter/ai-schemaläggning",
+      "/produkter/timefold-fsr",
+      "/case-studies",
+      "/kontakt"
+    ],
+    "externalLinks": [
+      "https://www.kolada.se",
+      "https://docs.timefold.ai"
+    ],
+    "imageCount": 4,
+    "videoCount": 0
+  },
+  "cta": {
+    "primary": {
+      "text": "Boka en demo",
+      "url": "/kontakt?ref=forskning-kontinuitet",
+      "type": "demo"
+    },
+    "secondary": {
+      "text": "Läs mer om AI-schemaläggning",
+      "url": "/produkter/ai-schemaläggning",
+      "type": "product"
+    }
+  }
+}

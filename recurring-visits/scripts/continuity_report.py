@@ -157,8 +157,8 @@ def _assignments_by_person(
 
 def compute_cci(assignments: list[tuple[str, str]]) -> float:
     """
-    Compute Continuity of Care Index: sum over caregivers of (n_i/N)^2.
-    n_i = visits from caregiver i, N = total visits. Higher = better (more concentration).
+    Our CCI: sum over caregivers of (n_i/N)^2.
+    n_i = visits from caregiver i, N = total visits. Higher = better.
     Returns 0.0 if no assignments.
     """
     if not assignments:
@@ -168,6 +168,24 @@ def compute_cci(assignments: list[tuple[str, str]]) -> float:
     for _, vehicle_id in assignments:
         counts[vehicle_id] = counts.get(vehicle_id, 0) + 1
     return sum((c / n) ** 2 for c in counts.values())
+
+
+def compute_bice_cci(assignments: list[tuple[str, str]]) -> float | None:
+    """
+    Bice-Boxerman Continuity of Care Index (official formula):
+    CCI = (sum(n_i^2) - N) / (N(N-1))
+    n_i = visits to caregiver i, N = total visits. Range 0–1; 1 = same caregiver every time.
+    Returns None if N < 2 (formula undefined).
+    """
+    if len(assignments) < 2:
+        return None
+    n_total = len(assignments)
+    counts: dict[str, int] = {}
+    for _, vehicle_id in assignments:
+        counts[vehicle_id] = counts.get(vehicle_id, 0) + 1
+    sum_sq = sum(c * c for c in counts.values())
+    denom = n_total * (n_total - 1)
+    return (sum_sq - n_total) / denom
 
 
 def main() -> int:
@@ -234,27 +252,30 @@ def main() -> int:
     visit_vehicle_list, n_vehicles, n_shifts = load_visit_vehicle_assignments(args.output)
     visit_to_client = load_visit_to_client(args.input)
 
-    # Build rows: one per person — client, nr_visits, continuity (unique count), optional cci
-    rows: list[tuple[str, int, int, float | None]] = []
+    # Build rows: one per person — client, nr_visits, continuity (unique count), optional cci, bice_cci
+    rows: list[tuple[str, int, int, float | None, float | None]] = []
     for person in sorted(person_assignments.keys()):
         assignments = person_assignments[person]
         nr_visits = len(assignments)
         nr_caregivers = len({v for _, v in assignments})
         cci = compute_cci(assignments) if include_cci else None
-        rows.append((person, nr_visits, nr_caregivers, cci))
+        bice_cci = compute_bice_cci(assignments) if include_cci else None
+        rows.append((person, nr_visits, nr_caregivers, cci, bice_cci))
 
     # Print table
     if include_cci:
-        print("client,nr_visits,continuity,cci")
-        print("(continuity = distinct caregivers, lower better; cci = Continuity of Care Index, higher better)")
+        print("client,nr_visits,continuity,cci,bice_cci")
+        print("(continuity = distinct caregivers, lower better; cci = sum(n_i/N)^2; bice_cci = Bice-Boxerman (sum n_i^2-N)/(N(N-1)), higher better)")
     else:
         print("client,nr_visits,continuity")
         print("(continuity = number of distinct caregivers; lower is better)")
     print("-" * 50)
     for row in rows:
         client, nr_visits, continuity = row[0], row[1], row[2]
-        if include_cci and row[3] is not None:
-            print(f"{client},{nr_visits},{continuity},{row[3]:.4f}")
+        if include_cci:
+            cci_str = f"{row[3]:.4f}" if row[3] is not None else ""
+            bice_str = f"{row[4]:.4f}" if row[4] is not None else ""
+            print(f"{client},{nr_visits},{continuity},{cci_str},{bice_str}")
         else:
             print(f"{client},{nr_visits},{continuity}")
 
@@ -263,14 +284,17 @@ def main() -> int:
         with open(args.report, "w", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
             if include_cci:
-                w.writerow(["client", "nr_visits", "continuity", "cci"])
-                w.writerows([(r[0], r[1], r[2], f"{r[3]:.4f}" if r[3] is not None else "") for r in rows])
+                w.writerow(["client", "nr_visits", "continuity", "cci", "bice_cci"])
+                w.writerows([
+                    (r[0], r[1], r[2], f"{r[3]:.4f}" if r[3] is not None else "", f"{r[4]:.4f}" if r[4] is not None else "")
+                    for r in rows
+                ])
             else:
                 w.writerow(["client", "nr_visits", "continuity"])
                 w.writerows([(r[0], r[1], r[2]) for r in rows])
         print(f"\nWrote {args.report}")
 
-    # Summary: average unique count and average CCI
+    # Summary: average unique count and average CCI (ours + Bice-Boxerman)
     if rows:
         avg_continuity = sum(r[2] for r in rows) / len(rows)
         print("\n" + "=" * 50)
@@ -281,7 +305,11 @@ def main() -> int:
         if include_cci and any(r[3] is not None for r in rows):
             cci_vals = [r[3] for r in rows if r[3] is not None]
             avg_cci = sum(cci_vals) / len(cci_vals) if cci_vals else 0.0
-            print(f"  Average CCI:           {avg_cci:.4f}")
+            print(f"  Average CCI (ours):    {avg_cci:.4f}  [sum (n_i/N)^2]")
+        if include_cci and any(r[4] is not None for r in rows):
+            bice_vals = [r[4] for r in rows if r[4] is not None]
+            avg_bice = sum(bice_vals) / len(bice_vals) if bice_vals else 0.0
+            print(f"  Average CCI (Bice):    {avg_bice:.4f}  [(sum n_i^2 - N) / (N(N-1))]")
         print("=" * 50)
 
     # Summary from vehicle.id and visits.name
