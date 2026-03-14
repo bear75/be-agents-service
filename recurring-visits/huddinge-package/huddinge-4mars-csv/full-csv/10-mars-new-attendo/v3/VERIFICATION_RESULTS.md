@@ -63,6 +63,17 @@ Result: ✅ PASS (expected ≤2 min flex)
 
 **Fix 1 verified**: "Exakt dag/tid" entries get minimal 1-min flex
 
+#### Three time-window cases (aligned with dashboard)
+
+| Case | CSV signal | Python / FSR result |
+|------|------------|---------------------|
+| **1. Exakt dag/tid** | "När på dagen" contains "exakt" | Exact Starttid, 1-min flex |
+| **2. Empty Före/Efter** | Före and Efter cells blank | Full slot from När på dagen + Skift |
+| **3. 0 0 Före Efter** | Före=0, Efter=0 (explicit "0") | Exact time, 1-min flex (same as case 1) |
+| Non-zero | Före and/or Efter non-zero | Starttid − Före to Starttid + Efter |
+
+Scripts: `scripts/conversion/csv_to_fsr.py`, `huddinge-package/.../scripts/attendo_4mars_to_fsr.py` both use `före_efter_empty` to distinguish empty (full slot) from explicit 0,0 (exact time).
+
 #### Sample före/efter Test
 ```
 Visit: H015_r0_1

@@ -13,10 +13,19 @@
 **Output**: v3_FIXED (`4cdfce61-0d2d-46e0-9c16-674a7b9dab0f`)
 
 **Fixes Applied**:
-1. ✅ "Exakt dag/tid" recognition → minimal 1-min flex
-2. ✅ Empty före/efter for critical tasks → minimal flex
-3. ✅ Same-day PT0M dependencies → 1173 dependencies added
-4. ✅ All zero-flex violations fixed (78 visits)
+1. ✅ "Exakt dag/tid" (När på dagen contains "exakt") → exact time, minimal 1-min flex
+2. ✅ Empty Före/Efter (cells blank) → full slot from När på dagen + Skift
+3. ✅ Explicit 0,0 Före/Efter → exact time (same as case 1)
+4. ✅ Same-day PT0M dependencies → 1173 dependencies added
+5. ✅ All zero-flex violations fixed (78 visits)
+
+**Time-window cases (aligned with dashboard seed/import and `scripts/conversion/csv_to_fsr.py`)**:
+| Case | CSV signal | Result |
+|------|------------|--------|
+| Exakt dag/tid | "När på dagen" contains "exakt" | Exact Starttid, 1-min flex |
+| Empty Före/Efter | Both cells blank | Full slot (Morgon/Lunch/Kväll/heldag) |
+| 0 0 Före Efter | Före=0, Efter=0 (explicit) | Exact time, 1-min flex |
+| Non-zero Före/Efter | Any other values | Starttid ± före/efter |
 
 **Verification**:
 - ✅ 2165 total dependencies (946 → 2165, +129%)

@@ -7,11 +7,12 @@ to visit occurrences (planning window 2 March–15 March 2026), geocodes address
 builds visits with time windows (Morgon/Lunch/Kväll), visitDependencies (same-day short delay e.g. frukost→lunch 3.5h; spread same insats e.g. 48h dusch),
 visitGroups (Dubbel), and vehicles from Slinga with shifts and requiredBreaks.
 
-UPDATED (2026-03-13): Fixed time window calculation logic:
-- "Exakt dag/tid" entries now get zero flex (exact time adherence)
-- Empty före/efter with specific times get ±15min flex instead of full slot
-- Same-day visits now sequence correctly even with long delays or missing delays
-- Prevents overlapping visits for same customer on same day
+UPDATED (2026-03-13): Fixed time window calculation logic (aligned with dashboard seed/import):
+- "Exakt dag/tid" (När på dagen contains "exakt"): exact time, minimal 1-min flex
+- Empty Före/Efter (cells blank): full slot from När på dagen + Skift
+- Explicit 0,0 Före/Efter: exact time (same as Exakt), minimal 1-min flex
+- Non-zero Före/Efter: Starttid ± före/efter
+- Same-day visits now sequence correctly (PT0M dependencies)
 
 Usage:
   python attendo_4mars_to_fsr.py input.csv -o input.json
@@ -436,6 +437,11 @@ def _expand_row_to_occurrences(
     base_lat = csv_lat if (csv_lat != 0 or csv_lon != 0) else 0.0
     base_lon = csv_lon if (csv_lat != 0 or csv_lon != 0) else 0.0
 
+    # Empty vs explicit 0: empty Före/Efter → full slot; explicit 0,0 → exact time (same as Exakt dag/tid)
+    _fore_raw = str(row.get("Före", "") or "").strip()
+    _efter_raw = str(row.get("Efter", "") or "").strip()
+    fore_efter_empty = _fore_raw == "" and _efter_raw == ""
+
     base: Dict[str, Any] = {
         "kundnr": str(row.get("Kundnr", "") or "").strip(),
         "address_key": address_key,
@@ -447,6 +453,7 @@ def _expand_row_to_occurrences(
         "insatser": str(row.get("Insatser", "") or "").strip(),
         "före": _parse_int(row.get("Före"), 0),
         "efter": _parse_int(row.get("Efter"), 0),
+        "före_efter_empty": fore_efter_empty,
         "dubbel": str(row.get("Dubbel", "") or "").strip(),
         "antal_tim_mellan": str(row.get("Antal tim mellan besöken", "") or "").strip(),
         "kritisk_insats": str(row.get("Kritisk insats Ja/nej", "") or "").strip().lower() == "ja",
@@ -618,39 +625,36 @@ def _compute_slot_bounds(occ: Dict[str, Any]) -> Tuple[int, int, bool]:
     """
     Return (min_start_minutes, max_start_minutes, is_heldag) for one occurrence.
 
-    REGEL (UPDATED):
-    - "Exakt dag/tid": Zero flex - visit must start at exact Starttid
-    - Före/Efter ifyllda: starttid ± före/efter (tid-flex)
-    - Före=Efter=0 with specific time: Small flex (±15 min) around Starttid
-    - Före=Efter=0 without time or with only slot: Use full slot for max flexibility
+    Three cases (aligned with dashboard seed/import):
+    1. "Exakt dag/tid" (När på dagen contains "exakt"): exact Starttid, minimal 1-min flex
+    2. Empty Före/Efter (cells blank): full slot from När på dagen + Skift
+    3. Explicit 0,0 Före/Efter: exact time (same as case 1), minimal 1-min flex
+    Non-zero Före/Efter: Starttid ± före/efter
     """
     slot_start, slot_end = _slot_for_nar_pa_dagen(occ["när_på_dagen"], occ.get("schift", ""))
     starttid = occ.get("starttid", "08:00")
     före = occ.get("före", 0)
     efter = occ.get("efter", 0)
+    före_efter_empty = occ.get("före_efter_empty", True)  # default True for legacy rows
     längd = occ.get("längd", 0)
 
     start_min = _parse_time_minutes(starttid)
-    is_exact = (slot_start, slot_end) == ("EXACT", "EXACT")
+    is_exact_slot = (slot_start, slot_end) == ("EXACT", "EXACT")
     is_heldag = (slot_start, slot_end) == SLOT_HELDAG
     slot_start_min = _parse_time_minutes(slot_start) if slot_start != "EXACT" else start_min
     slot_end_min = _parse_time_minutes(slot_end) if slot_end != "EXACT" else start_min
 
-    # FIX 1: "Exakt dag/tid" entries get MINIMAL flex (1 min) for Timefold compatibility
-    if is_exact:
+    # Case 1: "Exakt dag/tid" → minimal 1-min flex
+    if is_exact_slot:
         return (start_min, start_min + 1, False)
 
-    # FIX 2: Empty före/efter handling - use full slot (original behavior)
-    # Critical tasks get minimal flex for precision
+    # When före==0 and efter==0: distinguish empty (full slot) vs explicit 0,0 (exact time)
     if före == 0 and efter == 0:
-        kritisk = occ.get("kritisk_insats", False)
-
-        # Critical tasks: minimal flex (±1 min) for precision
-        if kritisk:
-            return (max(slot_start_min, start_min - 1), start_min + 1, is_heldag)
-
-        # Non-critical: use full slot (original behavior, works well)
-        return (slot_start_min, max(slot_start_min, slot_end_min - längd), is_heldag)
+        if före_efter_empty:
+            # Case 2: Empty Före/Efter → full slot from När på dagen
+            return (slot_start_min, max(slot_start_min, slot_end_min - längd), is_heldag)
+        # Case 3: Explicit 0,0 → exact time (same as Exakt dag/tid)
+        return (start_min, start_min + 1, False)
 
     # Före/Efter specified: use them
     min_start_min = max(0, start_min - före)
