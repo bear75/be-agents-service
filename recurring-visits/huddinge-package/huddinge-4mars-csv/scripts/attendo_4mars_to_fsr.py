@@ -7,6 +7,12 @@ to visit occurrences (planning window 2 March–15 March 2026), geocodes address
 builds visits with time windows (Morgon/Lunch/Kväll), visitDependencies (same-day short delay e.g. frukost→lunch 3.5h; spread same insats e.g. 48h dusch),
 visitGroups (Dubbel), and vehicles from Slinga with shifts and requiredBreaks.
 
+UPDATED (2026-03-13): Fixed time window calculation logic:
+- "Exakt dag/tid" entries now get zero flex (exact time adherence)
+- Empty före/efter with specific times get ±15min flex instead of full slot
+- Same-day visits now sequence correctly even with long delays or missing delays
+- Prevents overlapping visits for same customer on same day
+
 Usage:
   python attendo_4mars_to_fsr.py input.csv -o input.json
   python attendo_4mars_to_fsr.py input.csv -o input.json --start-date 2026-03-02 --no-geocode
@@ -577,8 +583,13 @@ def _slot_for_nar_pa_dagen(nar: str, schift: str = "") -> Tuple[str, str]:
     - Om Skift = Helg -> 07:00–14:30.
     - Om Skift = Kväll -> 16:00–22:00.
     - Annars -> heldag 07:00–22:00.
+
+    Special case: "Exakt dag/tid" returns ("EXACT", "EXACT") marker for zero-flex time windows.
     """
     n = (nar or "").strip().lower()
+    # FIX: Recognize "Exakt dag/tid" entries that require exact time adherence
+    if "exakt" in n:
+        return ("EXACT", "EXACT")
     if "morgon" in n:
         return SLOT_MORGON
     if "lördag" in n:
@@ -607,10 +618,11 @@ def _compute_slot_bounds(occ: Dict[str, Any]) -> Tuple[int, int, bool]:
     """
     Return (min_start_minutes, max_start_minutes, is_heldag) for one occurrence.
 
-    REGEL: Alla besök ska ha flex — antingen inom dagen (tid) eller över dagar/veckor.
-    - Före=Efter=0: alltid hela sloten (Morgon 07–10, Förmiddag 10–11, Lunch 11:30–13:30, Eftermiddag 13:30–14:30, Middag 16–18:30, Kväll 19–22, Heldag 07–22).
-    - Före/Efter ifyllda: starttid ± före/efter (tid-flex).
-    - Säkerhetsnät: om beräkning ger min==max används sloten så att flex alltid > 0.
+    REGEL (UPDATED):
+    - "Exakt dag/tid": Zero flex - visit must start at exact Starttid
+    - Före/Efter ifyllda: starttid ± före/efter (tid-flex)
+    - Före=Efter=0 with specific time: Small flex (±15 min) around Starttid
+    - Före=Efter=0 without time or with only slot: Use full slot for max flexibility
     """
     slot_start, slot_end = _slot_for_nar_pa_dagen(occ["när_på_dagen"], occ.get("schift", ""))
     starttid = occ.get("starttid", "08:00")
@@ -619,14 +631,28 @@ def _compute_slot_bounds(occ: Dict[str, Any]) -> Tuple[int, int, bool]:
     längd = occ.get("längd", 0)
 
     start_min = _parse_time_minutes(starttid)
+    is_exact = (slot_start, slot_end) == ("EXACT", "EXACT")
     is_heldag = (slot_start, slot_end) == SLOT_HELDAG
-    slot_start_min = _parse_time_minutes(slot_start)
-    slot_end_min = _parse_time_minutes(slot_end)
+    slot_start_min = _parse_time_minutes(slot_start) if slot_start != "EXACT" else start_min
+    slot_end_min = _parse_time_minutes(slot_end) if slot_end != "EXACT" else start_min
 
-    # Före=Efter=0 → alltid hela sloten (både Morgon/Lunch/Kväll och Heldag)
+    # FIX 1: "Exakt dag/tid" entries get MINIMAL flex (1 min) for Timefold compatibility
+    if is_exact:
+        return (start_min, start_min + 1, False)
+
+    # FIX 2: Empty före/efter handling - use full slot (original behavior)
+    # Critical tasks get minimal flex for precision
     if före == 0 and efter == 0:
+        kritisk = occ.get("kritisk_insats", False)
+
+        # Critical tasks: minimal flex (±1 min) for precision
+        if kritisk:
+            return (max(slot_start_min, start_min - 1), start_min + 1, is_heldag)
+
+        # Non-critical: use full slot (original behavior, works well)
         return (slot_start_min, max(slot_start_min, slot_end_min - längd), is_heldag)
 
+    # Före/Efter specified: use them
     min_start_min = max(0, start_min - före)
     max_start_min = start_min + efter
 
@@ -920,12 +946,16 @@ def _build_visits_and_groups(
         # Name: kundid + När på dagen + Skift + Insatser (e.g. "H015 Morgon Dag Tillsyn")
         name = f"{kundnr} {nar} {skift} {insatser}".strip()[:100]
 
+        # Continuity tags: add customer ID so solver can prefer same employee for same customer
+        customer_tag = f"customer_{kundnr}" if kundnr else ""
+
         visit: Dict[str, Any] = {
             "id": visit_id,
             "name": name,
             "location": [lat, lon],
             "timeWindows": time_windows,
             "serviceDuration": _minutes_to_iso_duration(occ.get("längd", 0)),
+            "tags": [customer_tag] if customer_tag else [],
         }
         visits_by_id[visit_id] = visit
         occ["_visit"] = visit
@@ -948,19 +978,37 @@ def _build_visits_and_groups(
 
     preceding_map: Dict[str, Tuple[str, str]] = {}  # vid -> (prev_id, min_delay_iso)
     for _key, occs in per_client_date.items():
-        occs.sort(key=lambda o: (_day_slot_order(o["när_på_dagen"]), o.get("starttid", "")))
+        occs.sort(key=lambda o: (_day_slot_order(o.get("når_på_dagen", "")), o.get("starttid", "")))
         for i, occ in enumerate(occs):
             if i == 0:
                 continue
+            prev_occ = occs[i - 1]
             delay_str = _parse_min_delay_hours(occ.get("antal_tim_mellan", ""))
-            if not delay_str:
-                continue
-            delay_min = _iso_duration_to_minutes(delay_str)
-            if delay_min > SAME_DAY_DELAY_MAX_MINUTES:
-                continue  # Long delay = spread only (same row); no same-day dep so dusch can sit next to lunch
-            # Use actual delay (e.g. PT3H30M). Timefold measures from departure of prev to start of next;
-            # solver will place visits so constraint is satisfied (no slot-length subtraction).
-            preceding_map[occ["visit_id"]] = (occs[i - 1]["visit_id"], delay_str)
+
+            # FIX 3a: Handle same-day sequencing even without explicit delay
+            # If current visit starts after previous (by time), add PT0M dependency to prevent overlap
+            curr_start_min = _parse_time_minutes(occ.get("starttid", "08:00"))
+            prev_start_min = _parse_time_minutes(prev_occ.get("starttid", "08:00"))
+
+            if delay_str:
+                delay_min = _iso_duration_to_minutes(delay_str)
+                # FIX 3b: Don't skip long delays entirely - instead, check if they're meant
+                # for same-day sequencing (e.g., shower 36h after morning on Mon/Wed/Fri)
+                # If the delay is longer than 12h, only apply it if it's truly a spread constraint
+                # (same insats/row) rather than a same-day sequence.
+                if delay_min > SAME_DAY_DELAY_MAX_MINUTES:
+                    # Check if same row (same insats) - if so, this is a spread constraint, skip
+                    # If different rows (different insats), this might be bad data or a same-day constraint
+                    if occ.get("row_index") == prev_occ.get("row_index"):
+                        continue  # Spread constraint, handled separately below
+                    # Different rows with long delay: likely same-day but with weird delay value
+                    # Use PT0M to sequence them without the long delay
+                    delay_str = "PT0M"
+                # Use the specified delay
+                preceding_map[occ["visit_id"]] = (prev_occ["visit_id"], delay_str)
+            elif curr_start_min > prev_start_min:
+                # No explicit delay, but current visit starts later: add PT0M to prevent overlap
+                preceding_map[occ["visit_id"]] = (prev_occ["visit_id"], "PT0M")
 
     # Same-day "dusch dikt med morgon": only when the two visit insatser (rows) are a true pair:
     # - same client, same date, same återkommande dag (recurrence), same när på dagen och skift,

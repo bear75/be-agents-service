@@ -1,0 +1,31 @@
+Insats/Kundnummer,Kommentar / fråga,Vad vill vi ändra
+H3047,Städ som ligger klockan 07,Ska starta 09:45 till 15:00
+Alla kunder,Exakt dag/tid,Ta bort rörlig start/stopp
+H086,Flyttar till VOB,Ta bort alla besök
+H087,Flyttar till VOB,Ta bort alla besök
+H035,Olika medarbetare,?
+H037,Morgon + lunch hamnar på olika medarbetare samma dag?,
+H038,Morgon + dusch + lunch hamnar på olika medarbetare samma dag?,
+H038,Varför hamnar inte kundens morgon + dusch ihop mån+fred?,Morgon + Dusch önskas efter varandra
+H038,Kvällsbesöket hamnar för tidigt,Minska före/efter till 15/15
+H038,Kvällsbesöket hamnar olika tider varje dag?,
+H248,2 promenader samtidigt 3/6 07:05,
+H248,Promenaden hamnar före morgonbesöket,Lägg till 0 min före och 150 min efter
+H248,"Eftermiddag + lunch, på 2 olika slingor samma tid",Lägg 0 min före
+H248,Dusch behöver vi ändra tid på,Ska ligga vid lunch
+H248,Dusch 2/3 överlappar annat besök,
+H248,"4/2 Lunch gemensamt med eftermiddag, tid mellan besök är styrt 1 timme? Räknas från start eller?",
+H332,Besök ej planerade efter filen. 4/3 (exakt dag/tid + kristisk insat är ifylld),Styra alla kundens besök till exakt dag så alla insatser planeras korrekt
+H332,3/3 inget morgonbesök i planeringen,
+H332,2/3 Inga besök i planeringen 07-15? Förstår inte AI att planera efter dagar? Alla besök behöver ses över!,
+H332,Alla morgonbesök hamnar den 5/3,
+H055,2 st Promenad 3/3,
+H072,3/3 + 5/3 Promenad/dusch överlappar varandra på olika slingor,
+H077,6/3 (lör) Beök ej planerat efter filen. Styrd till 11:00 + 90 min...?,
+H092,2/3+6/3 dusch + morgon överlappar varandra,
+H092,Förmiddag och lunch diffar ej med 3 timmar mellan besöken,
+H097,Morgonbesök Vardagar,Ändra till 45 min före + 15 min efter
+H097,"Lunch diffar ej 3 timmar mellan besöken, kan ändras efter justering av morgonbesöken?",
+H107,6/3 ledsagning + städ överlappar varandra på olika slingor,
+H113,Besöken planeras ej enl. fil.,Ta bort tid mellen besök
+H125,Klar!!,

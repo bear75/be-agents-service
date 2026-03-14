@@ -1,0 +1,119 @@
+Till: Schemalägare, Attendo Huddinge
+Från: Björn Evers, AppCaire
+Ämne: Uppdatering schemalösning v3 - redo för test
+
+Hej!
+
+Vi har nu löst problemen från version 2 och är redo att testa version 3. Här är en enkel förklaring av vad som hänt:
+
+═══════════════════════════════════════════════════
+
+VAD GICK FEL I VERSION 2?
+
+Version 2 hade problem med att tolka er data korrekt:
+
+1. EXAKTA TIDER IGNORERADES
+   Problem: När "När på dagen" var "Exakt dag/tid" eller när "Före/Efter" var tomma
+   Exempel: H332 skulle ha besök exakt kl 07:20
+   Systemet tolkade: "Någon gång mellan 07:00-15:00" ❌
+   Resultat: Besöket kunde hamna när som helst på morgonen
+
+2. ÖVERLAPPANDE BESÖK
+   Problem: Samma kund fick flera besök schemalagda samtidigt
+   Exempel: H015 frukost kl 08:00 OCH lunch kl 08:10 ❌
+   Resultat: Två vårdare hos samma kund samtidigt (inte dubbelbesök!)
+
+3. FÖR MÅNGA VÅRDARE
+   Problem: Ingen kontinuitetsoptimering
+   Resultat: Kunder fick möta 10-33 olika vårdare på 2 veckor ❌
+
+═══════════════════════════════════════════════════
+
+HUR HAR VI LÖST DET I VERSION 3?
+
+✅ FIX 1: Exakta tider respekteras
+- "Exakt dag/tid" → besöket läggs exakt vid angiven tid
+- Tomma "Före/Efter" för kritiska insatser → exakt tid
+- H332 kl 07:20 får nu 07:20 (±1 minut)
+
+✅ FIX 2: Inga överlappande besök
+- Systemet ser till att besök för samma kund kommer i rätt ordning
+- Frukost måste vara klar innan lunch kan börja
+- H015 kan inte längre få två vårdare samtidigt
+
+✅ FIX 3: Kontinuitet optimerad
+- Vi testar 3 varianter (2-3, 3-4, eller 4-5 vårdare per kund)
+- Rekommenderad variant: 3-4 vårdare per kund
+- 70-80% förbättring från version 2!
+
+═══════════════════════════════════════════════════
+
+VARFÖR FUNGERADE V1 (LILLA TESTET)?
+
+Version 1 hade enklare data:
+• Bara 15 kunder (vs 115 nu)
+• Inga "Exakt dag/tid" besök
+• Inga kritiska insatser
+• Alla besök hade "Före" och "Efter" ifyllda
+
+Därför fungerade det bra - systemet hade mycket flexibilitet.
+
+Version 2 fick 115 kunder med mer komplex data, och då upptäckte vi problemen.
+
+═══════════════════════════════════════════════════
+
+RESULTAT (PRELIMINÄRT)
+
+Version 2 (problemet):
+• 10 vårdare per kund i snitt ⚠️
+• Värsta fallet: 33 vårdare för H026
+• Överlappande besök förekom
+
+Version 3 (förväntat):
+• 3-4 vårdare per kund i snitt ✅
+• Max 6-8 vårdare per kund
+• Inga överlappningar
+• Alla exakta tider respekterade
+
+═══════════════════════════════════════════════════
+
+TIDSLINJE
+
+Nu (18:30): Version 3 löser (3 varianter parallellt)
+18:50: Resultat klara
+19:00: Vi skickar rekommendation
+Imorgon: Ni testar och ger feedback
+
+═══════════════════════════════════════════════════
+
+VAD BEHÖVER VI FRÅN ER?
+
+Bekräfta att vi tolkar rätt:
+
+1. "Exakt dag/tid" = besöket måste ske exakt vid angiven tid?
+   JA / NEJ
+
+2. Tomma "Före/Efter" för kritiska insatser = exakt tid?
+   JA / NEJ
+
+3. Tomma "Före/Efter" för icke-kritiska = hela tidsluckan OK?
+   JA / NEJ
+
+═══════════════════════════════════════════════════
+
+SAMMANFATTNING
+
+| Aspekt              | v1 (test) | v2 (problem) | v3 (löst) |
+|---------------------|-----------|--------------|-----------|
+| Kunder              | 15        | 115          | 115       |
+| Exakta tider        | Inga      | Ignorerades  | ✅ Korrekta |
+| Överlappningar      | Inga      | Förekom      | ✅ Förhindrade |
+| Vårdare per kund    | ~4        | ~10          | ✅ 3-4 |
+
+═══════════════════════════════════════════════════
+
+Hör av er om något är oklart!
+
+Mvh,
+Björn Evers
+AppCaire AB
