@@ -3,12 +3,13 @@
  * Target: unassigned <1%, continuity ≤11, routing efficiency ≥70%
  */
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { PagePurpose } from '../components/PagePurpose';
-import { getScheduleRuns, importScheduleRunsFromAppcaire } from '../lib/api';
-import type { ScheduleRun } from '../types';
+import { getScheduleRuns, importScheduleRunsFromAppcaire, getAvailableDatasets } from '../lib/api';
+import type { ScheduleRun, Dataset } from '../types';
 import { ScatterPlot } from '../components/schedules/ScatterPlot';
 import { RunDetailPanel } from '../components/schedules/RunDetailPanel';
+import { ArrowUpDown } from 'lucide-react';
 
 const STATUS_STYLE: Record<string, string> = {
   queued: 'bg-gray-100 text-gray-700',
@@ -18,7 +19,10 @@ const STATUS_STYLE: Record<string, string> = {
   failed: 'bg-red-100 text-red-800',
 };
 
-const DATASET = 'huddinge-2w-expanded';
+const SOURCE_STYLE: Record<string, string> = {
+  manual: 'bg-gray-100 text-gray-700',
+  research_loop: 'bg-purple-100 text-purple-800',
+};
 
 function toNum(v: unknown): number | null {
   if (v == null) return null;
@@ -30,6 +34,19 @@ function toNum(v: unknown): number | null {
 function fmtNum(v: unknown, decimals: number): string {
   const n = toNum(v);
   return n != null ? (decimals === 0 ? String(Math.round(n)) : n.toFixed(decimals)) : '—';
+}
+
+/** Format date for table: show time or — */
+function fmtDate(dateStr: string | null): string {
+  if (!dateStr) return '—';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+
+  if (isToday) {
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 /** Ensure metric fields are numbers (API may send strings from SQLite) */
@@ -58,17 +75,34 @@ function normalizeRun(r: ScheduleRun): ScheduleRun {
   };
 }
 
+type SortField = 'submitted_at' | 'status' | 'continuity_avg' | 'unassigned_pct' | 'efficiency';
+type SortDirection = 'asc' | 'desc';
+
 export function SchedulesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [runs, setRuns] = useState<ScheduleRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [selectedDataset, setSelectedDataset] = useState(searchParams.get('dataset') || 'huddinge-2w-expanded');
+  const [sortField, setSortField] = useState<SortField>('submitted_at');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+  const loadDatasets = async () => {
+    try {
+      const data = await getAvailableDatasets();
+      setDatasets(data);
+    } catch (e) {
+      console.error('Failed to load datasets:', e);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getScheduleRuns(DATASET);
+      const data = await getScheduleRuns(selectedDataset);
       setRuns(data.map(normalizeRun));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load runs');
@@ -78,8 +112,60 @@ export function SchedulesPage() {
   };
 
   useEffect(() => {
-    load();
+    loadDatasets();
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [selectedDataset]);
+
+  // Update URL when dataset changes
+  useEffect(() => {
+    if (selectedDataset !== (searchParams.get('dataset') || 'huddinge-2w-expanded')) {
+      setSearchParams({ dataset: selectedDataset });
+    }
+  }, [selectedDataset]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const sortedRuns = [...runs].sort((a, b) => {
+    let aVal: any;
+    let bVal: any;
+
+    switch (sortField) {
+      case 'submitted_at':
+        aVal = new Date(a.submitted_at).getTime();
+        bVal = new Date(b.submitted_at).getTime();
+        break;
+      case 'status':
+        aVal = a.status;
+        bVal = b.status;
+        break;
+      case 'continuity_avg':
+        aVal = a.continuity_avg ?? 999;
+        bVal = b.continuity_avg ?? 999;
+        break;
+      case 'unassigned_pct':
+        aVal = a.unassigned_pct ?? 999;
+        bVal = b.unassigned_pct ?? 999;
+        break;
+      case 'efficiency':
+        aVal = a.routing_efficiency_pct ?? 0;
+        bVal = b.routing_efficiency_pct ?? 0;
+        break;
+    }
+
+    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   /** Sync from shared dataset (huddinge-datasets) then reload list — single action for "latest data". */
   const refresh = async () => {
@@ -106,9 +192,26 @@ export function SchedulesPage() {
         tip="Use the loop script to dispatch parallel runs and cancel non-promising ones early."
       />
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Schedule optimization — {DATASET}
-        </h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Schedule Optimization
+          </h2>
+          <select
+            value={selectedDataset}
+            onChange={(e) => setSelectedDataset(e.target.value)}
+            className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {datasets.length > 0 ? (
+              datasets.map((ds) => (
+                <option key={ds.id} value={ds.id}>
+                  {ds.name}
+                </option>
+              ))
+            ) : (
+              <option value={selectedDataset}>{selectedDataset}</option>
+            )}
+          </select>
+        </div>
         <button
           type="button"
           onClick={refresh}
@@ -190,21 +293,60 @@ export function SchedulesPage() {
             <table className="min-w-full text-sm border border-gray-200 rounded-lg">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="text-left p-2 font-medium">ID</th>
-                  <th className="text-left p-2 font-medium">Status</th>
+                  <th className="text-left p-2 font-medium">
+                    <button
+                      onClick={() => handleSort('submitted_at')}
+                      className="flex items-center gap-1 hover:text-blue-600"
+                    >
+                      ID <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </th>
+                  <th className="text-left p-2 font-medium">
+                    <button
+                      onClick={() => handleSort('status')}
+                      className="flex items-center gap-1 hover:text-blue-600"
+                    >
+                      Status <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </th>
+                  <th className="text-left p-2 font-medium">Source</th>
+                  <th className="text-left p-2 font-medium text-xs">Submitted</th>
+                  <th className="text-left p-2 font-medium text-xs">Started</th>
+                  <th className="text-left p-2 font-medium text-xs">Completed</th>
                   <th className="text-right p-2 font-medium">In shifts</th>
                   <th className="text-right p-2 font-medium" title="Before trim (incl idle)">Shift h total</th>
                   <th className="text-right p-2 font-medium" title="Idle / empty shift hours">Shift h idle</th>
                   <th className="text-right p-2 font-medium" title="Removed all idle, early end">Shift h trimmed</th>
-                  <th className="text-right p-2 font-medium" title="Visit / (shift − break). All shifts.">Eff all %</th>
+                  <th className="text-right p-2 font-medium" title="Visit / (shift − break). All shifts.">
+                    <button
+                      onClick={() => handleSort('efficiency')}
+                      className="flex items-center gap-1 hover:text-blue-600 ml-auto"
+                    >
+                      Eff all % <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </th>
                   <th className="text-right p-2 font-medium" title="Exclude empty shifts only">Eff min visit %</th>
                   <th className="text-right p-2 font-medium" title="Visit-span only (shift = first→last visit)">Eff visit span %</th>
-                  <th className="text-right p-2 font-medium">Unassigned %</th>
-                  <th className="text-right p-2 font-medium" title="Visit-weighted continuity">Cont.</th>
+                  <th className="text-right p-2 font-medium">
+                    <button
+                      onClick={() => handleSort('unassigned_pct')}
+                      className="flex items-center gap-1 hover:text-blue-600 ml-auto"
+                    >
+                      Unassigned % <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </th>
+                  <th className="text-right p-2 font-medium" title="Visit-weighted continuity">
+                    <button
+                      onClick={() => handleSort('continuity_avg')}
+                      className="flex items-center gap-1 hover:text-blue-600 ml-auto"
+                    >
+                      Cont. <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {runs.map((r) => (
+                {sortedRuns.map((r) => (
                   <tr
                     key={r.id}
                     className="border-t border-gray-100 hover:bg-gray-50 cursor-pointer"
@@ -220,6 +362,14 @@ export function SchedulesPage() {
                         {r.status}
                       </span>
                     </td>
+                    <td className="p-2">
+                      <span className={`inline-flex px-1.5 py-0.5 rounded text-xs font-medium ${SOURCE_STYLE[r.source || 'manual']}`}>
+                        {r.source === 'research_loop' ? '🔬 AI' : '👤 Manual'}
+                      </span>
+                    </td>
+                    <td className="p-2 text-xs text-gray-600">{fmtDate(r.submitted_at)}</td>
+                    <td className="p-2 text-xs text-gray-600">{fmtDate(r.started_at)}</td>
+                    <td className="p-2 text-xs text-gray-600">{fmtDate(r.completed_at)}</td>
                     <td className="p-2 text-right">{fmtNum(r.input_shifts, 0)}</td>
                     <td className="p-2 text-right">{fmtNum(r.shift_hours_total, 0)}</td>
                     <td className="p-2 text-right">{fmtNum(r.shift_hours_idle, 0)}</td>

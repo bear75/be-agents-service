@@ -620,6 +620,49 @@ router.post('/:id/cancel', (req: Request, res: Response) => {
 const runningJobs = new Map<string, { process: ChildProcess; dataset: string; startedAt: string }>();
 
 /**
+ * GET /api/research/datasets
+ * List available datasets for research
+ */
+router.get('/research/datasets', (req: Request, res: Response) => {
+  try {
+    const dataDir = resolve(getServiceRoot(), 'recurring-visits/data');
+    const entries = readdirSync(dataDir, { withFileTypes: true });
+
+    const datasets = entries
+      .filter(e => e.isDirectory() && !e.name.startsWith('.') && e.name !== 'archive')
+      .map(e => {
+        const datasetDir = resolve(dataDir, e.name);
+        const rawDir = resolve(datasetDir, 'raw');
+
+        // Find CSV file in raw directory
+        let csvFile = null;
+        if (existsSync(rawDir)) {
+          const files = readdirSync(rawDir);
+          csvFile = files.find(f => f.endsWith('.csv')) || null;
+        }
+
+        return {
+          id: e.name,
+          name: e.name.charAt(0).toUpperCase() + e.name.slice(1),
+          path: datasetDir,
+          csv_file: csvFile,
+          has_data: csvFile !== null,
+        };
+      });
+
+    res.json({
+      success: true,
+      data: datasets,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to list datasets',
+    });
+  }
+});
+
+/**
  * GET /api/research/state?dataset=:dataset
  * Get current research state with history and learnings
  */
@@ -663,10 +706,11 @@ router.get('/research/state', (req: Request, res: Response) => {
  */
 router.post('/research/trigger', (req: Request, res: Response) => {
   try {
-    const { dataset = 'huddinge-v3', max_iterations = 50, strategies } = req.body as {
+    const { dataset = 'huddinge-v3', max_iterations = 50, strategies, dry_run = false } = req.body as {
       dataset?: string;
       max_iterations?: number;
       strategies?: string[];
+      dry_run?: boolean;
     };
 
     // Check if already running
@@ -704,13 +748,14 @@ router.post('/research/trigger', (req: Request, res: Response) => {
       args.push(strategies.join(','));
     }
 
-    const process = spawn(scriptPath, args, {
+    const childProcess = spawn(scriptPath, args, {
       detached: true,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: {
         ...process.env,
         DATASET: dataset,
         MAX_ITERATIONS: max_iterations.toString(),
+        DRY_RUN: dry_run ? 'true' : 'false',
       },
     });
 
@@ -718,13 +763,13 @@ router.post('/research/trigger', (req: Request, res: Response) => {
 
     // Track job
     runningJobs.set(job_id, {
-      process,
+      process: childProcess,
       dataset,
       startedAt: new Date().toISOString(),
     });
 
     // Handle process completion
-    process.on('close', (code) => {
+    childProcess.on('close', (code: number | null) => {
       runningJobs.delete(job_id);
       const finalStatus = code === 0 ? 'completed' : 'failed';
       updateResearchState(dataset, {
@@ -733,7 +778,7 @@ router.post('/research/trigger', (req: Request, res: Response) => {
     });
 
     // Don't wait for process
-    process.unref();
+    childProcess.unref();
 
     res.status(202).json({
       success: true,

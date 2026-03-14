@@ -874,7 +874,7 @@ export function createResearchState(params: {
     20.0, // goal_continuity_max
     1.0, // goal_unassigned_pct
     70.0, // goal_efficiency_pct
-    false, // goals_met
+    0, // goals_met (SQLite: 0=false, 1=true)
     now,
     now
   );
@@ -895,7 +895,8 @@ export function updateResearchState(dataset: string, updates: Partial<ResearchSt
   for (const [key, value] of Object.entries(updates)) {
     if (key !== 'id' && key !== 'dataset' && key !== 'created_at') {
       fields.push(`${key} = ?`);
-      values.push(value);
+      // Convert boolean to number for SQLite (0=false, 1=true)
+      values.push(typeof value === 'boolean' ? (value ? 1 : 0) : value);
     }
   }
 

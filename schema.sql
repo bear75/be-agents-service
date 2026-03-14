@@ -298,6 +298,9 @@ CREATE TABLE IF NOT EXISTS schedule_runs (
     shift_hours_idle REAL,
     efficiency_total_pct REAL,
     efficiency_trimmed_pct REAL,
+    efficiency_all_pct REAL,
+    efficiency_min_visit_pct REAL,
+    efficiency_visit_span_pct REAL,
     eff_v1_pct REAL,
     idle_shifts_v1 INTEGER,
     idle_shift_hours_v1 REAL,
@@ -311,12 +314,15 @@ CREATE TABLE IF NOT EXISTS schedule_runs (
     duration_seconds INTEGER,
     output_path TEXT,
     notes TEXT,
-    iteration INTEGER DEFAULT 1
+    iteration INTEGER DEFAULT 1,
+    source TEXT DEFAULT 'manual'
+        CHECK(source IN ('manual', 'research_loop'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_schedule_runs_dataset ON schedule_runs(dataset);
 CREATE INDEX IF NOT EXISTS idx_schedule_runs_status ON schedule_runs(status);
 CREATE INDEX IF NOT EXISTS idx_schedule_runs_submitted ON schedule_runs(submitted_at DESC);
+CREATE INDEX IF NOT EXISTS idx_schedule_runs_source ON schedule_runs(source);
 
 -- ============================================
 -- SCHEDULE RESEARCH STATE

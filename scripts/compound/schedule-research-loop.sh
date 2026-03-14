@@ -99,7 +99,7 @@ get_research_state() {
     return 0
   fi
 
-  curl -sS "${AGENT_SERVICE_URL}/api/research/state?dataset=${DATASET}" || echo '{"success":false}'
+  curl -sS "${AGENT_SERVICE_URL}/api/schedule-runs/research/state?dataset=${DATASET}" || echo '{"success":false}'
 }
 
 # Update research state via API
@@ -111,7 +111,7 @@ update_research_state() {
     return 0
   fi
 
-  curl -sS -X POST "${AGENT_SERVICE_URL}/api/research/state" \
+  curl -sS -X POST "${AGENT_SERVICE_URL}/api/schedule-runs/research/state" \
     -H "Content-Type: application/json" \
     -d "{\"dataset\":\"$DATASET\",\"updates\":$updates}" || true
 }

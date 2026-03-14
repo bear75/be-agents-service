@@ -416,6 +416,7 @@ export interface ScheduleRun {
   output_path: string | null;
   notes: string | null;
   iteration: number;
+  source: 'manual' | 'research_loop';
 }
 
 export interface ResearchState {

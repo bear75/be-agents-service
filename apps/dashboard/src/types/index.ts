@@ -346,6 +346,15 @@ export interface ScheduleRun {
   output_path: string | null;
   notes: string | null;
   iteration: number;
+  source?: 'manual' | 'research_loop';
+}
+
+export interface Dataset {
+  id: string;
+  name: string;
+  path: string;
+  csv_file: string | null;
+  has_data: boolean;
 }
 
 // ─── System Health (runtime checks from server) ─────────────────────────────

@@ -5,12 +5,12 @@
  * evaluate results, and converge toward goal metrics.
  */
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PagePurpose } from '../components/PagePurpose';
-import { getResearchState, getRunningResearchJobs } from '../lib/api';
-import type { ResearchStateResponse } from '../types';
-import { Play, Square, RefreshCw } from 'lucide-react';
+import { getResearchState, getRunningResearchJobs, triggerResearchLoop, getAvailableDatasets } from '../lib/api';
+import type { ResearchStateResponse, Dataset } from '../types';
+import { Play, Square, RefreshCw, X, ExternalLink } from 'lucide-react';
 
-const DATASET = 'huddinge-v3';
 const POLL_INTERVAL = 5000; // 5 seconds
 
 export function ScheduleResearchPage() {
@@ -18,10 +18,25 @@ export function ScheduleResearchPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [triggerDialogOpen, setTriggerDialogOpen] = useState(false);
+  const [maxIterations, setMaxIterations] = useState(50);
+  const [dryRun, setDryRun] = useState(false);
+  const [triggering, setTriggering] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [selectedDataset, setSelectedDataset] = useState('huddinge-v3');
+
+  const loadDatasets = async () => {
+    try {
+      const data = await getAvailableDatasets();
+      setDatasets(data);
+    } catch (e) {
+      console.error('Failed to load datasets:', e);
+    }
+  };
 
   const loadState = async () => {
     try {
-      const data = await getResearchState(DATASET);
+      const data = await getResearchState(selectedDataset);
       setState(data);
       setError(null);
     } catch (e) {
@@ -31,9 +46,47 @@ export function ScheduleResearchPage() {
     }
   };
 
+  const handleTrigger = async () => {
+    try {
+      setTriggering(true);
+      const result = await triggerResearchLoop({
+        dataset: selectedDataset,
+        max_iterations: maxIterations,
+        dry_run: dryRun,
+      });
+      setTriggerDialogOpen(false);
+      setSuccessMessage(`Research started! Job ID: ${result.job_id}${dryRun ? ' (DRY RUN)' : ''}`);
+
+      // Optimistic update: immediately set status to running
+      if (state) {
+        setState({
+          ...state,
+          state: {
+            ...state.state,
+            current_status: 'running',
+            current_job_id: result.job_id,
+          },
+        });
+      }
+
+      // Clear success message after 5 seconds
+      setTimeout(() => setSuccessMessage(null), 5000);
+      // Reload state to sync with server
+      setTimeout(loadState, 2000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to trigger research');
+    } finally {
+      setTriggering(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDatasets();
+  }, []);
+
   useEffect(() => {
     loadState();
-  }, []);
+  }, [selectedDataset]);
 
   // Poll for status updates when research is running
   useEffect(() => {
@@ -56,9 +109,28 @@ export function ScheduleResearchPage() {
       />
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Schedule Research — {DATASET}
-        </h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Schedule Research
+          </h2>
+          <select
+            value={selectedDataset}
+            onChange={(e) => setSelectedDataset(e.target.value)}
+            className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {datasets.map((ds) => (
+              <option key={ds.id} value={ds.id} disabled={!ds.has_data}>
+                {ds.name} {!ds.has_data ? '(no data)' : ''}
+              </option>
+            ))}
+          </select>
+          <Link
+            to={`/schedules?dataset=${selectedDataset}`}
+            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+          >
+            View All Runs <ExternalLink className="w-3.5 h-3.5" />
+          </Link>
+        </div>
         <div className="flex gap-2">
           <button
             type="button"
@@ -95,6 +167,12 @@ export function ScheduleResearchPage() {
       {error && (
         <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
           {error}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="rounded border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
+          ✓ {successMessage}
         </div>
       )}
 
@@ -288,7 +366,78 @@ export function ScheduleResearchPage() {
         </>
       )}
 
-      {/* TODO: Add TriggerResearchDialog modal */}
+      {/* Trigger Research Dialog */}
+      {triggerDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Start Research Loop</h3>
+              <button
+                type="button"
+                onClick={() => setTriggerDialogOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max Iterations
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={maxIterations}
+                  onChange={(e) => setMaxIterations(parseInt(e.target.value) || 50)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Maximum number of optimization iterations (default: 50)
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="dry-run"
+                  checked={dryRun}
+                  onChange={(e) => setDryRun(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="dry-run" className="text-sm text-gray-700">
+                  Dry run (simulate without actual Timefold API calls)
+                </label>
+              </div>
+
+              <div className="rounded bg-blue-50 border border-blue-200 px-3 py-2 text-sm text-blue-800">
+                <strong>Dataset:</strong> {selectedDataset}<br />
+                <strong>Goals:</strong> Continuity ≤11, Unassigned &lt;1%, Efficiency ≥70%
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-6">
+              <button
+                type="button"
+                onClick={() => setTriggerDialogOpen(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleTrigger}
+                disabled={triggering}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {triggering ? 'Starting…' : 'Start Research'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
