@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 Produce a CSV with the same content as the original but Lat/Lon set to substitute
-coordinates (not real Attendo locations). No anonymization: Gata, Postnr, Ort and
-Beskrivning are left unchanged.
+coordinates (not real Attendo locations). Beskrivning is redacted to remove
+credentials (e.g. mathem.se logins, building codes); other text and Gata, Postnr, Ort
+are unchanged.
 
 Reads:
   - Huddinge-v3 - Data.csv (original)
@@ -14,7 +15,45 @@ Writes:
 import csv
 import json
 import os
+import re
 import sys
+
+
+def _redact_beskrivning(text: str) -> str:
+    """Remove credentials and access codes from Beskrivning to avoid leaking in repo."""
+    if not text or not text.strip():
+        return text
+    s = text
+    # mathem.se emails (keep generic mention of mathem if present)
+    s = re.sub(
+        r"\S+@mathem\.se\s*",
+        "[e-post borttagen] ",
+        s,
+        flags=re.IGNORECASE,
+    )
+    # Password/lösenord patterns
+    s = re.sub(
+        r"(Lösenord|Lösen|Inlogg)\s*:\s*[^\s,.]+\s*",
+        r"\1: [redigerat] ",
+        s,
+        flags=re.IGNORECASE,
+    )
+    s = re.sub(
+        r"(Huddinge(?:leverans)?\d+)\s*",
+        "[redigerat] ",
+        s,
+        flags=re.IGNORECASE,
+    )
+    # Building access code
+    s = re.sub(
+        r"Bommens kod är\s*,\s*\d+\s*",
+        "Bommens kod [redigerat] ",
+        s,
+        flags=re.IGNORECASE,
+    )
+    # Remove orphan fragments from overlapping redactions
+    s = re.sub(r"\s*borttagen\]\s*", " ", s)
+    return s.strip()
 
 
 def main():
@@ -68,6 +107,8 @@ def main():
             lat, lon = get_substitute_coord(gata, postnr, ort)
             row["Lat"] = f"{lat:.6f}"
             row["Lon"] = f"{lon:.6f}"
+            if "Beskrivning" in row and row["Beskrivning"]:
+                row["Beskrivning"] = _redact_beskrivning(row["Beskrivning"])
             rows.append(row)
 
     with open(output_csv, "w", encoding="utf-8", newline="") as f_out:
@@ -76,7 +117,7 @@ def main():
         writer.writerows(rows)
 
     print(f"Wrote {len(rows)} rows to {output_csv}")
-    print(f"Assigned substitute coordinates for {len(location_to_coord)} unique locations (no anonymization).")
+    print(f"Assigned substitute coordinates for {len(location_to_coord)} unique locations; Beskrivning redacted.")
 
 
 if __name__ == "__main__":

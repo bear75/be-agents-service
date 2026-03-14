@@ -625,11 +625,11 @@ def _compute_slot_bounds(occ: Dict[str, Any]) -> Tuple[int, int, bool]:
     """
     Return (min_start_minutes, max_start_minutes, is_heldag) for one occurrence.
 
-    REGEL (UPDATED):
-    - "Exakt dag/tid": Zero flex - visit must start at exact Starttid
-    - Före/Efter ifyllda: starttid ± före/efter (tid-flex)
-    - Före=Efter=0 with specific time: Small flex (±15 min) around Starttid
-    - Före=Efter=0 without time or with only slot: Use full slot for max flexibility
+    Three cases (aligned with attendo_4mars_to_fsr and dashboard):
+    1. "Exakt dag/tid": exact Starttid, minimal 1-min flex
+    2. Empty Före/Efter (cells blank): full slot from När på dagen + Skift
+    3. Explicit 0,0 Före/Efter: exact time (same as case 1), minimal 1-min flex
+    Non-zero Före/Efter: Starttid ± före/efter
     """
     slot_start, slot_end = _slot_for_nar_pa_dagen(occ["när_på_dagen"], occ.get("schift", ""))
     starttid = occ.get("starttid", "08:00")
@@ -647,17 +647,17 @@ def _compute_slot_bounds(occ: Dict[str, Any]) -> Tuple[int, int, bool]:
     if is_exact:
         return (start_min, start_min + 1, False)
 
-    # FIX 2: Empty före/efter handling - use full slot (original behavior)
-    # Critical tasks get minimal flex for precision
+    # When före==0 and efter==0: distinguish empty (full slot) vs explicit 0,0 (exact time)
+    före_efter_empty = occ.get("före_efter_empty", True)  # default True for legacy rows
     if före == 0 and efter == 0:
-        kritisk = occ.get("kritisk_insats", False)
-
-        # Critical tasks: minimal flex (±1 min) for precision
-        if kritisk:
-            return (max(slot_start_min, start_min - 1), start_min + 1, is_heldag)
-
-        # Non-critical: use full slot (original behavior, works well)
-        return (slot_start_min, max(slot_start_min, slot_end_min - längd), is_heldag)
+        if före_efter_empty:
+            # Empty Före/Efter → full slot from När på dagen
+            kritisk = occ.get("kritisk_insats", False)
+            if kritisk:
+                return (max(slot_start_min, start_min - 1), start_min + 1, is_heldag)
+            return (slot_start_min, max(slot_start_min, slot_end_min - längd), is_heldag)
+        # Explicit 0,0 → exact time (same as Exakt dag/tid), minimal 1-min flex
+        return (start_min, start_min + 1, False)
 
     # Före/Efter specified: use them
     min_start_min = max(0, start_min - före)

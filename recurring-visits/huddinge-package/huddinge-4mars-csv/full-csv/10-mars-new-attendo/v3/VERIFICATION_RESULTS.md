@@ -72,7 +72,7 @@ Result: ✅ PASS (expected ≤2 min flex)
 | **3. 0 0 Före Efter** | Före=0, Efter=0 (explicit "0") | Exact time, 1-min flex (same as case 1) |
 | Non-zero | Före and/or Efter non-zero | Starttid − Före to Starttid + Efter |
 
-Scripts: `scripts/conversion/csv_to_fsr.py`, `huddinge-package/.../scripts/attendo_4mars_to_fsr.py` both use `före_efter_empty` to distinguish empty (full slot) from explicit 0,0 (exact time).
+Scripts: `scripts/conversion/csv_to_fsr.py` and `huddinge-package/.../scripts/attendo_4mars_to_fsr.py` both use `före_efter_empty` in `_compute_slot_bounds` to distinguish empty (full slot) from explicit 0,0 (exact time).
 
 #### Sample före/efter Test
 ```

@@ -56,3 +56,6 @@ logs/verification-sessions/
 
 # GitHub Actions runner (local setup, binaries > 100MB)
 actions-runner/
+
+# Substitute-location CSVs may contain redacted data; avoid re-committing sensitive outputs
+recurring-visits/**/*-substitute-locations.csv
