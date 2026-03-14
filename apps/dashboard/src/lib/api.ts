@@ -540,6 +540,58 @@ export function getDatasetAssetUrl(filename: string): string {
   return `${API_BASE}/schedule-runs/dataset-assets/${encodeURIComponent(filename)}`;
 }
 
+// ─── Schedule Research (AI-powered optimization loop) ────────────────────────
+
+import type { ResearchStateResponse } from '../types';
+
+/** Get research state for a dataset */
+export async function getResearchState(dataset = 'huddinge-v3'): Promise<ResearchStateResponse> {
+  return fetchApi<ResearchStateResponse>(`/research/state?dataset=${encodeURIComponent(dataset)}`);
+}
+
+/** Trigger research loop */
+export async function triggerResearchLoop(config: {
+  dataset: string;
+  max_iterations?: number;
+  strategies?: string[];
+}): Promise<{ job_id: string; status_url: string }> {
+  return fetchApi<{ job_id: string; status_url: string }>('/research/trigger', {
+    method: 'POST',
+    body: JSON.stringify(config),
+  });
+}
+
+/** Cancel running research job */
+export async function cancelResearchJob(job_id: string): Promise<void> {
+  await fetchApi<void>('/research/cancel', {
+    method: 'POST',
+    body: JSON.stringify({ job_id }),
+  });
+}
+
+/** Get research job status */
+export async function getResearchJobStatus(job_id: string): Promise<{
+  status: string;
+  progress: number;
+  current_iteration: number;
+}> {
+  return fetchApi<{
+    status: string;
+    progress: number;
+    current_iteration: number;
+  }>(`/research/status/${job_id}`);
+}
+
+/** Get research loop logs */
+export async function getResearchLogs(job_id: string, tail = 100): Promise<string> {
+  return fetchText(`/research/logs/${job_id}?tail=${tail}`);
+}
+
+/** Get running research jobs */
+export async function getRunningResearchJobs(): Promise<{ job_id: string; dataset: string; started_at: string }[]> {
+  return fetchApi<{ job_id: string; dataset: string; started_at: string }[]>('/research/running');
+}
+
 // ─── System Health ───────────────────────────────────────────────────────────
 
 export async function getSystemHealth(deep = false): Promise<SystemHealth> {

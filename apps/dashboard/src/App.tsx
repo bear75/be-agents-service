@@ -10,6 +10,7 @@ import { InsightsPage } from './pages/InsightsPage';
 import { MarketingPage } from './pages/MarketingPage';
 import { SchedulesPage } from './pages/SchedulesPage';
 import { RunDetailPage } from './pages/RunDetailPage';
+import { ScheduleResearchPage } from './pages/ScheduleResearchPage';
 import { SettingsWithDocsPage } from './pages/SettingsWithDocsPage';
 import './App.css';
 
@@ -67,6 +68,7 @@ function App() {
           <Route path="insights" element={<InsightsPage />} />
           <Route path="schedules" element={schedulesEnabled ? <SchedulesPage /> : <Navigate to="/" replace />} />
           <Route path="schedules/run/:id" element={schedulesEnabled ? <RunDetailPage /> : <Navigate to="/" replace />} />
+          <Route path="schedule-research" element={schedulesEnabled ? <ScheduleResearchPage /> : <Navigate to="/" replace />} />
           <Route path="marketing" element={<MarketingPage />} />
           <Route path="settings" element={settingsEnabled ? <SettingsWithDocsPage /> : <Navigate to="/" replace />} />
         </Route>

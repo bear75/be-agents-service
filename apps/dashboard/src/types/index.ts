@@ -94,6 +94,63 @@ export interface FollowUp {
   tags?: string[];
 }
 
+// ─── Schedule Research Types ──────────────────────────────────────────────────
+
+export interface ResearchState {
+  id: string;
+  dataset: string;
+  program_version: string;
+  iteration_count: number;
+  research_phase: 'exploration' | 'exploitation' | 'deep_dive';
+  current_job_id: string | null;
+  current_experiment_id: string | null;
+  current_status: 'idle' | 'running' | 'completed' | 'failed' | 'cancelled';
+  best_job_id: string | null;
+  best_experiment_id: string | null;
+  best_continuity_avg: number | null;
+  best_continuity_max: number | null;
+  best_unassigned_pct: number | null;
+  best_efficiency_pct: number | null;
+  best_achieved_at: string | null;
+  plateau_count: number;
+  last_improvement_iteration: number;
+  goal_continuity_avg: number;
+  goal_continuity_max: number;
+  goal_unassigned_pct: number;
+  goal_efficiency_pct: number;
+  goals_met: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ResearchHistory {
+  iteration: number;
+  job_id: string;
+  experiment_id: string;
+  strategy: string;
+  metrics: {
+    continuity_avg: number;
+    continuity_max: number;
+    unassigned_pct: number;
+    efficiency: number;
+  };
+  decision: 'keep' | 'kill' | 'double_down' | 'continue';
+  decision_reason: string;
+  timestamp: string;
+}
+
+export interface ResearchLearning {
+  text: string;
+  iteration: number;
+  category?: string;
+}
+
+export interface ResearchStateResponse {
+  state: ResearchState;
+  history: ResearchHistory[];
+  learnings: ResearchLearning[];
+}
+
 export interface PlanDocument {
   slug: string;
   filename: string;

@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Brain,
   BarChart2,
+  FlaskConical,
 } from 'lucide-react';
 
 const DEFAULT_REPO = 'darwin';
@@ -37,6 +38,7 @@ const NAV_ITEMS = [
   { path: '/plans', label: 'Plans', icon: Map, subtitle: 'PRDs & roadmaps', module: 'plans' as NavModule },
   { path: '/insights', label: 'Insights', icon: Brain, subtitle: 'Analytics & leaderboard', module: 'insights' as NavModule },
   { path: '/schedules', label: 'Schedules', icon: BarChart2, subtitle: 'Schedule optimization pipeline', module: 'schedules' as NavModule },
+  { path: '/schedule-research', label: 'Research', icon: FlaskConical, subtitle: 'AI-powered optimization loop', module: 'schedules' as NavModule },
   { path: '/marketing', label: 'Marketing', icon: TrendingUp, subtitle: 'Campaigns & leads', module: 'marketing' as NavModule },
   { path: '/settings', label: 'Settings', icon: Sliders, subtitle: 'Config & docs', module: 'settings' as NavModule },
 ];
