@@ -557,8 +557,8 @@ import type { ResearchStateResponse, Dataset } from '../types';
 
 /** Get available datasets for research */
 export async function getAvailableDatasets(): Promise<Dataset[]> {
-  const response = await fetchApi<{ data?: Dataset[] }>('/schedule-runs/research/datasets');
-  return response.data || [];
+  const response = await fetchApi<Dataset[]>('/schedule-runs/research/datasets');
+  return Array.isArray(response) ? response : [];
 }
 
 /** Get research state for a dataset */

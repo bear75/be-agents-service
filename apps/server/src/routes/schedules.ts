@@ -641,20 +641,30 @@ router.get('/research/datasets', (req: Request, res: Response) => {
       .map(e => {
         const datasetDir = resolve(dataDir, e.name);
         const rawDir = resolve(datasetDir, 'raw');
+        const inputDir = resolve(datasetDir, 'input');
 
-        // Find CSV file in raw directory
-        let csvFile = null;
+        // Find CSV in raw/ (e.g. Nova)
+        let csvFile: string | null = null;
         if (existsSync(rawDir)) {
           const files = readdirSync(rawDir);
-          csvFile = files.find(f => f.endsWith('.csv')) || null;
+          csvFile = files.find((f: string) => f.endsWith('.csv')) || null;
         }
+
+        // Or FSR input JSON in input/ (e.g. huddinge-v3)
+        let hasInputJson = false;
+        if (existsSync(inputDir)) {
+          const files = readdirSync(inputDir);
+          hasInputJson = files.some((f: string) => f.endsWith('.json'));
+        }
+
+        const hasData = csvFile !== null || hasInputJson;
 
         return {
           id: e.name,
           name: e.name.charAt(0).toUpperCase() + e.name.slice(1),
           path: datasetDir,
           csv_file: csvFile,
-          has_data: csvFile !== null,
+          has_data: hasData,
         };
       });
 
