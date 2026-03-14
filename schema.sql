@@ -319,6 +319,45 @@ CREATE INDEX IF NOT EXISTS idx_schedule_runs_status ON schedule_runs(status);
 CREATE INDEX IF NOT EXISTS idx_schedule_runs_submitted ON schedule_runs(submitted_at DESC);
 
 -- ============================================
+-- SCHEDULE RESEARCH STATE
+-- ============================================
+
+-- Research State (autonomous optimization loop state)
+CREATE TABLE IF NOT EXISTS research_state (
+    id TEXT PRIMARY KEY,
+    dataset TEXT NOT NULL UNIQUE,
+    program_version TEXT NOT NULL,
+    iteration_count INTEGER DEFAULT 0,
+    research_phase TEXT DEFAULT 'exploration'
+        CHECK(research_phase IN ('exploration', 'exploitation', 'deep_dive')),
+    current_job_id TEXT,
+    current_experiment_id TEXT,
+    current_status TEXT DEFAULT 'idle'
+        CHECK(current_status IN ('idle', 'running', 'completed', 'failed', 'cancelled')),
+    best_job_id TEXT,
+    best_experiment_id TEXT,
+    best_continuity_avg REAL,
+    best_continuity_max INTEGER,
+    best_unassigned_pct REAL,
+    best_efficiency_pct REAL,
+    best_achieved_at DATETIME,
+    plateau_count INTEGER DEFAULT 0,
+    last_improvement_iteration INTEGER DEFAULT 0,
+    goal_continuity_avg REAL DEFAULT 11.0,
+    goal_continuity_max REAL DEFAULT 20.0,
+    goal_unassigned_pct REAL DEFAULT 1.0,
+    goal_efficiency_pct REAL DEFAULT 70.0,
+    goals_met BOOLEAN DEFAULT FALSE,
+    history_json TEXT,
+    learnings_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_research_state_dataset ON research_state(dataset);
+CREATE INDEX IF NOT EXISTS idx_research_state_status ON research_state(current_status);
+
+-- ============================================
 -- LLM COST TRACKING
 -- ============================================
 

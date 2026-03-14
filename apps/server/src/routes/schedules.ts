@@ -10,12 +10,18 @@ import { Router, type Request, type Response } from 'express';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { spawn, type ChildProcess } from 'child_process';
 import {
   getAllScheduleRuns,
   getScheduleRunById,
   cancelScheduleRun,
   upsertScheduleRun,
   runSeedScheduleRunsIfEmpty,
+  getResearchState,
+  createResearchState,
+  updateResearchState,
+  getResearchHistory,
+  getResearchLearnings,
 } from '../lib/database.js';
 import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 import { parseRunFromFolder, getThreeEfficiencies } from '../lib/run-folder-parser.js';
@@ -602,6 +608,309 @@ router.post('/:id/cancel', (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to cancel run',
+    });
+  }
+});
+
+// ============================================================================
+// RESEARCH API ENDPOINTS (Schedule Research Loop)
+// ============================================================================
+
+// Track running research jobs
+const runningJobs = new Map<string, { process: ChildProcess; dataset: string; startedAt: string }>();
+
+/**
+ * GET /api/research/state?dataset=:dataset
+ * Get current research state with history and learnings
+ */
+router.get('/research/state', (req: Request, res: Response) => {
+  try {
+    const dataset = (req.query.dataset as string) || 'huddinge-v3';
+
+    let state = getResearchState(dataset);
+
+    // Create initial state if doesn't exist
+    if (!state) {
+      state = createResearchState({
+        dataset,
+        programVersion: process.env.GIT_HASH || 'dev',
+      });
+    }
+
+    const history = getResearchHistory(dataset, 50); // Last 50 runs
+    const learnings = getResearchLearnings(dataset);
+
+    res.json({
+      success: true,
+      data: {
+        state,
+        history,
+        learnings,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get research state',
+    });
+  }
+});
+
+/**
+ * POST /api/research/trigger
+ * Start research loop in background
+ * Body: { dataset, max_iterations?, strategies? }
+ */
+router.post('/research/trigger', (req: Request, res: Response) => {
+  try {
+    const { dataset = 'huddinge-v3', max_iterations = 50, strategies } = req.body as {
+      dataset?: string;
+      max_iterations?: number;
+      strategies?: string[];
+    };
+
+    // Check if already running
+    const existingJob = Array.from(runningJobs.values()).find(j => j.dataset === dataset);
+    if (existingJob) {
+      return res.status(409).json({
+        success: false,
+        error: `Research already running for dataset: ${dataset}`,
+        job_id: Array.from(runningJobs.entries()).find(([, v]) => v === existingJob)?.[0],
+      });
+    }
+
+    // Initialize or get research state
+    let state = getResearchState(dataset);
+    if (!state) {
+      state = createResearchState({
+        dataset,
+        programVersion: process.env.GIT_HASH || 'dev',
+      });
+    }
+
+    // Update state to running
+    updateResearchState(dataset, {
+      current_status: 'running',
+      current_job_id: null,
+      current_experiment_id: null,
+    });
+
+    // Spawn research loop script
+    const scriptPath = resolve(getServiceRoot(), 'scripts/compound/schedule-research-loop.sh');
+    const logPath = resolve(getServiceRoot(), 'logs/research', `${dataset}_${Date.now()}.log`);
+
+    const args = [dataset, max_iterations.toString()];
+    if (strategies && strategies.length > 0) {
+      args.push(strategies.join(','));
+    }
+
+    const process = spawn(scriptPath, args, {
+      detached: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        DATASET: dataset,
+        MAX_ITERATIONS: max_iterations.toString(),
+      },
+    });
+
+    const job_id = `research_${dataset}_${Date.now()}`;
+
+    // Track job
+    runningJobs.set(job_id, {
+      process,
+      dataset,
+      startedAt: new Date().toISOString(),
+    });
+
+    // Handle process completion
+    process.on('close', (code) => {
+      runningJobs.delete(job_id);
+      const finalStatus = code === 0 ? 'completed' : 'failed';
+      updateResearchState(dataset, {
+        current_status: finalStatus,
+      });
+    });
+
+    // Don't wait for process
+    process.unref();
+
+    res.status(202).json({
+      success: true,
+      data: {
+        job_id,
+        dataset,
+        max_iterations,
+        status_url: `/api/research/status/${job_id}`,
+        logs_url: `/api/research/logs/${job_id}`,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to trigger research',
+    });
+  }
+});
+
+/**
+ * POST /api/research/cancel
+ * Cancel running research loop
+ * Body: { job_id }
+ */
+router.post('/research/cancel', (req: Request, res: Response) => {
+  try {
+    const { job_id } = req.body as { job_id: string };
+
+    const job = runningJobs.get(job_id);
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        error: `Research job not found: ${job_id}`,
+      });
+    }
+
+    // Kill process
+    job.process.kill('SIGTERM');
+
+    // Update state
+    updateResearchState(job.dataset, {
+      current_status: 'cancelled',
+    });
+
+    runningJobs.delete(job_id);
+
+    res.json({
+      success: true,
+      message: `Research job cancelled: ${job_id}`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to cancel research',
+    });
+  }
+});
+
+/**
+ * GET /api/research/status/:job_id
+ * Get status of running research job
+ */
+router.get('/research/status/:job_id', (req: Request, res: Response) => {
+  try {
+    const { job_id } = req.params;
+
+    const job = runningJobs.get(job_id);
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        error: `Research job not found: ${job_id}`,
+        message: 'Job may have completed or been cancelled',
+      });
+    }
+
+    const state = getResearchState(job.dataset);
+
+    res.json({
+      success: true,
+      data: {
+        job_id,
+        dataset: job.dataset,
+        status: state?.current_status || 'running',
+        started_at: job.startedAt,
+        current_iteration: state?.iteration_count || 0,
+        current_experiment: state?.current_experiment_id,
+        current_job: state?.current_job_id,
+        research_phase: state?.research_phase,
+        plateau_count: state?.plateau_count || 0,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get research status',
+    });
+  }
+});
+
+/**
+ * GET /api/research/logs/:job_id?tail=N
+ * Get logs for research job
+ */
+router.get('/research/logs/:job_id', (req: Request, res: Response) => {
+  try {
+    const { job_id } = req.params;
+    const tail = parseInt(req.query.tail as string) || 100;
+
+    const job = runningJobs.get(job_id);
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        error: `Research job not found: ${job_id}`,
+      });
+    }
+
+    const logPath = resolve(
+      getServiceRoot(),
+      'logs/research',
+      `${job.dataset}_${job_id.split('_').pop()}.log`
+    );
+
+    if (!existsSync(logPath)) {
+      return res.json({
+        success: true,
+        data: {
+          logs: 'Log file not yet created',
+          lines: 0,
+        },
+      });
+    }
+
+    const logContent = readFileSync(logPath, 'utf-8');
+    const lines = logContent.split('\n');
+    const tailedLines = lines.slice(-tail);
+
+    res.json({
+      success: true,
+      data: {
+        logs: tailedLines.join('\n'),
+        lines: tailedLines.length,
+        total_lines: lines.length,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get research logs',
+    });
+  }
+});
+
+/**
+ * GET /api/research/running
+ * Get all running research jobs
+ */
+router.get('/research/running', (req: Request, res: Response) => {
+  try {
+    const jobs = Array.from(runningJobs.entries()).map(([job_id, job]) => {
+      const state = getResearchState(job.dataset);
+      return {
+        job_id,
+        dataset: job.dataset,
+        started_at: job.startedAt,
+        current_iteration: state?.iteration_count || 0,
+        status: state?.current_status || 'running',
+      };
+    });
+
+    res.json({
+      success: true,
+      data: jobs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get running jobs',
     });
   }
 });

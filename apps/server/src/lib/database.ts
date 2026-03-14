@@ -29,6 +29,9 @@ import type {
   AgentPerformanceView,
   ActiveSessionView,
   ScheduleRun,
+  ResearchState,
+  ResearchHistory,
+  ResearchLearning,
 } from '../types/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -832,6 +835,234 @@ export function getDashboardStats(): {
     totalExperiments: experiments.total,
     activeExperiments: experiments.active,
   };
+}
+
+// ─── Research State Management ────────────────────────────────────────────────
+
+export function getResearchState(dataset: string): ResearchState | null {
+  const result = db
+    .prepare(`SELECT * FROM research_state WHERE dataset = ?`)
+    .get(dataset) as ResearchState | undefined;
+
+  return result ?? null;
+}
+
+export function createResearchState(params: {
+  dataset: string;
+  programVersion: string;
+}): ResearchState {
+  const id = `research_${params.dataset}_${Date.now()}`;
+  const now = new Date().toISOString();
+
+  db.prepare(
+    `INSERT INTO research_state (
+      id, dataset, program_version, iteration_count, research_phase,
+      current_status, plateau_count, last_improvement_iteration,
+      goal_continuity_avg, goal_continuity_max, goal_unassigned_pct, goal_efficiency_pct,
+      goals_met, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(
+    id,
+    params.dataset,
+    params.programVersion,
+    0, // iteration_count
+    'exploration', // research_phase
+    'idle', // current_status
+    0, // plateau_count
+    0, // last_improvement_iteration
+    11.0, // goal_continuity_avg
+    20.0, // goal_continuity_max
+    1.0, // goal_unassigned_pct
+    70.0, // goal_efficiency_pct
+    false, // goals_met
+    now,
+    now
+  );
+
+  return getResearchState(params.dataset)!;
+}
+
+export function updateResearchState(dataset: string, updates: Partial<ResearchState>): void {
+  const existing = getResearchState(dataset);
+  if (!existing) {
+    throw new Error(`Research state not found for dataset: ${dataset}`);
+  }
+
+  const fields: string[] = [];
+  const values: unknown[] = [];
+
+  // Build dynamic UPDATE query
+  for (const [key, value] of Object.entries(updates)) {
+    if (key !== 'id' && key !== 'dataset' && key !== 'created_at') {
+      fields.push(`${key} = ?`);
+      values.push(value);
+    }
+  }
+
+  if (fields.length === 0) return;
+
+  // Always update updated_at
+  fields.push('updated_at = ?');
+  values.push(new Date().toISOString());
+
+  values.push(dataset);
+
+  db.prepare(
+    `UPDATE research_state SET ${fields.join(', ')} WHERE dataset = ?`
+  ).run(...values);
+}
+
+export function appendToResearchHistory(
+  dataset: string,
+  historyEntry: ResearchHistory
+): void {
+  const state = getResearchState(dataset);
+  if (!state) {
+    throw new Error(`Research state not found for dataset: ${dataset}`);
+  }
+
+  let history: ResearchHistory[] = [];
+  if (state.history_json) {
+    try {
+      history = JSON.parse(state.history_json);
+    } catch (e) {
+      console.error('Failed to parse history_json:', e);
+    }
+  }
+
+  history.push(historyEntry);
+
+  // Keep last 100 entries
+  if (history.length > 100) {
+    history = history.slice(-100);
+  }
+
+  updateResearchState(dataset, {
+    history_json: JSON.stringify(history),
+  });
+}
+
+export function addResearchLearning(
+  dataset: string,
+  learning: ResearchLearning
+): void {
+  const state = getResearchState(dataset);
+  if (!state) {
+    throw new Error(`Research state not found for dataset: ${dataset}`);
+  }
+
+  let learnings: ResearchLearning[] = [];
+  if (state.learnings_json) {
+    try {
+      learnings = JSON.parse(state.learnings_json);
+    } catch (e) {
+      console.error('Failed to parse learnings_json:', e);
+    }
+  }
+
+  learnings.push(learning);
+
+  updateResearchState(dataset, {
+    learnings_json: JSON.stringify(learnings),
+  });
+}
+
+export function updateBestResult(
+  dataset: string,
+  run: ScheduleRun
+): void {
+  const state = getResearchState(dataset);
+  if (!state) {
+    throw new Error(`Research state not found for dataset: ${dataset}`);
+  }
+
+  updateResearchState(dataset, {
+    best_job_id: run.id,
+    best_experiment_id: run.strategy,
+    best_continuity_avg: run.continuity_avg,
+    best_continuity_max: run.continuity_max,
+    best_unassigned_pct: run.unassigned_pct,
+    best_efficiency_pct: run.routing_efficiency_pct,
+    best_achieved_at: new Date().toISOString(),
+    last_improvement_iteration: state.iteration_count,
+    plateau_count: 0, // Reset plateau counter on improvement
+  });
+}
+
+export function checkGoalsMet(state: ResearchState): boolean {
+  if (!state.best_continuity_avg || !state.best_efficiency_pct) {
+    return false;
+  }
+
+  const goalsMet =
+    state.best_continuity_avg <= state.goal_continuity_avg &&
+    (state.best_continuity_max ?? Infinity) <= state.goal_continuity_max &&
+    (state.best_unassigned_pct ?? Infinity) < state.goal_unassigned_pct &&
+    state.best_efficiency_pct > state.goal_efficiency_pct;
+
+  if (goalsMet && !state.goals_met) {
+    updateResearchState(state.dataset, { goals_met: true });
+  }
+
+  return goalsMet;
+}
+
+export function incrementIteration(dataset: string): number {
+  const state = getResearchState(dataset);
+  if (!state) {
+    throw new Error(`Research state not found for dataset: ${dataset}`);
+  }
+
+  const newCount = state.iteration_count + 1;
+
+  // Determine research phase based on iteration count
+  let phase: ResearchState['research_phase'] = 'exploration';
+  if (newCount > 40) {
+    phase = 'deep_dive';
+  } else if (newCount > 20) {
+    phase = 'exploitation';
+  }
+
+  // Check for plateau
+  const plateauIncrement = (newCount - state.last_improvement_iteration) > 0 ? 1 : 0;
+  const newPlateauCount = state.plateau_count + plateauIncrement;
+
+  updateResearchState(dataset, {
+    iteration_count: newCount,
+    research_phase: phase,
+    plateau_count: newPlateauCount,
+  });
+
+  return newCount;
+}
+
+export function getResearchHistory(dataset: string, limit?: number): ResearchHistory[] {
+  const state = getResearchState(dataset);
+  if (!state || !state.history_json) {
+    return [];
+  }
+
+  try {
+    const history: ResearchHistory[] = JSON.parse(state.history_json);
+    return limit ? history.slice(-limit) : history;
+  } catch (e) {
+    console.error('Failed to parse history_json:', e);
+    return [];
+  }
+}
+
+export function getResearchLearnings(dataset: string): ResearchLearning[] {
+  const state = getResearchState(dataset);
+  if (!state || !state.learnings_json) {
+    return [];
+  }
+
+  try {
+    return JSON.parse(state.learnings_json);
+  } catch (e) {
+    console.error('Failed to parse learnings_json:', e);
+    return [];
+  }
 }
 
 // ─── Cleanup ──────────────────────────────────────────────────────────────────

@@ -1,0 +1,17 @@
+# Test tenant submissions (da2de902 variants) — 2026-03-03
+# API key: tf_p_96b5507b-57be-4ab6-b0a6-08a9d3372938
+# Submit with: --configuration-id "" (tenant default)
+
+preferred_vehicles_weight2	688faece-5d53-4402-820f-267445310a04
+wait_min_weight3	a4be8810-7812-4819-8aa5-1165e38a2b8d
+combo_preferred_and_wait_min	8e07450d-69e1-414a-8cb7-8c09ca0849ed
+
+# One busy day (2026-02-16) — preferredVehicles only; extract client→vehicle then patch full 2-week
+one_day_2026_02_16	0e4eec27-13a3-4348-be93-38c111af8823
+
+# From-patch (trim to visit span)
+from_patch_preferred	963c3aa9-9ed3-4fd9-9421-e2f99aa0789f
+from_patch_combo	ad48f2c0-9e39-47db-9959-73072d627112
+
+# Larger pool (25 per client, requiredVehicles)
+pool25_required	a88a5fde-c39e-4182-9be6-cfd6420b2999

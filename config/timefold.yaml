@@ -1,0 +1,145 @@
+# Timefold API Configuration
+# Used by scripts in scripts/timefold/ for API interaction
+
+timefold:
+  # API endpoint
+  api_url: "https://timefold.ai/api/v1"
+
+  # API key (read from environment variable)
+  # Set: export TIMEFOLD_API_KEY="sk_xxx"
+  api_key_env: "TIMEFOLD_API_KEY"
+
+  # Default timeout for solve jobs (seconds)
+  default_timeout: 3600  # 1 hour
+
+  # Polling interval for checking job status (seconds)
+  poll_interval: 30
+
+  # Max polling attempts before giving up
+  max_poll_attempts: 120  # 120 * 30s = 1 hour
+
+  # Default tenant (if using multi-tenant)
+  default_tenant: "test_tenant"
+
+# Dataset configuration
+datasets:
+  # Default dataset
+  default: "huddinge-v3"
+
+  # Dataset paths (relative to recurring-visits/data/)
+  huddinge-v3:
+    name: "Huddinge V3"
+    description: "Huddinge region, 115 clients, 4mars CSV format"
+    csv_file: "Huddinge-v3 - Data.csv"
+    paths:
+      raw: "recurring-visits/data/huddinge-v3/raw"
+      input: "recurring-visits/data/huddinge-v3/input"
+      output: "recurring-visits/data/huddinge-v3/output"
+      continuity: "recurring-visits/data/huddinge-v3/continuity"
+      docs: "recurring-visits/data/huddinge-v3/docs"
+
+  nova:
+    name: "Nova Region"
+    description: "Nova region dataset (future)"
+    paths:
+      raw: "recurring-visits/data/nova/raw"
+      input: "recurring-visits/data/nova/input"
+      output: "recurring-visits/data/nova/output"
+      continuity: "recurring-visits/data/nova/continuity"
+      docs: "recurring-visits/data/nova/docs"
+
+# Research configuration
+research:
+  # Goal metrics for research stopping conditions
+  goals:
+    continuity_avg: 11.0        # Target average continuity
+    continuity_max: 20.0        # Target max continuity
+    unassigned_pct: 1.0         # Max unassigned percentage
+    efficiency: 70.0            # Min routing efficiency percentage
+
+  # Research loop settings
+  loop:
+    max_iterations: 50          # Max iterations before stopping
+    plateau_threshold: 5        # Iterations with no improvement = plateau
+    deep_research_interval: 10  # Trigger deep research every N iterations
+
+  # Strategy families (starting points)
+  strategies:
+    - name: "pool_variation"
+      description: "Vary continuity pool size (3, 5, 8 vehicles)"
+    - name: "vehicle_mode"
+      description: "Required vs preferred vehicles"
+    - name: "from_patch"
+      description: "Continuity tightening via from-patch"
+    - name: "area_weighting"
+      description: "Geographic area clustering"
+    - name: "ess_integration"
+      description: "ESS + FSR shift-then-route"
+
+# Agent service integration
+agent_service:
+  # API URL for be-agent-service
+  url: "http://localhost:3010"
+
+  # Register runs to database
+  register_runs: true
+
+  # Endpoints
+  endpoints:
+    register_run: "/api/schedule-runs/register"
+    research_state: "/api/research/state"
+    research_trigger: "/api/research/trigger"
+
+# Logging
+logging:
+  level: "INFO"
+
+  # Log file paths (relative to dataset)
+  log_files:
+    conversion: "logs/conversion.log"
+    submission: "logs/submission.log"
+    analysis: "logs/analysis.log"
+    research: "logs/research.log"
+
+# Continuity optimization
+continuity:
+  # Pool sizes to test
+  pool_sizes: [3, 5, 8]
+
+  # Continuity target threshold
+  target_threshold: 11.0
+
+  # Over-target penalty weight
+  over_target_weight: 2.0
+
+  # From-patch settings
+  from_patch:
+    pin_visits: true            # Pin visits to vehicles
+    trim_shifts: true           # Remove empty shifts
+    remove_unused_vehicles: true # Remove vehicles with no visits
+
+# Metrics configuration
+metrics:
+  # Efficiency calculation method
+  efficiency_method: "field_time_ratio"  # field_time / (field_time + travel_time)
+
+  # Continuity calculation
+  continuity:
+    count_method: "avg_max"     # Report both average and max
+    include_unassigned: false   # Exclude unassigned from continuity calc
+
+  # Distance units
+  distance_units: "km"
+
+  # Duration units
+  duration_units: "hours"
+
+# Environment variables (documentation only)
+# These should be set in the shell or .env file
+environment:
+  required:
+    - TIMEFOLD_API_KEY          # Timefold API key (required)
+  optional:
+    - DATASET                   # Dataset name (default: huddinge-v3)
+    - AGENT_SERVICE_URL         # Override agent service URL
+    - LOG_LEVEL                 # Override logging level
