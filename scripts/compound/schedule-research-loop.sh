@@ -69,7 +69,7 @@ NC='\033[0m' # No Color
 
 log() {
   local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $*"
-  echo -e "$msg" | tee -a "$LOG_FILE"
+  echo -e "$msg" | tee -a "$LOG_FILE" >&2
 }
 
 log_info() {
@@ -99,7 +99,13 @@ get_research_state() {
     return 0
   fi
 
-  curl -sS "${AGENT_SERVICE_URL}/api/schedule-runs/research/state?dataset=${DATASET}" || echo '{"success":false}'
+  local response
+  response=$(curl -sS "${AGENT_SERVICE_URL}/api/schedule-runs/research/state?dataset=${DATASET}" 2>/dev/null)
+  if [[ $? -eq 0 && -n "$response" ]]; then
+    echo "$response"
+  else
+    echo '{"success":false}'
+  fi
 }
 
 # Update research state via API
@@ -118,16 +124,14 @@ update_research_state() {
 
 # Increment iteration counter
 increment_iteration() {
-  if [[ "$DRY_RUN" == "true" ]]; then
-    echo "1"
-    return 0
-  fi
-
   local state=$(get_research_state)
   local current=$(echo "$state" | jq -r '.data.state.iteration_count // 0')
   local new=$((current + 1))
 
-  update_research_state "{\"iteration_count\":$new}"
+  if [[ "$DRY_RUN" != "true" ]]; then
+    update_research_state "{\"iteration_count\":$new}"
+  fi
+
   echo "$new"
 }
 
@@ -341,7 +345,12 @@ fi
 # Main loop
 iteration=0
 while [[ $iteration -lt $MAX_ITERATIONS ]]; do
-  iteration=$(increment_iteration)
+  iteration=$((iteration + 1))
+
+  # Update API state (only in non-dry-run mode)
+  if [[ "$DRY_RUN" != "true" ]]; then
+    update_research_state "{\"iteration_count\":$iteration}"
+  fi
 
   log_info ""
   log_info "======================================================================"

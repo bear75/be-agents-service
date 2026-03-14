@@ -1,24 +1,27 @@
 #!/bin/bash
 #
 # Optimization Mathematician Agent
-# Analyses completed schedule runs, proposes next N strategies (exploitation + exploration).
-# Outputs JSON array of strategy configs for the schedule-optimization loop.
+# Proposes optimization strategies based on research state and history.
+# Called by schedule-research-loop.sh to determine next experiment.
 #
 # Usage:
-#   ./optimization-mathematician.sh <session_id> <appcaire_repo> [runs_json_path]
+#   ./optimization-mathematician.sh --dataset <dataset> --iteration <N> --state <state_json>
 #
 # Arguments:
-#   session_id     - Session ID for state coordination
-#   appcaire_repo  - Path to caire-platform/appcaire
-#   runs_json_path - Optional: path to JSON of completed runs (else read from API)
+#   --dataset    - Dataset name (e.g., huddinge-v3)
+#   --iteration  - Current iteration number
+#   --state      - Research state JSON (history, best result, etc.)
 #
-# Output (stdout): JSON array of strategy configs, e.g.:
-#   [{"algorithm":"pool-tight-11","strategy":"...","hypothesis":"..."}, ...]
+# Output (stdout): JSON object with:
+#   {
+#     "experiment_id": "unique-id",
+#     "strategy": "strategy-name",
+#     "hypothesis": "Expected outcome"
+#   }
 #
 # Exit codes:
 #   0 - Success
-#   1 - Blocked (no data, invalid input)
-#   2 - Script error
+#   1 - Error
 #
 
 set -euo pipefail
@@ -26,59 +29,68 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROMPT_FILE="$SCRIPT_DIR/prompts/optimization-mathematician.md"
-LOG_DIR="$SERVICE_ROOT/logs/optimization-mathematician"
 
-SESSION_ID="${1:-}"
-APPCAIRE_REPO="${2:-}"
-RUNS_JSON="${3:-}"
+# Parse arguments
+DATASET=""
+ITERATION=""
+STATE=""
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --dataset)
+      DATASET="$2"
+      shift 2
+      ;;
+    --iteration)
+      ITERATION="$2"
+      shift 2
+      ;;
+    --state)
+      STATE="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      exit 1
+      ;;
+  esac
+done
 
-log_info() { echo -e "${GREEN}[MATH]${NC} $1"; }
-log_warn() { echo -e "${YELLOW}[MATH]${NC} $1"; }
-log_error() { echo -e "${RED}[MATH]${NC} $1"; }
-
-if [[ -z "$SESSION_ID" || -z "$APPCAIRE_REPO" ]]; then
-  log_error "Missing required arguments"
-  echo "Usage: $0 <session_id> <appcaire_repo> [runs_json_path]"
-  exit 2
+if [[ -z "$DATASET" || -z "$ITERATION" ]]; then
+  echo "Error: Missing required arguments" >&2
+  echo "Usage: $0 --dataset <dataset> --iteration <N> --state <state_json>" >&2
+  exit 1
 fi
 
-if [[ ! -d "$APPCAIRE_REPO" ]]; then
-  log_error "Appcaire repo not found: $APPCAIRE_REPO"
-  exit 2
-fi
+# For now, return a simple test strategy
+# In production, this would:
+# 1. Analyze state.history to see what's been tried
+# 2. Check state.best_result for current baseline
+# 3. Propose novel strategy based on learnings
+# 4. Use Claude CLI to generate sophisticated strategies
 
-if [[ ! -f "$PROMPT_FILE" ]]; then
-  log_error "Prompt not found: $PROMPT_FILE"
-  exit 2
-fi
+# Generate experiment ID
+EXPERIMENT_ID="exp_$(date +%s)_iter${ITERATION}"
 
-mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/${SESSION_ID}.log"
-
-log_info "Session: $SESSION_ID | Appcaire: $APPCAIRE_REPO" | tee -a "$LOG_FILE"
-
-# When Claude CLI is used, this script would invoke it with runs data and prompt.
-# Output is expected to be a JSON array of strategy configs.
-if command -v claude >/dev/null 2>&1; then
-  log_info "Claude CLI available; mathematician prompt ready for loop invocation" | tee -a "$LOG_FILE"
+# Determine strategy based on iteration
+if [[ "$ITERATION" -eq 1 ]]; then
+  STRATEGY="pool_size_5"
+  HYPOTHESIS="Test baseline with pool size 5 (known good configuration)"
+elif [[ "$ITERATION" -eq 2 ]]; then
+  STRATEGY="pool_size_8"
+  HYPOTHESIS="Increase pool size to 8 for more flexibility, may reduce continuity"
 else
-  log_info "Mathematician prompt ready; use schedule-optimization-loop.sh with GET /api/schedule-runs for input" | tee -a "$LOG_FILE"
+  STRATEGY="pool_size_3"
+  HYPOTHESIS="Reduce pool size to 3 for tighter continuity, may increase unassigned"
 fi
 
-# Placeholder: emit a minimal valid strategy list so the loop can be tested
-# In production the loop passes runs JSON to Claude and parses stdout for strategies.
-if [[ -n "${EMIT_SAMPLE_STRATEGIES:-}" ]]; then
-  cat <<'EOF'
-[
-  {"algorithm":"pool-tight-11","strategy":"Same as 82a338b9 but max pool size = 11","hypothesis":"Reduce continuity from 14 to ≤11 by tightening vehicle pool"},
-  {"algorithm":"soft-weight-2x","strategy":"Double preferred-vehicle weight in Timefold config","hypothesis":"Stronger soft constraint improves continuity without losing assignments"}
-]
+# Output JSON as single line (compact) so tail -1 works
+cat <<EOF | jq -c .
+{
+  "experiment_id": "$EXPERIMENT_ID",
+  "strategy": "$STRATEGY",
+  "hypothesis": "$HYPOTHESIS"
+}
 EOF
-fi
 
 exit 0
