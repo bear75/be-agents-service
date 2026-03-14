@@ -19,6 +19,7 @@ This file contains learnings about the agent automation service that orchestrate
 7. [Deployment](#deployment)
 8. [Troubleshooting](#troubleshooting)
 9. [Common Mistakes](#common-mistakes)
+10. [Schedule Research (Timefold FSR Optimization)](#schedule-research-timefold-fsr-optimization)
 
 ---
 
@@ -727,6 +728,151 @@ Use Boris workflow with worktrees and subagents for [feature]
 ```
 
 See target repository's `.claude/prompts/` for full documentation.
+
+---
+
+## Schedule Research (Timefold FSR Optimization)
+
+### Overview
+
+Autonomous AI research system for optimizing homecare schedules using Timefold FSR (Field Service Routing). The system uses mathematician + specialist agents to iteratively improve routing efficiency, continuity, and unassigned visit rates.
+
+**Architecture:** Self-contained in be-agent-service, independent from beta-appcaire production.
+
+### Components
+
+**API & Dashboard:**
+- Server: `apps/server` (port 3010)
+- Research UI: `http://localhost:3010/schedule-research`
+- Database: SQLite `schedule_runs` table (44 columns)
+
+**Agents:**
+- `agents/optimization-mathematician.sh` - Proposes optimization strategies
+- `agents/timefold-specialist.sh` - Executes Timefold API submissions
+
+**Research Loop:**
+- `scripts/compound/schedule-research-loop.sh` - Autonomous optimization loop
+- Mathematician analyzes history → proposes strategy → specialist executes → repeat
+
+**Python Scripts:** (see `scripts/PYTHON_SCRIPTS.md`)
+- `scripts/timefold/` - API submission/fetching
+- `scripts/conversion/` - CSV → FSR JSON
+- `scripts/continuity/` - Vehicle pools, from-patch optimization
+- `scripts/analytics/` - Metrics calculation
+- `scripts/verification/` - Input validation
+- `scripts/geocoding/` - Address geocoding
+
+### Dataset: Huddinge v3
+
+**Location:** `/recurring-visits/data/huddinge-v3/`
+
+**Source CSV:** `/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/Huddinge-v3 - Data_final.csv`
+- 665 rows (664 data + header)
+- 22 columns (includes Lat, Lon coordinates)
+- 115 clients
+
+**Current Input:** `input_huddinge-v3_FIXED.json`
+- 3,844 visits (3,520 standalone + 324 in visit groups)
+- 2,069 dependencies (PT0M same-day, PT3H30M spacing)
+- Planning window: March 2-15, 2026 (2 weeks)
+- NO `tags` property (FSR schema compliance)
+
+### Common Workflows
+
+**Trigger Research Run:**
+```bash
+# Via API
+curl -X POST http://localhost:3010/api/research/trigger \
+  -H 'Content-Type: application/json' \
+  -d '{"dataset": "huddinge-v3", "max_iterations": 50}'
+
+# Via Dashboard
+open http://localhost:3010/schedule-research
+# Click "Trigger Research" button
+```
+
+**Monitor Progress:**
+```bash
+# Check status
+curl http://localhost:3010/api/research/state?dataset=huddinge-v3
+
+# View logs
+tail -f recurring-visits/logs/schedule-research-*.log
+```
+
+**Manual Script Execution:**
+```bash
+# Convert CSV to FSR JSON
+python3 scripts/conversion/csv_to_fsr.py \
+  "Huddinge-v3 - Data_final.csv" \
+  --start-date 2026-03-02 \
+  --end-date 2026-03-15 \
+  --no-geocode \
+  -o input.json
+
+# Submit to Timefold
+python3 scripts/timefold/submit.py solve input.json --wait --save solution.json
+
+# Calculate metrics
+python3 scripts/analytics/metrics.py solution.json
+
+# Generate continuity report
+python3 scripts/continuity/report.py solution.json
+```
+
+### Goal Metrics
+
+- **Continuity average:** ≤ 11.0 (number of different caregivers per client over 2 weeks)
+- **Unassigned visits:** < 1%
+- **Routing efficiency:** > 70% (productive time vs total shift time)
+
+### Research Strategies
+
+The mathematician agent is free to propose any strategy, including:
+- Pool size variation (3, 5, 8 vehicles per client)
+- Required vs preferred vehicles
+- ESS + FSR integration (shift-then-route)
+- From-patch optimization (continuity tightening)
+- Area weighting and clustering
+- Front-loading and binary tree strategies
+
+### Key Learnings
+
+**FSR Schema Compliance:**
+- Timefold FSR does NOT accept `tags` property on visits
+- Always remove tags before submission (both standalone visits and visits in groups)
+
+**Input File Versions:**
+- `input_v3_FIXED.json` (3,832 visits): Generated from `Data.csv` (20 cols, no coordinates)
+- `input_huddinge-v3_FIXED.json` (3,844 visits): Generated from `Data_final.csv` (22 cols with Lat/Lon)
+- **Current source of truth:** Data_final.csv with coordinates
+
+**Script Consolidation:**
+- Primary conversion: `scripts/conversion/csv_to_fsr.py` (from attendo_4mars_to_fsr.py)
+- All scripts organized by function in `/scripts/`
+- See `scripts/PYTHON_SCRIPTS.md` for complete reference
+
+**Timefold Submission:**
+- Redirect stderr to log file to avoid control characters in JSON parsing
+- Extract route plan ID from both stdout and stderr log
+- Poll status until completion
+- FSR solve typically takes 10-30 minutes for 3,844 visits
+
+### Database Schema
+
+**schedule_runs table:** 44 columns tracking:
+- Basic info: job_id, dataset, variant, status, timestamps
+- Metrics: efficiency, continuity_avg, unassigned_pct
+- Route details: total_distance, travel_time, shifts_used
+- Continuity: continuity_max, over_target_count
+- Config: input_path, strategy, config JSON
+
+### Documentation
+
+- `docs/SCHEDULE_RESEARCH_PROGRAM.md` - AI research instructions (planned)
+- `docs/SCRIPT_LOCATIONS.md` - Script consolidation map
+- `scripts/PYTHON_SCRIPTS.md` - Consolidated scripts reference
+- `recurring-visits/huddinge-package/huddinge-4mars-csv/docs/` - v3 campaign documentation
 
 ---
 

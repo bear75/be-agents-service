@@ -73,15 +73,20 @@ fi
 OUTPUT_DIR="$DATA_DIR/$DATASET/research_output/$EXPERIMENT_ID"
 mkdir -p "$OUTPUT_DIR"
 
-# Submit to Timefold
+# Submit to Timefold (redirect stderr to avoid control characters in JSON parsing)
 cd "$SCRIPTS_DIR"
-RESULT=$(python3 submit_to_timefold.py solve "$INPUT_JSON" --wait --save "$OUTPUT_DIR/output.json" 2>&1) || {
-  echo "{\"error\":\"Timefold submission failed: $RESULT\"}" | jq -c .
+TF_LOG="$OUTPUT_DIR/timefold_submission.log"
+RESULT=$(python3 submit_to_timefold.py solve "$INPUT_JSON" --wait --save "$OUTPUT_DIR/output.json" 2>"$TF_LOG") || {
+  ERROR_MSG=$(cat "$TF_LOG" 2>/dev/null | tail -5 | tr -d '\033\007\r' | tr '\n' ' ')
+  echo "{\"error\":\"Timefold submission failed: $ERROR_MSG\"}" | jq -c .
   exit 1
 }
 
-# Extract job ID from result (route plan ID)
+# Extract job ID from result (route plan ID) - check both stdout and stderr log
 ROUTE_PLAN_ID=$(echo "$RESULT" | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1)
+if [[ -z "$ROUTE_PLAN_ID" ]]; then
+  ROUTE_PLAN_ID=$(grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "$TF_LOG" 2>/dev/null | head -1)
+fi
 
 if [[ -z "$ROUTE_PLAN_ID" ]]; then
   ROUTE_PLAN_ID="$EXPERIMENT_ID"

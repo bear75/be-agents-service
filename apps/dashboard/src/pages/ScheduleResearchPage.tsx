@@ -118,11 +118,15 @@ export function ScheduleResearchPage() {
             onChange={(e) => setSelectedDataset(e.target.value)}
             className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {datasets.map((ds) => (
-              <option key={ds.id} value={ds.id} disabled={!ds.has_data}>
-                {ds.name} {!ds.has_data ? '(no data)' : ''}
-              </option>
-            ))}
+            {datasets.length === 0 ? (
+              <option value="">Loading datasets...</option>
+            ) : (
+              datasets.map((ds) => (
+                <option key={ds.id} value={ds.id} disabled={!ds.has_data}>
+                  {ds.name} {!ds.has_data ? '(no data)' : ''}
+                </option>
+              ))
+            )}
           </select>
           <Link
             to={`/schedules?dataset=${selectedDataset}`}

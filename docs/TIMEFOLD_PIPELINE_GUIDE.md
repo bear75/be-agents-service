@@ -332,23 +332,28 @@ if client == prev_client and date == prev_date:
 
 ### Running the Conversion
 
-**Command**:
+**Command** (run from **be-agent-service** repo root; v3 baseline = 2 weeks, Slinga-only vehicles):
 ```bash
-cd /Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits
+cd /path/to/be-agent-service
 
-python3 scripts/csv_to_fsr.py \
-  --input huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/Huddinge-v3\ -\ Data.csv \
-  --output huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/input_v3_FIXED.json \
-  --geocode-cache data/geocode_cache.json
+python3 scripts/timefold/conversion/csv_to_fsr.py \
+  "recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/Huddinge-v3 - Data_final.csv" \
+  -o "recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/input_v3_FIXED.json" \
+  --start-date 2026-03-02 \
+  --weeks 2 \
+  --no-supplementary-vehicles \
+  --no-geocode
 ```
 
 **Options**:
-- `--input`: CSV file path
-- `--output`: FSR JSON output path
-- `--geocode-cache`: Cached geocoding results (speeds up conversion)
-- `--weeks`: Number of weeks to generate (default: 1)
+- `--start-date`: Planning window start (e.g. 2026-03-02).
+- `--end-date`: Planning window end. If omitted, derived from longest recurrence in CSV (or capped by `--weeks`).
+- `--weeks`: Cap planning window to N weeks (e.g. **2** for v3 baseline). Use when CSV has 4-weekly rows so the window stays 2 weeks.
+- `--no-supplementary-vehicles`: Do not add extra Kväll/Dag vehicles (Slinga-only; ~26 vehicles for 2w). **Use for v3 baseline.**
+- `--no-geocode`: Skip geocoding when CSV has Lat/Lon.
+- `--address-coordinates`: Optional JSON of address → [lat, lon] for missing addresses.
 
-**Output**: `input_v3_FIXED.json` (baseline FSR input)
+**Output**: `input_v3_FIXED.json` (baseline FSR input, ~3832 visits, 2-week window). See also `docs/PIPELINE_SOURCE.md`.
 
 ### Verification
 
