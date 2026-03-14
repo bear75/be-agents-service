@@ -43,6 +43,9 @@ export function RunDetailPanel({ run, onClose, onCancel }: RunDetailPanelProps) 
         </button>
       </div>
       <div className="space-y-2">
+        {run.dataset && (
+          <p><span className="text-gray-500">Dataset:</span> <span className="font-mono text-xs">{run.dataset}</span></p>
+        )}
         <p><span className="text-gray-500">Status:</span> {run.status}</p>
         <p><span className="text-gray-500">Algorithm:</span> {run.algorithm}</p>
         <p><span className="text-gray-500">Strategy:</span> {run.strategy}</p>

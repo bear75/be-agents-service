@@ -5,7 +5,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PagePurpose } from '../components/PagePurpose';
-import { getScheduleRuns, importScheduleRunsFromAppcaire, getAvailableDatasets } from '../lib/api';
+import { getScheduleRuns, importScheduleRunsFromAppcaire, getAvailableDatasets, clearScheduleRuns } from '../lib/api';
 import type { ScheduleRun, Dataset } from '../types';
 import { ScatterPlot } from '../components/schedules/ScatterPlot';
 import { RunDetailPanel } from '../components/schedules/RunDetailPanel';
@@ -88,6 +88,7 @@ export function SchedulesPage() {
   const [selectedDataset, setSelectedDataset] = useState(searchParams.get('dataset') || 'huddinge-2w-expanded');
   const [sortField, setSortField] = useState<SortField>('submitted_at');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [clearedMessage, setClearedMessage] = useState<string | null>(null);
 
   const loadDatasets = async () => {
     try {
@@ -182,6 +183,25 @@ export function SchedulesPage() {
     }
   };
 
+  /** Delete all runs (start fresh with new formats/schedules). */
+  const clearAll = async () => {
+    if (!window.confirm('Delete all schedule runs? This cannot be undone.')) return;
+    setLoading(true);
+    setError(null);
+    setClearedMessage(null);
+    try {
+      const { deleted } = await clearScheduleRuns();
+      setSelectedId(null);
+      setRuns([]);
+      setClearedMessage(deleted > 0 ? `Cleared ${deleted} run(s).` : 'No runs to clear.');
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to clear runs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const selectedRun = selectedId ? runs.find((r) => r.id === selectedId) : null;
 
   return (
@@ -212,14 +232,24 @@ export function SchedulesPage() {
             )}
           </select>
         </div>
-        <button
-          type="button"
-          onClick={refresh}
-          disabled={loading}
-          className="text-sm text-blue-600 hover:underline disabled:opacity-50"
-        >
-          {loading ? 'Refreshing…' : 'Refresh'}
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={refresh}
+            disabled={loading}
+            className="text-sm text-blue-600 hover:underline disabled:opacity-50"
+          >
+            {loading ? 'Refreshing…' : 'Refresh'}
+          </button>
+          <button
+            type="button"
+            onClick={clearAll}
+            disabled={loading}
+            className="text-sm text-red-600 hover:underline disabled:opacity-50"
+          >
+            Clear all runs
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -228,13 +258,19 @@ export function SchedulesPage() {
         </div>
       )}
 
+      {clearedMessage && (
+        <div className="rounded border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
+          {clearedMessage}
+        </div>
+      )}
+
       {loading && runs.length === 0 ? (
         <div className="text-gray-500">Loading runs…</div>
       ) : runs.length === 0 ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-6 text-center text-sm text-amber-900">
-          <p className="font-medium">No runs in this dataset.</p>
+          <p className="font-medium">No runs yet.</p>
           <p className="mt-1 text-amber-800">
-            Click <strong>Refresh</strong> above to import from the shared huddinge-datasets folder (or seed sample runs).
+            Trigger a run from Schedule Research, or click Refresh to import from the shared huddinge-datasets folder.
           </p>
         </div>
       ) : (

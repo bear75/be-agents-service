@@ -5,7 +5,7 @@
 - **Template in repo:** `config/caire/env.example`
 - **Real file (create it):** `~/.config/caire/env`
 
-**Who uses what:** Telegram uses `TELEGRAM_BOT_TOKEN` (often in OpenClaw/plist), not `ANTHROPIC_API_KEY`. Compound jobs (auto-compound, PRD, orchestrator) use the Claude CLI and need `ANTHROPIC_API_KEY` — replace the placeholder with your key from console.anthropic.com or those jobs will fail with "Not logged in".
+**Who uses what:** Telegram uses `TELEGRAM_BOT_TOKEN` (often in OpenClaw/plist), not `ANTHROPIC_API_KEY`. Compound jobs (auto-compound, PRD, orchestrator) use the Claude CLI and need `ANTHROPIC_API_KEY` — replace the placeholder with your key from console.anthropic.com or those jobs will fail with "Not logged in". Schedule research (Timefold FSR) uses `TIMEFOLD_API_KEY` — set to the **caire-testing** tenant key so submissions use the correct Timefold tenant.
 
 ## Setup
 

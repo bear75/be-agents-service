@@ -112,6 +112,7 @@ export function RunDetailPage() {
   if (!run) return null;
 
   const continuityRows = continuityCsv ? parseContinuityCsv(continuityCsv) : [];
+  const isCompleted = run.status === 'completed';
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
@@ -119,6 +120,9 @@ export function RunDetailPage() {
         <div>
           <Link to="/schedules" className="text-sm text-gray-500 hover:text-gray-700">← Schedules</Link>
           <h1 className="text-xl font-semibold text-gray-900 mt-1 font-mono">{run.id}</h1>
+          {run.dataset && (
+            <p className="text-xs text-gray-500 mt-0.5 font-mono">Dataset: {run.dataset}</p>
+          )}
           <p className="text-sm text-gray-600 mt-0.5">
             {run.algorithm ? <span className="font-medium">Algorithm: {run.algorithm}</span> : null}
             {run.algorithm && run.strategy ? ' · ' : null}
@@ -135,6 +139,17 @@ export function RunDetailPage() {
         </span>
       </div>
 
+      {!isCompleted && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-medium">Run not completed yet</p>
+          <p className="mt-1 text-amber-800">
+            Detailed metrics (efficiency, continuity, shifts) appear only after the Timefold job finishes. Check back when status is <strong>completed</strong>.
+          </p>
+        </div>
+      )}
+
+      {isCompleted && (
+      <>
       {/* KPI cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {run.routing_efficiency_pct != null && (
@@ -278,6 +293,8 @@ export function RunDetailPage() {
           Attendo Schedule Pilot Report (PDF) →
         </a>
       </div>
+      </>
+      )}
     </div>
   );
 }

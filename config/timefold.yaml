@@ -18,8 +18,8 @@ timefold:
   # Max polling attempts before giving up
   max_poll_attempts: 120  # 120 * 30s = 1 hour
 
-  # Default tenant (if using multi-tenant)
-  default_tenant: "test_tenant"
+  # Default tenant: use caire-testing API key for schedule research
+  default_tenant: "caire-testing"
 
 # Dataset configuration
 datasets:

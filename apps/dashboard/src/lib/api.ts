@@ -30,6 +30,7 @@ const API_BASE =
 
 async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${url}`, {
+    cache: 'no-store',
     headers: {
       'Content-Type': 'application/json',
       ...options?.headers,
@@ -481,7 +482,8 @@ export async function getLLMUsage(days = 7, limit = 200): Promise<LLMUsageRecord
 // ─── Schedule optimization (Timefold FSR runs) ───────────────────────────────
 
 export async function getScheduleRuns(dataset?: string): Promise<ScheduleRun[]> {
-  const url = dataset ? `/schedule-runs?dataset=${encodeURIComponent(dataset)}` : '/schedule-runs';
+  const params = dataset ? `?dataset=${encodeURIComponent(dataset)}` : '';
+  const url = `/schedule-runs${params}`;
   const data = await fetchApi<{ runs?: ScheduleRun[] } | ScheduleRun[]>(url);
   if (Array.isArray(data)) return data;
   return data?.runs ?? [];
@@ -491,6 +493,15 @@ export async function cancelScheduleRun(id: string, reason?: string): Promise<Sc
   const data = await fetchApi<ScheduleRun>(`/schedule-runs/${id}/cancel`, {
     method: 'POST',
     body: JSON.stringify({ reason: reason ?? 'Cancelled by user' }),
+  });
+  return data;
+}
+
+/** Delete all schedule runs (start fresh with new formats/schedules). */
+export async function clearScheduleRuns(): Promise<{ deleted: number }> {
+  const data = await fetchApi<{ deleted: number }>('/schedule-runs/clear', {
+    method: 'POST',
+    body: JSON.stringify({}),
   });
   return data;
 }

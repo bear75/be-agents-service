@@ -143,6 +143,8 @@ What should we focus on next?
 | `add_follow_up` | Add follow-up |
 | `get_memory` | Read decisions/learnings/context |
 | **`trigger_agent`** | Start agent immediately |
+| **`trigger_schedule_research`** | Start schedule optimization research (Timefold FSR) |
+| **`get_schedule_research_status`** | Get current research state for a dataset |
 
 **Configuration:** `~/.openclaw/openclaw.json`
 ```json
@@ -159,6 +161,44 @@ What should we focus on next?
   }
 }
 ```
+
+### Trigger schedule research from Telegram
+
+Start schedule optimization research (Timefold FSR) and check status from Telegram. Darwin uses `trigger_schedule_research` and `get_schedule_research_status` when you say “start schedule research”, “run research”, “trigger schedule optimization”, or “how’s the schedule research going?”.
+
+**API (base URL: `http://localhost:3010`):**
+
+| Action | Method | URL | Body / query |
+|--------|--------|-----|--------------|
+| **Trigger** | POST | `/api/schedule-runs/research/trigger` | `{ "dataset": "huddinge-v3", "max_iterations": 50 }` |
+| **Status** | GET | `/api/schedule-runs/research/state?dataset=huddinge-v3` | Query: `dataset` (optional) |
+
+**How to test**
+
+1. **Backend (agent service on 3010):**
+   ```bash
+   # Terminal 1: start dashboard/API (if not already running)
+   cd ~/HomeCare/be-agents-service && PORT=3010 yarn workspace server dev
+
+   # Terminal 2: trigger research
+   curl -sS -X POST http://localhost:3010/api/schedule-runs/research/trigger \
+     -H "Content-Type: application/json" \
+     -d '{"dataset":"huddinge-v3","max_iterations":50}'
+
+   # Status
+   curl -sS "http://localhost:3010/api/schedule-runs/research/state?dataset=huddinge-v3" | jq .
+   ```
+
+2. **Bridge (use dist so new tools are loaded):**  
+   In `~/.openclaw/openclaw.json` (or your OpenClaw config), point the MCP server at the **dist** entry so the updated tools are used:
+   ```json
+   "args": ["node", "/full/path/to/be-agents-service/apps/openclaw-bridge/dist/index.js"]
+   ```
+   Set env so the bridge can reach the API: `SCHEDULE_RESEARCH_API_URL` or `AGENT_API_URL` = `http://localhost:3010` (default in code).
+
+3. **Restart OpenClaw/Darwin** so it reloads the bridge, then in Telegram try:
+   - “Start schedule research”
+   - “How’s the schedule research going?”
 
 ### Notification Scripts (`scripts/notifications/`)
 

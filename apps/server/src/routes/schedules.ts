@@ -16,7 +16,7 @@ import {
   getScheduleRunById,
   cancelScheduleRun,
   upsertScheduleRun,
-  runSeedScheduleRunsIfEmpty,
+  deleteAllScheduleRuns,
   getResearchState,
   createResearchState,
   updateResearchState,
@@ -29,7 +29,23 @@ import type { ScheduleRun } from '../types/index.js';
 
 const router = Router();
 
+/** Delete all schedule runs — must be registered before any /:id route so POST /clear is not matched as /:id. */
+router.post('/clear', (_req: Request, res: Response) => {
+  try {
+    const deleted = deleteAllScheduleRuns();
+    res.json({ success: true, data: { deleted } });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to clear schedule runs',
+    });
+  }
+});
+
 const HUDDINGE_DATASETS_DIR = 'huddinge-datasets';
+
+/** Only this batch folder is imported; old batches (e.g. 28-feb) are ignored so the dashboard shows only new runs. */
+const IMPORT_BATCH_NAME = process.env.SCHEDULE_IMPORT_BATCH || 'current';
 
 /** Repo-local datasets path: from this file (routes/schedules) up to repo root, then recurring-visits/... */
 const REPO_LOCAL_DATASETS = (() => {
@@ -152,15 +168,17 @@ function importRunsFromBatchDir(batchDir: string, batch: string): number {
       manifestEntry ?? null,
       CONTINUITY_TARGET,
     );
+    const existing = getScheduleRunById(runId);
+    const now = new Date().toISOString();
     upsertScheduleRun({
       ...parsed,
       decision: null,
       decision_reason: null,
-      submitted_at: new Date().toISOString(),
-      started_at: null,
-      completed_at: null,
-      cancelled_at: null,
-      duration_seconds: null,
+      submitted_at: existing?.submitted_at ?? now,
+      started_at: existing?.started_at ?? null,
+      completed_at: existing?.completed_at ?? null,
+      cancelled_at: existing?.cancelled_at ?? null,
+      duration_seconds: existing?.duration_seconds ?? null,
       notes: null,
       iteration: 1,
     });
@@ -220,44 +238,38 @@ router.get('/import-from-appcaire', (req: Request, res: Response) => {
     const batchesScanned: string[] = [];
     const sources: string[] = [];
 
-    // Shared folder only: AgentWorkspace/huddinge-datasets (e.g. .../huddinge-datasets/28-feb)
+    // Only import from huddinge-datasets/current (or SCHEDULE_IMPORT_BATCH); old batches like 28-feb are ignored.
     const huddingePath = getHuddingeDatasetsPath();
     if (huddingePath) {
-      sources.push(`huddinge-datasets: ${huddingePath}`);
-      const entries = readdirSync(huddingePath, { withFileTypes: true });
-      for (const ent of entries) {
-        if (!ent.isDirectory()) continue;
-        const batch = ent.name;
-        if (batch.startsWith('.')) continue;
-        const batchDir = resolve(huddingePath, batch);
-        batchesScanned.push(batch);
-        imported += importRunsFromBatchDir(batchDir, batch);
+      const batchDir = resolve(huddingePath, IMPORT_BATCH_NAME);
+      if (existsSync(batchDir)) {
+        sources.push(`huddinge-datasets/${IMPORT_BATCH_NAME}: ${batchDir}`);
+        batchesScanned.push(IMPORT_BATCH_NAME);
+        imported += importRunsFromBatchDir(batchDir, IMPORT_BATCH_NAME);
+      } else {
+        sources.push(`huddinge-datasets: ${huddingePath} (import batch "${IMPORT_BATCH_NAME}" not found)`);
       }
     }
 
     if (imported === 0 && sources.length === 0) {
       return res.status(404).json({
         success: false,
-        error: 'No shared dataset folder found. Use AgentWorkspace/huddinge-datasets (e.g. 28-feb/ with run subdirs and metrics/continuity files).',
-        hint: 'Set HUDDINGE_DATASETS_PATH to the shared huddinge-datasets folder, or configure darwin.workspace.path in config/repos.yaml.',
+        error: 'No shared dataset folder found. Use huddinge-datasets/current/ for new runs (see docs/SCHEDULE_RUNS_DATA_SOURCE.md).',
+        hint: 'Set HUDDINGE_DATASETS_PATH to the huddinge-datasets root, or use repo recurring-visits/huddinge-package/huddinge-datasets/current/.',
       });
     }
 
     if (imported === 0) {
-      const seeded = runSeedScheduleRunsIfEmpty(true);
-      if (seeded > 0) {
-        return res.json({
+      return res.json({
+        success: true,
+        data: {
           success: true,
-          data: {
-            success: true,
-            imported: 0,
-            seeded,
-            sources,
-            batchesScanned,
-            message: `No manifest.json with runs in scanned folders; seeded ${seeded} sample run(s). Refresh the page.`,
-          },
-        });
-      }
+          imported: 0,
+          sources,
+          batchesScanned,
+          message: `No runs in ${IMPORT_BATCH_NAME}/. Add run folders (and manifest.json) to huddinge-datasets/${IMPORT_BATCH_NAME}/, or trigger a run from Schedule Research.`,
+        },
+      });
     }
 
     res.json({
@@ -384,10 +396,6 @@ router.get('/', (req: Request, res: Response) => {
   try {
     const dataset = req.query.dataset as string | undefined;
     let runs = getAllScheduleRuns(dataset);
-    if (runs.length === 0) {
-      runSeedScheduleRunsIfEmpty();
-      runs = getAllScheduleRuns(dataset);
-    }
     runs = runs.map(augmentRunWithVariantMetrics);
     res.json({
       success: true,

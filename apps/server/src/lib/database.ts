@@ -120,6 +120,37 @@ function ensureSeedData(): void {
   runSeedData();
 }
 
+/**
+ * Ensure schedule_runs and research_state exist (for DBs created before these were in schema).
+ * Safe to run: uses CREATE TABLE IF NOT EXISTS and CREATE INDEX IF NOT EXISTS.
+ */
+function ensureScheduleResearchTables(): void {
+  const tables = db
+    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('schedule_runs', 'research_state')")
+    .all() as { name: string }[];
+  const names = new Set(tables.map((t) => t.name));
+  if (names.has('schedule_runs') && names.has('research_state')) {
+    return;
+  }
+  if (!existsSync(SCHEMA_PATH)) return;
+  const schema = readFileSync(SCHEMA_PATH, 'utf8');
+  const start = schema.indexOf('-- SCHEDULE OPTIMIZATION (Timefold FSR runs)');
+  const end = schema.indexOf('-- LLM COST TRACKING', start);
+  if (start === -1 || end === -1) return;
+  const block = schema
+    .slice(start, end)
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('--'))
+    .join('\n');
+  try {
+    db.exec(block);
+    console.log('Schedule research tables ensured (schedule_runs, research_state)');
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.warn('ensureScheduleResearchTables:', msg);
+  }
+}
+
 if (needsInit) {
   initializeSchema();
   ensureSeedData();
@@ -133,6 +164,7 @@ if (needsInit) {
     ensureSeedData();
   } else {
     ensureSeedData();
+    ensureScheduleResearchTables();
   }
 }
 
@@ -605,6 +637,12 @@ export function getScheduleRunById(id: string): ScheduleRun | undefined {
     | undefined;
 }
 
+/** Delete all schedule runs (e.g. to start fresh with new formats). Returns number deleted. */
+export function deleteAllScheduleRuns(): number {
+  const result = db.prepare('DELETE FROM schedule_runs').run();
+  return result.changes;
+}
+
 export function cancelScheduleRun(
   id: string,
   reason: string,
@@ -614,27 +652,6 @@ export function cancelScheduleRun(
     `UPDATE schedule_runs SET status = 'cancelled', decision = 'kill', decision_reason = ?, cancelled_at = ? WHERE id = ?`,
   ).run(reason, now, id);
   return getScheduleRunById(id);
-}
-
-/**
- * Run seed SQL for schedule_runs so dashboard has sample 28-feb runs with full metrics.
- * When force is false: only runs if table is empty.
- * When force is true: always runs (REPLACE overwrites the 11 sample runs with full metrics).
- */
-export function runSeedScheduleRunsIfEmpty(force = false): number {
-  const count = db.prepare('SELECT COUNT(*) as n FROM schedule_runs').get() as { n: number };
-  if (!force && count.n > 0) return count.n;
-  const seedPath = resolve(SERVICE_ROOT, 'scripts', 'seed-schedule-runs.sql');
-  if (!existsSync(seedPath)) return 0;
-  const sql = readFileSync(seedPath, 'utf8').replace(/^--.*$/gm, '').trim();
-  if (!sql) return 0;
-  try {
-    db.exec(sql);
-    const r = db.prepare('SELECT COUNT(*) as n FROM schedule_runs').get() as { n: number };
-    return r?.n ?? 0;
-  } catch {
-    return 0;
-  }
 }
 
 /**
