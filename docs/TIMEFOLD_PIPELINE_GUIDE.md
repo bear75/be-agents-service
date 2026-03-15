@@ -5,6 +5,8 @@
 **Date**: 2026-03-14
 **Status**: Production workflow documented
 
+**Related**: For source-of-truth (Schedule ↔ Input ↔ Solution), CSV upload via dashboard, script flow, and e2e to solution, see **[docs/pipeline/](docs/pipeline/)** (index: [pipeline/README.md](docs/pipeline/README.md)).
+
 ---
 
 ## Table of Contents

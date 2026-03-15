@@ -1558,6 +1558,8 @@ def generate_fsr_json(
         occs = _expand_row_to_occurrences(row, i, start_date, end_date)
         occurrences.extend(occs)
 
+    _write_facit(csv_path, occurrences, start_date, end_date)
+
     external_coordinates: Optional[Dict[str, Tuple[float, float]]] = None
     if address_coordinates_path and address_coordinates_path.exists():
         external_coordinates = _load_address_coordinates(address_coordinates_path)
@@ -1626,6 +1628,53 @@ def generate_fsr_json(
 
     _log_csv_json_summary(rows, occurrences, model_input)
     return payload
+
+
+def _write_facit(
+    csv_path: Path,
+    occurrences: List[Dict[str, Any]],
+    start_date: datetime,
+    end_date: datetime,
+) -> None:
+    """
+    Write facit.json next to the CSV with expected counts from expansion.
+    Same definitions as dashboard import: visits, groups (client+date+Dubbel ≥2), same-day ordering edges.
+    """
+    visits_by_client_date: Dict[Tuple[str, str], int] = defaultdict(int)
+    group_key_count: Dict[Tuple[str, str, str], int] = defaultdict(int)
+    for occ in occurrences:
+        kundnr = str(occ.get("kundnr", "")).strip()
+        date_iso = str(occ.get("date_iso", "")).strip()
+        if not date_iso:
+            continue
+        visits_by_client_date[(kundnr, date_iso)] += 1
+        dubbel = str(occ.get("dubbel", "")).strip()
+        if dubbel:
+            group_key_count[(kundnr, date_iso, dubbel)] += 1
+
+    expected_visit_count = len(occurrences)
+    expected_visit_groups = sum(1 for c in group_key_count.values() if c >= 2)
+    expected_same_day_ordering = sum(max(0, c - 1) for c in visits_by_client_date.values())
+
+    window_days = (end_date - start_date).days + 1
+    period_weeks = window_days / 7.0
+
+    facit = {
+        "sourceCsv": csv_path.name,
+        "periodDays": window_days,
+        "periodWeeks": period_weeks,
+        "expectedVisitCount": expected_visit_count,
+        "expectedVisitGroupsCount": expected_visit_groups,
+        "expectedSameDayOrderingCount": expected_same_day_ordering,
+        "periodStart": start_date.date().isoformat(),
+        "periodEnd": end_date.date().isoformat(),
+        "appendix": "Facit from CSV expansion: visits = occurrence count; groups = (client, date, Dubbel) with ≥2; dependencies = same-day ordering edges (no skip logic).",
+        "writtenAt": datetime.utcnow().isoformat() + "Z",
+    }
+    out = csv_path.parent / "facit.json"
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(facit, f, indent=2, ensure_ascii=False)
+    print(f"Wrote facit: {out}", file=sys.stderr)
 
 
 def _log_csv_json_summary(

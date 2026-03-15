@@ -6,6 +6,20 @@
 
 ---
 
+## 0. Schedule ↔ Timefold input ↔ Solution (source of truth)
+
+**The truth is what we send to Timefold as input.** That input is built deterministically from the schedule (in DB in the dashboard flow, or from FSR JSON in the script flow). One schedule in DB gives the same input every time until the schedule changes. One schedule can have many solutions; multiple solutions do **not** require multiple schedules.
+
+For a short, dedicated write-up and links to CSV upload, dashboard, script, and e2e flows, see:
+
+- **[docs/pipeline/](pipeline/)** — folder with:
+  - [01-source-of-truth.md](pipeline/01-source-of-truth.md) — Schedule ↔ Input ↔ Solution
+  - [02-csv-upload-dashboard.md](pipeline/02-csv-upload-dashboard.md) — CSV upload via dashboard (beta-appcaire)
+  - [03-script-flow.md](pipeline/03-script-flow.md) — Script flow (this repo: CSV → FSR → Timefold)
+  - [04-e2e-to-solution.md](pipeline/04-e2e-to-solution.md) — E2E from CSV/dashboard to solution
+
+---
+
 ## 1. Which scripts to use
 
 | Role | Canonical location | Notes |
@@ -114,5 +128,13 @@ Without `--weeks 2` you get 4 weeks; without `--no-supplementary-vehicles` you g
    `scripts/timefold/submission/submit_solve.py solve <input.json> --wait --save <output_dir>`
 
 4. **Continuity** (if needed): build pools from baseline solution, patch `requiredVehicles`, then submit again using scripts under `scripts/timefold/continuity/` and `scripts/timefold/analysis/`.
+
+---
+
+## 8. Counts and single source of truth
+
+**Production (dashboard):** The **single source of truth for “schemats siffror” is the database after import**. The schedule detail UI shows only DB-derived metrics (`Schedule.inputSummary`: visits, visit groups, employees, shifts, dependencies, etc.). No separate “model” or “optimization” counts are shown so the numbers stay consistent.
+
+**Prototype (this repo):** `scripts/conversion/csv_to_fsr.py` expands CSV → FSR JSON and optionally writes **facit.json** next to the CSV with expected counts from that expansion (visits, visit groups, same-day ordering). Those counts can differ from the dashboard because: (1) the script uses its own recurrence/grouping/dependency logic; (2) the dashboard import (CSV→DB) and DB→Timefold model build may use different rules. No change to the Python pipeline is required when the product requirement is “dashboard shows only DB numbers.” Use facit.json for prototype verification (e.g. CSV→JSON sanity checks), not as the production source of truth.
 
 All paths in this doc are relative to **be-agent-service** repo root unless otherwise noted.
