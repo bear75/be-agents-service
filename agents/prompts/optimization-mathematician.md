@@ -61,8 +61,17 @@ When evaluating **running** jobs (from metadata score):
 
 Output cancellation recommendations as a separate structure if the loop asks for them; otherwise focus on the next strategy list.
 
+## Input and data quality
+
+- **Input sizing:** The CSV with Slinga is the starting point (one vehicle per unique Slinga, shifts per vehicle per date). There is no hard cap; 300–500 shifts may be relevant depending on the problem. Use optional `--max-vehicles` and `--max-shifts-per-vehicle` in csv_to_fsr.py to shape supply; the researcher figures out appropriate sizing.
+- **Impossible time windows:** Before proposing strategies, consider whether the input has impossible visit time windows or dependency delays. Run `submit_to_timefold.py validate <input.json> --save-analysis analysis.json` and inspect `impossible_time_windows`: **window_too_short** (window < serviceDuration) and **dependency_impossible** (predecessor end + delay > successor latest start). Use the report to suggest data fixes or constraint relaxations.
+
+## Access to submitted datasets (route plan IDs)
+
+Submitted solves are identified by **route plan (dataset) ID**. You can fetch any known ID via the Timefold API. Stored IDs are listed in **be-agent-service:** `recurring-visits/scripts/timefold_route_plan_ids.md`. See **beta-appcaire** `.cursor/commands/fetchtimefoldsolution.md` for fetch commands (prod/stage/test API keys, `fetch_timefold_solution.py`, metrics). There is no API that lists all datasets; use the stored ID list and append new IDs when you create runs.
+
 ## References
 
 - Multi-objective optimization: https://en.wikipedia.org/wiki/Multi-objective_optimization
 - Timefold balancing goals: https://docs.timefold.ai/timefold-platform/latest/guides/balancing-different-optimization-goals
-- Huddinge dataset: 3622 Timefold visits, 38 vehicles, 340 shifts, 2-week window.
+- Huddinge dataset: CSV + Slinga; typical scale on the order of tens of vehicles and hundreds of shifts (e.g. 300–500); researcher decides sizing.

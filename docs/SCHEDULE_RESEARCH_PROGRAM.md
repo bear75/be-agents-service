@@ -126,15 +126,34 @@ An experiment is **one FSR solve** (or one from-patch variant) with a clear hypo
 }
 ```
 
+### Input Sizing (Vehicles & Shifts)
+
+The **CSV with Slinga is the starting point**: conversion produces one vehicle per unique Slinga and shifts per vehicle per date in the planning window. There is **no hard cap** on vehicle or shift count; typical ranges are on the order of tens of vehicles and hundreds of shifts (e.g. 300–500 shifts can be relevant). **The researcher decides** sizing based on the problem and experiments.
+
+- **csv_to_fsr.py:** optional `--max-vehicles` and `--max-shifts-per-vehicle` let you shape supply (e.g. to avoid sending far more shifts than needed). Use or omit as the researcher sees fit.
+- Uncap conversion yields one vehicle per Slinga and many shifts; if that is too large for the solver or experiments, use the optional caps.
+
+### Impossible Visit Time Windows (Researcher Must Analyze)
+
+The researcher must **analyze impossible visit time windows (start, end, and delay)** and use that when proposing strategies:
+
+- **Window too short:** visit time window (minStartTime → maxEndTime) shorter than serviceDuration → visit cannot be scheduled in that window.
+- **Dependency impossible:** visitDependencies with minDelay; if predecessor’s earliest end + delay is after successor’s latest possible start (maxEndTime − serviceDuration), the pair cannot be satisfied.
+
+**How to run:**  
+`submit_to_timefold.py validate <input.json> --save-analysis <path>`  
+This runs format validation and writes an `impossible_time_windows` report (window_too_short, dependency_impossible). Use this report to suggest fixes (e.g. relax time windows, adjust dependencies, or flag data errors).
+
 ### Execution Steps
 
-1. **Prepare input** (CSV → FSR or from-patch payload)
-2. **Submit to Timefold** (via `scripts/timefold/submission/submit_solve.py`)
-3. **Fetch solution** (poll until complete)
-4. **Calculate metrics** (via `scripts/timefold/analysis/metrics.py`)
-5. **Compare to baseline** (vs. best result in research state)
-6. **Make decision:** keep, kill, or double_down
-7. **Update research state** (append to history, update best if improved)
+1. **Prepare input** (CSV → FSR from Slinga; optionally use `--max-vehicles` / `--max-shifts-per-vehicle`, or from-patch payload)
+2. **Optionally run impossible time window analysis** (`validate --save-analysis`) and consider in strategy.
+3. **Submit to Timefold** (via `scripts/timefold/submission/submit_solve.py` or specialist)
+4. **Fetch solution** (poll until complete)
+5. **Calculate metrics** (via `scripts/timefold/analysis/metrics.py`)
+6. **Compare to baseline** (vs. best result in research state)
+7. **Make decision:** keep, kill, or double_down
+8. **Update research state** (append to history, update best if improved)
 
 ### Outcome Evaluation
 

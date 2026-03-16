@@ -138,6 +138,138 @@ def validate_visit_time_windows(model_input: dict) -> list[str]:
     return errors
 
 
+def _parse_duration_minutes(d: str) -> int:
+    """Parse ISO 8601 duration (PT30M, PT1H30M) to total minutes. Returns 0 if invalid."""
+    if not d or not isinstance(d, str) or not d.startswith("PT"):
+        return 0
+    import re
+    total = 0
+    for m in re.finditer(r"(\d+)H", d):
+        total += int(m.group(1)) * 60
+    for m in re.finditer(r"(\d+)M", d):
+        total += int(m.group(1))
+    return total
+
+
+def _parse_datetime_minutes(s: str) -> int | None:
+    """Parse ISO datetime (2026-03-02T07:00:00+01:00) to minutes since epoch. Returns None if invalid."""
+    if not s or not isinstance(s, str) or "T" not in s:
+        return None
+    try:
+        from datetime import datetime
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        return int(dt.timestamp() // 60)
+    except Exception:
+        return None
+
+
+def analyze_impossible_time_windows(model_input: dict) -> list[dict]:
+    """
+    Analyze visits for impossible time windows (start, end, service duration) and
+    visitDependencies (delay) conflicts. Returns list of issues for researcher reporting.
+    """
+    issues: list[dict] = []
+    visits_by_id: dict[str, dict] = {}
+
+    def collect_visit(v: dict) -> None:
+        vid = v.get("id")
+        if not vid:
+            return
+        tws = v.get("timeWindows") or []
+        if not tws:
+            return
+        sd = v.get("serviceDuration") or ""
+        sd_min = _parse_duration_minutes(sd)
+        earliest_end_min: int | None = None
+        latest_start_min: int | None = None
+        for i, tw in enumerate(tws):
+            min_s = tw.get("minStartTime") or ""
+            max_e = tw.get("maxEndTime") or ""
+            if not min_s or not max_e:
+                continue
+            min_min = _parse_datetime_minutes(min_s)
+            max_min = _parse_datetime_minutes(max_e)
+            if min_min is None or max_min is None:
+                continue
+            window_min = max_min - min_min
+            if window_min < sd_min:
+                issues.append({
+                    "kind": "window_too_short",
+                    "visit_id": vid,
+                    "time_window_index": i,
+                    "minStartTime": min_s,
+                    "maxEndTime": max_e,
+                    "window_minutes": window_min,
+                    "service_duration_minutes": sd_min,
+                    "message": f"Visit {vid} timeWindow[{i}]: window {window_min} min < serviceDuration {sd_min} min",
+                })
+            end_min = min_min + sd_min
+            start_max = max_min - sd_min
+            if earliest_end_min is None or end_min < earliest_end_min:
+                earliest_end_min = end_min
+            if latest_start_min is None or start_max > latest_start_min:
+                latest_start_min = start_max
+        visits_by_id[vid] = {
+            "visit": v,
+            "service_min": sd_min,
+            "earliest_end_min": earliest_end_min,
+            "latest_start_min": latest_start_min,
+        }
+
+    for v in model_input.get("visits") or []:
+        collect_visit(v)
+    for g in model_input.get("visitGroups") or []:
+        for v in g.get("visits") or []:
+            collect_visit(v)
+
+    # Build dependency list: successor_id -> [(predecessor_id, minDelay_minutes), ...]
+    dep_map: dict[str, list[tuple[str, int]]] = {}
+    for v in model_input.get("visits") or []:
+        vid = v.get("id")
+        for dep in v.get("visitDependencies") or []:
+            pred = dep.get("precedingVisit")
+            delay = dep.get("minDelay") or "PT0M"
+            if not pred or not vid:
+                continue
+            delay_min = _parse_duration_minutes(delay)
+            dep_map.setdefault(vid, []).append((pred, delay_min))
+    for g in model_input.get("visitGroups") or []:
+        for v in g.get("visits") or []:
+            vid = v.get("id")
+            for dep in v.get("visitDependencies") or []:
+                pred = dep.get("precedingVisit")
+                delay = dep.get("minDelay") or "PT0M"
+                if not pred or not vid:
+                    continue
+                delay_min = _parse_duration_minutes(delay)
+                dep_map.setdefault(vid, []).append((pred, delay_min))
+
+    for succ_id, deps in dep_map.items():
+        succ_info = visits_by_id.get(succ_id)
+        if not succ_info or succ_info.get("latest_start_min") is None:
+            continue
+        latest_succ_start = succ_info["latest_start_min"]
+        succ_sd = succ_info["service_min"]
+        for pred_id, delay_min in deps:
+            pred_info = visits_by_id.get(pred_id)
+            if not pred_info or pred_info.get("earliest_end_min") is None:
+                continue
+            pred_earliest_end = pred_info["earliest_end_min"]
+            earliest_succ_start = pred_earliest_end + delay_min
+            if earliest_succ_start > latest_succ_start:
+                issues.append({
+                    "kind": "dependency_impossible",
+                    "preceding_visit_id": pred_id,
+                    "visit_id": succ_id,
+                    "minDelay_minutes": delay_min,
+                    "earliest_successor_start_minutes": earliest_succ_start,
+                    "latest_successor_start_minutes": latest_succ_start,
+                    "message": f"Visit {succ_id} after {pred_id}+{delay_min}min: earliest start {earliest_succ_start} > latest start {latest_succ_start}",
+                })
+
+    return issues
+
+
 def _is_offset_datetime(s: str) -> bool:
     """True if s looks like ISO 8601 datetime with offset (e.g. 2026-03-02T07:00:00+01:00)."""
     if not s or not isinstance(s, str):
@@ -389,6 +521,12 @@ def main() -> int:
     # Validate-only mode (no API key needed; same checks as pre-submit)
     validate_p = sub.add_parser("validate", help="Validate input JSON (time windows, shifts). No submit.")
     validate_p.add_argument("input", type=Path, help="Input JSON with modelInput.")
+    validate_p.add_argument(
+        "--save-analysis",
+        type=Path,
+        default=None,
+        help="Write impossible time window/delay analysis JSON to file for researcher.",
+    )
 
     # Fetch mode: GET current output for a route plan (can call anytime during or after solve)
     fetch_p = sub.add_parser("fetch", help="Fetch current route plan state/output by ID. Use anytime during or after solve.")
@@ -520,6 +658,19 @@ def main() -> int:
                 print(f"  ... and {len(fsr_errors) - 50} more.", file=sys.stderr)
             return 1
         print("Validation OK (shifts, visit time windows, FSR schema).")
+        # Impossible time window / delay analysis for researcher
+        impossible = analyze_impossible_time_windows(mi)
+        if impossible:
+            print(f"Impossible time window/delay issues: {len(impossible)}", file=sys.stderr)
+            for iss in impossible[:30]:
+                print(f"  [{iss.get('kind', '?')}] {iss.get('message', iss)}", file=sys.stderr)
+            if len(impossible) > 30:
+                print(f"  ... and {len(impossible) - 30} more.", file=sys.stderr)
+        save_analysis = getattr(args, "save_analysis", None)
+        if save_analysis:
+            with open(save_analysis, "w", encoding="utf-8") as f:
+                json.dump({"impossible_time_windows": impossible, "count": len(impossible)}, f, indent=2, ensure_ascii=False)
+            print(f"Analysis written to {save_analysis}")
         return 0
 
     api_key = getattr(args, "api_key", None) or os.environ.get("TIMEFOLD_API_KEY", "")

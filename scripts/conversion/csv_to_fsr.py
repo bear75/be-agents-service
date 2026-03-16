@@ -1222,11 +1222,15 @@ def _build_vehicles(
     start_date: datetime,
     end_date: datetime,
     no_supplementary_vehicles: bool = False,
+    max_vehicles: Optional[int] = None,
+    max_shifts_per_vehicle: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     """
     Build one vehicle per unique Slinga. For each Slinga, collect (weekday, shift_type)
     from occurrences; add shifts for each date in window that matches.
     Day/Helg: break 10:00-14:00, 30 min at office.
+    Use max_vehicles (e.g. 40) and max_shifts_per_vehicle (e.g. 8) to cap supply;
+    typical target is ~40 vehicles and ~300 shifts instead of one shift per visit.
     """
     # Slinga -> set of (weekday, shift_type) from occurrence's Schift
     slinga_schedule: Dict[str, Dict[Tuple[int, str], None]] = defaultdict(dict)
@@ -1288,11 +1292,20 @@ def _build_vehicles(
                 shifts.append(shift)
 
         if shifts:
+            if max_shifts_per_vehicle is not None and max_shifts_per_vehicle > 0:
+                shifts = shifts[: max_shifts_per_vehicle]
             vehicles.append({
                 "id": vid,
                 "vehicleType": "VAN",
                 "shifts": shifts,
             })
+
+    if max_vehicles is not None and max_vehicles > 0 and len(vehicles) > max_vehicles:
+        vehicles = vehicles[:max_vehicles]
+        print(
+            f"Capped to {max_vehicles} vehicles (was more; use --max-vehicles 0 for no cap).",
+            file=sys.stderr,
+        )
 
     if not no_supplementary_vehicles:
         vehicles = _add_supplementary_vehicles(vehicles, occurrences, start_date, end_date)
@@ -1527,10 +1540,13 @@ def generate_fsr_json(
     geocode_rate_sec: float = 1.0,
     no_supplementary_vehicles: bool = False,
     address_coordinates_path: Optional[Path] = None,
+    max_vehicles: Optional[int] = None,
+    max_shifts_per_vehicle: Optional[int] = None,
 ) -> Dict[str, Any]:
     """
     Read 4mars CSV, expand, geocode, build visits and vehicles, write FSR JSON.
     If start/end dates not given, auto-computes: Monday of current week + longest recurrence.
+    Use max_vehicles (e.g. 40) and max_shifts_per_vehicle (e.g. 8) to cap supply to ~40 vehicles, ~300 shifts.
     """
 
     with open(csv_path, "r", encoding="utf-8-sig") as f:
@@ -1604,6 +1620,8 @@ def generate_fsr_json(
     vehicles = _build_vehicles(
         occurrences, start_date, end_date,
         no_supplementary_vehicles=no_supplementary_vehicles,
+        max_vehicles=max_vehicles,
+        max_shifts_per_vehicle=max_shifts_per_vehicle,
     )
 
     planning_window = {
@@ -1751,6 +1769,20 @@ def main() -> int:
         action="store_true",
         help="Do not add extra Kväll/Dag vehicles (match reference 26 vehicles for 2w)",
     )
+    parser.add_argument(
+        "--max-vehicles",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Optional cap on number of vehicles (e.g. 40). Researcher decides sizing; 300–500 shifts often relevant.",
+    )
+    parser.add_argument(
+        "--max-shifts-per-vehicle",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Optional cap on shifts per vehicle (e.g. 8). Use with --max-vehicles to shape supply.",
+    )
     args = parser.parse_args()
 
     if not args.input.exists():
@@ -1770,6 +1802,8 @@ def main() -> int:
             geocode_rate_sec=args.geocode_rate,
             no_supplementary_vehicles=args.no_supplementary_vehicles,
             address_coordinates_path=args.address_coordinates,
+            max_vehicles=args.max_vehicles,
+            max_shifts_per_vehicle=args.max_shifts_per_vehicle,
         )
         print(f"Wrote: {out}", file=sys.stderr)
     except Exception as e:
