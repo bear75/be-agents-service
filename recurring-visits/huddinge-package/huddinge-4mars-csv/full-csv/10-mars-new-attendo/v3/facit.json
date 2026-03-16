@@ -8,5 +8,5 @@
   "periodStart": "2026-03-02",
   "periodEnd": "2026-03-15",
   "appendix": "Facit from CSV expansion: visits = occurrence count; groups = (client, date, Dubbel) with ≥2; dependencies = same-day ordering edges (no skip logic).",
-  "writtenAt": "2026-03-15T13:06:11.393077Z"
+  "writtenAt": "2026-03-16T14:16:59.495362Z"
 }

@@ -24,15 +24,20 @@ def parse_time_minutes(time_str):
         return None
 
 def main():
+    import sys
     print("=" * 70)
     print("CSV → JSON VERIFICATION FOR HUDDINGE V3")
     print("=" * 70)
     print()
 
-    # Load data
+    # Load data (optional: pass csv_path and json_path as first two args)
+    if len(sys.argv) >= 3:
+        csv_path = sys.argv[1]
+        json_path = sys.argv[2]
+    else:
+        csv_path = 'huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/Huddinge-v3 - Data.csv'
+        json_path = 'huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/input_v3_FIXED.json'
     print("Loading data...")
-    csv_path = 'huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/Huddinge-v3 - Data.csv'
-    json_path = 'huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/input_v3_FIXED.json'
 
     try:
         with open(csv_path, 'r', encoding='utf-8-sig') as f:
