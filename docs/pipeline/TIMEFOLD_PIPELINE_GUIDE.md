@@ -449,7 +449,7 @@ python3 scripts/timefold/submission/submit_solve.py \
 
 **Options**:
 - `solve`: Submit solve job (vs `from-patch`)
-- `--configuration-id ""`: Use default Timefold configuration
+- `--configuration-id`: Timefold configuration profile ID. Default: `c522a20a-89c9-4a5b-aca2-46887a254ac7` (override with `TIMEFOLD_CONFIGURATION_ID` or pass `--configuration-id ""` to use payload config only)
 - `--wait`: Poll until completion
 - `--save <dir>`: Save solution to directory when complete
 - `> /tmp/...log 2>&1 &`: Background execution with logging

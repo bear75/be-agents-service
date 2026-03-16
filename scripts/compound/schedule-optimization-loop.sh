@@ -55,6 +55,10 @@ fi
 DARWIN_API="${DARWIN_API:-http://localhost:3010}"
 SESSION_ID="schedule-$(date +%s)-$$"
 BATCH="$(date +%d-%b | tr '[:upper:]' '[:lower:]')"
+DATA_DIR="$SERVICE_ROOT/recurring-visits/data"
+
+# Optional: trim shifts from input (TRIM_SHIFTS_FROM_INPUT=1; TRIM_INPUT_SOURCE, TRIM_MAX_SHIFTS_PER_VEHICLE or TRIM_SOLUTION)
+TRIM_SHIFTS_FROM_INPUT="${TRIM_SHIFTS_FROM_INPUT:-0}"
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 log_err() { echo "[$(date +%H:%M:%S)] ERROR: $*" >&2; }
@@ -114,6 +118,28 @@ best_medium_score() {
 
 log "Schedule Optimization Loop — dataset=$DATASET parallel=$PARALLEL max_iters=$MAX_ITERS dry_run=$DRY_RUN"
 log "APPCAIRE_PATH=${APPCAIRE_PATH:-<not set>} DARWIN_API=$DARWIN_API"
+
+# Optional: trim shifts from input (smaller problem for solve steps)
+if [[ "$TRIM_SHIFTS_FROM_INPUT" == "1" ]]; then
+  TRIM_INPUT_SOURCE="${TRIM_INPUT_SOURCE:-$DATA_DIR/$DATASET/input/input_${DATASET}_FIXED.json}"
+  TRIM_OUTPUT="$DATA_DIR/$DATASET/input/input_${DATASET}_FIXED_trimmed.json"
+  if [[ -f "$TRIM_INPUT_SOURCE" ]]; then
+    log "Trimming shifts: $TRIM_INPUT_SOURCE -> $TRIM_OUTPUT"
+    if [[ -n "${TRIM_SOLUTION:-}" && -f "$TRIM_SOLUTION" ]]; then
+      python3 "$SERVICE_ROOT/scripts/conversion/trim_shifts_from_input.py" \
+        --input "$TRIM_INPUT_SOURCE" --solution "$TRIM_SOLUTION" -o "$TRIM_OUTPUT" 2>&1 || true
+    else
+      python3 "$SERVICE_ROOT/scripts/conversion/trim_shifts_from_input.py" \
+        --input "$TRIM_INPUT_SOURCE" --max-shifts-per-vehicle "${TRIM_MAX_SHIFTS_PER_VEHICLE:-10}" -o "$TRIM_OUTPUT" 2>&1 || true
+    fi
+    if [[ -f "$TRIM_OUTPUT" ]]; then
+      export INPUT_JSON="$TRIM_OUTPUT"
+      log "Trimmed input ready; INPUT_JSON=$INPUT_JSON"
+    fi
+  else
+    log "Trim requested but source not found: $TRIM_INPUT_SOURCE"
+  fi
+fi
 
 iter=0
 while [[ $iter -lt $MAX_ITERS ]]; do

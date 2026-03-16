@@ -25,7 +25,7 @@ import {
 } from '../lib/database.js';
 import { getRepoConfig, getServiceRoot } from '../lib/config.js';
 import { parseRunFromFolder, getThreeEfficiencies } from '../lib/run-folder-parser.js';
-import type { ScheduleRun } from '../types/index.js';
+import type { ResearchState, ScheduleRun } from '../types/index.js';
 
 const router = Router();
 
@@ -409,6 +409,121 @@ router.get('/', (req: Request, res: Response) => {
   }
 });
 
+/**
+ * Research state routes MUST be registered before /:id so that
+ * GET/POST /research/state are not matched by /:id (id="research").
+ */
+router.get('/research/datasets', (req: Request, res: Response) => {
+  try {
+    const dataDir = resolve(getServiceRoot(), 'recurring-visits/data');
+    const entries = readdirSync(dataDir, { withFileTypes: true });
+
+    const datasets = entries
+      .filter(e => e.isDirectory() && !e.name.startsWith('.') && e.name !== 'archive')
+      .map(e => {
+        const datasetDir = resolve(dataDir, e.name);
+        const rawDir = resolve(datasetDir, 'raw');
+        const inputDir = resolve(datasetDir, 'input');
+
+        let csvFile: string | null = null;
+        if (existsSync(rawDir)) {
+          const files = readdirSync(rawDir);
+          csvFile = files.find((f: string) => f.endsWith('.csv')) || null;
+        }
+
+        let hasInputJson = false;
+        if (existsSync(inputDir)) {
+          const files = readdirSync(inputDir);
+          hasInputJson = files.some((f: string) => f.endsWith('.json'));
+        }
+
+        const hasData = csvFile !== null || hasInputJson;
+
+        return {
+          id: e.name,
+          name: e.name.charAt(0).toUpperCase() + e.name.slice(1),
+          path: datasetDir,
+          csv_file: csvFile,
+          has_data: hasData,
+        };
+      });
+
+    res.json({
+      success: true,
+      data: datasets,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to list datasets',
+    });
+  }
+});
+
+router.get('/research/state', (req: Request, res: Response) => {
+  try {
+    const dataset = (req.query.dataset as string) || 'huddinge-v3';
+
+    let state = getResearchState(dataset);
+
+    if (!state) {
+      state = createResearchState({
+        dataset,
+        programVersion: process.env.GIT_HASH || 'dev',
+      });
+    }
+
+    const history = getResearchHistory(dataset, 50);
+    const learnings = getResearchLearnings(dataset);
+
+    res.json({
+      success: true,
+      data: {
+        state,
+        history,
+        learnings,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get research state',
+    });
+  }
+});
+
+/**
+ * POST /api/schedule-runs/research/state
+ * Body: { dataset, updates } — updates are merged into research_state (e.g. iteration_count, best_*).
+ */
+router.post('/research/state', (req: Request, res: Response) => {
+  try {
+    const dataset = String((req.body?.dataset as string) || 'huddinge-v3').trim();
+    const updates = (req.body?.updates as Record<string, unknown>) || {};
+
+    if (Object.keys(updates).length === 0) {
+      return res.json({ success: true, data: { updated: false } });
+    }
+
+    let state = getResearchState(dataset);
+    if (!state) {
+      state = createResearchState({
+        dataset,
+        programVersion: process.env.GIT_HASH || 'dev',
+      });
+    }
+
+    updateResearchState(dataset, updates as Partial<ResearchState>);
+    const updated = getResearchState(dataset);
+    res.json({ success: true, data: { state: updated, updated: true } });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update research state',
+    });
+  }
+});
+
 /** Resolve run folder path from shared huddinge-datasets (batch/run_id). Returns null if run not in DB or folder missing. */
 function getRunFolderPath(runId: string): { basePath: string; run: ScheduleRun } | null {
   const run = getScheduleRunById(runId);
@@ -626,96 +741,6 @@ router.post('/:id/cancel', (req: Request, res: Response) => {
 
 // Track running research jobs
 const runningJobs = new Map<string, { process: ChildProcess; dataset: string; startedAt: string }>();
-
-/**
- * GET /api/research/datasets
- * List available datasets for research
- */
-router.get('/research/datasets', (req: Request, res: Response) => {
-  try {
-    const dataDir = resolve(getServiceRoot(), 'recurring-visits/data');
-    const entries = readdirSync(dataDir, { withFileTypes: true });
-
-    const datasets = entries
-      .filter(e => e.isDirectory() && !e.name.startsWith('.') && e.name !== 'archive')
-      .map(e => {
-        const datasetDir = resolve(dataDir, e.name);
-        const rawDir = resolve(datasetDir, 'raw');
-        const inputDir = resolve(datasetDir, 'input');
-
-        // Find CSV in raw/ (e.g. Nova)
-        let csvFile: string | null = null;
-        if (existsSync(rawDir)) {
-          const files = readdirSync(rawDir);
-          csvFile = files.find((f: string) => f.endsWith('.csv')) || null;
-        }
-
-        // Or FSR input JSON in input/ (e.g. huddinge-v3)
-        let hasInputJson = false;
-        if (existsSync(inputDir)) {
-          const files = readdirSync(inputDir);
-          hasInputJson = files.some((f: string) => f.endsWith('.json'));
-        }
-
-        const hasData = csvFile !== null || hasInputJson;
-
-        return {
-          id: e.name,
-          name: e.name.charAt(0).toUpperCase() + e.name.slice(1),
-          path: datasetDir,
-          csv_file: csvFile,
-          has_data: hasData,
-        };
-      });
-
-    res.json({
-      success: true,
-      data: datasets,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to list datasets',
-    });
-  }
-});
-
-/**
- * GET /api/research/state?dataset=:dataset
- * Get current research state with history and learnings
- */
-router.get('/research/state', (req: Request, res: Response) => {
-  try {
-    const dataset = (req.query.dataset as string) || 'huddinge-v3';
-
-    let state = getResearchState(dataset);
-
-    // Create initial state if doesn't exist
-    if (!state) {
-      state = createResearchState({
-        dataset,
-        programVersion: process.env.GIT_HASH || 'dev',
-      });
-    }
-
-    const history = getResearchHistory(dataset, 50); // Last 50 runs
-    const learnings = getResearchLearnings(dataset);
-
-    res.json({
-      success: true,
-      data: {
-        state,
-        history,
-        learnings,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to get research state',
-    });
-  }
-});
 
 /**
  * POST /api/research/trigger

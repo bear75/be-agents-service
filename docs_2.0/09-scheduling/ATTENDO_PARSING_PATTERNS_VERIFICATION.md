@@ -44,6 +44,8 @@ Distribution matches **§2 Time Slot Mapping** and **§3 Time Window Calculation
 - **Case 3 – Explicit 0,0:** Treated as exact; included in exact-window count.
 - **Case 4 – Non-zero Före/Efter:** Reflected in various PT*H*M dependency delays and any remaining custom window widths.
 
+**Före/Efter 0,0 vs empty (confirmed in code):** The converter explicitly treats **empty** Före/Efter (blank cells) differently from **explicit 0,0** (cells contain "0" or 0). Raw strings are read first (`_fore_raw`, `_efter_raw`); `fore_efter_empty = (_fore_raw == "" and _efter_raw == "")` is only true when both cells are blank. In `_compute_slot_bounds` (csv_to_fsr.py): when `före==0 and efter==0`, if `före_efter_empty` is true → full slot from När på dagen + Skift; if false → explicit 0,0 → exact time (Starttid ± 1 min). So 0,0 gives exact window; empty gives full-slot window.
+
 **Planning window:** `2026-03-02`–`2026-03-15` (14 days), consistent with doc and v3 campaign.
 
 ---

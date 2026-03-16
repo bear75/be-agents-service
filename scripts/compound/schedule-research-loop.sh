@@ -24,6 +24,10 @@
 #   MAX_ITERATIONS    - Override max iterations
 #   TIMEFOLD_API_KEY  - Required for Timefold API calls
 #   DRY_RUN           - Set to "true" to simulate without API calls
+#   TRIM_SHIFTS_FROM_INPUT - Set to "1" to trim shifts before loop (smaller/faster solves)
+#   TRIM_INPUT_SOURCE - Input to trim (default: data/DATASET/input/input_DATASET_FIXED.json)
+#   TRIM_MAX_SHIFTS_PER_VEHICLE - Cap shifts per vehicle when no TRIM_SOLUTION (default 10)
+#   TRIM_SOLUTION    - If set, keep only vehicles/shifts used in this solution JSON
 #
 # Exit Codes:
 #   0 - Success (goals met or max iterations reached)
@@ -51,6 +55,12 @@ STRATEGIES_FILTER="${3:-}"
 # API configuration
 AGENT_SERVICE_URL="${AGENT_SERVICE_URL:-http://localhost:3010}"
 DRY_RUN="${DRY_RUN:-false}"
+
+# Optional: trim shifts from input before loop (uses trim_shifts_from_input.py)
+# Set TRIM_SHIFTS_FROM_INPUT=1 to enable. Optionally set TRIM_INPUT_SOURCE (default:
+# data/DATASET/input/input_DATASET_FIXED.json), TRIM_MAX_SHIFTS_PER_VEHICLE (default 10),
+# or TRIM_SOLUTION (path to solution JSON for solution-based trim).
+TRIM_SHIFTS_FROM_INPUT="${TRIM_SHIFTS_FROM_INPUT:-0}"
 
 # Logging
 LOG_FILE="${LOG_FILE:-$SERVICE_ROOT/logs/research/${DATASET}_$(date +%Y%m%d_%H%M%S).log}"
@@ -135,7 +145,7 @@ increment_iteration() {
   echo "$new"
 }
 
-# Register run to database
+# Register run to database (body built with jq to avoid control chars / invalid JSON)
 register_run() {
   local job_id="$1"
   local strategy="$2"
@@ -146,22 +156,34 @@ register_run() {
     return 0
   fi
 
+  # Ensure metrics is valid JSON (empty object if not)
+  local metrics_json="{}"
+  if echo "$metrics" | jq -e . >/dev/null 2>&1; then
+    metrics_json="$metrics"
+  fi
+
+  local body
+  body=$(jq -n -c \
+    --arg id "$job_id" \
+    --arg dataset "$DATASET" \
+    --arg strategy "$strategy" \
+    --argjson m "$metrics_json" \
+    '{
+      id: $id,
+      dataset: $dataset,
+      strategy: $strategy,
+      status: "completed",
+      continuity_avg: ($m.continuity_avg),
+      continuity_max: ($m.continuity_max),
+      unassigned_pct: ($m.unassigned_pct),
+      routing_efficiency_pct: ($m.routing_efficiency_pct),
+      total_visits: ($m.total_visits),
+      unassigned_visits: ($m.unassigned_visits)
+    }') || return 0
+
   curl -sS -X POST "${AGENT_SERVICE_URL}/api/schedule-runs/register" \
     -H "Content-Type: application/json" \
-    -d "{
-      \"id\":\"$job_id\",
-      \"dataset\":\"$DATASET\",
-      \"strategy\":\"$strategy\",
-      \"status\":\"completed\",
-      $(echo "$metrics" | jq -c '{
-        continuity_avg,
-        continuity_max,
-        unassigned_pct,
-        routing_efficiency_pct,
-        total_visits,
-        unassigned_visits
-      }')
-    }" || true
+    -d "$body" || true
 }
 
 # ============================================================================
@@ -248,59 +270,85 @@ execute_strategy_via_specialist() {
     return 0
   fi
 
-  # Call specialist agent with strategy
-  local result
-  result=$("$AGENTS_DIR/timefold-specialist.sh" \
+  # Call specialist; only stdout is the final JSON line (stderr is logged separately)
+  local raw_output result
+  raw_output=$("$AGENTS_DIR/timefold-specialist.sh" \
     --dataset "$DATASET" \
-    --strategy "$strategy" 2>&1 | tail -1) || echo "{}"
-
-  # Validate result JSON
+    --strategy "$strategy" 2>>"$LOG_FILE") || true
+  # Take first line that is valid JSON (in case of any stray output)
+  result=""
+  while IFS= read -r line; do
+    if echo "$line" | jq -e . >/dev/null 2>&1; then
+      result="$line"
+      break
+    fi
+  done <<< "$raw_output"
+  if [[ -z "$result" ]]; then
+    result=$(echo "$raw_output" | tail -1)
+  fi
   if ! echo "$result" | jq -e . >/dev/null 2>&1; then
-    log_error "Invalid result JSON from specialist: $result"
+    log_error "Invalid result JSON from specialist (last line): ${result:0:200}"
+    echo "{}"
     return 1
   fi
-
   echo "$result"
 }
 
-# Evaluate result vs. best
+# Coerce to numeric for bc (strip newlines, default to fallback)
+_safe_num() {
+  local val="${1:-}"
+  local fallback="${2:-0}"
+  val=$(echo "$val" | tr -d '\n\r' | head -1)
+  if [[ -z "$val" ]] || [[ "$val" == "null" ]]; then
+    echo "$fallback"
+    return
+  fi
+  if [[ "$val" =~ ^-?[0-9]+\.?[0-9]*$ ]]; then
+    echo "$val"
+  else
+    echo "$fallback"
+  fi
+}
+
+# Evaluate result vs. best (safe when metrics or state are missing)
 evaluate_result() {
   local result="$1"
   local state="$2"
 
-  local new_continuity=$(echo "$result" | jq -r '.metrics.continuity_avg // 999')
-  local best_continuity=$(echo "$state" | jq -r '.data.state.best_continuity_avg // 999')
+  local new_continuity=$(_safe_num "$(echo "$result" | jq -r '.metrics.continuity_avg // empty')" "999")
+  local best_continuity=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_continuity_avg // empty')" "999")
+  local new_efficiency=$(_safe_num "$(echo "$result" | jq -r '.metrics.routing_efficiency_pct // empty')" "0")
+  local best_efficiency=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_efficiency_pct // empty')" "0")
+  local new_unassigned=$(_safe_num "$(echo "$result" | jq -r '.metrics.unassigned_pct // empty')" "999")
+  local best_unassigned=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_unassigned_pct // empty')" "999")
 
-  local new_efficiency=$(echo "$result" | jq -r '.metrics.routing_efficiency_pct // 0')
-  local best_efficiency=$(echo "$state" | jq -r '.data.state.best_efficiency_pct // 0')
-
-  local new_unassigned=$(echo "$result" | jq -r '.metrics.unassigned_pct // 999')
-  local best_unassigned=$(echo "$state" | jq -r '.data.state.best_unassigned_pct // 999')
-
-  # Decision logic
   local decision="continue"
   local reason=""
 
-  # Kill if worse across all metrics
-  if (( $(echo "$new_continuity > $best_continuity" | bc -l) )) && \
-     (( $(echo "$new_efficiency < $best_efficiency" | bc -l) )) && \
-     (( $(echo "$new_unassigned > $best_unassigned" | bc -l) )); then
+  # bc with -l can fail on empty; ensure we pass numbers
+  local c_gt_b=$(echo "$new_continuity > $best_continuity" | bc -l 2>/dev/null || echo "0")
+  local e_lt_b=$(echo "$new_efficiency < $best_efficiency" | bc -l 2>/dev/null || echo "0")
+  local u_gt_b=$(echo "$new_unassigned > $best_unassigned" | bc -l 2>/dev/null || echo "0")
+  if [[ "${c_gt_b:-0}" == "1" ]] && [[ "${e_lt_b:-0}" == "1" ]] && [[ "${u_gt_b:-0}" == "1" ]]; then
     decision="kill"
     reason="Worse than baseline across all metrics"
-  # Double down if significant improvement
-  elif (( $(echo "$new_continuity < ($best_continuity - 2.0)" | bc -l) )) || \
-       (( $(echo "$new_efficiency > ($best_efficiency + 5.0)" | bc -l) )); then
-    decision="double_down"
-    reason="Significant improvement (continuity -$(echo "$best_continuity - $new_continuity" | bc -l) or efficiency +$(echo "$new_efficiency - $best_efficiency" | bc -l))"
-  # Keep if any improvement
-  elif (( $(echo "$new_continuity < $best_continuity" | bc -l) )) || \
-       (( $(echo "$new_efficiency > $best_efficiency" | bc -l) )) || \
-       (( $(echo "$new_unassigned < $best_unassigned" | bc -l) )); then
-    decision="keep"
-    reason="Improvement in at least one metric"
   else
-    decision="continue"
-    reason="No significant change, continue exploration"
+    local c_improve=$(echo "$new_continuity < ($best_continuity - 2.0)" | bc -l 2>/dev/null || echo "0")
+    local e_improve=$(echo "$new_efficiency > ($best_efficiency + 5.0)" | bc -l 2>/dev/null || echo "0")
+    if [[ "${c_improve:-0}" == "1" ]] || [[ "${e_improve:-0}" == "1" ]]; then
+      decision="double_down"
+      reason="Significant improvement (continuity or efficiency)"
+    else
+      local c_better=$(echo "$new_continuity < $best_continuity" | bc -l 2>/dev/null || echo "0")
+      local e_better=$(echo "$new_efficiency > $best_efficiency" | bc -l 2>/dev/null || echo "0")
+      local u_better=$(echo "$new_unassigned < $best_unassigned" | bc -l 2>/dev/null || echo "0")
+      if [[ "${c_better:-0}" == "1" ]] || [[ "${e_better:-0}" == "1" ]] || [[ "${u_better:-0}" == "1" ]]; then
+        decision="keep"
+        reason="Improvement in at least one metric"
+      else
+        reason="No significant change, continue exploration"
+      fi
+    fi
   fi
 
   echo "{\"decision\":\"$decision\",\"reason\":\"$reason\"}"
@@ -334,6 +382,29 @@ log_info "API URL: $AGENT_SERVICE_URL"
 log_info "Dry Run: $DRY_RUN"
 log_info "Log File: $LOG_FILE"
 log_info "======================================================================"
+
+# Optional: trim shifts from input (reduces solve size; specialist will use _trimmed.json)
+if [[ "$TRIM_SHIFTS_FROM_INPUT" == "1" ]]; then
+  TRIM_INPUT_SOURCE="${TRIM_INPUT_SOURCE:-$DATA_DIR/$DATASET/input/input_${DATASET}_FIXED.json}"
+  TRIM_OUTPUT="$DATA_DIR/$DATASET/input/input_${DATASET}_FIXED_trimmed.json"
+  if [[ -f "$TRIM_INPUT_SOURCE" ]]; then
+    log_info "Trimming shifts from input: $TRIM_INPUT_SOURCE -> $TRIM_OUTPUT"
+    if [[ -n "${TRIM_SOLUTION:-}" && -f "$TRIM_SOLUTION" ]]; then
+      python3 "$SERVICE_ROOT/scripts/conversion/trim_shifts_from_input.py" \
+        --input "$TRIM_INPUT_SOURCE" --solution "$TRIM_SOLUTION" -o "$TRIM_OUTPUT" 2>&1 | tee -a "$LOG_FILE" || true
+    else
+      python3 "$SERVICE_ROOT/scripts/conversion/trim_shifts_from_input.py" \
+        --input "$TRIM_INPUT_SOURCE" --max-shifts-per-vehicle "${TRIM_MAX_SHIFTS_PER_VEHICLE:-10}" -o "$TRIM_OUTPUT" 2>&1 | tee -a "$LOG_FILE" || true
+    fi
+    if [[ -f "$TRIM_OUTPUT" ]]; then
+      log_success "Trimmed input ready; specialist will use it"
+    else
+      log_warn "Trim failed; specialist will use original input"
+    fi
+  else
+    log_warn "Trim requested but TRIM_INPUT_SOURCE not found: $TRIM_INPUT_SOURCE"
+  fi
+fi
 
 # Initialize research state
 STATE=$(get_research_state)

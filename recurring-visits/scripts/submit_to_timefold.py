@@ -40,6 +40,9 @@ POLL_INTERVAL_SEC = 10
 POLL_TIMEOUT_SEC = 7200  # 2 hours
 _DEFAULT_ENV_FILE = Path.home() / ".config" / "caire" / "env"
 
+# Default Timefold configuration profile ID (override with TIMEFOLD_CONFIGURATION_ID or --configuration-id)
+DEFAULT_CONFIGURATION_ID = "c522a20a-89c9-4a5b-aca2-46887a254ac7"
+
 
 def _load_env_file(env_file: Path) -> None:
     """Load simple KEY=VALUE or export KEY=VALUE pairs into os.environ."""
@@ -376,8 +379,8 @@ def main() -> int:
     solve_p.add_argument("input", type=Path, help="Input JSON with modelInput.")
     solve_p.add_argument(
         "--configuration-id",
-        default=os.environ.get("TIMEFOLD_CONFIGURATION_ID", ""),
-        help="Timefold configuration profile ID (or set TIMEFOLD_CONFIGURATION_ID). Omit to use payload config only.",
+        default=os.environ.get("TIMEFOLD_CONFIGURATION_ID", DEFAULT_CONFIGURATION_ID),
+        help="Timefold configuration profile ID (or set TIMEFOLD_CONFIGURATION_ID). Default: " + DEFAULT_CONFIGURATION_ID,
     )
     solve_p.add_argument("--skip-validate", action="store_true")
 
@@ -387,8 +390,8 @@ def main() -> int:
     patch_p.add_argument("--route-plan-id", required=True, help="Route plan ID to patch.")
     patch_p.add_argument(
         "--configuration-id",
-        default=os.environ.get("TIMEFOLD_CONFIGURATION_ID", ""),
-        help="Timefold configuration profile ID (or set TIMEFOLD_CONFIGURATION_ID). Omit to use payload config only.",
+        default=os.environ.get("TIMEFOLD_CONFIGURATION_ID", DEFAULT_CONFIGURATION_ID),
+        help="Timefold configuration profile ID (or set TIMEFOLD_CONFIGURATION_ID). Default: " + DEFAULT_CONFIGURATION_ID,
     )
 
     # Common args
