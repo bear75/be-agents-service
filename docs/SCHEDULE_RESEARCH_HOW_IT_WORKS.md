@@ -93,3 +93,38 @@ TRIM_SHIFTS_FROM_INPUT=1 ./scripts/compound/schedule-research-loop.sh huddinge-v
 yarn workspace server start
 # Or dev: PORT=3010 yarn workspace server dev
 ```
+
+---
+
+## Testing (does it work?)
+
+**1. Dashboard (UI)**  
+Open **http://localhost:3010/schedule-research**. You should see the Research page; use it to view state, trigger a run, or cancel. The server must be running on port 3010.
+
+**2. Scripts (no browser)**  
+- **API only (health + research state):**  
+  `./scripts/openclaw/test-schedule-research.sh`  
+- **Trigger from CLI:**  
+  `./scripts/openclaw/test-schedule-research.sh --trigger`  
+- **Dry-run loop (no Timefold, 1 iteration):**  
+  `DRY_RUN=true MAX_ITERATIONS=1 ./scripts/compound/schedule-research-loop.sh huddinge-v3`  
+
+**3. Real run (one solve)**  
+`MAX_ITERATIONS=1 ./scripts/compound/schedule-research-loop.sh huddinge-v3`  
+Requires `TIMEFOLD_API_KEY` and input at `recurring-visits/data/huddinge-v3/input/input_huddinge-v3_FIXED.json` (or `*_trimmed.json`).
+
+---
+
+## Input has too many shifts (e.g. 195 vehicles, 2600+ shifts)
+
+The specialist uses **`*_trimmed.json`** if present, otherwise `*_FIXED.json`. To force fewer vehicles and shifts for all new runs:
+
+**Option A – Trim existing input (no CSV):**  
+From repo root:
+```bash
+./scripts/compound/prepare-huddinge-v3-input.sh 40 10
+```
+This trims `input_huddinge-v3_FIXED.json` to **40 vehicles, 10 shifts per vehicle** (~400 shifts) and writes `input_huddinge-v3_FIXED_trimmed.json`. The specialist will use it on the next run. You can pass other numbers: `./prepare-huddinge-v3-input.sh 50 8`.
+
+**Option B – Regenerate from CSV with caps:**  
+If you prefer to regenerate from the Huddinge CSV with caps (e.g. 40 vehicles, 8 shifts/vehicle), run csv_to_fsr.py with `--max-vehicles` and `--max-shifts-per-vehicle`, then copy the output to `recurring-visits/data/huddinge-v3/input/input_huddinge-v3_FIXED.json` or `*_trimmed.json`.

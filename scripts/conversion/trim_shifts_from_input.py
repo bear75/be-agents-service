@@ -77,13 +77,19 @@ def trim_from_solution(
     return result
 
 
-def trim_max_shifts_per_vehicle(data: dict, max_shifts: int) -> dict:
-    """Keep first max_shifts shifts per vehicle; preserve rest of input."""
+def trim_max_shifts_per_vehicle(
+    data: dict,
+    max_shifts: int,
+    max_vehicles: int | None = None,
+) -> dict:
+    """Keep first max_shifts shifts per vehicle; optionally cap to first max_vehicles vehicles."""
     result = dict(data)
     mi = result.get("modelInput", {})
     if not mi or max_shifts < 1:
         return result
     vehicles_in = mi.get("vehicles", [])
+    if max_vehicles is not None and max_vehicles > 0:
+        vehicles_in = vehicles_in[:max_vehicles]
     vehicles_out = []
     for v in vehicles_in:
         shifts = v.get("shifts", [])[:max_shifts]
@@ -124,6 +130,13 @@ def main() -> int:
         metavar="N",
         help="If set (and no --solution), keep only first N shifts per vehicle.",
     )
+    ap.add_argument(
+        "--max-vehicles",
+        type=int,
+        default=None,
+        metavar="N",
+        help="If set with --max-shifts-per-vehicle, keep only first N vehicles (reduces total shifts).",
+    )
     args = ap.parse_args()
 
     if not args.input.exists():
@@ -154,7 +167,11 @@ def main() -> int:
         used_v, used_s = _used_vehicles_and_shifts_from_solution(solution)
         trimmed = trim_from_solution(data, used_v, used_s)
     else:
-        trimmed = trim_max_shifts_per_vehicle(data, args.max_shifts_per_vehicle)
+        trimmed = trim_max_shifts_per_vehicle(
+            data,
+            args.max_shifts_per_vehicle,
+            max_vehicles=args.max_vehicles,
+        )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with open(args.output, "w") as f:
