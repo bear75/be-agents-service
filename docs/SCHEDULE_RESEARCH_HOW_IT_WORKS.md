@@ -2,34 +2,43 @@
 
 ## In one sentence
 
-The loop runs **one dataset** for up to **N iterations**. Each iteration: the **mathematician** proposes a strategy (e.g. pool size 5), the **specialist** runs one Timefold FSR solve for that dataset, results are evaluated and registered; the loop stops when goals are met or max iterations is reached.
+The loop runs **one dataset** for up to **N iterations**. Each iteration: the **mathematician** proposes a strategy (e.g. pool size 5), the **specialist** runs one Timefold FSR solve, results are evaluated and registered; the loop stops when **goals are met** or max iterations is reached.
+
+---
+
+## Goals
+
+- **Quick-win (exit success):** continuity ≤11, unassigned <1%, **field efficiency** >70%.
+- **Ultimate (stretch):** continuity ≤8, unassigned <1%, field efficiency >75%.
+
+Efficiency is **field efficiency** (visit / (visit + travel), no wait, no idle) from `scripts/analytics/metrics.py`. The Timefold config (e.g. `c522a20a-89c9-4a5b-aca2-46887a254ac7`) already enforces a **3h max solve** per job; the script does not add a wall-clock cap.
 
 ---
 
 ## Flow (per iteration)
 
-1. **Get research state** — `GET /api/schedule-runs/research/state?dataset=<name>` (iteration count, best metrics, history).
-2. **Check goals** — If continuity ≤11, unassigned <1%, efficiency >70% → exit success.
-3. **Get strategy** — Call **optimization-mathematician** agent with state + iteration; it returns one experiment (e.g. `pool5_baseline`, `pool8`, `from_patch_continuity`).
-4. **Execute strategy** — Call **timefold-specialist** with that strategy. Specialist:
-   - Loads FSR input for the dataset (e.g. `recurring-visits/data/huddinge-v3/input/input_huddinge-v3_FIXED.json`),
-   - Submits to Timefold with default config `c522a20a-89c9-4a5b-aca2-46887a254ac7`,
-   - Waits for solve, saves solution to `.../research_output/<experiment_id>/output.json`,
-   - Optionally runs metrics/continuity scripts, then outputs one JSON line with `job_id`, `status`, `metrics`.
-5. **Register run** — `POST /api/schedule-runs/register` with job id, strategy name, metrics (so the run appears in the dashboard).
-6. **Evaluate** — Compare new metrics to best; set decision: keep / double_down / kill / continue.
-7. **Update state** — `POST /api/schedule-runs/research/state` with e.g. `iteration_count` (and later best_* when wired).
+1. **Get research state** — `GET /api/schedule-runs/research/state?dataset=<name>` (iteration count, best metrics, goals).
+2. **Check goals** — If continuity ≤11, unassigned <1%, field efficiency >70% → **exit success**.
+3. **Get strategy** — Call **optimization-mathematician** with state + iteration; returns one experiment (e.g. `pool5_baseline`, `pool8`).
+4. **Execute strategy** — Call **timefold-specialist**. Specialist:
+   - Loads FSR input for the dataset (e.g. `recurring-visits/data/huddinge-v3/input/input_huddinge-v3_FIXED.json`, or `*_trimmed.json` if trim was used),
+   - Submits to Timefold with config `c522a20a-89c9-4a5b-aca2-46887a254ac7` (3h max solve in config),
+   - **Default:** waits for solve (`--wait`), saves solution to `.../research_output/<experiment_id>/output.json`, runs metrics, returns `job_id`, `status`, `metrics`.
+   - **With `--no-wait`:** returns immediately with `job_id` and `status: "running"`; you can fetch output anytime with `python3 recurring-visits/scripts/submit_to_timefold.py fetch <plan_id> --save <dir>`.
+5. **Register run** — `POST /api/schedule-runs/register` with job id, strategy, metrics (field + routing efficiency).
+6. **Evaluate** — Compare new metrics to best (using field efficiency); decision: keep / double_down / kill / continue.
+7. **Update state** — `POST /api/schedule-runs/research/state` with e.g. `iteration_count` (and best_* when improved).
 8. **Sleep 2s**, next iteration.
 
 ---
 
 ## How many iterations and datasets?
 
-- **Datasets:** Exactly **one** per run. You choose it: `./schedule-research-loop.sh <dataset> [max_iterations]`.
+- **Datasets:** **One** per run. You choose it: `./schedule-research-loop.sh <dataset> [max_iterations]`.
   - Example: `huddinge-v3` → all solves use `recurring-visits/data/huddinge-v3/input/...`.
-- **Iterations:** Up to **max_iterations** (default **50**). Each iteration = one FSR solve.
-  - So with default 50 you get up to 50 Timefold solves for that single dataset.
-  - You can pass a smaller number, e.g. `./schedule-research-loop.sh huddinge-v3 3` for 3 iterations.
+- **Iterations:** Up to **max_iterations** (default **50**). Each iteration = one FSR solve (one strategy, one Timefold job).
+  - Example: `./schedule-research-loop.sh huddinge-v3 20` → up to 20 solves for that dataset.
+- **Parallel:** `PARALLEL_SOLVES` (default 4) is reserved for future use (multiple solves per round). Today the loop runs one solve per iteration.
 
 ---
 
@@ -37,24 +46,50 @@ The loop runs **one dataset** for up to **N iterations**. Each iteration: the **
 
 | What | Where |
 |------|--------|
-| **Run log (timestamps, strategies, decisions)** | `be-agent-service/logs/research/<dataset>_<YYYYMMDD_HHMMSS>.log` — printed to terminal and appended to this file. |
-| **Research state (best metrics, history)** | API: `GET http://localhost:3010/api/schedule-runs/research/state?dataset=huddinge-v3` (or Dashboard Schedule Research UI if available). |
-| **Registered runs (dashboard)** | API: `GET http://localhost:3010/api/schedule-runs?dataset=huddinge-v3` — list of runs with strategy, metrics, status. |
-| **Per-experiment solution + logs** | `be-agent-service/recurring-visits/data/<dataset>/research_output/<experiment_id>/`: `output.json` (Timefold solution), `timefold_submission.log`, optional `metrics_*.json`. |
-| **End-of-run summary** | Printed at end of script: “Best result so far” with continuity, efficiency, unassigned %, best job ID (from state). |
+| **Run log (timestamps, strategies, decisions)** | `be-agent-service/logs/research/<dataset>_<YYYYMMDD_HHMMSS>.log` — also printed to terminal. |
+| **Research state (best metrics, goals)** | `GET http://localhost:3010/api/schedule-runs/research/state?dataset=huddinge-v3` (or Schedule Research UI if available). |
+| **Registered runs** | `GET http://localhost:3010/api/schedule-runs?dataset=huddinge-v3` — list of runs with strategy, metrics, status. |
+| **Per-experiment solution + metrics** | `be-agent-service/recurring-visits/data/<dataset>/research_output/<experiment_id>/`: `output.json`, `timefold_submission.log`, `metrics_*.json` (field_efficiency_pct, continuity, etc.). |
+| **End-of-run summary** | Printed at end: “Best result so far” with continuity, efficiency (field), unassigned %, best job ID. |
 
 ---
 
-## Quick start
+## How to start the research
+
+**Prerequisites**
+
+- Agent server running (e.g. `http://localhost:3010`) so the loop can read/write research state and register runs.
+- `TIMEFOLD_API_KEY` set (e.g. in `~/.config/caire/env` or in the shell).
+
+**Run the loop**
+
+```bash
+cd ~/HomeCare/be-agent-service
+
+# Default dataset (huddinge-v3), default max iterations (50)
+./scripts/compound/schedule-research-loop.sh
+
+# Dataset + max iterations (e.g. 20)
+./scripts/compound/schedule-research-loop.sh huddinge-v3 20
+```
+
+**Optional env overrides**
+
+```bash
+# Quick test with fewer iterations
+MAX_ITERATIONS=5 ./scripts/compound/schedule-research-loop.sh huddinge-v3
+
+# Dry run (no real Timefold or register calls)
+DRY_RUN=true ./scripts/compound/schedule-research-loop.sh huddinge-v3 3
+
+# Trim shifts before loop (smaller/faster solves; specialist uses *_trimmed.json)
+TRIM_SHIFTS_FROM_INPUT=1 ./scripts/compound/schedule-research-loop.sh huddinge-v3 10
+```
+
+**Start server (if needed)**
 
 ```bash
 # From be-agent-service root
-# 1. Start the API (so loop can read/write state and register runs)
 yarn workspace server start
-# Or in another terminal: PORT=3010 yarn workspace server dev
-
-# 2. Run loop for dataset huddinge-v3 with 3 iterations (quick test)
-./scripts/compound/schedule-research-loop.sh huddinge-v3 3
+# Or dev: PORT=3010 yarn workspace server dev
 ```
-
-Requires `TIMEFOLD_API_KEY` (e.g. in `~/.config/caire/env`) so the specialist can submit to Timefold.

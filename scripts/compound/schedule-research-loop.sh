@@ -28,8 +28,9 @@
 #   TRIM_INPUT_SOURCE - Input to trim (default: data/DATASET/input/input_DATASET_FIXED.json)
 #   TRIM_MAX_SHIFTS_PER_VEHICLE - Cap shifts per vehicle when no TRIM_SOLUTION (default 10)
 #   TRIM_SOLUTION    - If set, keep only vehicles/shifts used in this solution JSON
-#   MAX_WALL_CLOCK_SEC - Max wall-clock time in seconds (default: 10800 = 3h). Exit when exceeded.
 #   PARALLEL_SOLVES  - Number of solves to run in parallel per round (default: 4). Jobs queue and run while you sleep.
+#
+# Note: Timefold config (e.g. c522a20a-89c9-4a5b-aca2-46887a254ac7) already has a 3h max solve; no script cap needed.
 #
 # Goals: Quick-win exit = continuity ≤11, unassigned <1%, field efficiency >70%. Ultimate = ≤8, <1%, >75% (field = visit/(visit+travel), no wait, no idle).
 #
@@ -66,8 +67,7 @@ DRY_RUN="${DRY_RUN:-false}"
 # or TRIM_SOLUTION (path to solution JSON for solution-based trim).
 TRIM_SHIFTS_FROM_INPUT="${TRIM_SHIFTS_FROM_INPUT:-0}"
 
-# Wall-clock cap and parallel solves (run many when you sleep)
-MAX_WALL_CLOCK_SEC="${MAX_WALL_CLOCK_SEC:-10800}"
+# Parallel solves per round (run many when you sleep; TF config has 3h max solve)
 PARALLEL_SOLVES="${PARALLEL_SOLVES:-4}"
 
 # Logging
@@ -170,6 +170,7 @@ register_run() {
     metrics_json="$metrics"
   fi
 
+  # Prefer field_efficiency_pct (no wait, no idle) for goals; API stores as routing_efficiency_pct for compatibility
   local body
   body=$(jq -n -c \
     --arg id "$job_id" \
@@ -184,7 +185,8 @@ register_run() {
       continuity_avg: ($m.continuity_avg),
       continuity_max: ($m.continuity_max),
       unassigned_pct: ($m.unassigned_pct),
-      routing_efficiency_pct: ($m.routing_efficiency_pct),
+      routing_efficiency_pct: (($m.field_efficiency_pct) // ($m.routing_efficiency_pct)),
+      field_efficiency_pct: ($m.field_efficiency_pct),
       total_visits: ($m.total_visits),
       unassigned_visits: ($m.unassigned_visits)
     }') || return 0
@@ -198,24 +200,26 @@ register_run() {
 # RESEARCH STATE CHECKS
 # ============================================================================
 
-# Check if goals are met
+# Check if goals are met (quick-win: continuity ≤11, unassigned <1%, field efficiency >70%)
+# Ultimate goals (stretch): ≤8, <1%, >75% — same metric (field = visit/(visit+travel), no wait, no idle)
 check_goals_met() {
   local state="$1"
 
-  local continuity_avg=$(echo "$state" | jq -r '.data.state.best_continuity_avg // 999')
-  local continuity_max=$(echo "$state" | jq -r '.data.state.best_continuity_max // 999')
-  local unassigned_pct=$(echo "$state" | jq -r '.data.state.best_unassigned_pct // 999')
-  local efficiency=$(echo "$state" | jq -r '.data.state.best_efficiency_pct // 0')
+  local continuity_avg=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_continuity_avg // empty')" "999")
+  local continuity_max=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_continuity_max // empty')" "999")
+  local unassigned_pct=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_unassigned_pct // empty')" "999")
+  local efficiency=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_efficiency_pct // empty')" "0")
 
-  local goal_continuity_avg=$(echo "$state" | jq -r '.data.state.goal_continuity_avg // 11.0')
-  local goal_continuity_max=$(echo "$state" | jq -r '.data.state.goal_continuity_max // 20.0')
-  local goal_unassigned_pct=$(echo "$state" | jq -r '.data.state.goal_unassigned_pct // 1.0')
-  local goal_efficiency=$(echo "$state" | jq -r '.data.state.goal_efficiency_pct // 70.0')
+  local goal_continuity_avg=$(_safe_num "$(echo "$state" | jq -r '.data.state.goal_continuity_avg // empty')" "11.0")
+  local goal_continuity_max=$(_safe_num "$(echo "$state" | jq -r '.data.state.goal_continuity_max // empty')" "20.0")
+  local goal_unassigned_pct=$(_safe_num "$(echo "$state" | jq -r '.data.state.goal_unassigned_pct // empty')" "1.0")
+  local goal_efficiency=$(_safe_num "$(echo "$state" | jq -r '.data.state.goal_efficiency_pct // empty')" "70.0")
 
-  if (( $(echo "$continuity_avg <= $goal_continuity_avg" | bc -l) )) && \
-     (( $(echo "$continuity_max <= $goal_continuity_max" | bc -l) )) && \
-     (( $(echo "$unassigned_pct < $goal_unassigned_pct" | bc -l) )) && \
-     (( $(echo "$efficiency > $goal_efficiency" | bc -l) )); then
+  local c_ok=$(echo "$continuity_avg <= $goal_continuity_avg" | bc -l 2>/dev/null || echo "0")
+  local cm_ok=$(echo "$continuity_max <= $goal_continuity_max" | bc -l 2>/dev/null || echo "0")
+  local u_ok=$(echo "$unassigned_pct < $goal_unassigned_pct" | bc -l 2>/dev/null || echo "0")
+  local e_ok=$(echo "$efficiency > $goal_efficiency" | bc -l 2>/dev/null || echo "0")
+  if [[ "${c_ok:-0}" == "1" ]] && [[ "${cm_ok:-0}" == "1" ]] && [[ "${u_ok:-0}" == "1" ]] && [[ "${e_ok:-0}" == "1" ]]; then
     return 0
   else
     return 1
@@ -279,10 +283,11 @@ execute_strategy_via_specialist() {
   fi
 
   # Call specialist; only stdout is the final JSON line (stderr is logged separately)
-  local raw_output result
-  raw_output=$("$AGENTS_DIR/timefold-specialist.sh" \
-    --dataset "$DATASET" \
-    --strategy "$strategy" 2>>"$LOG_FILE") || true
+  # Set SPECIALIST_NO_WAIT=1 to submit without waiting (get job_id immediately; fetch output later with submit_to_timefold.py fetch <plan_id>)
+  local raw_output result specialist_args
+  specialist_args=(--dataset "$DATASET" --strategy "$strategy")
+  [[ -n "${SPECIALIST_NO_WAIT:-}" ]] && specialist_args+=(--no-wait)
+  raw_output=$("$AGENTS_DIR/timefold-specialist.sh" "${specialist_args[@]}" 2>>"$LOG_FILE") || true
   # Take first line that is valid JSON (in case of any stray output)
   result=""
   while IFS= read -r line; do
@@ -297,6 +302,12 @@ execute_strategy_via_specialist() {
   if ! echo "$result" | jq -e . >/dev/null 2>&1; then
     log_error "Invalid result JSON from specialist (last line): ${result:0:200}"
     echo "{}"
+    return 1
+  fi
+  # Surface specialist errors (e.g. input not found, Timefold API failure) so we don't register bogus runs
+  if echo "$result" | jq -e '.error' >/dev/null 2>&1; then
+    log_error "Specialist failed: $(echo "$result" | jq -r '.error')"
+    echo "$result"
     return 1
   fi
   echo "$result"
@@ -325,7 +336,8 @@ evaluate_result() {
 
   local new_continuity=$(_safe_num "$(echo "$result" | jq -r '.metrics.continuity_avg // empty')" "999")
   local best_continuity=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_continuity_avg // empty')" "999")
-  local new_efficiency=$(_safe_num "$(echo "$result" | jq -r '.metrics.routing_efficiency_pct // empty')" "0")
+  # Use field efficiency (visit/(visit+travel), no wait, no idle) for goal comparison
+  local new_efficiency=$(_safe_num "$(echo "$result" | jq -r '.metrics.field_efficiency_pct // .metrics.routing_efficiency_pct // empty')" "0")
   local best_efficiency=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_efficiency_pct // empty')" "0")
   local new_unassigned=$(_safe_num "$(echo "$result" | jq -r '.metrics.unassigned_pct // empty')" "999")
   local best_unassigned=$(_safe_num "$(echo "$state" | jq -r '.data.state.best_unassigned_pct // empty')" "999")
@@ -470,7 +482,7 @@ while [[ $iteration -lt $MAX_ITERATIONS ]]; do
   # Execute strategy via specialist
   RESULT=$(execute_strategy_via_specialist "$STRATEGY")
   if [[ $? -ne 0 ]]; then
-    log_error "Specialist failed to execute strategy"
+    log_error "Specialist failed (see error above); skipping register and state update"
     continue
   fi
 

@@ -7,10 +7,17 @@ Modes:
   2. From-patch:  POST patch payload to an existing route plan
 
 With --wait, polls until solve completes and saves the output JSON.
+Without --wait, submit returns immediately with the route plan ID; fetch output anytime with the fetch command.
+
+  # Fetch current output (anytime during or after solve)
+  python3 submit_to_timefold.py fetch <plan_id> [--save path]
 
 Usage:
-  # Fresh solve
+  # Fresh solve (block until done)
   python3 submit_to_timefold.py solve ../tf/step2-input-trimmed.json --wait --save ../tf/step2-output.json
+
+  # Fresh solve (return immediately; fetch later)
+  python3 submit_to_timefold.py solve ../tf/step2-input-trimmed.json
 
   # From-patch
   python3 submit_to_timefold.py from-patch ../tf/step2-from-patch-payload.json \
@@ -281,6 +288,15 @@ def submit_from_patch(
     return r.json()
 
 
+def fetch_route_plan(plan_id: str, api_key: str) -> dict:
+    """GET current route plan state/output. Returns full response (metadata + solution when completed)."""
+    url = f"{TIMEFOLD_BASE}/{plan_id}"
+    r = requests.get(url, headers=_headers(api_key), timeout=60)
+    if r.status_code != 200:
+        raise RuntimeError(f"Fetch error: HTTP {r.status_code}: {r.text[:500]}")
+    return r.json()
+
+
 def poll_until_done(plan_id: str, api_key: str) -> dict:
     """Poll route plan until terminal status. Returns final response."""
     url = f"{TIMEFOLD_BASE}/{plan_id}"
@@ -374,6 +390,21 @@ def main() -> int:
     validate_p = sub.add_parser("validate", help="Validate input JSON (time windows, shifts). No submit.")
     validate_p.add_argument("input", type=Path, help="Input JSON with modelInput.")
 
+    # Fetch mode: GET current output for a route plan (can call anytime during or after solve)
+    fetch_p = sub.add_parser("fetch", help="Fetch current route plan state/output by ID. Use anytime during or after solve.")
+    fetch_p.add_argument("plan_id", help="Route plan ID (UUID from submit).")
+    fetch_p.add_argument(
+        "--save",
+        type=Path,
+        default=None,
+        help="Save response JSON to this path (file or directory; if dir, writes <plan_id>_output.json).",
+    )
+    fetch_p.add_argument(
+        "--api-key",
+        default=None,
+        help="Timefold API key (default: TIMEFOLD_API_KEY env or ~/.config/caire/env).",
+    )
+
     # Solve mode
     solve_p = sub.add_parser("solve", help="Submit fresh solve (modelInput).")
     solve_p.add_argument("input", type=Path, help="Input JSON with modelInput.")
@@ -431,6 +462,31 @@ def main() -> int:
     patch_p.add_argument("--save-id", type=Path, default=None, help="Write new route plan ID to this file (from-patch only).")
 
     args = ap.parse_args()
+
+    if args.mode == "fetch":
+        api_key = (getattr(args, "api_key", None) or os.environ.get("TIMEFOLD_API_KEY", "")).strip()
+        if not api_key:
+            print("Error: TIMEFOLD_API_KEY required for fetch.", file=sys.stderr)
+            return 1
+        try:
+            data = fetch_route_plan(args.plan_id.strip(), api_key)
+        except RuntimeError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return 1
+        meta = data.get("metadata") or data.get("run") or {}
+        status = (meta.get("solverStatus") or data.get("solverStatus") or "?").upper()
+        score = meta.get("score", "")
+        print(f"Status: {status}  Score: {score}")
+        print(f"plan_id: {args.plan_id.strip()}")
+        if getattr(args, "save", None):
+            save_path = args.save
+            if save_path.exists() and save_path.is_dir():
+                save_path = save_path / f"{args.plan_id.strip()}_output.json"
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(save_path, "w") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            print(f"Saved to {save_path}")
+        return 0
 
     if args.mode == "validate":
         if not args.input.exists():

@@ -15,6 +15,7 @@ DATA_DIR="$SERVICE_ROOT/recurring-visits/data"
 # Parse arguments
 DATASET=""
 STRATEGY=""
+NO_WAIT=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -25,6 +26,10 @@ while [[ $# -gt 0 ]]; do
     --strategy)
       STRATEGY="$2"
       shift 2
+      ;;
+    --no-wait)
+      NO_WAIT="1"
+      shift
       ;;
     *)
       echo "Unknown argument: $1" >&2
@@ -80,7 +85,10 @@ mkdir -p "$OUTPUT_DIR"
 # Submit to Timefold (stderr to log so stdout is clean for parsing)
 cd "$SCRIPTS_DIR"
 TF_LOG="$OUTPUT_DIR/timefold_submission.log"
-RESULT=$(python3 submit_to_timefold.py solve "$INPUT_JSON" --wait --save "$OUTPUT_DIR/output.json" 2>"$TF_LOG") || {
+WAIT_ARG="--wait"
+[[ -n "${NO_WAIT:-}" ]] && WAIT_ARG=""
+# Without --wait we only submit; output can be fetched later with: python3 submit_to_timefold.py fetch <plan_id> --save <dir>
+RESULT=$(python3 submit_to_timefold.py solve "$INPUT_JSON" $WAIT_ARG --save "$OUTPUT_DIR/output.json" 2>"$TF_LOG") || {
   ERROR_MSG=$(cat "$TF_LOG" 2>/dev/null | tail -5 | tr -d '\033\007\r' | tr '\n' ' ')
   jq -n -c --arg msg "Timefold submission failed: ${ERROR_MSG:-unknown}" '{error: $msg}'
   exit 1
@@ -93,6 +101,15 @@ if [[ -z "$ROUTE_PLAN_ID" ]]; then
 fi
 if [[ -z "$ROUTE_PLAN_ID" ]]; then
   ROUTE_PLAN_ID="$EXPERIMENT_ID"
+fi
+
+# No-wait: return immediately with job_id; you can fetch output later with submit_to_timefold.py fetch <plan_id> --save <dir>
+if [[ -n "${NO_WAIT:-}" ]]; then
+  echo "$ROUTE_PLAN_ID" > "$OUTPUT_DIR/job_id.txt"
+  jq -n -c \
+    --arg job_id "$ROUTE_PLAN_ID" \
+    '{job_id: $job_id, status: "running", metrics: null}'
+  exit 0
 fi
 
 if [[ ! -f "$OUTPUT_DIR/output.json" ]]; then
