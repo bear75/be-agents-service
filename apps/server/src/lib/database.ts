@@ -899,6 +899,37 @@ export function createResearchState(params: {
   return getResearchState(params.dataset)!;
 }
 
+/**
+ * Column names in research_state that are allowed in UPDATE.
+ * Prevents request body keys from being interpolated into SQL (allowlist only).
+ * Exported for route-level validation before calling updateResearchState.
+ */
+export const RESEARCH_STATE_UPDATABLE_KEYS = new Set<string>([
+  'program_version',
+  'iteration_count',
+  'research_phase',
+  'current_job_id',
+  'current_experiment_id',
+  'current_status',
+  'best_job_id',
+  'best_experiment_id',
+  'best_continuity_avg',
+  'best_continuity_max',
+  'best_unassigned_pct',
+  'best_efficiency_pct',
+  'best_achieved_at',
+  'plateau_count',
+  'last_improvement_iteration',
+  'goal_continuity_avg',
+  'goal_continuity_max',
+  'goal_unassigned_pct',
+  'goal_efficiency_pct',
+  'goals_met',
+  'history_json',
+  'learnings_json',
+  'updated_at',
+]);
+
 export function updateResearchState(dataset: string, updates: Partial<ResearchState>): void {
   const existing = getResearchState(dataset);
   if (!existing) {
@@ -908,13 +939,10 @@ export function updateResearchState(dataset: string, updates: Partial<ResearchSt
   const fields: string[] = [];
   const values: unknown[] = [];
 
-  // Build dynamic UPDATE query
   for (const [key, value] of Object.entries(updates)) {
-    if (key !== 'id' && key !== 'dataset' && key !== 'created_at') {
-      fields.push(`${key} = ?`);
-      // Convert boolean to number for SQLite (0=false, 1=true)
-      values.push(typeof value === 'boolean' ? (value ? 1 : 0) : value);
-    }
+    if (!RESEARCH_STATE_UPDATABLE_KEYS.has(key)) continue;
+    fields.push(`${key} = ?`);
+    values.push(typeof value === 'boolean' ? (value ? 1 : 0) : value);
   }
 
   if (fields.length === 0) return;

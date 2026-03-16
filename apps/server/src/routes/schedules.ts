@@ -20,6 +20,7 @@ import {
   getResearchState,
   createResearchState,
   updateResearchState,
+  RESEARCH_STATE_UPDATABLE_KEYS,
   getResearchHistory,
   getResearchLearnings,
 } from '../lib/database.js';
@@ -499,7 +500,13 @@ router.get('/research/state', (req: Request, res: Response) => {
 router.post('/research/state', (req: Request, res: Response) => {
   try {
     const dataset = String((req.body?.dataset as string) || 'huddinge-v3').trim();
-    const updates = (req.body?.updates as Record<string, unknown>) || {};
+    const raw = (req.body?.updates as Record<string, unknown>) || {};
+    const updates: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(raw)) {
+      if (RESEARCH_STATE_UPDATABLE_KEYS.has(key)) {
+        updates[key] = value;
+      }
+    }
 
     if (Object.keys(updates).length === 0) {
       return res.json({ success: true, data: { updated: false } });
