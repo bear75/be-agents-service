@@ -1,0 +1,46 @@
+%% myCaire – Product Ecosystem Map
+%% Visar hur produkter konsumerar myCaire-kärnan
+
+flowchart TB
+    subgraph myCaireCore [myCaire Kärna]
+        Identity[Identity + OrgClaim]
+        Actuals[Unified Actuals]
+        Entitlements[Entitlements]
+        Gamification[Gamification]
+        Insights[Insights / CaireIndex]
+    end
+
+    subgraph produkter [Produkter]
+        Scheduling[Schemaläggning]
+        Kunskapsportaler[Kunskapsportaler]
+        Handbook[Personalhandbok]
+        CaregiverApp[Caregiver-app]
+        BrukarApp[Brukarapp]
+    end
+
+    subgraph value [Värde / Flywheel-bidrag]
+        V1[Realtidsdata / Actuals]
+        V2[Transparens / Org-claim]
+        V3[Compliance / Policy]
+        V4[EVV / Kvalitet]
+        V5[Trygghet / Nöjdhet]
+    end
+
+    Scheduling --> Actuals
+    Scheduling -->|driver| V1
+    Kunskapsportaler --> Identity
+    Kunskapsportaler --> Insights
+    Kunskapsportaler -->|acquisition| V2
+    Handbook --> Entitlements
+    Handbook -->|utbildning| V3
+    CaregiverApp --> Actuals
+    CaregiverApp --> Gamification
+    CaregiverApp -->|check-in/out| V4
+    BrukarApp --> Insights
+    BrukarApp -->|transparens| V5
+
+    Identity --> produkter
+    Actuals --> produkter
+    Entitlements --> produkter
+    Gamification --> produkter
+    Insights --> produkter

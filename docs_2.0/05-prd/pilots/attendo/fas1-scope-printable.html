@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAIRE × Attendo – Pilotdata (Fas 1)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #111;
+        }
+
+        h1 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3rem;
+            margin-top: 2rem;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f5f5f5;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .keep-together {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            display: block;
+            /* Ensure block formatting context */
+        }
+
+        .keep-together img {
+            max-height: 85vh;
+            /* Limit height to fit on a page */
+            width: auto;
+            /* Maintain aspect ratio */
+            display: block;
+            margin: 0 auto;
+        }
+
+        .page-break-before {
+            page-break-before: always;
+            break-before: always;
+        }
+
+        /* Specific rule for the gap between 3 and 4 */
+        /* Since the user asked to remove empty page between 3 and 4, we ensure normal flow */
+
+        @media print {
+            body {
+                padding: 0;
+            }
+
+            a {
+                text-decoration: none;
+                color: #000;
+            }
+
+            .keep-together img {
+                max-height: 18cm;
+                /* A4 printable height constraint approx */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>CAIRE × Attendo – Pilotdata, process och optimeringsflöde (Fas 1)</h1>
+
+    <p>Vi har gått igenom CSV-underlaget och har lite konkret återkoppling kring datan, så att vi sätter rätt
+        förutsättningar från start. Vi har även sammanställt hur vi ser på pilotens databehov, planeringslogik och
+        optimeringsprocess, för att säkerställa att vi får ett upplägg som är:</p>
+    <ul>
+        <li>Operativt realistiskt för hemtjänst</li>
+        <li>Mätbart mot Attendos nuvarande arbetssätt</li>
+        <li>Transparent i varför ett schema blir bättre eller sämre</li>
+    </ul>
+    <p>Nedan beskriver vi helheten: data → grovplanering → realtid → jämförelse.</p>
+
+    <hr>
+
+    <h2>1. Datagrund – vad vi behöver i piloten</h2>
+
+    <h3>1.1 Obligatorisk data (miniminivå endast tidsrelaterade krav)</h3>
+    <p><strong>Syfte:</strong><br>
+        Tillhandahålla minsta möjliga informationsmängd för att möjliggöra korrekt schemaläggning av:</p>
+    <ul>
+        <li>Rådata/instatsbeslut för månads-grovplanering av slingor</li>
+        <li>Realtidsändringar</li>
+        <li>Demand & supply-hantering – utan beroenden till långsiktiga eller aggregerade datapunkter</li>
+        <li>Samt motsvarande planerade scheman för slingor och realtidsändringar på samma data
+            (slinga/dag/besök/anställd)</li>
+    </ul>
+
+    <p>För att kunna grovplanera slingor över en månad och därefter hantera realtidsändringar behöver varje besök ha:
+    </p>
+
+    <p><strong>Besök:</strong></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Fält</th>
+                <th>Beskrivning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ObjectID</td>
+                <td>Unikt besöks-ID (samma ID genom hela livscykeln: grovplan → realtid → utfört)</td>
+            </tr>
+            <tr>
+                <td>Adress / geokoordinat</td>
+                <td>Besökets plats</td>
+            </tr>
+            <tr>
+                <td>Duration</td>
+                <td>Besökets längd</td>
+            </tr>
+            <tr>
+                <td>Time window</td>
+                <td>Starttid (räcker med duration och flexibilitet)</td>
+            </tr>
+            <tr>
+                <td>Flexibilitet</td>
+                <td>± minuter</td>
+            </tr>
+            <tr>
+                <td>Dubbelbemanning</td>
+                <td>Om besöket kräver två anställda</td>
+            </tr>
+            <tr>
+                <td>Frekvens</td>
+                <td>Daglig, veckovis, varannan vecka, månadsvis</td>
+            </tr>
+            <tr>
+                <td>Prioritet</td>
+                <td>Optional - frekvens kan räcka</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>Anställd:</strong></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Fält</th>
+                <th>Beskrivning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>EmployeeID</td>
+                <td>Unikt ID för resursen</td>
+            </tr>
+            <tr>
+                <td>Arbetspass (Shift)</td>
+                <td>Tidsintervall då den anställde är tillgänglig. Exempel: 07:00–16:00, 15:00–22:00</td>
+            </tr>
+            <tr>
+                <td>Pauser (Breaks)</td>
+                <td>Optional per individ. En eller flera pauser kopplade till arbetspasset: start, duration, flexibility
+                </td>
+            </tr>
+            <tr>
+                <td>Kontraktstyp</td>
+                <td>Fast anställd eller timanställd</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>Geografi:</strong></p>
+    <ul>
+        <li>Start- och slutadress per anställd antas vara områdets kontor</li>
+        <li>Ett område per CSV-fil</li>
+    </ul>
+
+    <h3>Medvetet utanför scope i fas 1</h3>
+    <p>Följande används inte i fas 1 och ignoreras helt av optimeringen:</p>
+    <ul>
+        <li>Skills / kompetenser</li>
+        <li>Preferenser</li>
+        <li>Kontinuitet (vem som gjort besöket tidigare)</li>
+        <li>Outnyttjade timmar</li>
+        <li>Kontaktpersoner</li>
+        <li>Alla datapunkter som kräver summering eller analys över tid</li>
+    </ul>
+
+    <p><strong>Konsekvens:</strong><br>
+        Optimeringen tar endast hänsyn till:</p>
+    <ul>
+        <li>Arbetstid, pauser och kostnader för anställda</li>
+        <li>Adresser, frekvenser, tidsfönster och flexibilitet i besök</li>
+        <li>Slingor för förenklad kontinuitet</li>
+        <li><em>Inte</em> till historik eller långsiktiga mål</li>
+    </ul>
+
+    <p><strong>Viktig avgränsning (designprincip):</strong><br>
+        I fas 1 optimerar CAIRE inom en given tidshorisont, inte över tid. Det gör modellen snabb, deterministisk och
+        fullt lämpad för realtidsändringar.</p>
+
+    <h3>1.2 Varför frekvens är nödvändig</h3>
+    <p>Frekvens krävs för att kunna grovplanera slingor över en hel månad och skapa ett realistiskt grundschema.</p>
+    <p><strong>Exempel:</strong></p>
+    <ul>
+        <li>Veckovis städning → torsdag 13:00–14:00, flexibilitet ±30 min</li>
+        <li>Toalettbesök 4 ggr/dag → varje dag 07, 12, 17, 22, flexibilitet ±5 min</li>
+    </ul>
+    <p>Frekvensen används för att:</p>
+    <ul>
+        <li>Placera besök korrekt över tid</li>
+        <li>Skilja låsta dagliga besök från flyttbara vecko-/månadsbesök</li>
+        <li>Analysera supply/demand per dag, vecka och månad</li>
+    </ul>
+
+    <h3>1.3 Schemaimport – tre tillstånd</h3>
+    <p>För att möjliggöra fullständig jämförelse och analys behöver piloten stödja import av tre schematillstånd per
+        dag/område:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Schematyp</th>
+                <th>Beskrivning</th>
+                <th>Användning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Oplanerat</strong></td>
+                <td>Besök utan tilldelad anställd/tid</td>
+                <td>Baseline för optimering</td>
+            </tr>
+            <tr>
+                <td><strong>Planerat</strong></td>
+                <td>Manuellt schema från eCare</td>
+                <td>Jämförelse mot optimerat</td>
+            </tr>
+            <tr>
+                <td><strong>Utfört</strong></td>
+                <td>Faktiskt genomfört schema</td>
+                <td>Verifikation och analys</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>CSV-format:</strong> En fil per område/dag med kolumn för schematyp (unplanned/planned/actual).</p>
+    <p><strong>Dataflöde:</strong></p>
+    <ol>
+        <li>Import oplanerat → Kör optimering → Jämför med planerat</li>
+        <li>Import utfört → Jämför med optimerat → Identifiera avvikelser</li>
+    </ol>
+    <blockquote><strong>OBS:</strong> Alla scheman (inkl. utfört) importeras via CSV från eCare. Phoniro/GPS är EJ
+        aktuellt för Attendo.</blockquote>
+
+    <h3>1.4 Transportläge (förenkling fas 1)</h3>
+    <p><strong>Endast bil (DRIVING) i fas 1</strong> – ingen differentiering av transportläge.</p>
+    <p><strong>Motivering:</strong></p>
+    <ul>
+        <li><strong>Promenadrutter:</strong> Korta avstånd → restidsskillnaden bil vs gång är minimal (några minuter)
+        </li>
+        <li><strong>Bilslingor:</strong> Stora avstånd → alltid bil oavsett</li>
+    </ul>
+    <p><strong>Konsekvens:</strong> Timefold använder <code>transportMode: DRIVING</code> för alla vehicles/employees i
+        fas 1.</p>
+
+    <hr>
+
+    <h2>2. Sling-minne – inbyggd kontinuitet i fas 1</h2>
+    <p>För att piloten ska spegla verklig hemtjänstplanering tar vi hänsyn till sling-minne:</p>
+    <p><strong>En slinga = område + dag + arbetspass</strong> (ex. 07–16)</p>
+    <p>Varje slinga har:</p>
+    <ul>
+        <li>Ett EmployeeID</li>
+        <li>En ordnad lista av ObjectID (1, 2, 3, 4…)</li>
+    </ul>
+    <p>Detta innebär att:</p>
+    <ul>
+        <li>Samma anställd utför alla besök i slingans grundplan</li>
+        <li>Grundläggande kontinuitet är inbyggd</li>
+        <li>Vi slipper införa full kontaktperson-/preferenslogik i fas 1</li>
+    </ul>
+    <p><strong>Sling-minne över tid (testbart i piloten):</strong></p>
+    <ul>
+        <li><strong>Nivå A – daglig kontinuitet (bas):</strong> Varje dags slinga har samma anställd</li>
+        <li><strong>Nivå B – veckovis kontinuitet (utökad):</strong> Samma slingor återkommer samma veckodagar över
+            månadshorisonten</li>
+    </ul>
+
+    <hr>
+
+    <div class="keep-together">
+        <h2>3. Process – grovplanering, realtid och jämförelse</h2>
+        <p><em>Översiktligt flöde</em></p>
+        <img src="process-flow-diagram.png"
+            alt="Processflöde: Inputdata → Grovplanering → Baseline → Realtidsändringar → Optimering → Jämförelse">
+    </div>
+
+    <hr>
+
+    <h2>4. Grovplanering – månad (baseline)</h2>
+    <p>I detta steg:</p>
+    <ul>
+        <li>Planeras alla besök från scratch</li>
+        <li>Slingor optimeras geografiskt och tidsmässigt</li>
+        <li>Sling-minne appliceras</li>
+        <li>Resultatet blir ett stabilt referensschema</li>
+    </ul>
+
+    <hr>
+
+    <h2>5. Realtidsändringar – simulering i pilot</h2>
+    <p>Realtidsändringar simuleras i piloten via CSV-fil och/eller direkt i schemavyn. Exempel på ändringar som kan
+        förekomma:</p>
+    <ul>
+        <li>Sjuk anställd</li>
+        <li>Avbokning av besök</li>
+        <li>Nytt besök</li>
+        <li>Ändrad starttid eller duration</li>
+    </ul>
+    <p>Varje ändring har ett ID som kan kopplas till:</p>
+    <ul>
+        <li>Relevant besök (t.ex. ObjectID eller motsvarande identifierare)</li>
+        <li>Berörd slinga och/eller anställd</li>
+    </ul>
+    <p>Detta gör det möjligt att spåra ändringar och jämföra manuella och optimerade versioner.</p>
+
+    <h3>Grundprinciper för realtidsoptimering</h3>
+    <p><strong>Tidshorisont:</strong></p>
+    <ul>
+        <li>Realtidsoptimering körs med veckovis tidshorisont för att behålla kontext kring flyttbara besök baserat på
+            frekvens</li>
+        <li>Månadsvis horisont används inte i realtid, av både prestanda- och tidsaspektsskäl</li>
+    </ul>
+    <p><strong>Begränsad omoptimering:</strong></p>
+    <ul>
+        <li>Endast ändrade eller påverkade objekt tas med i ny körning</li>
+        <li>Grovplanerade och opåverkade besök/slingor är låsta</li>
+    </ul>
+    <p><strong>Flyttlogik:</strong></p>
+    <ul>
+        <li>Dagliga besök flyttas i sista hand</li>
+        <li>Vecko- och månadsbesök kan flyttas mellan dagar enligt sin frekvens</li>
+        <li>Slingor bryts endast när regler och behov kräver det</li>
+    </ul>
+
+    <h3>Supply och demand i realtid</h3>
+    <p>Realtidsändringar kan påverka både demand (besök) och supply (anställda). Optimeringen ska därför kunna justera
+        båda dimensionerna.</p>
+    <p><strong>Demand – besök:</strong></p>
+    <ul>
+        <li>Flytta besök mellan dagar</li>
+        <li>Lägga till eller ta bort besök</li>
+        <li>Ändra starttid eller duration</li>
+        <li>Ändra antal besökstimmar (förberedelse för utnyttjad-timmar-pool i senare fas)</li>
+    </ul>
+    <p><strong>Supply – anställda (främst timanställda):</strong></p>
+    <ul>
+        <li>Lägga till extra anställd och ny slinga vid ökat behov</li>
+        <li>Byta anställd för slinga vid t.ex. sjukdom</li>
+        <li>Ta bort anställd/slinga vid avbokningar</li>
+        <li>Ändra skift eller tillgänglighet</li>
+    </ul>
+    <p>Timanställda fungerar här som en flexibel resurs-pool för att hantera variationer utan att störa
+        grundplaneringen.</p>
+
+    <h3>Manuell hantering och AI-stöd (samma schemavy)</h3>
+    <p>Systemet ska vid realtidsändringar alltid erbjuda två parallella arbetssätt, i samma schemavy:</p>
+    <p><strong>Manuellt:</strong></p>
+    <ul>
+        <li>Lägga till / ta bort besök</li>
+        <li>Flytta besök i tid eller mellan dagar</li>
+        <li>Lägga till / ta bort timanställd</li>
+        <li>Byta anställd för slinga</li>
+    </ul>
+    <p>Alla manuella ändringar:</p>
+    <ul>
+        <li>Valideras direkt mot regler och constraints</li>
+        <li>Visualiseras tydligt i schemat</li>
+    </ul>
+    <p><strong>AI-stött:</strong><br>
+        Användaren kan be AI:</p>
+    <ul>
+        <li>Kontrollera och analysera en manuell ändring (bättre/sämre, varför)</li>
+        <li>Föreslå en optimerad lösning baserat på ändringen</li>
+    </ul>
+    <p>Schemavyn är AI-agnostisk: det ska alltid vara tydligt vad som ändrats, oavsett om ändringen gjorts manuellt
+        eller av AI.</p>
+
+    <h3>Kostnader, raster och kontraktsfördelning (inställningar)</h3>
+    <p>För att hålla fas 1 enkel hanteras följande som globala inställningar, inte per individ i CSV:</p>
+    <ul>
+        <li>Kostnad fast anställd</li>
+        <li>Kostnad timanställd</li>
+        <li>Standardraster (default)</li>
+        <li>Önskad fördelning mellan fast och timanställda i grovplanering (t.ex. 80 % fast / 20 % tim → vid 10 slingor
+            = 8 fasta, 2 tim)</li>
+    </ul>
+    <p>Dessa inställningar kan:</p>
+    <ul>
+        <li>Anges vid ny grovplanering, eller</li>
+        <li>Justeras som en override vid omplanering</li>
+    </ul>
+
+    <hr>
+
+    <h2>6. Manuell planering + AI (lika viktiga)</h2>
+
+    <h3>Manuellt</h3>
+    <ul>
+        <li>Drag & drop i schemavyn</li>
+        <li>Endast tillåtna flyttar är möjliga</li>
+        <li>Omedelbar visuell validering (färg, ikon, blockering)</li>
+    </ul>
+
+    <h3>AI-stöd</h3>
+    <p>AI analyserar manuella ändringar utan att optimera om.<br>
+        Visar:</p>
+    <ul>
+        <li>Om ändringen förbättrar eller försämrar schemat</li>
+        <li>Vilka mål/constraints som påverkas</li>
+        <li>KPI:er</li>
+    </ul>
+
+    <hr>
+
+    <h2>7. Restidsanalys med kartvy</h2>
+
+    <h3>7.1 Syfte</h3>
+    <p>Visualisera och validera restider genom geografisk kartvy:</p>
+    <ul>
+        <li>Jämför manuella (planerade) restider med optimerade</li>
+        <li>Identifiera orealistiska restidsestimat</li>
+        <li>Verifiera geografisk logik i slingor</li>
+    </ul>
+
+    <h3>7.2 Funktioner i fas 1</h3>
+    <ul>
+        <li><strong>Kartvy per slinga/dag:</strong> Visa besöksordning med ruttlinje</li>
+        <li><strong>Restidsjämförelse:</strong> Manuell vs Timefold-estimat vs faktisk (från utfört schema)</li>
+        <li><strong>Avvikelsemarkering:</strong> Flagga stora skillnader (>20%)</li>
+    </ul>
+
+    <h3>7.3 KPI-påverkan</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Källa manuell</th>
+                <th>Källa optimerad</th>
+                <th>Källa utförd</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Restid per besök</td>
+                <td>eCare CSV</td>
+                <td>Timefold output</td>
+                <td>eCare CSV (actuals)</td>
+            </tr>
+            <tr>
+                <td>Total restid/dag</td>
+                <td>Summering</td>
+                <td>Timefold KPI</td>
+                <td>Faktisk från CSV</td>
+            </tr>
+            <tr>
+                <td>Restidsavvikelse</td>
+                <td>-</td>
+                <td>Optimerad - manuell</td>
+                <td>Utförd - planerad</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>8. Jämförelse mot manuella scheman (Attendos krav)</h2>
+    <p>Piloten möjliggör jämförelse på flera nivåer:</p>
+
+    <h3>8.1 KPI-jämförelse</h3>
+    <ul>
+        <li>Effektivitet (besökstid/arbetstid)</li>
+        <li>Arbetstid</li>
+        <li>Besökstid</li>
+        <li>Restid</li>
+        <li>Väntetid</li>
+        <li>Assigned / unassigned visits (antal + tid)</li>
+        <li>Finansiellt: kostnader, intäkter och marginal (optional - uppdelat på individnivå)</li>
+        <li><em>(Förberedelse inför outnyttjade timmar-pool i fas 2)</em></li>
+    </ul>
+
+    <h3>8.2 Transparens &amp; förklarbarhet (minst lika viktigt)</h3>
+    <p>CAIRE visar alltid:</p>
+    <ul>
+        <li>Vad som ändrats</li>
+        <li>Varför det ändrats</li>
+        <li>Vilka constraints/mål som påverkats</li>
+    </ul>
+    <p>Detta är avgörande när:</p>
+    <ul>
+        <li>Ett manuellt schema visar bättre KPI:er</li>
+        <li>Men samtidigt bryter mot regler eller mål</li>
+    </ul>
+    <p>Då kan vi:</p>
+    <ul>
+        <li>Verifiera att det manuella schemat är ogiltigt, eller</li>
+        <li>Justera constraints så att CAIRE medvetet kan bortse från dem</li>
+    </ul>
+    <p>👉 <strong>Transparens är A och O – inte bara siffror.</strong></p>
+
+    <h3>8.3 Utfört schema (Actuals)</h3>
+    <p>Import av utförda scheman (via CSV från eCare) möjliggör:</p>
+    <ul>
+        <li><strong>Validering av optimering:</strong> Hur väl motsvarar optimerat schema verkligheten?</li>
+        <li><strong>Avvikelseanalys:</strong> Identifiera systematiska avvikelser</li>
+        <li><strong>Lärande:</strong> Justera constraints baserat på verkligt utfall</li>
+    </ul>
+    <p><strong>Datapunkter från utfört schema (CSV):</strong></p>
+    <ul>
+        <li>Faktisk starttid vs planerad</li>
+        <li>Faktisk duration vs planerad</li>
+        <li>Faktisk restid (beräknad från tider i CSV)</li>
+        <li>Avbokningar och tillägg</li>
+        <li>Anställd som utförde besöket</li>
+    </ul>
+    <p><strong>Koppling till framtida optimering:</strong><br>
+        Utförda scheman matar tillbaka till systemet för:</p>
+    <ul>
+        <li>Bättre restidsestimat</li>
+        <li>Realistiska durationsuppskattningar</li>
+        <li>Kontinuitetshistorik</li>
+    </ul>
+
+    <hr>
+
+    <h2>9. Avgränsning – vad ligger i fas 2</h2>
+    <p>Fas 2 lägger till funktioner som <strong>kräver historik och analys över tid</strong>.</p>
+    <h3>9.1 Avancerade constraints</h3>
+    <ul>
+        <li>Skills/kompetens-matching</li>
+        <li>Preferenser (klient ↔ vårdgivare)</li>
+        <li>Kontaktperson-logik</li>
+    </ul>
+    <h3>9.2 Kontinuitetsanalys</h3>
+    <ul>
+        <li>Full kontinuitetslogik (vem som gjort besöket tidigare)</li>
+        <li>Kontinuitets-KPI (antal olika vårdgivare)</li>
+        <li>Kontaktperson-procent</li>
+    </ul>
+    <h3>9.3 Supply/demand över tid</h3>
+    <ul>
+        <li>Outnyttjade timmar-pool (100 % flexibilitet)</li>
+        <li>Demand-analyser över tid (geografiskt, kompetens)</li>
+        <li>Kapacitetshistogram och dashboards</li>
+    </ul>
+    <h3>9.4 Cross-area optimering</h3>
+    <ul>
+        <li>Optimering över flera områden samtidigt</li>
+        <li>Förslag om klientflytt till bättre passande område</li>
+    </ul>
+    <h3>9.5 WebSocket (valfritt)</h3>
+    <ul>
+        <li>Realtidsuppdateringar under optimering</li>
+        <li>Polling fungerar i fas 1</li>
+    </ul>
+    <h3>9.6 Bryntum UI fas 2</h3>
+    <p>Tillägg utöver fas 1:</p>
+    <ul>
+        <li>Skills/kompetensfiltrering</li>
+        <li>Preferensvisning</li>
+        <li>Kontaktperson-logik</li>
+        <li>Outnyttjade timmar-pool</li>
+        <li>Analyser över tid</li>
+        <li>Cross-area-vy</li>
+    </ul>
+
+    <hr>
+
+    <h2>Avslutande samsynsfråga</h2>
+    <p>Om vi har samsyn kring detta ungefärliga flöde – grovplanering av slingor över en månad från scratch,
+        sling-minne, veckovis realtidsoptimering samt full jämförbarhet och transparens mot manuella scheman – ser vi
+        detta som tillräckligt för att rättvist och mätbart utvärdera hur CAIRE förbättrar schemaläggning jämfört med
+        Attendos nuvarande arbetssätt, både vid grundplanering och vid realtidsändringar.</p>
+
+    <script>
+        window.onload = function () {
+            console.log("Ready for printing");
+        }
+    </script>
+
+</body>
+
+</html>

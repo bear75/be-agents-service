@@ -1,0 +1,26 @@
+%% myCaire – Flywheel
+%% Best practice: Mer användning → mer data → bättre optimering → bättre upplevelse → mer adoption
+
+flowchart LR
+    subgraph flywheel [myCaire Flywheel]
+        A[Mer användning]
+        B[Mer actuals-data]
+        C[Bättre optimering]
+        D[Bättre upplevelse]
+        E[Mer adoption]
+    end
+
+    A -->|"registrerar utförande"| B
+    B -->|"förbättrar modeller"| C
+    C -->|"bättre scheman, insikter"| D
+    D -->|"nöjdare användare"| E
+    E -->|"fler aktiva"| A
+
+    subgraph gamification [Gamification]
+        G1[Mål per persona]
+        G2[Nudges / Badges]
+        G3[Uppföljning]
+    end
+
+    D -.->|"drivs av"| gamification
+    gamification -.->|"ökar"| A

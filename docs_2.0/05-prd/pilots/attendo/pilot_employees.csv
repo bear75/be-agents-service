@@ -1,0 +1,4 @@
+EmployeeID,Name,ContractType,ShiftStart,ShiftEnd,Breaks,HourlyCost,TransportMode
+EMP001,Lisa Andersson,FullTime,07:00,16:00,"11:00-11:30,14:00-14:15",250,Driving
+EMP002,Erik Svensson,PartTime,07:00,12:00,,220,Driving
+EMP003,Maria Lind,Hourly,15:00,22:00,"18:00-18:30",200,Driving

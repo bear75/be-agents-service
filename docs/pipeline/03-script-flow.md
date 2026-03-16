@@ -36,6 +36,36 @@ Flow in this repo (be-agent-service): CSV file → Python conversion to FSR JSON
 
 ---
 
+## Time windows only (no "pinned" in TF input)
+
+Timefold FSR has **no** "pinned" or "fixed day" field. The solver only uses **time windows** on each visit: one TW = single day (non-movable); multiple TWs = multi-day (movable). "Pinned" vs "flexible" in our code is internal shorthand for how we build those TWs.
+
+---
+
+## Movable (multi-TW) visits
+
+**Definition**: A visit is “movable” when it has **more than one time window** (solver can place it on different days). Script and dashboard both use this meaning.
+
+- **Script**: `flexible_day` → multiple TWs; else one TW per occurrence. Huddinge v3 (2-week): ~397 movable, ~3520 visits, 152 groups. The script should create at least as many visits and groups as the dashboard (align expansion and grouping).
+- **Dashboard**: Same rule: templates with partial weekdays, biweekly, or “Varje vecka” with no days → flexible (multi-TW); daily or full weekday/weekend set → pinned (single-TW). Counts can differ from the script if CSV/date range or recurrence parsing differ (e.g. day names, empty “Varje vecka” handling).
+
+To compare: run `./scripts/compare-script-vs-dashboard-fsr.sh` (be-agent-service), then `yarn workspace dashboard-server dump-fsr` (beta-appcaire); if dashboard movable is much lower (e.g. 157 vs 397), the gap is in CSV→DB recurrence or classification—align import/projection with the script.
+
+---
+
+## Script locations and CSV notes
+
+**Canonical script**: `scripts/conversion/csv_to_fsr.py` (single source for CSV→FSR in this repo).
+
+**Older copy**: `recurring-visits/huddinge-package/huddinge-4mars-csv/scripts/attendo_4mars_to_fsr.py` — same logic, historically had (1) typo `når_på_dagen` instead of `när_på_dagen` (CSV column is "När på dagen"), (2) visit group key `dubbel_date_iso` so different clients with the same Dubbel and date were merged into one group. Both are fixed in that file to match the canonical script: `när_på_dagen`, group key `kundnr_date_iso_dubbel`. Prefer the canonical script for new runs.
+
+**CSV (Huddinge v3 Data_final.csv)**:
+- **Coordinates**: All 664 rows have Lat/Lon. No visits are dropped for missing coords when using this file with `--no-geocode`. Fallback to office coords in the script is for other CSVs or when geocoding fails.
+- **Återkommande**: The column contains "Varje vecka, weekdays" in many rows (e.g. "Varje vecka, mån tis ons tor fre", "Varje vecka, lör sön", "Varje vecka, mån"). In Data_final.csv there is no "Varje vecka" only (no weekdays); every row has weekdays after the comma. Recurrence parsing uses this column.
+- **Dubbel / visit groups**: One group per (client, date, Dubbel). If the CSV has different clients with the same Dubbel id, that is a data issue; the script does not merge across clients (group key includes kundnr).
+
+---
+
 ## Relation to dashboard flow
 
 - **Script flow**: No DB. CSV and FSR JSON are the source of truth for that run. Counts can differ from the dashboard because recurrence, grouping, and dependency logic may differ.

@@ -982,7 +982,7 @@ def _build_visits_and_groups(
 
     preceding_map: Dict[str, Tuple[str, str]] = {}  # vid -> (prev_id, min_delay_iso)
     for _key, occs in per_client_date.items():
-        occs.sort(key=lambda o: (_day_slot_order(o.get("når_på_dagen", "")), o.get("starttid", "")))
+        occs.sort(key=lambda o: (_day_slot_order(o.get("när_på_dagen", "")), o.get("starttid", "")))
         for i, occ in enumerate(occs):
             if i == 0:
                 continue
@@ -1120,13 +1120,15 @@ def _build_visits_and_groups(
         for i in range(1, len(occs)):
             spread_deps.append((occs[i]["visit_id"], occs[i - 1]["visit_id"], delay_str))
 
-    # Visit groups: same Dubbel + same date (build before dependencies so we can skip same-group deps)
+    # Visit groups: same client + same date + same Dubbel (match dashboard: kundnr_dateStr_dubbel).
+    # If CSV has different clients with same Dubbel id, that is a data issue; we group per (kundnr, date, dubbel).
     groups_by_key: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for occ in occurrences:
         v = occ.get("_visit")
         if not v or not occ.get("dubbel"):
             continue
-        gk = f"{occ['dubbel']}_{occ['date_iso']}"
+        kundnr = (occ.get("kundnr") or "").strip() or "_"
+        gk = f"{kundnr}_{occ['date_iso']}_{occ['dubbel']}"
         if v not in groups_by_key[gk]:
             groups_by_key[gk].append(v)
 

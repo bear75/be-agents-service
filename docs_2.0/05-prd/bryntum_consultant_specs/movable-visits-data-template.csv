@@ -1,0 +1,45 @@
+Field Name,Type,Required,Purpose,Example Value,Description,Format Notes,Comments
+movableVisitTemplateId,String,Yes,Uniquely identify each movable visit template in the system,template_001,Unique template identifier,Any string format,Can use external ID from eCare. Must be unique within organization. Used as parentId in daily schedule data
+clientId,String,Yes,Link movable visit template to specific client,client_001,Client identifier (can be external ID from eCare),Any string format,Can use external ID from eCare. Must be unique within organization
+clientName,String,Recommended,Display client name in UI and match visits to clients,Anna Andersson,Client name (for matching and display),Full name format,Used for display and matching during import
+clientPersonnummer,String,Optional,Client social security number from PDF,481123-0038,Personnummer (YYMMDD-XXXX format),YYMMDD-XXXX format,Extracted from PDF "Avser person" section
+clientAddress,String,Optional,Client address from PDF,"Brunskogsbacken 84, 12371 Farsta",Full address from PDF,Full street address with postal code,Extracted from PDF. Will be geocoded if lat/lng not provided
+clientPortkod,String,Optional,Client apartment door code from PDF,1234,Portkod (door code),String (numeric),Extracted from PDF "Portkod" field
+clientPhone,String,Optional,Client home phone number from PDF,08-12345678,Client home phone,Phone number format,Extracted from PDF "Telefonnummer" field
+clientMobilnummer,String,Optional,Client mobile phone number from PDF,070-1234567,Client mobile phone,Phone number format,Extracted from PDF "Mobilnummer" field
+clientCivilstand,String,Optional,Client marital status from PDF,Änka,Client marital status,Enum string,Values: Änka/Änkling, Ensamboende, Gift, Sambo, etc.
+clientLanguage,String,Optional,Client preferred language from PDF,Svenska,Client contact language,Language name,Extracted from PDF "Kontaktspråk" field
+clientAktuelSituation,String,Optional,Client current situation assessment from PDF,"Kartläggning av aktuell situation...",Full situation assessment text,Multi-line text,Extracted from PDF "Kartläggning av aktuell situation" section
+orderNumber,String,Optional,Order number from municipality PDF,3303540,Beställningsnummer from PDF,Any string format,Extracted from PDF "Beställningsnr" field
+orderDate,Date (YYYY-MM-DD),Optional,Date when order was created,2025-10-30,Order creation date from PDF,YYYY-MM-DD,Extracted from PDF "Utskriftsdatum" field
+handlaggare,String,Optional,Municipality case worker name from PDF,Amanda Palm,Handläggare (case worker) name,Full name format,Extracted from PDF "Handläggare" field. Municipality contact person
+handlaggareTelefon,String,Optional,Municipality case worker phone from PDF,08-12345678,Handläggare phone number,Phone number format,Extracted from PDF "Tfn" field near Handläggare
+contactRelation,String,Optional,External contact relation to client,Dotter,Contact relation to client,Enum string,Values: Son/dotter, Dotter, Son, Vän, Make, Maka, Barnbarn, Systrar, Bror, Närstående
+contactName,String,Optional,External contact name from PDF,Anna Fernberg Mautner,External contact full name,Full name format,Extracted from PDF "Externa kontakter" table. Närstående (relatives/friends)
+contactTelefonHem,String,Optional,External contact home phone,08-12345678,Contact home phone,Phone number format,Extracted from PDF "Telefon hem" field
+contactTelefonArbete,String,Optional,External contact work phone,08-87654321,Contact work phone,Phone number format,Extracted from PDF "Telefon arbete" field
+contactMobilnummer,String,Optional,External contact mobile phone,070-1234567,Contact mobile phone,Phone number format,Extracted from PDF "Mobilnummer" field
+contactEmail,String,Optional,External contact email address,anna.mautner@example.com,Contact email address,Email format,Extracted from PDF if available
+visitTitle,String,Yes,Visit type/name from PDF,"Morgon","Visit title: 'Morgon', 'Lunchtid', 'Städ 2 RoK', 'Fönsterputs', etc.",String,Extracted from PDF visit details table. Canonical titles: Morgon, Lunchtid, Eftermiddag, Middagstid, Kväll, Natt, Städ 2 RoK, Fönsterputs, Tvätt, Inköp, etc.
+visitCategory,String,Yes,Category of visit - determines if daily or recurring,daily,"Category: 'daily' (Morgon, Lunchtid, etc.) or 'recurring' (Städ, Tvätt, etc.)",Enum string,Values: daily, recurring. Daily = Morgon/Lunchtid/Eftermiddag/Middagstid/Kväll/Natt. Recurring = Städ/Tvätt/Inköp/etc.
+frequencyPeriod,String,Yes,Frequency period for recurring visits,week,"Frequency: 'week', 'month', or 'year'",Enum string,Values: week, month, year. Daily visits always use 'week'
+daysInPeriod,Integer,Yes,Number of days/occurrences in the frequency period,7,"Days in period: 7 for weekly, 2 for monthly recurring, 1 for annual",Integer,7 for weekly daily visits, 2 for monthly recurring (Städ 2 RoK), 1 for annual (Fönsterputs)
+occasionsDay,Integer,Yes,Number of occasions per day during day shift (07:00-22:00),1,"Occasions per day: 1 for most visits, 0 for night-only",Integer,1 for day visits, 0 for night-only visits
+occasionsNight,Integer,Yes,Number of occasions per day during night shift (22:00-07:00),0,"Occasions per night: 0 for day visits, 1-5 for night visits",Integer,0 for day visits, 1-5 for night visits
+durationMinutes,Integer,Yes,Duration of visit in minutes,50,"Duration in minutes (e.g., 50 for Morgon, 30 for Lunchtid, 75 for Städ)",Integer (minutes),Typical: Morgon=50, Lunchtid=30, Eftermiddag=15, Middagstid=30, Kväll=25, Städ=75, Tvätt=75, Inköp=45
+isDubbelbemanning,Boolean (TRUE/FALSE),Optional,Whether this visit requires double staffing,false,Double staffing required (TRUE) or not (FALSE),TRUE or FALSE,TRUE = requires two staff members (shows 👥 icon in UI)
+validFrom,Date (YYYY-MM-DD),Optional,Valid from date for this order,2025-01-01,Order valid from date,YYYY-MM-DD,Extracted from PDF "fr o m" field. Order validity period start
+validTo,Date (YYYY-MM-DD),Optional,Valid to date for this order,2025-12-31,Order valid to date,YYYY-MM-DD,Extracted from PDF "t o m" field. Order validity period end
+beraknadInsatstidPerManad,Decimal (hours),Optional,Total calculated hours per month from PDF,103.83,Total hours per month (from PDF summary),Decimal (hours),Extracted from PDF "Beräknad insatstid" summary box
+dagKvallstimmar,Decimal (hours),Optional,Day and evening hours per month,103.83,Day + evening hours per month,Decimal (hours),Extracted from PDF "Dag + kväll" summary box
+dubbelbemanningMinuter,Integer,Optional,Double staffing minutes per month,0,Total double staffing minutes per month,Integer (minutes),Extracted from PDF "Dubbelbemanning" summary box
+nattExklDubbelbemanning,Decimal (hours),Optional,Night hours per month (excluding double staffing),0,Night hours per month,Decimal (hours),Extracted from PDF "Natt exkl" summary box
+nattbesokAntalPerManad,Integer,Optional,Number of night visits per month,0,Number of night visits per month,Integer,Extracted from PDF "Nattbesök" summary box
+skills,Comma-separated string,Optional,Required skills/competencies for the visit,"Dusch,Medicinering","Required skills (e.g., 'Dusch,Medicinering')",Comma-separated list,Multiple skills separated by commas. Matched against employee_skills table
+serviceAreaId,String,Optional,Service area for this visit,area_001,Service area identifier,Any string format,Service area where visit should be scheduled
+priority,String (1-10),Optional,Priority level for this visit template,5,"Visit priority (1 = highest, 10 = lowest)",String "1" to "10",Will be converted to enum: 1-3=urgent, 4-6=high, 7-8=normal, 9-10=low
+preferredWindowStart,Time (HH:MM),Optional,Preferred start time window,08:00,Preferred start time (if specified in PDF),HH:MM format,If specified in PDF. Used for preferredTimeWindows calculation
+preferredWindowEnd,Time (HH:MM),Optional,Preferred end time window,09:00,Preferred end time (if specified in PDF),HH:MM format,If specified in PDF. Used for preferredTimeWindows calculation
+allowedWindowStart,Time (HH:MM),Optional,Allowed start time window,07:00,Earliest allowed start time,HH:MM format,Default: 07:00 for day visits. Used for minStartTime calculation
+allowedWindowEnd,Time (HH:MM),Optional,Allowed end time window,22:00,Latest allowed end time,HH:MM format,Default: 22:00 for day visits. Used for maxEndTime calculation
+notes,String,Optional,Additional notes about this visit template,From PDF order 3303540,Notes or source information,Free text,Additional context or source information

@@ -1,0 +1,6 @@
+ObjectID,Address,Duration,TimeWindowStart,TimeWindowEnd,Flexibility,Doubling,Frequency,Priority,VisitType,EmployeeID
+1,Storgatan 1,30,08:00,10:00,30,No,Daily,Normal,Planned,EMP001
+2,Lillgatan 4,45,10:30,12:00,15,Yes,Daily,High,Planned,EMP001
+3,Storgatan 1,30,13:00,14:00,30,No,Weekly,Low,Unplanned,
+4,Skogsvägen 7,60,09:00,11:00,10,No,Weekly,Normal,Unplanned,
+5,Lillgatan 4,15,15:00,16:00,15,No,Daily,High,Actual,EMP001

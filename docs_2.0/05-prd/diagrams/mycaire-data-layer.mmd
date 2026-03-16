@@ -1,0 +1,34 @@
+%% myCaire – Data Layer
+%% Visar dataflöden: CAIRE Platform, officiella källor, CaireIndex
+
+flowchart TB
+    subgraph cairePlatform [CAIRE Platform]
+        Planering[Planering]
+        Utforande[Utförande / Actuals]
+        Avvikelser[Avvikelser]
+        Kvalitet[Kvalitetsindikatorer]
+        Planering --> Utforande
+        Utforande --> Avvikelser
+        Avvikelser --> Kvalitet
+    end
+
+    subgraph officiella [Officiella källor]
+        SCB[SCB statistik]
+        Ekonomi[Ekonomiska nyckeltal]
+        Regelverk[Regelverk]
+        SCB --> Jamforelser
+        Ekonomi --> Jamforelser
+        Regelverk --> Jamforelser
+    end
+
+    subgraph sammanstallning [Sammanställning]
+        Jamforelser[Jämförelser / Benchmarks]
+        CaireIndex[CaireIndex]
+        Segmentering[Segmentering]
+        Jamforelser --> CaireIndex
+        Kvalitet --> CaireIndex
+        CaireIndex --> Segmentering
+    end
+
+    cairePlatform --> sammanstallning
+    officiella --> sammanstallning

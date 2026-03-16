@@ -83,6 +83,6 @@ The React dashboard at **http://localhost:3030** is the main UI. All docs live i
 
 ---
 
-## Archived Docs
+## Archived documentation
 
-Old implementation, migration, or beta-appcaire-specific docs are in `docs-archive/`.
+Old, one-off, or superseded docs are in **[archive/](archive/)**. They are not maintained. Index: [archive/README.md](archive/README.md).

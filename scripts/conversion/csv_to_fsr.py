@@ -14,6 +14,10 @@ UPDATED (2026-03-13): Fixed time window calculation logic (aligned with dashboar
 - Non-zero Före/Efter: Starttid ± före/efter
 - Same-day visits now sequence correctly (PT0M dependencies)
 
+UPDATED (2026-03-15): Align visit/group counts with dashboard:
+- Visit groups key: (kundnr, date_iso, dubbel) to match dashboard (was dubbel_date_iso).
+- Fallback coordinates: use DEFAULT_OFFICE when lat/lon missing so no visits are dropped (dashboard keeps null-coord visits).
+
 Usage:
   python attendo_4mars_to_fsr.py input.csv -o input.json
   python attendo_4mars_to_fsr.py input.csv -o input.json --start-date 2026-03-02 --no-geocode
@@ -939,11 +943,14 @@ def _build_visits_and_groups(
     """
 
     visits_by_id: Dict[str, Dict[str, Any]] = {}
+    n_fallback_coords = 0
     for occ in occurrences:
         lat = _parse_float(occ.get("lat"), 0)
         lon = _parse_float(occ.get("lon"), 0)
         if lat == 0 and lon == 0:
-            continue
+            # Fallback so we don't drop visits (dashboard keeps null-coord visits; FSR needs a location)
+            lat, lon = DEFAULT_OFFICE[0], DEFAULT_OFFICE[1]
+            n_fallback_coords += 1
         time_windows = _build_time_windows(occ)
         visit_id = occ["visit_id"]
         kundnr = occ.get("kundnr", "")
@@ -953,19 +960,22 @@ def _build_visits_and_groups(
         # Name: kundid + När på dagen + Skift + Insatser (e.g. "H015 Morgon Dag Tillsyn")
         name = f"{kundnr} {nar} {skift} {insatser}".strip()[:100]
 
-        # Continuity tags: add customer ID so solver can prefer same employee for same customer
-        customer_tag = f"customer_{kundnr}" if kundnr else ""
-
+        # FSR schema does not allow "tags" on visits; omit for API compatibility.
         visit: Dict[str, Any] = {
             "id": visit_id,
             "name": name,
             "location": [lat, lon],
             "timeWindows": time_windows,
             "serviceDuration": _minutes_to_iso_duration(occ.get("längd", 0)),
-            "tags": [customer_tag] if customer_tag else [],
         }
         visits_by_id[visit_id] = visit
         occ["_visit"] = visit
+
+    if n_fallback_coords:
+        print(
+            f"Used fallback coordinates (office) for {n_fallback_coords} occurrence(s) with no lat/lon.",
+            file=sys.stderr,
+        )
 
     # Visit dependencies: two kinds.
     # 1) Same-day chain (måltider: frukost → lunch): different rows (insatser) same customer same day.
@@ -985,7 +995,7 @@ def _build_visits_and_groups(
 
     preceding_map: Dict[str, Tuple[str, str]] = {}  # vid -> (prev_id, min_delay_iso)
     for _key, occs in per_client_date.items():
-        occs.sort(key=lambda o: (_day_slot_order(o.get("når_på_dagen", "")), o.get("starttid", "")))
+        occs.sort(key=lambda o: (_day_slot_order(o.get("när_på_dagen", "")), o.get("starttid", "")))
         for i, occ in enumerate(occs):
             if i == 0:
                 continue
@@ -1123,13 +1133,14 @@ def _build_visits_and_groups(
         for i in range(1, len(occs)):
             spread_deps.append((occs[i]["visit_id"], occs[i - 1]["visit_id"], delay_str))
 
-    # Visit groups: same Dubbel + same date (build before dependencies so we can skip same-group deps)
+    # Visit groups: same client + same date + same Dubbel (match dashboard: kundnr_dateStr_dubbel)
     groups_by_key: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for occ in occurrences:
         v = occ.get("_visit")
         if not v or not occ.get("dubbel"):
             continue
-        gk = f"{occ['dubbel']}_{occ['date_iso']}"
+        kundnr = (occ.get("kundnr") or "").strip() or f"_row{occ.get('row_index', 0)}"
+        gk = f"{kundnr}_{occ['date_iso']}_{occ['dubbel']}"
         if v not in groups_by_key[gk]:
             groups_by_key[gk].append(v)
 
@@ -1407,7 +1418,6 @@ def _create_shift_with_break(
         "minStartTime": min_start,
         "maxEndTime": max_end,
         "skills": [],
-        "tags": [],
         "requiredBreaks": [
             {
                 "id": f"{shift_id}_break",
@@ -1442,7 +1452,6 @@ def _create_shift_no_break(
         "minStartTime": min_start,
         "maxEndTime": max_end,
         "skills": [],
-        "tags": [],
         "temporarySkillSets": [],
         "temporaryTagSets": [],
         "itinerary": [],
