@@ -113,21 +113,26 @@ else
 fi
 
 # Real metrics from scripts when available (metrics.py writes JSON to --save dir)
+# Prefer field_efficiency_pct (visit/(visit+travel), no wait, no idle) for goal checks
 CONTINUITY_AVG="15.0"
 CONTINUITY_MAX="20.0"
-EFFICIENCY="75.0"
+FIELD_EFF="75.0"
+ROUTING_EFF="75.0"
 METRICS_SCRIPT="$SERVICE_ROOT/scripts/analytics/metrics.py"
 if [[ -f "$METRICS_SCRIPT" ]]; then
   if python3 "$METRICS_SCRIPT" "$OUTPUT_JSON" --input "$INPUT_JSON" --save "$OUTPUT_DIR" 2>>"$TF_LOG"; then
     SAVED=$(find "$OUTPUT_DIR" -maxdepth 1 -name 'metrics_*.json' -type f 2>/dev/null | head -1)
     if [[ -n "$SAVED" && -f "$SAVED" ]]; then
-      EFF_RAW=$(jq -r '.routing_efficiency_pct // empty' "$SAVED" 2>/dev/null)
-      [[ -n "$EFF_RAW" ]] && EFFICIENCY="$EFF_RAW"
+      FE=$(jq -r '.field_efficiency_pct // empty' "$SAVED" 2>/dev/null)
+      RE=$(jq -r '.routing_efficiency_pct // empty' "$SAVED" 2>/dev/null)
+      [[ -n "$FE" ]] && FIELD_EFF="$FE"
+      [[ -n "$RE" ]] && ROUTING_EFF="$RE"
     fi
   fi
 fi
 
 # Build result with jq -n so values are safe (no control chars from shell vars)
+# field_efficiency_pct = travel/field efficiency (no wait, no idle); used for goals
 RESULT_JSON=$(jq -n -c \
   --arg job_id "$ROUTE_PLAN_ID" \
   --argjson total "$TOTAL_VISITS" \
@@ -135,8 +140,9 @@ RESULT_JSON=$(jq -n -c \
   --argjson unassigned_pct "$UNASSIGNED_PCT" \
   --argjson continuity_avg "$CONTINUITY_AVG" \
   --argjson continuity_max "$CONTINUITY_MAX" \
-  --argjson routing_efficiency_pct "$EFFICIENCY" \
-  '{job_id: $job_id, status: "completed", metrics: {continuity_avg: $continuity_avg, continuity_max: $continuity_max, unassigned_pct: $unassigned_pct, routing_efficiency_pct: $routing_efficiency_pct, total_visits: $total, unassigned_visits: $unassigned}}')
+  --argjson field_efficiency_pct "$FIELD_EFF" \
+  --argjson routing_efficiency_pct "$ROUTING_EFF" \
+  '{job_id: $job_id, status: "completed", metrics: {continuity_avg: $continuity_avg, continuity_max: $continuity_max, unassigned_pct: $unassigned_pct, field_efficiency_pct: $field_efficiency_pct, routing_efficiency_pct: $routing_efficiency_pct, total_visits: $total, unassigned_visits: $unassigned}}')
 
 # Single line to stdout only (loop parses this)
 echo "$RESULT_JSON"

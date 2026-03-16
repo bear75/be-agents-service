@@ -28,6 +28,10 @@
 #   TRIM_INPUT_SOURCE - Input to trim (default: data/DATASET/input/input_DATASET_FIXED.json)
 #   TRIM_MAX_SHIFTS_PER_VEHICLE - Cap shifts per vehicle when no TRIM_SOLUTION (default 10)
 #   TRIM_SOLUTION    - If set, keep only vehicles/shifts used in this solution JSON
+#   MAX_WALL_CLOCK_SEC - Max wall-clock time in seconds (default: 10800 = 3h). Exit when exceeded.
+#   PARALLEL_SOLVES  - Number of solves to run in parallel per round (default: 4). Jobs queue and run while you sleep.
+#
+# Goals: Quick-win exit = continuity ≤11, unassigned <1%, field efficiency >70%. Ultimate = ≤8, <1%, >75% (field = visit/(visit+travel), no wait, no idle).
 #
 # Exit Codes:
 #   0 - Success (goals met or max iterations reached)
@@ -61,6 +65,10 @@ DRY_RUN="${DRY_RUN:-false}"
 # data/DATASET/input/input_DATASET_FIXED.json), TRIM_MAX_SHIFTS_PER_VEHICLE (default 10),
 # or TRIM_SOLUTION (path to solution JSON for solution-based trim).
 TRIM_SHIFTS_FROM_INPUT="${TRIM_SHIFTS_FROM_INPUT:-0}"
+
+# Wall-clock cap and parallel solves (run many when you sleep)
+MAX_WALL_CLOCK_SEC="${MAX_WALL_CLOCK_SEC:-10800}"
+PARALLEL_SOLVES="${PARALLEL_SOLVES:-4}"
 
 # Logging
 LOG_FILE="${LOG_FILE:-$SERVICE_ROOT/logs/research/${DATASET}_$(date +%Y%m%d_%H%M%S).log}"
