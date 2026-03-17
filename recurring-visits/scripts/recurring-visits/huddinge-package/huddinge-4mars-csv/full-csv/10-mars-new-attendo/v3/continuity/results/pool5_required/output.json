@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "d87e9a1a-ee5a-489a-bb07-f3c95cbe3b73",
+    "originId": "d87e9a1a-ee5a-489a-bb07-f3c95cbe3b73",
+    "name": "Huddinge 4mars Schedule",
+    "submitDateTime": "2026-03-16T18:42:42.677393473Z",
+    "solverStatus": "SOLVING_SCHEDULED",
+    "tags": [
+      "system.profile:huddinge-wait-min",
+      "system.type:from-request"
+    ]
+  },
+  "run": {
+    "id": "d87e9a1a-ee5a-489a-bb07-f3c95cbe3b73",
+    "originId": "d87e9a1a-ee5a-489a-bb07-f3c95cbe3b73",
+    "name": "Huddinge 4mars Schedule",
+    "submitDateTime": "2026-03-16T18:42:42.677393473Z",
+    "solverStatus": "SOLVING_SCHEDULED",
+    "tags": [
+      "system.profile:huddinge-wait-min",
+      "system.type:from-request"
+    ]
+  }
+}

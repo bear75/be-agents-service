@@ -200,8 +200,10 @@ register_run() {
 # RESEARCH STATE CHECKS
 # ============================================================================
 
-# Check if goals are met (quick-win: continuity ≤11, unassigned <1%, field efficiency >70%)
-# Ultimate goals (stretch): ≤8, <1%, >75% — same metric (field = visit/(visit+travel), no wait, no idle)
+# Check if goals are met (quick-win: continuity ≤11, unassigned <1%, field efficiency >70%).
+# Field efficiency = visit/(visit+travel), no wait, no idle (from metrics --visit-span-only).
+# Continuity from scripts/continuity/report.py (per-client distinct caregivers; avg and max).
+# Ultimate goals (stretch): ≤8, <1%, >75%.
 check_goals_met() {
   local state="$1"
 

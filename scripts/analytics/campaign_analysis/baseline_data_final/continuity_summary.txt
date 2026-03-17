@@ -1,0 +1,467 @@
+client,nr_visits,continuity
+(continuity = number of distinct caregivers; lower is better)
+--------------------------------------------------
+H015,88,73
+H025,84,68
+H026,241,117
+H027,6,6
+H029,117,79
+H031,6,6
+H034,84,68
+H035,240,126
+H037,84,69
+H038,100,78
+H039,86,52
+H041,128,81
+H047,60,49
+H048,60,45
+H053,77,63
+H055,186,110
+H061,1,1
+H072,100,78
+H077,25,25
+H081,64,57
+H086,190,120
+H087,3,3
+H092,76,63
+H095,165,106
+H096,70,60
+H097,167,111
+H107,44,36
+H113,8,8
+H114,56,46
+H125,66,51
+H145,165,106
+H154,152,104
+H155,31,29
+H157,98,72
+H160,4,4
+H164,1,1
+H172,116,78
+H181,31,29
+H182,193,127
+H194,4,4
+H200,68,55
+H230,31,30
+H235,44,38
+H238,168,106
+H239,56,46
+H240,2,2
+H243,66,55
+H244,112,81
+H248,184,122
+H269,20,18
+H270,93,67
+H284,108,71
+H287,2,2
+H288,18,18
+H289,10,9
+H290,180,112
+H293,114,80
+H295,8,8
+H297,2,2
+H299,20,18
+H300,119,71
+H301,128,85
+H302,78,67
+H312,2,2
+H314,58,48
+H315,120,78
+H322,138,90
+H323,193,108
+H324,94,75
+H326,4,4
+H327,104,78
+H328,4,4
+H331,102,88
+H332,165,107
+H333,6,6
+H334,39,33
+H335,12,11
+H337,124,81
+H339,1,1
+H341,1,1
+H342,1,1
+H346,3,3
+H349,88,69
+H351,151,92
+H354,120,74
+H355,10,10
+H357,4,4
+H358,6,6
+H360,88,71
+H361,2,2
+H362,73,66
+H363,180,108
+H364,2,2
+H365,176,113
+H366,38,35
+H367,60,48
+H369,132,87
+HN01_r637_1,1,1
+HN01_r637_2,1,1
+HN02_r638_1,1,1
+HN03_r639_1,1,1
+HN03_r639_2,1,1
+HN04_r640_1,1,1
+HN04_r640_2,1,1
+HN05_r641_1,1,1
+HN07_r642_1,1,1
+HN07_r642_2,1,1
+HN08_r643_1,1,1
+HN12_r644_1,1,1
+HN12_r644_2,1,1
+HN13_r645_1,1,1
+HN13_r645_10,1,1
+HN13_r645_11,1,1
+HN13_r645_12,1,1
+HN13_r645_13,1,1
+HN13_r645_14,1,1
+HN13_r645_15,1,1
+HN13_r645_16,1,1
+HN13_r645_17,1,1
+HN13_r645_18,1,1
+HN13_r645_19,1,1
+HN13_r645_2,1,1
+HN13_r645_20,1,1
+HN13_r645_3,1,1
+HN13_r645_4,1,1
+HN13_r645_5,1,1
+HN13_r645_6,1,1
+HN13_r645_7,1,1
+HN13_r645_8,1,1
+HN13_r645_9,1,1
+HN13_r646_1,1,1
+HN13_r646_2,1,1
+HN13_r646_3,1,1
+HN13_r646_4,1,1
+HN13_r646_5,1,1
+HN13_r646_6,1,1
+HN13_r646_7,1,1
+HN13_r646_8,1,1
+HN13_r647_1,1,1
+HN13_r647_2,1,1
+HN13_r647_3,1,1
+HN13_r647_4,1,1
+HN13_r648_1,1,1
+HN13_r649_1,1,1
+HN13_r649_2,1,1
+HN13_r649_3,1,1
+HN13_r649_4,1,1
+HN13_r649_5,1,1
+HN13_r649_6,1,1
+HN13_r649_7,1,1
+HN13_r649_8,1,1
+HN13_r650_1,1,1
+HN13_r650_10,1,1
+HN13_r650_11,1,1
+HN13_r650_12,1,1
+HN13_r650_13,1,1
+HN13_r650_14,1,1
+HN13_r650_15,1,1
+HN13_r650_16,1,1
+HN13_r650_17,1,1
+HN13_r650_18,1,1
+HN13_r650_19,1,1
+HN13_r650_2,1,1
+HN13_r650_20,1,1
+HN13_r650_3,1,1
+HN13_r650_4,1,1
+HN13_r650_5,1,1
+HN13_r650_6,1,1
+HN13_r650_7,1,1
+HN13_r650_8,1,1
+HN13_r650_9,1,1
+HN13_r651_1,1,1
+HN13_r651_2,1,1
+HN13_r651_3,1,1
+HN13_r651_4,1,1
+HN13_r652_1,1,1
+HN13_r652_2,1,1
+HN13_r653_1,1,1
+HN13_r653_10,1,1
+HN13_r653_11,1,1
+HN13_r653_12,1,1
+HN13_r653_13,1,1
+HN13_r653_14,1,1
+HN13_r653_15,1,1
+HN13_r653_16,1,1
+HN13_r653_17,1,1
+HN13_r653_18,1,1
+HN13_r653_19,1,1
+HN13_r653_2,1,1
+HN13_r653_20,1,1
+HN13_r653_21,1,1
+HN13_r653_22,1,1
+HN13_r653_23,1,1
+HN13_r653_24,1,1
+HN13_r653_25,1,1
+HN13_r653_26,1,1
+HN13_r653_27,1,1
+HN13_r653_28,1,1
+HN13_r653_3,1,1
+HN13_r653_4,1,1
+HN13_r653_5,1,1
+HN13_r653_6,1,1
+HN13_r653_7,1,1
+HN13_r653_8,1,1
+HN13_r653_9,1,1
+HN13_r654_1,1,1
+HN13_r654_10,1,1
+HN13_r654_11,1,1
+HN13_r654_12,1,1
+HN13_r654_13,1,1
+HN13_r654_14,1,1
+HN13_r654_15,1,1
+HN13_r654_16,1,1
+HN13_r654_17,1,1
+HN13_r654_18,1,1
+HN13_r654_19,1,1
+HN13_r654_2,1,1
+HN13_r654_20,1,1
+HN13_r654_21,1,1
+HN13_r654_22,1,1
+HN13_r654_23,1,1
+HN13_r654_24,1,1
+HN13_r654_25,1,1
+HN13_r654_26,1,1
+HN13_r654_27,1,1
+HN13_r654_28,1,1
+HN13_r654_3,1,1
+HN13_r654_4,1,1
+HN13_r654_5,1,1
+HN13_r654_6,1,1
+HN13_r654_7,1,1
+HN13_r654_8,1,1
+HN13_r654_9,1,1
+HN15_r655_1,1,1
+HN15_r655_2,1,1
+HN16_r656_1,1,1
+HN16_r656_2,1,1
+HN17_r657_1,1,1
+HN17_r657_2,1,1
+HN19_r658_1,1,1
+HN19_r658_2,1,1
+HN20_r659_1,1,1
+HN20_r659_2,1,1
+HN22_r660_1,1,1
+HN23_r661_1,1,1
+HN23_r661_2,1,1
+HN24_r662_1,1,1
+HN24_r662_2,1,1
+HN25_r663_1,1,1
+HN25_r663_2,1,1
+
+Wrote /Users/bjornevers_MacPro/HomeCare/be-agent-service/scripts/analytics/campaign_analysis/baseline_data_final/continuity.csv
+
+==================================================
+Summary (continuity = unique caregivers per client)
+==================================================
+  Clients:              250
+  Average unique count:  21.32
+==================================================
+
+==================================================
+Summary (from vehicle.id + visits.name)
+==================================================
+  Total visits:          7562
+  Clients (persons):     250
+  Caregivers (vehicles): 195  (distinct vehicle.id; 1 vehicle = 1 caregiver)
+  Shifts in output:      5260  (not used for continuity; continuity = distinct vehicles per client)
+
+  Per vehicle (vehicle_id, visits, clients):
+    Dag_00_Central_1: 26 visits, 23 clients
+    Dag_01_Central_1: 32 visits, 26 clients
+    Dag_02_Central_2: 33 visits, 25 clients
+    Dag_03_Fullersta: 29 visits, 24 clients
+    Dag_04_Visättra: 28 visits, 24 clients
+    Dag_04_Visättra_2: 15 visits, 13 clients
+    Dag_05_Flemingsberg_1: 42 visits, 35 clients
+    Dag_06_Flemingsberg_2: 44 visits, 32 clients
+    Dag_07_Flemingsberg_3: 20 visits, 19 clients
+    Dag_08_Kvarnbergsplan_1: 43 visits, 32 clients
+    Dag_09_Kvarnbergsplan_2: 36 visits, 29 clients
+    Dag_10_Abbe: 27 visits, 23 clients
+    Dag_11_Snättringe: 18 visits, 18 clients
+    Dag_12_Segeltorp_1: 39 visits, 25 clients
+    Dag_13_Stuvsta_1: 42 visits, 33 clients
+    Dag_14_Stuvsta_2: 31 visits, 27 clients
+    Dag_15_Masmo: 18 visits, 17 clients
+    Dag_16_Vårby_1: 20 visits, 18 clients
+    Dag_17_Vårby_2_Janet: 25 visits, 19 clients
+    Dag_5_Flemingsberg_3: 39 visits, 29 clients
+    Extra_Dag_1: 31 visits, 26 clients
+    Extra_Dag_10: 24 visits, 19 clients
+    Extra_Dag_100: 33 visits, 30 clients
+    Extra_Dag_101: 49 visits, 31 clients
+    Extra_Dag_102: 34 visits, 26 clients
+    Extra_Dag_103: 44 visits, 39 clients
+    Extra_Dag_104: 34 visits, 27 clients
+    Extra_Dag_105: 30 visits, 23 clients
+    Extra_Dag_106: 30 visits, 26 clients
+    Extra_Dag_107: 33 visits, 26 clients
+    Extra_Dag_108: 35 visits, 28 clients
+    Extra_Dag_109: 33 visits, 25 clients
+    Extra_Dag_11: 41 visits, 27 clients
+    Extra_Dag_110: 32 visits, 25 clients
+    Extra_Dag_111: 25 visits, 23 clients
+    Extra_Dag_112: 27 visits, 20 clients
+    Extra_Dag_113: 26 visits, 18 clients
+    Extra_Dag_114: 26 visits, 23 clients
+    Extra_Dag_115: 31 visits, 27 clients
+    Extra_Dag_116: 32 visits, 25 clients
+    Extra_Dag_117: 29 visits, 23 clients
+    Extra_Dag_118: 35 visits, 28 clients
+    Extra_Dag_119: 22 visits, 20 clients
+    Extra_Dag_12: 16 visits, 13 clients
+    Extra_Dag_120: 39 visits, 27 clients
+    Extra_Dag_121: 38 visits, 30 clients
+    Extra_Dag_122: 41 visits, 32 clients
+    Extra_Dag_123: 30 visits, 25 clients
+    Extra_Dag_124: 36 visits, 26 clients
+    Extra_Dag_125: 16 visits, 14 clients
+    Extra_Dag_126: 40 visits, 31 clients
+    Extra_Dag_127: 35 visits, 25 clients
+    Extra_Dag_13: 30 visits, 28 clients
+    Extra_Dag_14: 44 visits, 35 clients
+    Extra_Dag_15: 32 visits, 24 clients
+    Extra_Dag_16: 27 visits, 21 clients
+    Extra_Dag_17: 34 visits, 27 clients
+    Extra_Dag_18: 30 visits, 24 clients
+    Extra_Dag_19: 35 visits, 27 clients
+    Extra_Dag_2: 23 visits, 21 clients
+    Extra_Dag_20: 31 visits, 27 clients
+    Extra_Dag_21: 48 visits, 33 clients
+    Extra_Dag_22: 30 visits, 26 clients
+    Extra_Dag_23: 28 visits, 23 clients
+    Extra_Dag_24: 37 visits, 30 clients
+    Extra_Dag_25: 35 visits, 28 clients
+    Extra_Dag_26: 42 visits, 31 clients
+    Extra_Dag_27: 23 visits, 22 clients
+    Extra_Dag_28: 34 visits, 28 clients
+    Extra_Dag_29: 29 visits, 23 clients
+    Extra_Dag_3: 46 visits, 39 clients
+    Extra_Dag_30: 36 visits, 29 clients
+    Extra_Dag_31: 33 visits, 26 clients
+    Extra_Dag_32: 31 visits, 25 clients
+    Extra_Dag_33: 33 visits, 25 clients
+    Extra_Dag_34: 45 visits, 32 clients
+    Extra_Dag_35: 36 visits, 31 clients
+    Extra_Dag_36: 41 visits, 30 clients
+    Extra_Dag_37: 28 visits, 22 clients
+    Extra_Dag_38: 44 visits, 33 clients
+    Extra_Dag_39: 30 visits, 23 clients
+    Extra_Dag_4: 28 visits, 22 clients
+    Extra_Dag_40: 50 visits, 28 clients
+    Extra_Dag_41: 42 visits, 33 clients
+    Extra_Dag_42: 39 visits, 27 clients
+    Extra_Dag_43: 32 visits, 28 clients
+    Extra_Dag_44: 47 visits, 34 clients
+    Extra_Dag_45: 49 visits, 32 clients
+    Extra_Dag_46: 33 visits, 25 clients
+    Extra_Dag_47: 33 visits, 27 clients
+    Extra_Dag_48: 31 visits, 27 clients
+    Extra_Dag_49: 23 visits, 19 clients
+    Extra_Dag_5: 45 visits, 35 clients
+    Extra_Dag_50: 42 visits, 32 clients
+    Extra_Dag_51: 27 visits, 20 clients
+    Extra_Dag_52: 39 visits, 29 clients
+    Extra_Dag_53: 30 visits, 25 clients
+    Extra_Dag_54: 51 visits, 40 clients
+    Extra_Dag_55: 37 visits, 32 clients
+    Extra_Dag_56: 24 visits, 19 clients
+    Extra_Dag_57: 35 visits, 27 clients
+    Extra_Dag_58: 34 visits, 28 clients
+    Extra_Dag_59: 34 visits, 27 clients
+    Extra_Dag_6: 25 visits, 23 clients
+    Extra_Dag_60: 27 visits, 23 clients
+    Extra_Dag_61: 41 visits, 31 clients
+    Extra_Dag_62: 48 visits, 35 clients
+    Extra_Dag_63: 28 visits, 24 clients
+    Extra_Dag_64: 31 visits, 25 clients
+    Extra_Dag_65: 48 visits, 35 clients
+    Extra_Dag_66: 23 visits, 20 clients
+    Extra_Dag_67: 35 visits, 27 clients
+    Extra_Dag_68: 36 visits, 30 clients
+    Extra_Dag_69: 31 visits, 27 clients
+    Extra_Dag_7: 28 visits, 22 clients
+    Extra_Dag_70: 32 visits, 25 clients
+    Extra_Dag_71: 29 visits, 21 clients
+    Extra_Dag_72: 22 visits, 18 clients
+    Extra_Dag_73: 30 visits, 26 clients
+    Extra_Dag_74: 22 visits, 19 clients
+    Extra_Dag_75: 24 visits, 19 clients
+    Extra_Dag_76: 24 visits, 19 clients
+    Extra_Dag_77: 30 visits, 26 clients
+    Extra_Dag_78: 28 visits, 20 clients
+    Extra_Dag_79: 32 visits, 24 clients
+    Extra_Dag_8: 41 visits, 32 clients
+    Extra_Dag_80: 24 visits, 21 clients
+    Extra_Dag_81: 28 visits, 21 clients
+    Extra_Dag_82: 25 visits, 22 clients
+    Extra_Dag_83: 38 visits, 30 clients
+    Extra_Dag_84: 48 visits, 37 clients
+    Extra_Dag_85: 38 visits, 29 clients
+    Extra_Dag_86: 27 visits, 20 clients
+    Extra_Dag_87: 43 visits, 35 clients
+    Extra_Dag_88: 42 visits, 31 clients
+    Extra_Dag_89: 30 visits, 23 clients
+    Extra_Dag_9: 35 visits, 27 clients
+    Extra_Dag_90: 22 visits, 19 clients
+    Extra_Dag_91: 47 visits, 35 clients
+    Extra_Dag_92: 32 visits, 25 clients
+    Extra_Dag_93: 31 visits, 26 clients
+    Extra_Dag_94: 46 visits, 38 clients
+    Extra_Dag_95: 32 visits, 27 clients
+    Extra_Dag_96: 37 visits, 28 clients
+    Extra_Dag_97: 34 visits, 29 clients
+    Extra_Dag_98: 32 visits, 25 clients
+    Extra_Dag_99: 26 visits, 21 clients
+    Extra_Kvall_1: 52 visits, 33 clients
+    Extra_Kvall_10: 60 visits, 37 clients
+    Extra_Kvall_11: 60 visits, 40 clients
+    Extra_Kvall_12: 77 visits, 41 clients
+    Extra_Kvall_13: 77 visits, 42 clients
+    Extra_Kvall_14: 74 visits, 42 clients
+    Extra_Kvall_15: 68 visits, 33 clients
+    Extra_Kvall_16: 83 visits, 44 clients
+    Extra_Kvall_17: 82 visits, 40 clients
+    Extra_Kvall_18: 58 visits, 37 clients
+    Extra_Kvall_19: 84 visits, 39 clients
+    Extra_Kvall_2: 39 visits, 27 clients
+    Extra_Kvall_20: 54 visits, 30 clients
+    Extra_Kvall_21: 75 visits, 41 clients
+    Extra_Kvall_22: 98 visits, 44 clients
+    Extra_Kvall_23: 84 visits, 42 clients
+    Extra_Kvall_24: 63 visits, 37 clients
+    Extra_Kvall_25: 87 visits, 40 clients
+    Extra_Kvall_26: 78 visits, 42 clients
+    Extra_Kvall_27: 56 visits, 34 clients
+    Extra_Kvall_3: 78 visits, 42 clients
+    Extra_Kvall_4: 79 visits, 36 clients
+    Extra_Kvall_5: 76 visits, 37 clients
+    Extra_Kvall_6: 56 visits, 34 clients
+    Extra_Kvall_7: 79 visits, 38 clients
+    Extra_Kvall_8: 72 visits, 39 clients
+    Extra_Kvall_9: 84 visits, 44 clients
+    Helg_00_Flempan_1: 12 visits, 10 clients
+    Helg_01_Flempan_3: 5 visits, 5 clients
+    Helg_02_Snättringe: 4 visits, 4 clients
+    Helg_03_Central_1: 10 visits, 9 clients
+    Helg_04_Central_3: 8 visits, 8 clients
+    Helg_05_Kvarnen_1: 4 visits, 4 clients
+    Helg_06_Masmo: 4 visits, 4 clients
+    Helg_07_Visättra_TJEJ: 10 visits, 10 clients
+    Helg_08_Stuvsta_1_Tjej: 6 visits, 6 clients
+    Helg_09_Stuvsta_2_Kille: 10 visits, 10 clients
+    Helg_10_Segeltorp: 5 visits, 5 clients
+    Kväll_01_Central: 89 visits, 43 clients
+    Kväll_02_Kvarnen: 88 visits, 45 clients
+    Kväll_03_Visättra: 82 visits, 42 clients
+    Kväll_04_Flemingsberg: 107 visits, 48 clients
+    Kväll_05_Stuvsta_1: 81 visits, 43 clients
+    Kväll_06_Segeltorp_TJEJ: 78 visits, 42 clients
+    Kväll_07_Vårby: 81 visits, 44 clients
+    Matlådor_Måndagar: 29 visits, 23 clients
+    TVÄTT_PÅ_KONTORET: 23 visits, 20 clients
+    städ: 27 visits, 23 clients

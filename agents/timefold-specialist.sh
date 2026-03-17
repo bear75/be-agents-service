@@ -129,21 +129,36 @@ else
   UNASSIGNED_PCT="0"
 fi
 
-# Real metrics from scripts when available (metrics.py writes JSON to --save dir)
-# Prefer field_efficiency_pct (visit/(visit+travel), no wait, no idle) for goal checks
+# Real metrics from scripts when available (metrics without idle: --visit-span-only)
+# field_efficiency_pct = visit/(visit+travel), no wait, no idle (goal metric)
 CONTINUITY_AVG="15.0"
 CONTINUITY_MAX="20.0"
 FIELD_EFF="75.0"
 ROUTING_EFF="75.0"
 METRICS_SCRIPT="$SERVICE_ROOT/scripts/analytics/metrics.py"
 if [[ -f "$METRICS_SCRIPT" ]]; then
-  if python3 "$METRICS_SCRIPT" "$OUTPUT_JSON" --input "$INPUT_JSON" --save "$OUTPUT_DIR" 2>>"$TF_LOG"; then
+  if python3 "$METRICS_SCRIPT" "$OUTPUT_JSON" --input "$INPUT_JSON" --visit-span-only --save "$OUTPUT_DIR" 2>>"$TF_LOG"; then
     SAVED=$(find "$OUTPUT_DIR" -maxdepth 1 -name 'metrics_*.json' -type f 2>/dev/null | head -1)
     if [[ -n "$SAVED" && -f "$SAVED" ]]; then
       FE=$(jq -r '.field_efficiency_pct // empty' "$SAVED" 2>/dev/null)
       RE=$(jq -r '.routing_efficiency_pct // empty' "$SAVED" 2>/dev/null)
       [[ -n "$FE" ]] && FIELD_EFF="$FE"
       [[ -n "$RE" ]] && ROUTING_EFF="$RE"
+    fi
+  fi
+fi
+
+# Continuity from scripts/continuity/report.py (per-client distinct caregivers)
+CONTINUITY_SCRIPT="$SERVICE_ROOT/scripts/continuity/report.py"
+if [[ -f "$CONTINUITY_SCRIPT" ]]; then
+  CONT_CSV="$OUTPUT_DIR/continuity.csv"
+  if python3 "$CONTINUITY_SCRIPT" --input "$INPUT_JSON" --output "$OUTPUT_JSON" --report "$CONT_CSV" --no-cci 2>>"$TF_LOG" >/dev/null; then
+    if [[ -f "$CONT_CSV" ]]; then
+      # continuity = column 3; skip header
+      CA=$(awk -F',' 'NR>1 {s+=$3; n++} END {printf "%.2f", (n>0 ? s/n : 0)}' "$CONT_CSV")
+      CM=$(awk -F',' 'NR>1 {if($3>m) m=$3} END {print (m=="" ? "0" : m)}' "$CONT_CSV")
+      [[ -n "$CA" ]] && CONTINUITY_AVG="$CA"
+      [[ -n "$CM" ]] && CONTINUITY_MAX="$CM"
     fi
   fi
 fi

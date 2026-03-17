@@ -86,7 +86,9 @@ cancel_run() {
   log "Cancelled run $id: $reason"
 }
 
-# Check if any completed run meets all three targets
+# Check if any completed run meets all three targets.
+# Goals: unassigned <1%, continuity_avg ≤11, field efficiency (no idle) ≥70%.
+# routing_efficiency_pct is populated from field_efficiency_pct when available (visit/(visit+travel)).
 check_convergence() {
   local runs_json="$1"
   local met
@@ -96,7 +98,7 @@ check_convergence() {
     | map(select(
         (.unassigned_pct != null and .unassigned_pct < 1) and
         (.continuity_avg != null and .continuity_avg <= 11) and
-        (.routing_efficiency_pct != null and .routing_efficiency_pct >= 70)
+        ((.routing_efficiency_pct != null) and (.routing_efficiency_pct >= 70))
       ))
     | length
   ' 2>/dev/null || echo "0")

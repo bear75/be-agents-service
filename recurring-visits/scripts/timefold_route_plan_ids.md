@@ -3,6 +3,15 @@
 Stored IDs for fetching solutions with `fetch_timefold_solution.py`.  
 See [Timefold docs: Request the solution](https://docs.timefold.ai/field-service-routing/latest/getting-started-with-field-service-routing#requestTheSolution).
 
+## API keys by env
+
+| Env         | Name        | Use for |
+| ----------- | ----------- | ------- |
+| **caire-prod** | `tf_p_1c3007a4-be8f-4ebc-aa0b-8304d8709bb8` | Prod route plans, e.g. `77de8407-e4af-415a-a6c9-442f4f4426dd`. |
+| test tenant | `tf_p_96b5507b-57be-4ab6-b0a6-08a9d3372938` | v3 continuity campaign (cf407218, c1ea12a5, d87e9a1a, 5e55bf3a). |
+
+Set `TIMEFOLD_API_KEY` to the key for the plan’s tenant before fetch.
+
 ## Huddinge 2-week runs
 
 | ID                                     | Env     | Date       | Description                                                                                                                                             |
@@ -14,6 +23,7 @@ See [Timefold docs: Request the solution](https://docs.timefold.ai/field-service
 | `5ff7929f-738b-4cfa-9add-845c03089b0d` | prod    | 2026-02-25 | First solve (origin input from `25feb-stagetf-corect/`); config `a43d4eec-...`; parent for from-patch; output in `solve/25feb_prod/`                    |
 | `c87d58dd-5200-41a9-a334-e075c54a7d94` | staging | 2026-02-24 | Staging run; input `export-field-service-routing-v1-c87d58dd-...-input.json`, output trimmed in `solve/24feb/`                                          |
 | `fa713a0d-f4e7-4c56-a019-65f41042e336` | staging | 2026-02-25 | From-patch run (unique weekdays for recurring weekly 2–6); parent/origin `c87d58dd-5200-41a9-a334-e075c54a7d94`; files in `solve/25feb-stagetf-corect/` |
+| `77de8407-e4af-415a-a6c9-442f4f4426dd` | prod    | 2026-03-16 | Huddinge v3; 41 vehicles, 464 shifts, 74 unassigned; field eff 76.5%; output in `data/huddinge-v3/fetched_77de8407/`. **Use prod API key** to fetch.   |
 
 ## Dataset origin and patch (fa713a0d — recurring weekly 2–6)
 

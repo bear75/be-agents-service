@@ -18,6 +18,8 @@ This document defines the autonomous AI research program for Timefold schedule o
 
 ## Goal Metrics
 
+**Rule for all agents and new data assets:** Efficiency and continuity definitions and production are fixed. See [EFFICIENCY_AND_CONTINUITY_RULES.md](EFFICIENCY_AND_CONTINUITY_RULES.md).
+
 The research program aims to achieve these target metrics:
 
 | Metric | Target | Current Best | Status |

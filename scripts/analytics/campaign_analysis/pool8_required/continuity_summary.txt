@@ -1,0 +1,236 @@
+client,nr_visits,continuity
+(continuity = number of distinct caregivers; lower is better)
+--------------------------------------------------
+H015,44,8
+H025,42,8
+H026,103,8
+H027,3,3
+H029,59,8
+H031,3,2
+H034,42,7
+H035,52,3
+H037,42,8
+H038,50,8
+H039,42,8
+H041,64,8
+H047,30,8
+H048,30,8
+H053,39,8
+H055,93,8
+H061,1,1
+H072,50,8
+H077,13,7
+H081,32,8
+H086,95,8
+H087,2,1
+H092,38,8
+H095,83,7
+H096,35,7
+H097,84,8
+H107,10,5
+H113,4,2
+H114,28,8
+H125,33,8
+H145,83,8
+H154,76,8
+H155,16,8
+H157,47,8
+H160,2,2
+H164,1,1
+H172,58,8
+H181,16,6
+H182,97,8
+H194,2,2
+H200,34,6
+H230,16,7
+H235,22,8
+H238,84,8
+H239,28,7
+H240,1,1
+H243,33,8
+H244,56,8
+H248,92,8
+H269,9,4
+H270,47,8
+H284,54,8
+H287,1,1
+H288,9,5
+H289,5,2
+H290,90,8
+H293,57,8
+H295,4,2
+H297,1,1
+H299,10,6
+H300,60,8
+H301,46,8
+H302,39,8
+H312,1,1
+H314,29,7
+H315,60,8
+H322,69,8
+H323,89,8
+H324,47,8
+H326,2,1
+H327,52,7
+H328,2,1
+H331,51,8
+H332,83,8
+H333,3,3
+H334,20,7
+H335,6,4
+H337,62,8
+H339,1,1
+H341,1,1
+H342,1,1
+H346,2,1
+H349,44,8
+H351,76,8
+H354,60,8
+H355,6,3
+H357,2,1
+H358,4,3
+H360,44,7
+H361,1,1
+H362,37,7
+H363,90,8
+H364,1,1
+H365,88,8
+H366,19,7
+H367,30,7
+H369,66,8
+HN01_r637_1,1,1
+HN02_r638_1,1,1
+HN03_r639_1,1,1
+HN04_r640_1,1,1
+HN05_r641_1,1,1
+HN07_r642_1,1,1
+HN08_r643_1,1,1
+HN12_r644_1,1,1
+HN13_r645_1,1,1
+HN13_r645_10,1,1
+HN13_r645_2,1,1
+HN13_r645_3,1,1
+HN13_r645_4,1,1
+HN13_r645_5,1,1
+HN13_r645_6,1,1
+HN13_r645_7,1,1
+HN13_r645_8,1,1
+HN13_r645_9,1,1
+HN13_r646_1,1,1
+HN13_r646_2,1,1
+HN13_r646_3,1,1
+HN13_r646_4,1,1
+HN13_r647_1,1,1
+HN13_r647_2,1,1
+HN13_r648_1,1,1
+HN13_r649_1,1,1
+HN13_r649_2,1,1
+HN13_r649_3,1,1
+HN13_r649_4,1,1
+HN13_r650_1,1,1
+HN13_r650_10,1,1
+HN13_r650_2,1,1
+HN13_r650_3,1,1
+HN13_r650_4,1,1
+HN13_r650_5,1,1
+HN13_r650_6,1,1
+HN13_r650_7,1,1
+HN13_r650_8,1,1
+HN13_r650_9,1,1
+HN13_r651_1,1,1
+HN13_r651_2,1,1
+HN13_r652_1,1,1
+HN13_r653_1,1,1
+HN13_r653_10,1,1
+HN13_r653_11,1,1
+HN13_r653_12,1,1
+HN13_r653_13,1,1
+HN13_r653_14,1,1
+HN13_r653_2,1,1
+HN13_r653_3,1,1
+HN13_r653_4,1,1
+HN13_r653_5,1,1
+HN13_r653_6,1,1
+HN13_r653_7,1,1
+HN13_r653_8,1,1
+HN13_r653_9,1,1
+HN13_r654_1,1,1
+HN13_r654_10,1,1
+HN13_r654_11,1,1
+HN13_r654_12,1,1
+HN13_r654_13,1,1
+HN13_r654_14,1,1
+HN13_r654_2,1,1
+HN13_r654_3,1,1
+HN13_r654_4,1,1
+HN13_r654_5,1,1
+HN13_r654_6,1,1
+HN13_r654_7,1,1
+HN13_r654_8,1,1
+HN13_r654_9,1,1
+HN15_r655_1,1,1
+HN16_r656_1,1,1
+HN17_r657_1,1,1
+HN19_r658_1,1,1
+HN20_r659_1,1,1
+HN22_r660_1,1,1
+HN23_r661_1,1,1
+HN24_r662_1,1,1
+HN25_r663_1,1,1
+
+Wrote /Users/bjornevers_MacPro/HomeCare/be-agent-service/scripts/analytics/campaign_analysis/pool8_required/continuity.csv
+
+==================================================
+Summary (continuity = unique caregivers per client)
+==================================================
+  Clients:              176
+  Average unique count:  3.69
+==================================================
+
+==================================================
+Summary (from vehicle.id + visits.name)
+==================================================
+  Total visits:          3670
+  Clients (persons):     176
+  Caregivers (vehicles): 41  (distinct vehicle.id; 1 vehicle = 1 caregiver)
+  Shifts in output:      474  (not used for continuity; continuity = distinct vehicles per client)
+
+  Per vehicle (vehicle_id, visits, clients):
+    Dag_00_Central_1: 136 visits, 24 clients
+    Dag_01_Central_1: 154 visits, 26 clients
+    Dag_02_Central_2: 85 visits, 17 clients
+    Dag_03_Fullersta: 107 visits, 20 clients
+    Dag_04_Visättra: 116 visits, 21 clients
+    Dag_04_Visättra_2: 136 visits, 23 clients
+    Dag_05_Flemingsberg_1: 141 visits, 22 clients
+    Dag_06_Flemingsberg_2: 105 visits, 22 clients
+    Dag_07_Flemingsberg_3: 127 visits, 24 clients
+    Dag_08_Kvarnbergsplan_1: 100 visits, 16 clients
+    Dag_09_Kvarnbergsplan_2: 146 visits, 21 clients
+    Dag_10_Abbe: 49 visits, 14 clients
+    Dag_11_Snättringe: 157 visits, 21 clients
+    Dag_12_Segeltorp_1: 120 visits, 13 clients
+    Dag_13_Stuvsta_1: 41 visits, 12 clients
+    Dag_14_Stuvsta_2: 93 visits, 19 clients
+    Dag_15_Masmo: 106 visits, 13 clients
+    Dag_16_Vårby_1: 101 visits, 13 clients
+    Dag_17_Vårby_2_Janet: 53 visits, 14 clients
+    Dag_5_Flemingsberg_3: 140 visits, 16 clients
+    Helg_00_Flempan_1: 1 visits, 1 clients
+    Helg_02_Snättringe: 5 visits, 4 clients
+    Helg_03_Central_1: 5 visits, 3 clients
+    Helg_05_Kvarnen_1: 2 visits, 2 clients
+    Helg_06_Masmo: 1 visits, 1 clients
+    Helg_07_Visättra_TJEJ: 1 visits, 1 clients
+    Helg_08_Stuvsta_1_Tjej: 1 visits, 1 clients
+    Helg_10_Segeltorp: 1 visits, 1 clients
+    Kväll_01_Central: 161 visits, 34 clients
+    Kväll_02_Kvarnen: 305 visits, 48 clients
+    Kväll_03_Visättra: 159 visits, 29 clients
+    Kväll_04_Flemingsberg: 162 visits, 28 clients
+    Kväll_05_Stuvsta_1: 169 visits, 27 clients
+    Kväll_06_Segeltorp_TJEJ: 181 visits, 31 clients
+    Kväll_07_Vårby: 164 visits, 29 clients
+    Matlådor_Måndagar: 57 visits, 16 clients
+    TVÄTT_PÅ_KONTORET: 62 visits, 13 clients
+    städ: 20 visits, 9 clients

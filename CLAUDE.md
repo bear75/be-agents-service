@@ -822,9 +822,11 @@ python3 scripts/continuity/report.py solution.json
 
 ### Goal Metrics
 
-- **Continuity average:** ≤ 11.0 (number of different caregivers per client over 2 weeks)
+**Canonical rules for efficiency and continuity (all agents, all new data assets):** See **docs/EFFICIENCY_AND_CONTINUITY_RULES.md**.
+
+- **Continuity average:** ≤ 11.0 (number of different caregivers per client; from `scripts/continuity/report.py`)
 - **Unassigned visits:** < 1%
-- **Routing efficiency:** > 70% (productive time vs total shift time)
+- **Efficiency:** Field efficiency (visit/(visit+travel), no idle) > 70%; from `metrics.py --visit-span-only` → `field_efficiency_pct`
 
 ### Research Strategies
 
