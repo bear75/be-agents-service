@@ -19,8 +19,10 @@ All paths below are under `be-agent-service/` (root = repo root).
 | pool8_required          | 73.82%     | No        | campaign_analysis/pool8_required/metrics_*_5e55bf3a.json       | metrics_report_5e55bf3a.txt |
 
 **Summary:** `campaign_analysis/SUMMARY.md`  
-**New runs for >75%:** `scripts/analytics/submit_v3_efficiency_runs.sh` (builds pool10_required, pool8_preferred; submits with test tenant key). Plan IDs: `campaign_analysis/efficiency_runs_manifest.md`.  
-**Per-job:** each variant folder has `output.json`, `metrics_*.json`, `continuity.csv`, `continuity_summary.txt`, `empty_shifts.txt`.
+**All jobs (incl. pool10, pool8_preferred, 17 Mar):** `campaign_analysis/ALL_JOBS_REPORT.md`  
+**Recommendations and new runs:** `campaign_analysis/RECOMMENDATIONS_AND_NEW_RUNS.md`  
+**New runs for >75%:** `submit_v3_efficiency_runs.sh` (pool10 + pool8_preferred), `submit_pool5_preferred.sh` (pool5_preferred). Plan IDs: `efficiency_runs_manifest.md`.  
+**Per-job:** each variant folder has `output.json`, `metrics_*.json`, `continuity.csv` (if run), `empty_shifts.txt`.
 
 ---
 

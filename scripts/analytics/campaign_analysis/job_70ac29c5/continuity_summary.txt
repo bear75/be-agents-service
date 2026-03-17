@@ -1,0 +1,239 @@
+client,nr_visits,continuity
+(continuity = number of distinct caregivers; lower is better)
+--------------------------------------------------
+074d8448-f37a-433f-a5ff-120441ab9c5f,1,1
+07e176a4-8f4f-4be7-93fa-6c17c027255e,1,1
+1106c2f6-488c-4972-935e-a55d245ccd0e,1,1
+11629b5d-7da4-48e0-96f2-db9b897afc3d,1,1
+18a34735-8ca0-4b3d-bdc6-e31ec9dab619,1,1
+1dc12ef8-db90-4f8b-aa7c-daeda3a27c61,1,1
+1ef77b6c-0c60-4404-93ae-920621f6896b,1,1
+1f2b50e1-0047-4a88-ac2f-99d8af4db0ec,1,1
+2438d756-d959-49cd-bb04-6d0a7c597e8f,1,1
+3120f837-22c2-4265-bfaa-059f2dd269e0,1,1
+340ada96-c336-496e-85bf-5509548cee3c,1,1
+340e7e95-9328-4b00-8489-516409a5a434,1,1
+37416cfb-8836-41a0-8816-fca44781fb98,1,1
+37f2ccd3-06f1-4224-b3bf-5606da0f0577,1,1
+3937b865-5340-4df7-b524-3d81c781241c,1,1
+3b3b580f-f356-45f6-bf0f-66d7187c6aa7,1,1
+3c9b75a2-fc6a-4a0f-ace8-b941e2f2e751,1,1
+40ee8f88-6088-4350-848e-fed623ef7bd2,1,1
+41b08c1a-b5bb-420e-9288-42e927f5a5a1,1,1
+4cc9c05a-86e9-4a8c-a348-868283007c8e,1,1
+4f736920-86b6-442a-af81-b73cd01ea6de,1,1
+50a99ac8-43c2-428a-8a94-351a334f7fcc,1,1
+5378579f-5a36-457f-a1c9-a375f7535126,1,1
+5985d3ff-a2b7-4486-967a-0f891d8bcea1,1,1
+6e0031c7-e808-4fb5-9f6a-152e50fbb1ef,1,1
+839302f2-2648-4c69-b3ff-8b06fd3999d8,1,1
+84ea1c2b-9cdc-4f08-9085-b6ad54a18244,1,1
+8500ad03-41ac-4ffd-bc2d-c077c5cd6eee,1,1
+86a5b905-1eb1-4a6b-994d-c7b56f3821e3,1,1
+8ac334a5-ef25-4d6a-b083-93ff6c2e4143,1,1
+9076d065-2331-424f-b478-a5b0f4bc0e0e,1,1
+90d788c6-0240-4430-be80-51939b4eea56,1,1
+91a3c374-5f4d-4a92-a0bb-c5a8f44a562d,1,1
+97160218-f911-4702-99bc-0bb0cbfc18ee,1,1
+99e2f632-f3c3-4f5f-abdf-93116d3b1a73,1,1
+H015,44,25
+H025,42,26
+H026,95,33
+H027,3,2
+H029,59,29
+H031,3,3
+H034,48,27
+H035,92,32
+H037,45,25
+H038,50,28
+H039,45,20
+H041,64,27
+H047,30,19
+H048,34,22
+H053,39,22
+H055,91,34
+H061,1,1
+H072,50,26
+H077,13,10
+H081,32,19
+H086,95,30
+H087,2,2
+H092,38,20
+H095,83,29
+H096,35,22
+H097,84,32
+H107,22,18
+H113,4,4
+H114,28,17
+H125,33,22
+H145,83,33
+H154,76,29
+H155,16,12
+H157,49,27
+H160,2,2
+H164,1,1
+H172,64,26
+H181,16,12
+H182,97,33
+H194,2,2
+H200,34,23
+H230,16,13
+H235,22,14
+H238,84,32
+H239,28,16
+H240,1,1
+H243,33,18
+H244,54,24
+H248,92,32
+H269,10,9
+H270,47,21
+H284,55,25
+H287,1,1
+H288,9,9
+H289,7,7
+H290,90,36
+H293,57,27
+H295,4,4
+H297,1,1
+H299,10,9
+H300,60,29
+H301,42,25
+H302,39,25
+H312,1,1
+H314,29,18
+H315,60,27
+H322,69,29
+H323,97,30
+H324,47,25
+H326,2,2
+H327,54,23
+H328,2,2
+H331,51,26
+H332,83,31
+H333,3,3
+H334,20,12
+H335,6,6
+H337,62,25
+H339,1,1
+H341,1,1
+H342,1,1
+H346,2,2
+H349,44,24
+H351,76,31
+H354,60,27
+H355,6,5
+H357,2,2
+H358,4,4
+H360,44,22
+H361,1,1
+H362,37,23
+H363,90,32
+H364,1,1
+H365,88,31
+H366,19,14
+H367,30,17
+H369,66,30
+HN01_2026-03-17_637,1,1
+HN02_2026-03-20_638,1,1
+HN03_2026-03-19_639,1,1
+HN04_2026-03-18_640,1,1
+HN05_2026-03-18_641,1,1
+HN07_2026-03-19_642,1,1
+HN08_2026-03-18_643,1,1
+HN12_2026-03-18_644,1,1
+HN13_2026-03-16_648,1,1
+HN13_2026-03-16_651,1,1
+HN13_2026-03-18_647,1,1
+HN13_2026-03-19_652,1,1
+HN15_2026-03-20_655,1,1
+HN16_2026-03-19_656,1,1
+HN17_2026-03-18_657,1,1
+HN19_2026-03-16_658,1,1
+HN20_2026-03-16_659,1,1
+HN22_2026-03-17_660,1,1
+HN23_2026-03-20_661,1,1
+HN24_2026-03-20_662,1,1
+HN25_2026-03-17_663,1,1
+abefd5c0-5e55-4068-b5d6-8393e0f13943,1,1
+af55b0ce-322e-4b99-b780-f6cc1aee7712,1,1
+bc2ce5d6-ddf1-4d99-a69a-e57510a97b76,1,1
+bf42efb3-d526-4efb-a4b2-85cb71c795f3,1,1
+c6ac02d5-25f5-410c-87e7-081faafc16d6,1,1
+cc403e44-cb75-455c-a901-65b87f04142e,1,1
+d0f85634-1a9b-4090-9f19-02bcbe2336de,1,1
+d19f57bc-b102-40bd-82f8-88458e122f46,1,1
+d3dffa26-3bed-4f8b-a29a-9be74e6e8906,1,1
+d81c3974-db4f-4540-a3ec-49b3e3f8099d,1,1
+d8bab954-c121-42a3-a94b-020c608288d0,1,1
+daa01445-6e87-4330-ae62-b0e1fbd2ddd9,1,1
+db53559e-113e-4cf9-ab25-29bde4d7878f,1,1
+ddf1cf11-4098-47d3-955c-f9d687c3dac7,1,1
+dfb191c3-8347-4b01-9e66-0de33ebcb2ed,1,1
+e352e7fc-2ba0-41b4-afbc-0910bf257f95,1,1
+e83aba7d-e239-4f91-82a8-71555c0f4049,1,1
+e9677676-148e-420a-9851-30b0de868a7e,1,1
+ede79b33-504d-4383-8eec-e1da7e101f0c,1,1
+f4f74787-9e16-41f2-beb2-637d901d2e56,1,1
+f5d10291-7030-4757-8a19-5ffa33d46f91,1,1
+fefd0d7d-76b7-4cba-ab13-99e7be1e4063,1,1
+ff098edd-ec01-4835-a60c-77701dea4a9e,1,1
+
+Wrote /Users/bjornevers_MacPro/HomeCare/be-agent-service/scripts/analytics/campaign_analysis/job_70ac29c5/continuity.csv
+
+==================================================
+Summary (continuity = unique caregivers per client)
+==================================================
+  Clients:              176
+  Average unique count:  10.30
+==================================================
+
+==================================================
+Summary (from vehicle.id + visits.name)
+==================================================
+  Total visits:          3744
+  Clients (persons):     176
+  Caregivers (vehicles): 41  (distinct vehicle.id; 1 vehicle = 1 caregiver)
+  Shifts in output:      464  (not used for continuity; continuity = distinct vehicles per client)
+
+  Per vehicle (vehicle_id, visits, clients):
+    Dag_00_Central_1: 106 visits, 57 clients
+    Dag_01_Central_1: 109 visits, 54 clients
+    Dag_02_Central_2: 106 visits, 54 clients
+    Dag_03_Fullersta: 94 visits, 52 clients
+    Dag_04_Visättra: 89 visits, 49 clients
+    Dag_04_Visättra_2: 131 visits, 60 clients
+    Dag_05_Flemingsberg_1: 92 visits, 53 clients
+    Dag_06_Flemingsberg_2: 109 visits, 52 clients
+    Dag_07_Flemingsberg_3: 112 visits, 61 clients
+    Dag_08_Kvarnbergsplan_1: 100 visits, 54 clients
+    Dag_09_Kvarnbergsplan_2: 104 visits, 55 clients
+    Dag_10_Abbe: 102 visits, 53 clients
+    Dag_11_Snättringe: 68 visits, 47 clients
+    Dag_12_Segeltorp_1: 79 visits, 51 clients
+    Dag_13_Stuvsta_1: 105 visits, 52 clients
+    Dag_14_Stuvsta_2: 100 visits, 54 clients
+    Dag_15_Masmo: 119 visits, 59 clients
+    Dag_16_Vårby_1: 77 visits, 49 clients
+    Dag_17_Vårby_2_Janet: 93 visits, 53 clients
+    Dag_5_Flemingsberg_3: 112 visits, 57 clients
+    Helg_00_Flempan_1: 31 visits, 28 clients
+    Helg_01_Flempan_3: 28 visits, 22 clients
+    Helg_02_Snättringe: 16 visits, 15 clients
+    Helg_03_Central_1: 6 visits, 5 clients
+    Helg_04_Central_3: 37 visits, 30 clients
+    Helg_05_Kvarnen_1: 14 visits, 13 clients
+    Helg_06_Masmo: 28 visits, 22 clients
+    Helg_07_Visättra_TJEJ: 27 visits, 23 clients
+    Helg_08_Stuvsta_1_Tjej: 18 visits, 16 clients
+    Helg_09_Stuvsta_2_Kille: 11 visits, 11 clients
+    Helg_10_Segeltorp: 20 visits, 19 clients
+    Kväll_01_Central: 176 visits, 56 clients
+    Kväll_02_Kvarnen: 170 visits, 49 clients
+    Kväll_03_Visättra: 168 visits, 55 clients
+    Kväll_04_Flemingsberg: 165 visits, 54 clients
+    Kväll_05_Stuvsta_1: 171 visits, 49 clients
+    Kväll_06_Segeltorp_TJEJ: 168 visits, 51 clients
+    Kväll_07_Vårby: 167 visits, 55 clients
+    Matlådor_Måndagar: 78 visits, 48 clients
+    TVÄTT_PÅ_KONTORET: 122 visits, 61 clients
+    städ: 116 visits, 54 clients

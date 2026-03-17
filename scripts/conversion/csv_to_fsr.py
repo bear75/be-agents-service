@@ -1471,6 +1471,50 @@ def _create_shift_no_break(
     }
 
 
+# ---- Drop time windows outside planning (avoid optional visits) ----
+
+
+def _drop_visits_with_time_windows_after_planning(model_input: Dict[str, Any]) -> int:
+    """
+    Remove time windows that end after the latest shift (planning window end).
+    Timefold marks such visits as optional. Dropping those windows (or the visit if none left)
+    keeps all remaining visits mandatory.
+    Returns count of visits that were dropped entirely.
+    """
+    vehicles = model_input.get("vehicles") or []
+    planning_end: Optional[str] = None
+    for v in vehicles:
+        for s in v.get("shifts", []):
+            mx = s.get("maxEndTime")
+            if mx and (planning_end is None or mx > planning_end):
+                planning_end = mx
+    if not planning_end:
+        return 0
+
+    dropped = 0
+
+    def filter_visit(visit: Dict[str, Any]) -> bool:
+        """Filter time windows; return True if visit should be kept."""
+        tws = visit.get("timeWindows") or []
+        kept = [tw for tw in tws if (tw.get("maxEndTime") or "") <= planning_end]
+        if not kept:
+            return False
+        visit["timeWindows"] = kept
+        return True
+
+    visits = model_input.get("visits") or []
+    model_input["visits"] = [v for v in visits if filter_visit(v)]
+    dropped += len(visits) - len(model_input["visits"])
+
+    for group in model_input.get("visitGroups") or []:
+        group_visits = group.get("visits") or []
+        kept_visits = [v for v in group_visits if filter_visit(v)]
+        group["visits"] = kept_visits
+        dropped += len(group_visits) - len(kept_visits)
+
+    return dropped
+
+
 # ---- Flex verification: ALLA BESÖK HAR FLEX (tid eller dag) ----
 
 
@@ -1616,6 +1660,7 @@ def generate_fsr_json(
             print(f"  - {addr}", file=sys.stderr)
 
     _assign_visit_ids_kundnr_lopnr(occurrences)
+
     standalone, visit_groups, _ = _build_visits_and_groups(occurrences)
     vehicles = _build_vehicles(
         occurrences, start_date, end_date,
@@ -1636,6 +1681,13 @@ def generate_fsr_json(
     }
     if visit_groups:
         model_input["visitGroups"] = visit_groups
+
+    n_dropped = _drop_visits_with_time_windows_after_planning(model_input)
+    if n_dropped:
+        print(
+            f"Dropped {n_dropped} visit(s) whose time windows ended after planning (avoids optional visits).",
+            file=sys.stderr,
+        )
 
     ok, violations = _verify_all_visits_have_flex(model_input)
     if not ok:

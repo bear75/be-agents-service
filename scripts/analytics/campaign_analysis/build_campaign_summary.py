@@ -9,7 +9,25 @@ import csv
 import json
 from pathlib import Path
 
-VARIANTS = ["baseline_data_final", "pool3_required", "pool5_required", "pool8_required"]
+VARIANTS = [
+    "baseline_data_final",
+    "pool3_required",
+    "pool5_required",
+    "pool8_required",
+    "pool10_required",
+    "pool10_preferred_w2",
+    "pool10_preferred_w10",
+    "pool10_preferred_w20",
+    "pool10_wait_min",
+    "pool10_combo",
+    "pool10_travel",
+    "pool10_from_patch",
+    "pool8_required_3h",
+    "pool8_preferred_w10_3h",
+    "pool10_eff_3h",
+    "pool8_from_patch_3h",
+    "pool10_from_patch_v2_3h",
+]
 GOAL_EFF = 70.0  # field efficiency % (CAMPAIGN_MATRIX: 73%+)
 GOAL_CONTINUITY = 11.0  # avg distinct caregivers per client (≤11)
 GOAL_UNASSIGNED_PCT = 5.0  # unassigned < 5%
