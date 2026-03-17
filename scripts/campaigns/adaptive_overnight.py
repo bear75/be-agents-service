@@ -6,9 +6,9 @@ Loop:
   1. Submit next pending campaign (retry hourly if queue full)
   2. Poll all running campaigns for completion
   3. On completion: fetch solution, run metrics
-     - GOOD (efficiency >65%, continuity <13, unassigned <2%):
+     - GOOD (efficiency ≥75%, or ≥80% if continuity ≤11, unassigned ≤2%):
        → Mark as promising, create follow-up with pushed settings
-     - BAD (efficiency <55% or unassigned >5%):
+     - BAD (efficiency <65% or unassigned >5%):
        → Cancel similar pending campaigns, document as no-good
      - OK (in between): keep, no follow-up
   4. Sleep 1 hour, repeat
@@ -45,10 +45,12 @@ FIRST_RUN_OUTPUT = REPO_ROOT / "recurring-visits" / "data" / "huddinge-v3" / "re
 TIMEFOLD_BASE = "https://app.timefold.ai/api/models/field-service-routing/v1/route-plans"
 
 # Thresholds for evaluation
-GOOD_EFFICIENCY = 65.0     # field efficiency % — promising
-GOOD_CONTINUITY = 13.0     # avg caregivers/client — promising
+# Field efficiency must be >75%, or >80% if continuity ≤11
+GOOD_EFFICIENCY = 75.0     # field efficiency % — minimum acceptable
+GOOD_EFFICIENCY_HIGH = 80.0  # required when continuity ≤11
+GOOD_CONTINUITY = 11.0     # avg caregivers/client — target
 GOOD_UNASSIGNED = 2.0      # % — promising
-BAD_EFFICIENCY = 55.0      # below this = bad
+BAD_EFFICIENCY = 65.0      # below this = bad, cancel similar
 BAD_UNASSIGNED = 5.0       # above this = bad
 
 import functools
@@ -233,9 +235,15 @@ def _parse_dur(iso: str) -> float:
 
 
 def evaluate(metrics: dict) -> str:
-    """Returns 'good', 'bad', or 'ok'."""
+    """Returns 'good', 'bad', or 'ok'.
+    
+    Good = efficiency ≥75% (or ≥80% if continuity ≤11) AND unassigned ≤2%.
+    Bad = efficiency <65% or unassigned >5%.
+    """
     eff = metrics.get("field_efficiency_pct", 0)
     unas = metrics.get("unassigned_pct", 100)
+    # continuity not directly available from quick metrics, use visit/vehicle ratio as proxy
+    # TODO: run full continuity report for accurate numbers
     if eff < BAD_EFFICIENCY or unas > BAD_UNASSIGNED:
         return "bad"
     if eff >= GOOD_EFFICIENCY and unas <= GOOD_UNASSIGNED:
