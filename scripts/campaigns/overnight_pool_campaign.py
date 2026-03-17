@@ -185,8 +185,11 @@ def submit_campaign(
     dataset: str = "huddinge-v3",
     batch: str = "",
     darwin_api: str = "",
+    configuration_id: str = "",
+    max_retries: int = 30,
+    retry_interval: int = 120,
 ) -> str | None:
-    """Submit a single campaign to Timefold. Returns route_plan_id or None."""
+    """Submit a single campaign to Timefold. Retries on 429 (queue full). Returns route_plan_id or None."""
     if not batch:
         batch = datetime.now().strftime("%d-%b").lower()
 
@@ -203,17 +206,31 @@ def submit_campaign(
         "--algorithm", strategy_name,
         "--hypothesis", f"Overnight campaign: {strategy_name}",
     ]
+    if configuration_id:
+        cmd.extend(["--configuration-id", configuration_id])
     if darwin_api:
         cmd.extend(["--darwin-api", darwin_api])
     else:
         cmd.append("--no-register-darwin")
 
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(REPO_ROOT))
-    out = result.stdout + "\n" + result.stderr
-    match = re.search(r"Route plan ID:\s*([a-f0-9-]+)", out)
-    if match:
-        return match.group(1)
-    print(f"  SUBMIT FAILED for {strategy_name}: {out[:300]}", file=sys.stderr)
+    for attempt in range(1, max_retries + 1):
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(REPO_ROOT))
+        out = result.stdout + "\n" + result.stderr
+        match = re.search(r"Route plan ID:\s*([a-f0-9-]+)", out)
+        if match:
+            return match.group(1)
+
+        if "429" in out and "Too many concurrent" in out:
+            queued_match = re.search(r"currently queued:\s*(\d+)", out)
+            queued = queued_match.group(1) if queued_match else "?"
+            print(f"  Queue full ({queued}/50). Waiting {retry_interval}s before retry {attempt}/{max_retries}...")
+            time.sleep(retry_interval)
+            continue
+
+        print(f"  SUBMIT FAILED for {strategy_name}: {out[:300]}", file=sys.stderr)
+        return None
+
+    print(f"  SUBMIT FAILED for {strategy_name}: max retries ({max_retries}) exhausted", file=sys.stderr)
     return None
 
 
@@ -224,8 +241,10 @@ def main() -> int:
     ap.add_argument("--first-run-output", type=Path, default=FIRST_RUN_OUTPUT)
     ap.add_argument("--api-key", type=str, default=None)
     ap.add_argument("--darwin-api", type=str, default="http://localhost:3010")
+    ap.add_argument("--configuration-id", type=str, default="", help="Timefold configuration profile ID")
     ap.add_argument("--dry-run", action="store_true", help="Build inputs only, do not submit")
     ap.add_argument("--delay", type=int, default=5, help="Seconds between submissions (default 5)")
+    ap.add_argument("--retry-interval", type=int, default=120, help="Seconds to wait on queue-full 429 before retry (default 120)")
     args = ap.parse_args()
 
     api_key = args.api_key or load_env()
@@ -303,6 +322,8 @@ def main() -> int:
             dataset="huddinge-v3",
             batch=batch_label,
             darwin_api=args.darwin_api,
+            configuration_id=args.configuration_id,
+            retry_interval=args.retry_interval,
         )
         entry = {
             "strategy": name,
