@@ -5,10 +5,10 @@ Adaptive overnight campaign: submit → monitor → evaluate → double down or 
 Loop:
   1. Submit next pending campaign (retry hourly if queue full)
   2. Poll all running campaigns for completion
-  3. On completion: fetch solution, run metrics
-     - GOOD (efficiency ≥75%, or ≥80% if continuity ≤11, unassigned ≤2%):
+  3. On completion: fetch solution, run metrics + continuity
+     - GOOD (sliding scale: eff 75-80% for continuity 5-11, unassigned ≤2%):
        → Mark as promising, create follow-up with pushed settings
-     - BAD (efficiency <65% or unassigned >5%):
+     - BAD (efficiency <70% or unassigned >5%):
        → Cancel similar pending campaigns, document as no-good
      - OK (in between): keep, no follow-up
   4. Sleep 1 hour, repeat
@@ -44,14 +44,16 @@ FIRST_RUN_OUTPUT = REPO_ROOT / "recurring-visits" / "data" / "huddinge-v3" / "re
 
 TIMEFOLD_BASE = "https://app.timefold.ai/api/models/field-service-routing/v1/route-plans"
 
-# Thresholds for evaluation
-# Field efficiency must be >75%, or >80% if continuity ≤11
-GOOD_EFFICIENCY = 75.0     # field efficiency % — minimum acceptable
-GOOD_EFFICIENCY_HIGH = 80.0  # required when continuity ≤11
-GOOD_CONTINUITY = 11.0     # avg caregivers/client — target
-GOOD_UNASSIGNED = 2.0      # % — promising
-BAD_EFFICIENCY = 65.0      # below this = bad, cancel similar
-BAD_UNASSIGNED = 5.0       # above this = bad
+# Thresholds: efficiency vs continuity sliding scale
+# Sweet spot is high efficiency + low continuity on a sliding scale:
+#   continuity 5  → efficiency ≥80% is good
+#   continuity 8  → efficiency ≥77% is good
+#   continuity 11 → efficiency ≥75% is good
+# Linear interpolation: required_eff = 80 - (continuity - 5) * (5/6)
+# Below 70% efficiency or above 5% unassigned = always bad
+GOOD_UNASSIGNED = 2.0      # % — max for "good"
+BAD_EFFICIENCY = 70.0      # below this = always bad regardless of continuity
+BAD_UNASSIGNED = 5.0       # above this = always bad
 
 import functools
 print = functools.partial(print, flush=True)
@@ -178,9 +180,8 @@ def cancel_solve(plan_id: str) -> bool:
 
 
 def quick_metrics_from_output(data: dict) -> dict:
-    """Extract quick metrics from a completed solve response (no full metrics.py run)."""
+    """Extract quick metrics from a completed solve response including continuity."""
     mo = data.get("modelOutput") or {}
-    kpis = data.get("kpis") or {}
     unassigned = mo.get("unassignedVisits") or []
 
     total_visits = 0
@@ -189,7 +190,11 @@ def quick_metrics_from_output(data: dict) -> dict:
     total_wait_sec = 0
     vehicles_used = 0
 
+    # Track client → set of vehicle IDs for continuity
+    client_vehicles: dict[str, set[str]] = {}
+
     for veh in mo.get("vehicles") or []:
+        veh_id = veh.get("id", "?")
         veh_has_visits = False
         for shift in veh.get("shifts") or []:
             metrics = shift.get("metrics") or {}
@@ -200,6 +205,11 @@ def quick_metrics_from_output(data: dict) -> dict:
                     total_visits += 1
                     veh_has_visits = True
                     visit_time += _parse_dur(it.get("serviceDuration", "PT0S"))
+                    # Derive client from visit name: "H026_24 - Bad/Dusch" → "H026"
+                    name = (it.get("name") or "").strip()
+                    client = _visit_name_to_client(name)
+                    if client:
+                        client_vehicles.setdefault(client, set()).add(veh_id)
             total_travel_sec += travel
             total_visit_sec += visit_time
             total_wait_sec += _parse_dur(metrics.get("totalWaitingTime", "PT0S"))
@@ -211,17 +221,43 @@ def quick_metrics_from_output(data: dict) -> dict:
     total_all = total_visits + unassigned_count
     unassigned_pct = (unassigned_count / total_all * 100) if total_all > 0 else 0
 
+    # Continuity: average distinct caregivers per client
+    if client_vehicles:
+        cont_values = [len(v) for v in client_vehicles.values()]
+        continuity_avg = sum(cont_values) / len(cont_values)
+        continuity_max = max(cont_values)
+    else:
+        continuity_avg = 0.0
+        continuity_max = 0
+
     return {
         "visits_assigned": total_visits,
         "unassigned": unassigned_count,
         "unassigned_pct": round(unassigned_pct, 2),
         "field_efficiency_pct": round(field_eff, 1),
+        "continuity_avg": round(continuity_avg, 1),
+        "continuity_max": continuity_max,
         "travel_hours": round(total_travel_sec / 3600, 1),
         "wait_hours": round(total_wait_sec / 3600, 1),
         "visit_hours": round(total_visit_sec / 3600, 1),
         "vehicles_used": vehicles_used,
+        "clients": len(client_vehicles),
         "score": (data.get("metadata") or {}).get("score", "?"),
     }
+
+
+def _visit_name_to_client(name: str) -> str:
+    """Derive client (Kundnr) from visit name. 'H026_24 - Bad/Dusch' → 'H026'."""
+    if not name:
+        return ""
+    if " - " in name:
+        prefix = name.split(" - ")[0].strip()
+        # H026_24 → H026, H015_r1 → H015
+        s = re.sub(r"_r\d+$", "", prefix)
+        s = re.sub(r"_\d+$", "", s)
+        return s
+    m = re.match(r"^(H\d+)", name)
+    return m.group(1) if m else ""
 
 
 def _parse_dur(iso: str) -> float:
@@ -234,19 +270,32 @@ def _parse_dur(iso: str) -> float:
     return total
 
 
+def required_efficiency(continuity: float) -> float:
+    """Sliding scale: what efficiency % is needed at a given continuity.
+    
+    continuity 5  → 80%
+    continuity 11 → 75%
+    Linear: eff = 80 - (continuity - 5) * (5/6)
+    Clamped to [75, 80].
+    """
+    return max(75.0, min(80.0, 80.0 - (continuity - 5.0) * (5.0 / 6.0)))
+
+
 def evaluate(metrics: dict) -> str:
     """Returns 'good', 'bad', or 'ok'.
     
-    Good = efficiency ≥75% (or ≥80% if continuity ≤11) AND unassigned ≤2%.
-    Bad = efficiency <65% or unassigned >5%.
+    Sliding scale: efficiency 75-80% for continuity 5-11.
+    Lower continuity (fewer caregivers) demands higher efficiency.
     """
     eff = metrics.get("field_efficiency_pct", 0)
     unas = metrics.get("unassigned_pct", 100)
-    # continuity not directly available from quick metrics, use visit/vehicle ratio as proxy
-    # TODO: run full continuity report for accurate numbers
+    cont = metrics.get("continuity_avg", 99)
+
     if eff < BAD_EFFICIENCY or unas > BAD_UNASSIGNED:
         return "bad"
-    if eff >= GOOD_EFFICIENCY and unas <= GOOD_UNASSIGNED:
+    
+    needed_eff = required_efficiency(cont)
+    if eff >= needed_eff and unas <= GOOD_UNASSIGNED and cont <= 11.0:
         return "good"
     return "ok"
 
@@ -399,8 +448,11 @@ def main():
                 verdict = evaluate(m)
                 c["verdict"] = verdict
 
-                log(f"  Efficiency: {m['field_efficiency_pct']}%  Unassigned: {m['unassigned_pct']}%  "
-                    f"Travel: {m['travel_hours']}h  Wait: {m['wait_hours']}h  Score: {m['score']}")
+                needed = required_efficiency(m.get("continuity_avg", 99))
+                log(f"  Efficiency: {m['field_efficiency_pct']}% (need ≥{needed:.0f}%)  "
+                    f"Continuity: {m.get('continuity_avg', '?')} avg  "
+                    f"Unassigned: {m['unassigned_pct']}%  "
+                    f"Travel: {m['travel_hours']}h  Wait: {m['wait_hours']}h")
 
                 if verdict == "good":
                     log(f"  ✅ GOOD — creating follow-up with pushed settings")
@@ -459,18 +511,19 @@ def _save_state(campaigns: list[dict], out_dir: Path):
     md_lines = [
         f"# Adaptive Overnight Campaign — {datetime.now().strftime('%Y-%m-%d %H:%M')}",
         "",
-        "| # | Strategy | Pool | Verdict | Efficiency | Unassigned | Travel | Wait | Route Plan ID |",
-        "|---|----------|------|---------|-----------|-----------|--------|------|---------------|",
+        "| # | Strategy | Pool | Verdict | Efficiency | Continuity | Unassigned | Travel | Wait | Route Plan ID |",
+        "|---|----------|------|---------|-----------|-----------|-----------|--------|------|---------------|",
     ]
     for i, c in enumerate(campaigns):
         m = c.get("metrics") or {}
         eff = f"{m.get('field_efficiency_pct', '—')}%" if m else "—"
+        cont = f"{m.get('continuity_avg', '—')}" if m else "—"
         unas = f"{m.get('unassigned_pct', '—')}%" if m else "—"
         travel = f"{m.get('travel_hours', '—')}h" if m else "—"
         wait = f"{m.get('wait_hours', '—')}h" if m else "—"
         verdict_icon = {"good": "✅", "bad": "❌", "ok": "⚠️"}.get(c.get("verdict", ""), "⏳")
         rid = f"`{c.get('route_plan_id', '—')[:12]}`" if c.get("route_plan_id") else "—"
-        md_lines.append(f"| {i+1} | {c['name']} | {c.get('pool_size', '—')} | {verdict_icon} {c.get('verdict', c['status'])} | {eff} | {unas} | {travel} | {wait} | {rid} |")
+        md_lines.append(f"| {i+1} | {c['name']} | {c.get('pool_size', '—')} | {verdict_icon} {c.get('verdict', c['status'])} | {eff} | {cont} | {unas} | {travel} | {wait} | {rid} |")
     md_lines.append("")
 
     md_path = out_dir / "CAMPAIGN_RESULTS.md"
@@ -494,12 +547,12 @@ def _print_summary(campaigns: list[dict]):
     log(f"  ⏳ Pending:   {len(pending)}")
 
     if good:
-        log("\nBest results:")
+        log("\nBest results (sweet spot = high efficiency + low continuity):")
         best = sorted(good, key=lambda c: -(c.get("metrics") or {}).get("field_efficiency_pct", 0))
         for c in best[:5]:
             m = c["metrics"]
-            log(f"  {c['name']}: eff={m['field_efficiency_pct']}% unas={m['unassigned_pct']}% "
-                f"travel={m['travel_hours']}h wait={m['wait_hours']}h")
+            log(f"  {c['name']}: eff={m['field_efficiency_pct']}% cont={m.get('continuity_avg','?')} "
+                f"unas={m['unassigned_pct']}% travel={m['travel_hours']}h wait={m['wait_hours']}h")
 
 
 if __name__ == "__main__":
