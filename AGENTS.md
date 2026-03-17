@@ -33,3 +33,22 @@ See `README.md` for full commands. Key commands from repo root:
 - SQLite database is auto-created at `.compound-state/agent-service.db` on first server start. Seed data (teams, agents) is automatically inserted.
 - The `yarn.lock` exists alongside a `package-lock.json` in the repo. Use `yarn` as the package manager (lockfile: `yarn.lock`, `packageManager` field in `package.json`). Yarn will warn about the `package-lock.json` — this is harmless.
 - The dashboard Vite config (`apps/dashboard/vite.config.ts`) proxies `/api` to `localhost:3010`, but the proxy target is the same port as the dev server, which can cause loops if both Vite and Express try to bind port 3010 simultaneously. For dashboard HMR development, start the Express server on a different port first, or use the unified `yarn dev` approach.
+
+### Timefold FSR schedule optimization
+
+Requires `TIMEFOLD_API_KEY` env var (add as a Cursor Cloud secret). Python `requests` library must be installed (`pip3 install requests`).
+
+**Key scripts** (all under `scripts/`):
+- `conversion/csv_to_fsr.py` — CSV → FSR JSON input
+- `timefold/submit.py` — submit solve or from-patch to Timefold API
+- `timefold/fetch.py` — fetch solution by route plan ID
+- `continuity/build_pools.py` — build per-client vehicle pools (preferred/required)
+- `continuity/report.py` — continuity metrics (caregivers per client)
+- `analytics/metrics.py` — efficiency, travel, wait metrics
+- `campaigns/overnight_pool_campaign.py` — batch campaign runner (13 variants)
+
+**Overnight campaigns:** `python3 scripts/campaigns/overnight_pool_campaign.py --configuration-id <ID>`. Builds pools from first-run output, generates weight-profile variants, submits with retry on 429 (queue full). All campaigns use `preferredVehicles` (soft constraint). See script docstring for details.
+
+**Timefold queue limit:** 50 concurrent slots; each solve uses ~4 slots. The campaign script retries on HTTP 429 with configurable interval. Monitor progress via the log file or `campaign_manifest.json` in the output directory.
+
+**Data:** `recurring-visits/data/huddinge-v3/input/input_huddinge-v3_FIXED.json` (3844 visits, 195 vehicles). Source CSV: `Huddinge-v3 - Data_final.csv`.

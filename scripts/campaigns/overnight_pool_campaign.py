@@ -186,7 +186,7 @@ def submit_campaign(
     batch: str = "",
     darwin_api: str = "",
     configuration_id: str = "",
-    max_retries: int = 30,
+    max_retries: int = 200,
     retry_interval: int = 120,
 ) -> str | None:
     """Submit a single campaign to Timefold. Retries on 429 (queue full). Returns route_plan_id or None."""
