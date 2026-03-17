@@ -6,7 +6,7 @@ Loop:
   1. Submit next pending campaign (retry hourly if queue full)
   2. Poll all running campaigns for completion
   3. On completion: fetch solution, run metrics + continuity
-     - GOOD (sliding scale: eff 75-80% for continuity 5-11, unassigned ≤2%):
+     - GOOD (sliding scale: cont 5→eff≥75%, cont 11→eff≥80%, unassigned ≤2%):
        → Mark as promising, create follow-up with pushed settings
      - BAD (efficiency <70% or unassigned >5%):
        → Cancel similar pending campaigns, document as no-good
@@ -45,11 +45,12 @@ FIRST_RUN_OUTPUT = REPO_ROOT / "recurring-visits" / "data" / "huddinge-v3" / "re
 TIMEFOLD_BASE = "https://app.timefold.ai/api/models/field-service-routing/v1/route-plans"
 
 # Thresholds: efficiency vs continuity sliding scale
-# Sweet spot is high efficiency + low continuity on a sliding scale:
-#   continuity 5  → efficiency ≥80% is good
-#   continuity 8  → efficiency ≥77% is good
-#   continuity 11 → efficiency ≥75% is good
-# Linear interpolation: required_eff = 80 - (continuity - 5) * (5/6)
+# Low continuity (few caregivers) is good → can accept 75% efficiency
+# High continuity (many caregivers) is bad → must compensate with ≥80% efficiency
+#   continuity 5  (good) → efficiency ≥75%
+#   continuity 8         → efficiency ≥77.5%
+#   continuity 11 (bad)  → efficiency ≥80%
+# Linear interpolation: required_eff = 75 + (continuity - 5) * (5/6)
 # Below 70% efficiency or above 5% unassigned = always bad
 GOOD_UNASSIGNED = 2.0      # % — max for "good"
 BAD_EFFICIENCY = 70.0      # below this = always bad regardless of continuity
@@ -273,12 +274,14 @@ def _parse_dur(iso: str) -> float:
 def required_efficiency(continuity: float) -> float:
     """Sliding scale: what efficiency % is needed at a given continuity.
     
-    continuity 5  → 80%
-    continuity 11 → 75%
-    Linear: eff = 80 - (continuity - 5) * (5/6)
+    Low continuity (good, few caregivers) = can accept lower efficiency:
+      continuity 5  → need ≥75%
+    High continuity (bad, many caregivers) = must have higher efficiency to compensate:
+      continuity 11 → need ≥80%
+    Linear: eff = 75 + (continuity - 5) * (5/6)
     Clamped to [75, 80].
     """
-    return max(75.0, min(80.0, 80.0 - (continuity - 5.0) * (5.0 / 6.0)))
+    return max(75.0, min(80.0, 75.0 + (continuity - 5.0) * (5.0 / 6.0)))
 
 
 def evaluate(metrics: dict) -> str:
