@@ -199,21 +199,18 @@ def quick_metrics_from_output(data: dict) -> dict:
         veh_has_visits = False
         for shift in veh.get("shifts") or []:
             metrics = shift.get("metrics") or {}
-            travel = _parse_dur(metrics.get("totalTravelTime", "PT0S"))
-            visit_time = 0
+            total_travel_sec += _parse_dur(metrics.get("totalTravelTime", "PT0S"))
+            total_visit_sec += _parse_dur(metrics.get("totalServiceDuration", "PT0S"))
+            total_wait_sec += _parse_dur(metrics.get("totalWaitingTime", "PT0S"))
             for it in shift.get("itinerary") or []:
                 if (it.get("kind") or "").upper() == "VISIT":
                     total_visits += 1
                     veh_has_visits = True
-                    visit_time += _parse_dur(it.get("serviceDuration", "PT0S"))
-                    # Derive client from visit name: "H026_24 - Bad/Dusch" → "H026"
-                    name = (it.get("name") or "").strip()
-                    client = _visit_name_to_client(name)
-                    if client:
-                        client_vehicles.setdefault(client, set()).add(veh_id)
-            total_travel_sec += travel
-            total_visit_sec += visit_time
-            total_wait_sec += _parse_dur(metrics.get("totalWaitingTime", "PT0S"))
+                    visit_id = it.get("id", "")
+                    if visit_id:
+                        client = _visit_name_to_client(visit_id)
+                        if client:
+                            client_vehicles.setdefault(client, set()).add(veh_id)
         if veh_has_visits:
             vehicles_used += 1
 
@@ -247,17 +244,11 @@ def quick_metrics_from_output(data: dict) -> dict:
     }
 
 
-def _visit_name_to_client(name: str) -> str:
-    """Derive client (Kundnr) from visit name. 'H026_24 - Bad/Dusch' → 'H026'."""
-    if not name:
+def _visit_name_to_client(name_or_id: str) -> str:
+    """Derive client (Kundnr) from visit name or ID. 'H026_24 - Bad/Dusch' or 'H026_24_2026-03-03_Morgon' → 'H026'."""
+    if not name_or_id:
         return ""
-    if " - " in name:
-        prefix = name.split(" - ")[0].strip()
-        # H026_24 → H026, H015_r1 → H015
-        s = re.sub(r"_r\d+$", "", prefix)
-        s = re.sub(r"_\d+$", "", s)
-        return s
-    m = re.match(r"^(H\d+)", name)
+    m = re.match(r"^(H\d+)", name_or_id)
     return m.group(1) if m else ""
 
 
