@@ -94,13 +94,16 @@ def build_pools(pool_size: int, out_dir: Path) -> Path | None:
     return patched if r.returncode == 0 and patched.exists() else None
 
 
-def apply_overrides(source: Path, out_path: Path, overrides: dict) -> bool:
+def apply_overrides(source: Path, out_path: Path, overrides: dict, max_threads: int = 1) -> bool:
     with open(source) as f:
         payload = json.load(f)
     config = payload.setdefault("config", {})
     model = config.setdefault("model", {})
     existing = model.setdefault("overrides", {})
     existing.update(overrides)
+    # Set maxThreadCount to 1 so each job uses 1 queue slot (not 4)
+    run_config = config.setdefault("run", {})
+    run_config["maxThreadCount"] = max_threads
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
@@ -121,6 +124,8 @@ def make_baseline(out_dir: Path) -> Path:
         for v in g.get("visits") or []:
             v.pop("requiredVehicles", None)
             v.pop("preferredVehicles", None)
+    config = payload.setdefault("config", {})
+    config.setdefault("run", {})["maxThreadCount"] = 1
     with open(out_path, "w") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
     return out_path
@@ -407,10 +412,9 @@ def main():
             f"{sum(1 for c in campaigns if c['status']=='completed')} completed")
         log(f"{'='*50}")
 
-        # 1. Submit pending campaigns (one at a time to be gentle on queue)
+        # 1. Submit all pending campaigns (1 thread each, so 13 = 13 slots out of 50)
         pending = [c for c in campaigns if c["status"] == "pending"]
-        if pending:
-            c = pending[0]
+        for c in pending:
             log(f"Submitting {c['name']}...")
             plan_id = submit_solve(Path(c["input"]), args.configuration_id)
             if plan_id:
@@ -418,8 +422,10 @@ def main():
                 c["status"] = "running"
                 c["submitted_at"] = datetime.now().isoformat()
                 log(f"  -> {plan_id}")
+                time.sleep(2)
             else:
                 log(f"  -> Queue full or error, will retry next cycle")
+                break
 
         # 2. Check running campaigns
         running = [c for c in campaigns if c["status"] == "running"]

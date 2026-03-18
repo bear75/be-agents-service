@@ -151,6 +151,10 @@ def apply_weight_profile(
         overrides[k] = v
     model["overrides"] = overrides
     config["model"] = model
+    # 1 thread per job so we can queue all 13 in the 50-thread limit
+    run_config = config.get("run") or {}
+    run_config["maxThreadCount"] = 1
+    config["run"] = run_config
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as f:
@@ -173,6 +177,8 @@ def make_baseline(base_input: Path, out_dir: Path) -> Path:
         for v in g.get("visits") or []:
             v.pop("requiredVehicles", None)
             v.pop("preferredVehicles", None)
+    config = payload.setdefault("config", {})
+    config.setdefault("run", {})["maxThreadCount"] = 1
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
     return out_path
