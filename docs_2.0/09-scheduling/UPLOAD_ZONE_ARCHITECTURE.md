@@ -2,9 +2,9 @@
 
 **Purpose:** Comprehensive technical documentation of the 3-step upload wizard with traffic-light validation. Explains the "upload zone gatekeeper" pattern, Caire format conversion flow, and validation timing.
 
-**Status:** ✅ Implemented in `feature/import-zone`
+**Status:** ✅ Implemented (3-step wizard, Caire format, traffic-light validation)
 
-**Last Updated:** 2026-03-16
+**Last Updated:** 2026-03-18
 
 ---
 
@@ -1455,4 +1455,4 @@ The **Schedule Upload Zone** implements a robust 3-step wizard that:
 
 - [CAIRE_MIDDLE_CSV_FORMAT.md](./CAIRE_MIDDLE_CSV_FORMAT.md) - Canonical format specification
 - [CSV_IMPORT_AND_VALIDATION_BEST_PRACTICES.md](./CSV_IMPORT_AND_VALIDATION_BEST_PRACTICES.md) - Best practices
-- Feature branch: `feature/import-zone`
+- [DEPENDENCY_CREATION_VERIFICATION.md](./DEPENDENCY_CREATION_VERIFICATION.md) - Visit dependency creation during Attendo import

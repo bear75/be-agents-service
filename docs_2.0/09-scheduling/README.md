@@ -1,7 +1,7 @@
 # Caire Scheduling Documentation
 
 **Version:** 2.0  
-**Last Updated:** 2025-12-11  
+**Last Updated:** 2026-03-18  
 **Status:** ✅ Core Documentation Complete
 
 **Single source of truth (product & UI):** **[SOLUTION_UI_SPECIFICATION.md](./SOLUTION_UI_SPECIFICATION.md)** — use this as the one place for what we build and why. For metrics definitions → [METRICS_SPECIFICATION.md](./METRICS_SPECIFICATION.md). For schedule/solution/scenario architecture → [SCHEDULE_SOLUTION_ARCHITECTURE.md](./SCHEDULE_SOLUTION_ARCHITECTURE.md). (Superseded product narrative: [../../archive/SOLUTION_UI_PRD.md](../../archive/SOLUTION_UI_PRD.md).)
@@ -51,6 +51,8 @@ Documents are organized by descriptive names (no numbering scheme):
 
 10. **[FRONTEND_INTEGRATION.md](./FRONTEND_INTEGRATION.md)** - Bryntum UI integration
 11. **[PREPLANNING_FRONTEND_IMPLEMENTATION.md](./PREPLANNING_FRONTEND_IMPLEMENTATION.md)** - Pre-planning frontend implementation guide
+12. **Client View** - Client-centric scheduler (`ClientScheduler`, `ClientFilterPanel`); resources = clients, events = assignments; filters: inset names, inset groups, frequencies, employees, only-with-dependencies
+13. **Scheduler Appearance** - Org-level overrides via `Organization.settings.schedulerAppearance`; `SchedulerAppearanceSection` in Operational Settings; category/frequency colors, client view appearance; env fallbacks: `VITE_SCHEDULER_CATEGORY_COLORS`, `VITE_SCHEDULER_FREQUENCY_COLORS`
 
 ### 🔍 Pre-Planning Analysis
 
@@ -64,9 +66,20 @@ Documents are organized by descriptive names (no numbering scheme):
     - **[ESS_FSR_DUAL_MODEL_ARCHITECTURE.md](./ess-fsr/ESS_FSR_DUAL_MODEL_ARCHITECTURE.md)** - Dual-model architecture
     - **[ESS_FSR_PROJECT_PLAN.md](./ess-fsr/ESS_FSR_PROJECT_PLAN.md)** - Project plan and sprint breakdown
 
+### 📤 Upload & Import
+
+14. **[UPLOAD_ZONE_ARCHITECTURE.md](./UPLOAD_ZONE_ARCHITECTURE.md)** - 3-step upload wizard, Caire format, traffic-light validation
+15. **[SCHEDULE_IMPORT_UPLOAD_FLOW.md](./SCHEDULE_IMPORT_UPLOAD_FLOW.md)** - Current vs target import flow
+16. **[DEPENDENCY_CREATION_VERIFICATION.md](./DEPENDENCY_CREATION_VERIFICATION.md)** - Visit dependency creation during Attendo CSV import
+
+### 📋 Resources & Insets
+
+17. **[SEED_DATA_SYSTEM_SETTINGS.md](./SEED_DATA_SYSTEM_SETTINGS.md)** - Org-scoped catalog (DaySlots, Insets, InsetGroups, Skills)
+18. **[INSETS_AND_CLIENT_VIEW.md](./INSETS_AND_CLIENT_VIEW.md)** - Insets, InsetGroups, client view, scheduler appearance
+
 ### 📊 Pilots
 
-11. **[pilots/](./pilots/)** - Pilot-specific documentation
+19. **[pilots/](./pilots/)** - Pilot-specific documentation
     - **[Attendo Pilot](./pilots/attendo/)** - Attendo pilot plan and data requirements
 
 ---

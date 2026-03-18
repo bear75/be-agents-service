@@ -1,6 +1,6 @@
 # Daily Scheduling — Product Requirements
 
-Status: DRAFT | Owner: TBD | Last updated: 2026-03-03
+Status: DRAFT | Owner: TBD | Last updated: 2026-03-18
 
 ## Problem
 
@@ -30,7 +30,7 @@ A scheduler opens the day view, sees disruptions and resulting gaps flagged auto
 
 ## Scope
 
-**In scope:** Day view against approved baseline; flagging disruptions (sick, late, cancellation) and surfacing gaps; AI re-optimization (Timefold FSR) on affected portion; side-by-side comparison; pin/unpin, drag, re-optimize; deferred movable visits (reschedule or pool); recapture unused hours from gaps; recommendation visits to fill remaining gaps; temp employee in resource pool and re-optimize; publish to staff (mobile); live metrics (efficiency, travel, continuity).
+**In scope:** Day view against approved baseline; **employee view** (employees as resources) and **client view** (clients as resources, assignments as events; filters: inset names, inset groups, frequencies, employees, only-with-dependencies); flagging disruptions (sick, late, cancellation) and surfacing gaps; AI re-optimization (Timefold FSR) on affected portion; side-by-side comparison; pin/unpin, drag, re-optimize; deferred movable visits (reschedule or pool); recapture unused hours from gaps; recommendation visits to fill remaining gaps; temp employee in resource pool and re-optimize; publish to staff (mobile); live metrics (efficiency, travel, continuity); **insets and InsetGroups** (visit types, dependency ordering); **visit dependencies** (VisitDependency, ClientDependencyRule, ServiceAreaDependencyRule; from CSV import and rules); **scheduler appearance** (org-level category/frequency colors via Operational Settings).
 
 **Out of scope:** Creating or revising the repeating baseline (that is Visit Planning, PRD 1); ESS+FSR auto staffing discovery (roadmap); multi-area scheduling, AI chat, BI export (roadmap).
 
@@ -60,8 +60,10 @@ All of the following are first-class in the schema (data model, API, UI), not on
 
 ### Dependencies
 
-- **Per-customer:** Visit-to-visit dependencies (preceding visit, minDelay). Used for same-day ordering and minimum gap (e.g. "3.5 h between visits"). Data model supports visit dependency; UI allows defining/editing per client/visit pair or template. FSR input includes `visitDependencies` from schema.
+- **Per-customer:** Visit-to-visit dependencies (preceding visit, minDelay). Used for same-day ordering and minimum gap (e.g. "3.5 h between visits"). Data model: `VisitDependency` (schedule-level); `ClientDependencyRule` / `ServiceAreaDependencyRule` (client/area-level rules). UI allows defining/editing per client/visit pair or template. FSR input includes `visitDependencies` from schema.
 - **Area/org rules:** General rules for visit types (e.g. same-day slot order Morgon→Lunch→Kväll, default min delay, spread-over-week behaviour). Stored in schema; the system generates or validates `visitDependencies` from these rules when building FSR input. These feed FSR `visitDependencies` and visit groups but are **defined and editable in the schema/UI**, not only in import files.
+- **CSV import:** Attendo CSV "Antal tim mellan besöken" → `attendoToCaire` → `upsertVisitDependencies`; semantics: &lt;12h = same-day, ≥18h = cross-day spread. See [DEPENDENCY_CREATION_VERIFICATION.md](../09-scheduling/DEPENDENCY_CREATION_VERIFICATION.md).
+- **InsetGroups:** `InsetGroup` + `InsetGroupMember` define ordering (e.g. meals: breakfast → lunch → dinner); `resolveInsetGroupDependencies` builds FSR edges from schema.
 - **Visit groups (e.g. Dubbel / double-staffing):** FSR supports **visit groups** (`visitGroups[]`): all visits in a group must be assigned to different vehicles and run at the same time (no semi-assigned groups). Schema and UI must keep visit group membership consistent when building FSR input.
 
 ### Scenarios

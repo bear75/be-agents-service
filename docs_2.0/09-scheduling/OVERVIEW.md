@@ -3,7 +3,7 @@
 > **Canonical sources:** Keep this doc as an intro/index. Do not duplicate metrics definitions, score display, or architecture details here — those live in [METRICS_SPECIFICATION.md](METRICS_SPECIFICATION.md), [SOLUTION_UI_SPECIFICATION.md](SOLUTION_UI_SPECIFICATION.md) (and [../../archive/SOLUTION_UI_PRD.md](../../archive/SOLUTION_UI_PRD.md) § Score and Metrics Display), and [SCHEDULE_SOLUTION_ARCHITECTURE.md](SCHEDULE_SOLUTION_ARCHITECTURE.md).
 
 **Version:** 2.0  
-**Last Updated:** 2025-12-11  
+**Last Updated:** 2026-03-18  
 **Status:** Core Documentation
 
 ---
@@ -38,13 +38,13 @@ EXTERNAL JSON/CSV  →  MAPPERS  →  NORMALIZED DATABASE  →  GraphQL API  →
 
 ### External Data Sources
 
-| External Source  | Format   | Mapper                 | Database Tables                     | Purpose                                              |
-| ---------------- | -------- | ---------------------- | ----------------------------------- | ---------------------------------------------------- |
-| **Carefox API**  | JSON     | CarefoxMapper          | `schedules`, `visits`, `employees`  | Planned visits from Swedish ERP                      |
-| **Phoniro CSV**  | CSV      | PhoniroMapper          | `schedules`, `visits` (actuals)     | Actual execution data (Carefox only)                 |
-| **Timefold API** | JSON     | TimefoldResponseMapper | `solutions`, `solution_assignments` | AI optimization results                              |
-| **eCare CSV**    | CSV      | eCareMapper            | `schedules`, `visits`, `employees`  | ERP import (unplanned, planned, actuals in same CSV) |
-| **PDF Upload**   | PDF→JSON | MovableVisitMapper     | `visit_templates`                   | Movable visit extraction                             |
+| External Source  | Format   | Mapper / Adapter        | Database Tables                     | Purpose                                              |
+| ---------------- | -------- | ----------------------- | ----------------------------------- | ---------------------------------------------------- |
+| **Attendo CSV**  | CSV      | AttendoAdapter + attendoToCaire | `schedules`, `visits`, `clients`, `employees`, `VisitDependency` | 3-step upload wizard; Caire format; traffic-light validation |
+| **Nova Expanded**| CSV      | NovaExpandedAdapter + parseExpandedCsv | Same as above                | Expanded recurring-visits format                     |
+| **Timefold API** | JSON     | TimefoldResponseMapper  | `solutions`, `solution_assignments` | AI optimization results                              |
+| **Carefox API**  | JSON     | CarefoxMapper           | `schedules`, `visits`, `employees`  | Planned visits from Swedish ERP (legacy)             |
+| **eCare CSV**    | CSV      | eCareMapper             | `schedules`, `visits`, `employees`  | ERP import (legacy)                                  |
 
 ### Complete Data Flow
 
@@ -270,9 +270,12 @@ This is the **top priority metric** for all optimizations.
 All data stored in **relational tables** (Prisma + PostgreSQL):
 
 - **Schedules**: Main schedule instances with `startDate`/`endDate` (can span multiple days)
-- **Visits**: Individual care visits with time windows, skills, priority, `pinned` flag
+- **Visits**: Individual care visits with time windows, skills, priority, `pinned` flag; linked to Inset (visit type)
 - **Employees**: Caregivers with shifts, skills, availability, transport mode
 - **Clients**: Care recipients with preferences, continuity requirements
+- **Insets**: Visit types (morning_care, shower, etc.); org-scoped; `InsetGroup` + `InsetGroupMember` for dependency ordering (e.g. meals: breakfast → lunch → dinner)
+- **VisitDependency**: Schedule-level visit-to-visit dependencies (preceding, succeeding, minDelay, dependencyType: spread | same_day | temporal)
+- **ClientDependencyRule / ServiceAreaDependencyRule**: Client/area-level rules that generate VisitDependency
 - **Slinga (Templates)**: Recurring weekly patterns stored in `templates` table
 - **Visit Templates (Movable Visits)**: Flexible visits with time windows, stored in `visit_templates` table
 - **Solutions**: Optimization results stored in `solutions` table
@@ -313,11 +316,17 @@ See [Backend Architecture](./BACKEND_ARCHITECTURE.md) for complete API details.
 
 ### Bryntum SchedulerPro Integration
 
-- **Timeline view**: Employees as resources, visits as events
-- **Drag-and-drop**: Assign visits to employees
+- **Employee view**: Employees as resources, visits as events; drag-and-drop assignments
+- **Client view**: Clients as resources, assignments as events; `ClientScheduler` + `ClientFilterPanel`; filters: inset names, inset groups, frequencies, employees, only-with-dependencies
 - **Real-time updates**: WebSocket subscriptions for optimization progress
 - **Diff view**: Compare baseline vs optimized
 - **Bench panel**: Unassigned visits for drag-and-drop
+
+### Scheduler Appearance
+
+- **Org-level overrides**: `Organization.settings.schedulerAppearance` (category colors, frequency border colors) via `SchedulerAppearanceSection` in Operational Settings
+- **Env fallbacks**: `VITE_SCHEDULER_CATEGORY_COLORS`, `VITE_SCHEDULER_FREQUENCY_COLORS` (JSON)
+- **Client view appearance**: Time window background/border via `schedulerAppearanceConfig`
 
 See [Frontend Integration](./FRONTEND_INTEGRATION.md) for details.
 
