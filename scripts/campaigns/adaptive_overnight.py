@@ -44,17 +44,11 @@ FIRST_RUN_OUTPUT = REPO_ROOT / "recurring-visits" / "data" / "huddinge-v3" / "re
 
 TIMEFOLD_BASE = "https://app.timefold.ai/api/models/field-service-routing/v1/route-plans"
 
-# Thresholds: efficiency vs continuity sliding scale
-# Low continuity (few caregivers) is good → can accept 75% efficiency
-# High continuity (many caregivers) is bad → must compensate with ≥80% efficiency
-#   continuity 5  (good) → efficiency ≥75%
-#   continuity 8         → efficiency ≥77.5%
-#   continuity 11 (bad)  → efficiency ≥80%
-# Linear interpolation: required_eff = 75 + (continuity - 5) * (5/6)
-# Below 70% efficiency or above 5% unassigned = always bad
-GOOD_UNASSIGNED = 2.0      # % — max for "good"
-BAD_EFFICIENCY = 70.0      # below this = always bad regardless of continuity
-BAD_UNASSIGNED = 5.0       # above this = always bad
+# Goals: lower continuity = better (1 = ideal), higher efficiency = better (100% = ideal)
+# No hard caps — we rank by a combined score and use thresholds only for bad/cancel decisions.
+# BAD = clearly not worth keeping (cancel similar to free queue)
+BAD_EFFICIENCY = 70.0      # below this = bad
+BAD_UNASSIGNED = 5.0       # above this = bad
 
 import functools
 print = functools.partial(print, flush=True)
@@ -262,24 +256,27 @@ def _parse_dur(iso: str) -> float:
     return total
 
 
-def required_efficiency(continuity: float) -> float:
-    """Sliding scale: what efficiency % is needed at a given continuity.
+def sweet_spot_score(metrics: dict) -> float:
+    """Combined score: higher = better. Rewards high efficiency + low continuity + low unassigned.
     
-    Low continuity (good, few caregivers) = can accept lower efficiency:
-      continuity 5  → need ≥75%
-    High continuity (bad, many caregivers) = must have higher efficiency to compensate:
-      continuity 11 → need ≥80%
-    Linear: eff = 75 + (continuity - 5) * (5/6)
-    Clamped to [75, 80].
+    Score = efficiency - continuity_penalty - unassigned_penalty
+    where continuity_penalty = continuity_avg * 2 (each extra caregiver costs 2 eff points)
+    and unassigned_penalty = unassigned_pct * 5 (each % unassigned costs 5 eff points)
     """
-    return max(75.0, min(80.0, 75.0 + (continuity - 5.0) * (5.0 / 6.0)))
+    eff = metrics.get("field_efficiency_pct", 0)
+    cont = metrics.get("continuity_avg", 99)
+    unas = metrics.get("unassigned_pct", 100)
+    return eff - cont * 2.0 - unas * 5.0
 
 
 def evaluate(metrics: dict) -> str:
     """Returns 'good', 'bad', or 'ok'.
     
-    Sliding scale: efficiency 75-80% for continuity 5-11.
-    Lower continuity (fewer caregivers) demands higher efficiency.
+    Lower continuity = better (1 = ideal).
+    Higher efficiency = better (100% = ideal).
+    No caps — ranked by combined score.
+    BAD = eff <70% or unassigned >5% → cancel similar, free queue.
+    GOOD = eff ≥75% and continuity ≤11 and unassigned ≤2%.
     """
     eff = metrics.get("field_efficiency_pct", 0)
     unas = metrics.get("unassigned_pct", 100)
@@ -287,9 +284,7 @@ def evaluate(metrics: dict) -> str:
 
     if eff < BAD_EFFICIENCY or unas > BAD_UNASSIGNED:
         return "bad"
-    
-    needed_eff = required_efficiency(cont)
-    if eff >= needed_eff and unas <= GOOD_UNASSIGNED and cont <= 11.0:
+    if eff >= 75.0 and cont <= 11.0 and unas <= 2.0:
         return "good"
     return "ok"
 
@@ -442,10 +437,9 @@ def main():
                 verdict = evaluate(m)
                 c["verdict"] = verdict
 
-                needed = required_efficiency(m.get("continuity_avg", 99))
-                log(f"  Efficiency: {m['field_efficiency_pct']}% (need ≥{needed:.0f}%)  "
-                    f"Continuity: {m.get('continuity_avg', '?')} avg  "
-                    f"Unassigned: {m['unassigned_pct']}%  "
+                score = sweet_spot_score(m)
+                log(f"  Eff: {m['field_efficiency_pct']}%  Cont: {m.get('continuity_avg', '?')}  "
+                    f"Unas: {m['unassigned_pct']}%  Score: {score:.1f}  "
                     f"Travel: {m['travel_hours']}h  Wait: {m['wait_hours']}h")
 
                 if verdict == "good":
@@ -505,10 +499,16 @@ def _save_state(campaigns: list[dict], out_dir: Path):
     md_lines = [
         f"# Adaptive Overnight Campaign — {datetime.now().strftime('%Y-%m-%d %H:%M')}",
         "",
-        "| # | Strategy | Pool | Verdict | Efficiency | Continuity | Unassigned | Travel | Wait | Route Plan ID |",
-        "|---|----------|------|---------|-----------|-----------|-----------|--------|------|---------------|",
+        "| # | Strategy | Pool | Verdict | Score | Eff% ↑ | Cont ↓ | Unas% ↓ | Travel | Wait | Route Plan ID |",
+        "|---|----------|------|---------|-------|--------|--------|---------|--------|------|---------------|",
     ]
+    scored = []
     for i, c in enumerate(campaigns):
+        m = c.get("metrics") or {}
+        score = sweet_spot_score(m) if m else -999
+        scored.append((score, i, c))
+    scored.sort(key=lambda x: -x[0])
+    for rank, (score, _, c) in enumerate(scored):
         m = c.get("metrics") or {}
         eff = f"{m.get('field_efficiency_pct', '—')}%" if m else "—"
         cont = f"{m.get('continuity_avg', '—')}" if m else "—"
@@ -517,7 +517,8 @@ def _save_state(campaigns: list[dict], out_dir: Path):
         wait = f"{m.get('wait_hours', '—')}h" if m else "—"
         verdict_icon = {"good": "✅", "bad": "❌", "ok": "⚠️"}.get(c.get("verdict", ""), "⏳")
         rid = f"`{c.get('route_plan_id', '—')[:12]}`" if c.get("route_plan_id") else "—"
-        md_lines.append(f"| {i+1} | {c['name']} | {c.get('pool_size', '—')} | {verdict_icon} {c.get('verdict', c['status'])} | {eff} | {cont} | {unas} | {travel} | {wait} | {rid} |")
+        sc = f"{score:.1f}" if m else "—"
+        md_lines.append(f"| {rank+1} | {c['name']} | {c.get('pool_size', '—')} | {verdict_icon} {c.get('verdict', c['status'])} | {sc} | {eff} | {cont} | {unas} | {travel} | {wait} | {rid} |")
     md_lines.append("")
 
     md_path = out_dir / "CAMPAIGN_RESULTS.md"
@@ -540,13 +541,15 @@ def _print_summary(campaigns: list[dict]):
     log(f"  💥 Failed:    {len(failed)}")
     log(f"  ⏳ Pending:   {len(pending)}")
 
-    if good:
-        log("\nBest results (sweet spot = high efficiency + low continuity):")
-        best = sorted(good, key=lambda c: -(c.get("metrics") or {}).get("field_efficiency_pct", 0))
-        for c in best[:5]:
+    completed = [c for c in campaigns if c.get("metrics")]
+    if completed:
+        log("\nBest variants (by eff ↑, continuity ↓, unassigned ↓):")
+        ranked = sorted(completed, key=lambda c: -sweet_spot_score(c.get("metrics", {})))
+        for c in ranked[:5]:
             m = c["metrics"]
-            log(f"  {c['name']}: eff={m['field_efficiency_pct']}% cont={m.get('continuity_avg','?')} "
-                f"unas={m['unassigned_pct']}% travel={m['travel_hours']}h wait={m['wait_hours']}h")
+            sc = sweet_spot_score(m)
+            log(f"  {c['name']}: score={sc:.1f} eff={m['field_efficiency_pct']}% "
+                f"cont={m.get('continuity_avg','?')} unas={m['unassigned_pct']}%")
 
 
 if __name__ == "__main__":

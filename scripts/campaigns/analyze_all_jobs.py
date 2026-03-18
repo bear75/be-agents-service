@@ -96,14 +96,14 @@ def quick_metrics(data: dict) -> dict | None:
         continuity_avg = 0.0
         continuity_max = 0
 
-    needed_eff = max(75.0, min(80.0, 75.0 + (continuity_avg - 5.0) * (5.0 / 6.0)))
+    score = field_eff - continuity_avg * 2.0 - unassigned_pct * 5.0
 
     return {
         "visits": total_visits,
         "unassigned": unassigned_count,
         "unassigned_pct": round(unassigned_pct, 2),
         "field_eff": round(field_eff, 1),
-        "needed_eff": round(needed_eff, 1),
+        "score": round(score, 1),
         "cont_avg": round(continuity_avg, 1),
         "cont_max": continuity_max,
         "travel_h": round(total_travel_sec / 3600, 1),
@@ -126,10 +126,9 @@ def verdict(m: dict) -> str:
     eff = m["field_eff"]
     cont = m["cont_avg"]
     unas = m["unassigned_pct"]
-    needed = m["needed_eff"]
     if eff < 70 or unas > 5:
         return "❌ BAD"
-    if eff >= needed and unas <= 2 and cont <= 11:
+    if eff >= 75 and cont <= 11 and unas <= 2:
         return "✅ GOOD"
     return "⚠️  OK"
 
@@ -180,38 +179,41 @@ def main():
 
         time.sleep(0.5)
 
-    # Sort by field efficiency descending
-    results.sort(key=lambda x: -x["field_eff"])
+    # Sort by score descending (eff↑, cont↓, unas↓)
+    results.sort(key=lambda x: -x["score"])
 
     # Print summary table
     print(f"\n{'='*160}")
-    print(f"ALL COMPLETED JOBS — RANKED BY FIELD EFFICIENCY")
+    print(f"ALL COMPLETED JOBS — RANKED BY SCORE (eff↑, cont↓, unas↓)")
     print(f"{'='*160}")
-    print(f"{'#':>3} {'Verdict':<10} {'Eff%':>5} {'Need':>5} {'Cont':>5} {'Unas%':>6} {'Visits':>6} {'Travel':>7} {'Wait':>6} {'Visit':>7} {'Vehs':>5} {'Name':<45} {'Submitted':<20} {'ID':<14}")
-    print("-" * 160)
+    print(f"{'#':>3} {'Verdict':<10} {'Score':>6} {'Eff%':>5} {'Cont':>5} {'Unas%':>6} {'Visits':>6} {'Travel':>7} {'Wait':>6} {'Visit':>7} {'Vehs':>5} {'Name':<45} {'Submitted':<20} {'ID':<14}")
+    print("-" * 165)
     for i, r in enumerate(results):
         icon = r["verdict"][:2]
-        print(f"{i+1:>3} {icon:<10} {r['field_eff']:>5.1f} {r['needed_eff']:>5.1f} {r['cont_avg']:>5.1f} {r['unassigned_pct']:>6.2f} {r['visits']:>6} {r['travel_h']:>6.1f}h {r['wait_h']:>5.1f}h {r['visit_h']:>6.1f}h {r['vehicles']:>5} {r['name']:<45} {r['submitted']:<20} {r['id'][:12]:<14}")
+        print(f"{i+1:>3} {icon:<10} {r['score']:>6.1f} {r['field_eff']:>5.1f} {r['cont_avg']:>5.1f} {r['unassigned_pct']:>6.2f} {r['visits']:>6} {r['travel_h']:>6.1f}h {r['wait_h']:>5.1f}h {r['visit_h']:>6.1f}h {r['vehicles']:>5} {r['name']:<45} {r['submitted']:<20} {r['id'][:12]:<14}")
 
     # Sweet spot analysis
     print(f"\n{'='*80}")
-    print("SWEET SPOT ANALYSIS (efficiency ≥75-80% for continuity 5-11)")
+    print("SWEET SPOT ANALYSIS")
+    print("Lower continuity = better (1 = ideal)")
+    print("Higher efficiency = better (100% = ideal)")
+    print("Score = eff - cont×2 - unas×5")
     print(f"{'='*80}")
     sweet = [r for r in results if r["verdict"].startswith("✅")]
     ok = [r for r in results if r["verdict"].startswith("⚠️")]
     bad = [r for r in results if r["verdict"].startswith("❌")]
 
-    print(f"\n✅ GOOD (meets sliding scale): {len(sweet)}")
+    print(f"\n✅ GOOD (eff≥75%, cont≤11, unas≤2%): {len(sweet)}")
     for r in sweet[:10]:
-        print(f"   eff={r['field_eff']}% cont={r['cont_avg']} unas={r['unassigned_pct']}% — {r['name']} ({r['id'][:12]})")
+        print(f"   score={r['score']:.1f} eff={r['field_eff']}% cont={r['cont_avg']} unas={r['unassigned_pct']}% — {r['name']} ({r['id'][:12]})")
 
-    print(f"\n⚠️  OK (close but not there): {len(ok)}")
-    for r in ok[:10]:
-        print(f"   eff={r['field_eff']}% cont={r['cont_avg']} unas={r['unassigned_pct']}% need≥{r['needed_eff']}% — {r['name']} ({r['id'][:12]})")
+    print(f"\n⚠️  OK: {len(ok)}")
+    for r in sorted(ok, key=lambda x: -x['score'])[:10]:
+        print(f"   score={r['score']:.1f} eff={r['field_eff']}% cont={r['cont_avg']} unas={r['unassigned_pct']}% — {r['name']} ({r['id'][:12]})")
 
     print(f"\n❌ BAD (eff<70% or unas>5%): {len(bad)}")
     for r in bad[:5]:
-        print(f"   eff={r['field_eff']}% cont={r['cont_avg']} unas={r['unassigned_pct']}% — {r['name']} ({r['id'][:12]})")
+        print(f"   score={r['score']:.1f} eff={r['field_eff']}% cont={r['cont_avg']} unas={r['unassigned_pct']}% — {r['name']} ({r['id'][:12]})")
 
     # Save results
     out_dir = Path("/workspace/recurring-visits/data/huddinge-v3/campaigns")
@@ -224,14 +226,15 @@ def main():
         "",
         f"**{len(results)} completed jobs analyzed** | ✅ {len(sweet)} good | ⚠️ {len(ok)} ok | ❌ {len(bad)} bad",
         "",
-        "Sliding scale: continuity 5 → need ≥75% eff, continuity 11 → need ≥80% eff",
+        "Lower continuity = better (1 = ideal). Higher efficiency = better (100% = ideal).",
+        "Score = eff - cont×2 - unas×5. Ranked by score descending.",
         "",
-        "| # | Verdict | Eff% | Need% | Cont | Unas% | Visits | Travel | Wait | Name | ID |",
-        "|---|---------|------|-------|------|-------|--------|--------|------|------|-----|",
+        "| # | Verdict | Score | Eff% ↑ | Cont ↓ | Unas% ↓ | Visits | Travel | Wait | Name | ID |",
+        "|---|---------|-------|--------|--------|---------|--------|--------|------|------|-----|",
     ]
     for i, r in enumerate(results):
         md_lines.append(
-            f"| {i+1} | {r['verdict']} | {r['field_eff']} | {r['needed_eff']} | {r['cont_avg']} | {r['unassigned_pct']} | {r['visits']} | {r['travel_h']}h | {r['wait_h']}h | {r['name'][:40]} | `{r['id'][:12]}` |"
+            f"| {i+1} | {r['verdict']} | {r['score']} | {r['field_eff']} | {r['cont_avg']} | {r['unassigned_pct']} | {r['visits']} | {r['travel_h']}h | {r['wait_h']}h | {r['name'][:40]} | `{r['id'][:12]}` |"
         )
     md_lines.append("")
     with open(out_dir / "ALL_JOBS_ANALYSIS.md", "w") as f:
