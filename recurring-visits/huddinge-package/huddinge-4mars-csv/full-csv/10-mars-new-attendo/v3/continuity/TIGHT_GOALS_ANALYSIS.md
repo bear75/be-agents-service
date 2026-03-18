@@ -1,18 +1,18 @@
-# Tight goals: unassigned <1%, field efficiency >75%, continuity <8
+# Tight goals: field efficiency >80%, continuity 6–10, unassigned manually manageable
 
-**Target:** Unassigned **<1%** (<76 of 7,653), field efficiency **>75%**, continuity avg **<8**.
+**Target:** Field efficiency **>80%**; continuity avg **6–10**; unassigned visits kept low but **some can be manually managed**.
 
 ---
 
 ## 1. Current results vs target
 
-| Metric        | Target   | Best current                    | Gap                          |
-|---------------|----------|----------------------------------|------------------------------|
-| Unassigned %  | <1%      | 1.4% (pool10_from_patch, 105)   | Need ~30 more assigned       |
-| Field eff.    | >75%     | 73.82% (pool8_required)         | +1.2–2 pp                    |
-| Continuity    | <8       | 9.78–9.84 (pool10); 3.69 (pool8)| pool10 over; pool8 already OK|
+| Metric        | Target      | Best current                    | Gap / note |
+|---------------|-------------|----------------------------------|------------|
+| Field eff.    | **>80%**    | 73.82% (pool8_required)         | +6+ pp; focus of new runs    |
+| Continuity    | **6–10**    | 9.78–9.84 (pool10); 3.69 (pool8)| pool10 in range; pool8 below (tighter) |
+| Unassigned    | Low; manual OK | 1.4% (pool10_from_patch, 105)  | Some unassigned acceptable for manual handling |
 
-**Observation:** Pool8 has best efficiency (73.82%) and best continuity (3.69) but 162 unassigned (2.1%). Pool10 has fewest unassigned (105–129) but continuity ~9.8 and efficiency 72–73%. No single run yet meets all three tight goals.
+**Observation:** We should be able to get **over 80%** efficiency and continuity **between 6–10**. Pool8 has best efficiency (73.82%) and very tight continuity (3.69). Pool10 sits in the 6–10 continuity band but efficiency is 72–73%. New strategies (PT3H solves, from-patch, eff weights) aim to push efficiency toward 80%+ while keeping continuity in 6–10.
 
 ---
 
@@ -40,7 +40,7 @@ All runs use **runConfiguration.termination**: spentLimit=**PT3H**, unimprovedSp
 | pool10_eff_3h          | solve      | pool10 required + travel 5 + wait 5  | 709eaa15-2bd6-47bd-b9b6-a7e1ad14ea18 |
 | pool8_preferred_w10_3h | solve      | variants/input_pool8_preferred.json + overrides | c52a3d44-0141-4b10-8f33-b4fc942e8f15 |
 
-After completion: run `scripts/analytics/campaign_analysis/fetch_tight_goals_campaign.sh` (create it to fetch these 5 IDs into campaign_analysis/<variant>), then `build_campaign_summary.py` to regenerate SUMMARY.md. VARIANTS already includes these five.
+After completion: run `fetch_tight_goals_campaign.sh`, then `build_campaign_summary.py`. **Success:** eff >80%, continuity 6–10; some unassigned can be manually managed.
 
 ---
 

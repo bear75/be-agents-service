@@ -24,13 +24,34 @@ VARIANTS = [
     "pool10_from_patch",
     "pool8_required_3h",
     "pool8_preferred_w10_3h",
+    # Pool8 preferred baseline (from pool8_preferred_w10_3h)
+    "pool8_preferred_w15_3h",
+    "pool8_preferred_w20_3h",
+    "pool8_preferred_w10_eff_3h",
+    "pool8_preferred_w10_from_patch_3h",
     "pool10_eff_3h",
     "pool8_from_patch_3h",
     "pool10_from_patch_v2_3h",
+    # Overnight campaigns (preferred pools, P/W/T weight balance)
+    "pool10_p5_w3_t3",
+    "pool10_p10_w3_t3",
+    "pool10_p5_w5_t3",
+    "pool10_p5_w3_t5",
+    "pool10_p10_w5_t5",
+    "pool8_p5_w3_t3",
+    "pool8_p10_w3_t3",
+    "pool8_p5_w5_t5",
+    "pool10_p8_w4_t4",
+    "pool10_p15_w2_t5",
+    "pool8_p8_w4_t4",
+    "pool10_p3_w5_t5",
+    "pool10_p20_w2_t2",
+    "pool8_p15_w2_t5",
+    "pool8_p10_w5_t5",
 ]
-GOAL_EFF = 70.0  # field efficiency % (CAMPAIGN_MATRIX: 73%+)
-GOAL_CONTINUITY = 11.0  # avg distinct caregivers per client (≤11)
-GOAL_UNASSIGNED_PCT = 5.0  # unassigned < 5%
+# Lower continuity = better (1 = one caregiver for 2 weeks). Higher efficiency = better (100% = no travel).
+# Never cap continuity or efficiency — always minimize continuity, maximize efficiency.
+GOAL_UNASSIGNED_PCT = 5.0  # unassigned < 5% (manually manageable)
 
 
 def find_latest_metrics(dir_path: Path) -> dict | None:
@@ -75,10 +96,10 @@ def main() -> None:
     lines = [
         "# v3 campaign – fetch & analyze all jobs",
         "",
-        "**Goals:** Field efficiency **≥70%** (stretch 73%+), continuity avg ≤11, unassigned <5%.",
+        "**Priorities:** Lower continuity = better (1 = ideal). Higher efficiency = better (100% = ideal). Unassigned low. Never cap continuity or efficiency.",
         "",
-        "| Variant | Plan ID | Assigned | Unassigned | Unassigned % | Field eff. | Continuity avg | ≤11 | Eff. ≥70% |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Variant | Plan ID | Assigned | Unassigned | Unassigned % | Field eff. | Continuity avg |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
     ]
 
     total_visits = 7653  # from input
@@ -86,12 +107,12 @@ def main() -> None:
     for variant in VARIANTS:
         d = script_dir / variant
         if not d.is_dir():
-            rows.append((variant, "—", "—", "—", "—", "—", "—", "—", "—"))
+            rows.append((variant, "—", "—", "—", "—", "—", "—"))
             continue
         metrics = find_latest_metrics(d)
         cont_avg = continuity_avg_from_csv(d / "continuity.csv") or continuity_avg_from_summary(d / "continuity_summary.txt")
         if not metrics:
-            rows.append((variant, "—", "—", "—", "—", "—", f"{cont_avg:.2f}" if cont_avg else "—", "—", "—"))
+            rows.append((variant, "—", "—", "—", "—", "—", f"{cont_avg:.2f}" if cont_avg else "—"))
             continue
         plan_id = (metrics.get("route_plan_id") or "—").split("-")[0]
         assigned = metrics.get("total_visits_assigned", 0)
@@ -100,18 +121,32 @@ def main() -> None:
         field_eff = metrics.get("field_efficiency_pct")
         eff_str = f"{field_eff:.2f}%" if field_eff is not None else "—"
         cont_str = f"{cont_avg:.2f}" if cont_avg is not None else "—"
-        goal_cont = "Yes" if cont_avg is not None and cont_avg <= GOAL_CONTINUITY else "No"
-        goal_eff = "Yes" if field_eff is not None and field_eff >= GOAL_EFF else "No"
-        rows.append((variant, plan_id, f"{assigned:,}", f"{unassigned:,}", f"{unass_pct:.1f}%", eff_str, cont_str, goal_cont, goal_eff))
+        rows.append((variant, plan_id, f"{assigned:,}", f"{unassigned:,}", f"{unass_pct:.1f}%", eff_str, cont_str))
 
-    for variant, plan_id, assigned, unassigned, unass_pct, eff_str, cont_str, goal_cont, goal_eff in rows:
-        lines.append(f"| **{variant}** | {plan_id} | {assigned} | {unassigned} | {unass_pct} | {eff_str} | {cont_str} | {goal_cont} | {goal_eff} |")
+    for variant, plan_id, assigned, unassigned, unass_pct, eff_str, cont_str in rows:
+        lines.append(f"| **{variant}** | {plan_id} | {assigned} | {unassigned} | {unass_pct} | {eff_str} | {cont_str} |")
+
+    # Best: highest eff, lowest continuity, lowest unassigned
+    def _eff(r): return float(r[5].rstrip("%")) if r[5] and r[5] != "—" else 0
+    def _cont(r): return float(r[6]) if r[6] and r[6] != "—" else 999
+    def _unass(r): return float(r[4].rstrip("%")) if r[4] and r[4] != "—" else 999
+    with_data = [(r, i) for i, r in enumerate(rows) if r[1] != "—"]
+    with_data.sort(key=lambda x: (-_eff(x[0]), _cont(x[0]), _unass(x[0])))
+    best = with_data[:5]
 
     lines.extend([
         "",
+        "## Best variants (highest eff, lowest continuity, lowest unassigned)",
+        "",
+    ])
+    for _, i in best:
+        r = rows[i]
+        lines.append(f"- **{r[0]}**: {r[5]} eff, {r[6]} continuity, {r[4]} unassigned")
+    lines.extend([
+        "",
         "**Notes:**",
-        "- Per-job outputs: `baseline_data_final/`, `pool3_required/`, `pool5_required/`, `pool8_required/` (output.json, metrics_*.json, continuity.csv, empty_shifts.txt).",
-        "- To re-fetch: `./scripts/analytics/campaign_analysis/fetch_all_campaign_runs.sh` (requires TIMEFOLD_API_KEY).",
+        "- Per-job outputs: `baseline_data_final/`, `pool3_required/`, etc. (output.json, metrics_*.json, continuity.csv).",
+        "- Re-fetch: `fetch_all_campaign_runs.sh`, `fetch_pool10_campaign_runs.sh`, `fetch_tight_goals_campaign.sh`, `fetch_overnight_campaigns.sh` (requires TIMEFOLD_API_KEY).",
         "",
     ])
     out = script_dir / "SUMMARY.md"

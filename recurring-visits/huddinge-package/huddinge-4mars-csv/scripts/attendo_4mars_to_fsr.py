@@ -468,7 +468,13 @@ def _expand_row_to_occurrences(
     occurrences: List[Dict[str, Any]] = []
 
     if recurrence == "daily":
+        schift_lower = (base.get("schift", "") or "").strip().lower()
         for d in dates_in_window:
+            # Dag = Mon-Fri only, Helg = Sat-Sun only
+            if ("dag" in schift_lower and "helg" not in schift_lower) and d.weekday() >= 5:
+                continue
+            if "helg" in schift_lower and d.weekday() <= 4:
+                continue
             occ = {**base, "date": d, "date_iso": d.date().isoformat()}
             occurrences.append(occ)
 
@@ -681,8 +687,18 @@ def _make_time_window(date: datetime, min_start_min: int, max_start_min: int, l�
 def _build_time_windows(occ: Dict[str, Any]) -> List[Dict[str, str]]:
     """
     Build timeWindows list for a visit occurrence.
-    For flexible_day with Morgon/Lunch/Kväll: one window per eligible day (enforces
-    time-of-day on each day). For HELDAG or non-flexible: single window.
+
+    Flexible visits always get one window per eligible day so the solver picks exactly
+    one day.  Eligible days are filtered by shift:
+      - Dag  → Mon-Fri (weekday() 0-4)
+      - Helg → Sat-Sun (weekday() 5-6)
+      - Kväll / empty / heldag → all 7 days
+
+    When the occurrence already specifies explicit weekdays (e.g. "mån tis tor"), those
+    take precedence over the shift filter.
+
+    For heldag/no-shift visits the time bounds default to the Dag shift window (07:00-15:00)
+    so the solver doesn't schedule a Städ at 21:00.
     """
     min_start_min, max_start_min, is_heldag = _compute_slot_bounds(occ)
     längd = occ.get("längd", 0)
@@ -690,22 +706,29 @@ def _build_time_windows(occ: Dict[str, Any]) -> List[Dict[str, str]]:
     if occ.get("flexible_day") and occ.get("period_start") and occ.get("period_end"):
         p_start = occ["period_start"]
         p_end = occ["period_end"]
+
+        # When is_heldag (no shift, no "när på dagen") → clamp to Dag shift bounds
+        # so flexible service visits are placed 07:00-15:00, not 07:00-22:00.
         if is_heldag:
-            min_dt = p_start.replace(hour=min_start_min // 60, minute=min_start_min % 60, second=0, microsecond=0)
-            max_st_dt = p_end.replace(hour=max_start_min // 60, minute=max_start_min % 60, second=0, microsecond=0)
-            max_end_dt = max_st_dt + timedelta(minutes=längd)
-            return [{
-                "minStartTime": min_dt.isoformat() + TIMEZONE_SUFFIX,
-                "maxStartTime": max_st_dt.isoformat() + TIMEZONE_SUFFIX,
-                "maxEndTime": max_end_dt.isoformat() + TIMEZONE_SUFFIX,
-            }]
+            dag_start = _parse_time_minutes(SHIFT_DAG[0])   # 420  (07:00)
+            dag_end = _parse_time_minutes(SHIFT_DAG[1])      # 900  (15:00)
+            min_start_min = dag_start
+            max_start_min = max(dag_start, dag_end - längd)
+
         period_dates = _dates_in_window(p_start, p_end)
+
         # Restrict to row weekdays when set (e.g. "mån tis tor" => only Mon, Tue, Thu).
-        # Otherwise flexible_day would get windows for all days in period (e.g. Fri) and
-        # the solver could place multiple visits on the same day.
         weekdays = occ.get("weekdays")
         if weekdays is not None and len(weekdays) > 0:
             period_dates = [d for d in period_dates if d.weekday() in weekdays]
+        else:
+            # No explicit weekdays → filter by shift (Dag=Mon-Fri, Helg=Sat-Sun).
+            schift = (occ.get("schift", "") or "").strip().lower()
+            if is_heldag or ("dag" in schift and "helg" not in schift):
+                period_dates = [d for d in period_dates if d.weekday() <= 4]
+            elif "helg" in schift:
+                period_dates = [d for d in period_dates if d.weekday() >= 5]
+
         windows = [_make_time_window(d, min_start_min, max_start_min, längd) for d in period_dates]
         return windows if windows else [_make_time_window(occ["date"], min_start_min, max_start_min, längd)]
 
@@ -1014,6 +1037,41 @@ def _build_visits_and_groups(
                 # No explicit delay, but current visit starts later: add PT0M to prevent overlap
                 preceding_map[occ["visit_id"]] = (prev_occ["visit_id"], "PT0M")
 
+    # FIX 4: Overlapping same-client same-day time windows.
+    # Time window: minStart=start-före, maxStart=start+efter, maxEnd=maxStart+duration.
+    # Two visits overlap if [minStart_a, maxEnd_a] overlaps [minStart_b, maxEnd_b].
+    def _time_window_bounds_overlap(occ_a: Dict[str, Any], occ_b: Dict[str, Any]) -> bool:
+        """True if the two occurrences' full time windows (minStart..maxEnd) overlap."""
+        min_a, max_a, _ = _compute_slot_bounds(occ_a)
+        min_b, max_b, _ = _compute_slot_bounds(occ_b)
+        längd_a = occ_a.get("längd", 0)
+        längd_b = occ_b.get("längd", 0)
+        max_end_a = max_a + längd_a
+        max_end_b = max_b + längd_b
+        return min_a < max_end_b and min_b < max_end_a
+
+    for (_kundnr, _date_iso), occs in per_client_date.items():
+        for i, occ_a in enumerate(occs):
+            if occ_a.get("_visit") is None:
+                continue
+            for occ_b in occs[i + 1 :]:
+                if occ_b.get("_visit") is None:
+                    continue
+                if occ_a.get("visit_id") == occ_b.get("visit_id"):
+                    continue
+                if not _time_window_bounds_overlap(occ_a, occ_b):
+                    continue
+                start_a = _parse_time_minutes(occ_a.get("starttid", "08:00"))
+                start_b = _parse_time_minutes(occ_b.get("starttid", "08:00"))
+                if start_a < start_b:
+                    prev_id, dep_id = occ_a["visit_id"], occ_b["visit_id"]
+                elif start_b < start_a:
+                    prev_id, dep_id = occ_b["visit_id"], occ_a["visit_id"]
+                else:
+                    continue
+                if dep_id not in preceding_map:
+                    preceding_map[dep_id] = (prev_id, "PT0M")
+
     # Same-day "dusch dikt med morgon": only when the two visit insatser (rows) are a true pair:
     # - same client, same date, same återkommande dag (recurrence), same när på dagen och skift,
     # - and starttid/före/efter place both within the same time window (slot bounds overlap).
@@ -1025,10 +1083,14 @@ def _build_visits_and_groups(
         return (tuple(sorted(wd)) if wd else ())
 
     def _time_window_bounds_overlap(occ_a: Dict[str, Any], occ_b: Dict[str, Any]) -> bool:
-        """True if the two occurrences' start-time windows (min_start, max_start) overlap."""
+        """True if the two occurrences' full time windows (minStart..maxEnd) overlap."""
         min_a, max_a, _ = _compute_slot_bounds(occ_a)
         min_b, max_b, _ = _compute_slot_bounds(occ_b)
-        return min_a < max_b and min_b < max_a
+        längd_a = occ_a.get("längd", 0)
+        längd_b = occ_b.get("längd", 0)
+        max_end_a = max_a + längd_a
+        max_end_b = max_b + längd_b
+        return min_a < max_end_b and min_b < max_end_a
 
     # Group by (client, date, när_på_dagen, skift, recurrence) so we only pair same-slot same-recurrence visits.
     per_client_date_slot: Dict[Tuple[Any, ...], List[Dict[str, Any]]] = defaultdict(list)

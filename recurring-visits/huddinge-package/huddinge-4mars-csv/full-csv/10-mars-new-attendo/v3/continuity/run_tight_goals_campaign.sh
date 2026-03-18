@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Submit strategies targeting unassigned <1%, field eff. >75%, continuity <8. All PT3H/PT15M.
+# Submit strategies targeting field eff. >80%, continuity 6–10; some unassigned OK for manual handling. All PT3H/PT15M.
 # Run from be-agent-service root. Requires TIMEFOLD_API_KEY. See TIGHT_GOALS_ANALYSIS.md.
 
 set -e
@@ -129,5 +129,5 @@ submit_solve pool10_eff_3h "$TIGHT_DIR/input_pool10_eff_3h.json" &
 submit_from_patch pool8_from_patch_3h "5e55bf3a-9768-4ac8-9a98-d38b857926e4" "$PATCH_DIR/pool8_required_patch.json" &
 submit_from_patch pool10_from_patch_v2_3h "4b5536f2-df02-431a-a7f4-d24fee45ed55" "$PATCH_DIR/pool10_from_patch_patch.json" &
 wait
-echo "Done. Record route plan IDs from output above. Update TIGHT_GOALS_ANALYSIS.md and fetch with --metrics-dir when completed."
-echo "Target: unassigned <1%, field eff. >75%, continuity <8."
+echo "Done. Record route plan IDs from output above. Update TIGHT_GOALS_ANALYSIS.md and fetch when completed."
+echo "Target: field eff. >80%, continuity 6–10; some unassigned manually manageable."

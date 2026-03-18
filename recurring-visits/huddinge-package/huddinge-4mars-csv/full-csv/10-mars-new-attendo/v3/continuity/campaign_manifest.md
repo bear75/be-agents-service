@@ -30,7 +30,7 @@
 
 | pool10_from_patch | 4b5536f2-df02-431a-a7f4-d24fee45ed55 | SOLVING_COMPLETED |
 
-**Tight-goals campaign (unassigned <1%, eff >75%, continuity <8):** PT3H/PT15M. See `v3/continuity/TIGHT_GOALS_ANALYSIS.md`.
+**Tight-goals campaign (eff >80%, continuity 6–10; some unassigned manually manageable):** PT3H/PT15M. See `v3/continuity/TIGHT_GOALS_ANALYSIS.md`.
 
 | pool8_required_3h | 76b02f06-a74f-4ff6-a95e-fbf87d6e6d07 | SOLVING_SCHEDULED |
 | pool8_preferred_w10_3h | c52a3d44-0141-4b10-8f33-b4fc942e8f15 | SOLVING_SCHEDULED |
