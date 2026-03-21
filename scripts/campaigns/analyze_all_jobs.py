@@ -215,8 +215,8 @@ def main():
     for r in bad[:5]:
         print(f"   score={r['score']:.1f} eff={r['field_eff']}% cont={r['cont_avg']} unas={r['unassigned_pct']}% — {r['name']} ({r['id'][:12]})")
 
-    # Save results
-    out_dir = Path("/workspace/recurring-visits/data/huddinge-v3/campaigns")
+    # Save results (default: alongside script; override with ANALYZE_OUTPUT_DIR)
+    out_dir = Path(os.environ.get("ANALYZE_OUTPUT_DIR", Path(__file__).resolve().parent / "analysis_output"))
     out_dir.mkdir(parents=True, exist_ok=True)
     with open(out_dir / "all_jobs_analysis.json", "w") as f:
         json.dump(results, f, indent=2, default=str)

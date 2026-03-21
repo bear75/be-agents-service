@@ -46,6 +46,21 @@ Primary script for Huddinge v3 dataset with:
 - Visit groups (Dubbel visits)
 - Coordinate integration (if geocoded)
 
+**expand_supply_shifts.py** - Research: add *supply* without changing visits (duplicate fleet and/or extend shift end times)
+```bash
+python3 scripts/conversion/expand_supply_shifts.py \
+  -i path/to/export-*-input.json \
+  -o path/to/input_supply_fleet_x2.json \
+  --fleet-duplicates 1
+
+# Optional: +3h on each shift maxEndTime (evening buffer)
+python3 scripts/conversion/expand_supply_shifts.py -i in.json -o out.json \
+  --fleet-duplicates 1 --extend-end-hours 3
+```
+- Duplicates append full copies of all vehicles (`id` suffix `__supply_dupN`), with fresh UUIDs on shifts/breaks.
+- `--extend-end-hours` only extends `maxEndTime` per shift (start unchanged).
+- Use when `analyze_unassigned.py` shows supply gaps or you want to test capacity headroom.
+
 ## Continuity (`continuity/`)
 
 **build_pools.py** - Generate vehicle pools per client (pool3/pool5/pool8)
@@ -104,21 +119,50 @@ python3 scripts/analytics/analyze_supply_demand.py solution.json input.json
 python3 scripts/analytics/compare_csv_json.py source.csv input.json
 ```
 
-**analyze_dependency_feasibility.py** - Check if dependencies are physically feasible
-```bash
-python3 scripts/analytics/analyze_dependency_feasibility.py input.json
-```
+**analyze_dependency_feasibility.py** - ( lives under `verification/` ) See Verification section.
 
 ## Verification (`verification/`)
 
-**verify_flex.py** - Verify all visits have time window flexibility
+Goal pipeline for **assignable input** → **0 unassigned** after solve:
+
+1. **Dependencies vs time windows** (infeasible `minDelay` makes solver leave visits unassigned)
+```bash
+python3 scripts/verification/analyze_dependency_feasibility.py input.json --all -o dependency_report.json
+```
+
+2. **Time flex** (zero-flex visits are allowed but harder; script flags them)
 ```bash
 python3 scripts/verification/verify_flex.py input.json
 ```
 
-**compare_time_windows.py** - Compare time windows between old and new inputs
+3. **Compare CSV/conversion fixes** (old vs new input; includes `visitGroups` visits)
 ```bash
 python3 scripts/verification/compare_time_windows.py old_input.json new_input.json
+```
+
+4. **After Timefold solve** — unassigned count (goal: 0)
+```bash
+python3 scripts/verification/verify_unassigned.py output.json
+python3 scripts/verification/verify_unassigned.py output.json --max 5   # allow small slack
+```
+
+5. **Continuity / duplicates** (dataset folder with input, output, continuity.csv)
+```bash
+python3 scripts/verification/verify_solution.py --dataset path/to/run-folder [--day 2026-02-16]
+```
+
+**fetch_dashboard_solution_bundle.py** — dashboard **Solution.id** → lookup `timefoldJobId` in DB → fetch Timefold JSON + run checks  
+(requires `psql`, `DATABASE_URL`, `TIMEFOLD_API_KEY`)
+```bash
+export DATABASE_URL="postgresql://..."  # dashboard-server
+python3 scripts/verification/fetch_dashboard_solution_bundle.py aaf9d57f-c03a-494b-afa1-f8d07a6de66e
+# or: --env-file /path/to/beta-appcaire/apps/dashboard-server/.env
+# or: --route-plan-id <timefoldJobId>  # if you already know the Timefold id
+```
+
+**analyze_dependency_feasibility.py** - `precedingVisit` + `minDelay` vs time windows (multi-day delays up to 14 days)
+```bash
+python3 scripts/verification/analyze_dependency_feasibility.py input.json --all -o report.json
 ```
 
 ## Geocoding (`geocoding/`)
@@ -194,19 +238,17 @@ python3 scripts/continuity/build_from_patch.py \
 python3 scripts/timefold/submit.py from-patch input_pool5.json from_patch.json --wait --save solution_continuity.json
 ```
 
-### Validation
+### Validation (input + output)
 
-1. **Verify Time Window Flexibility**
+See **Verification (`verification/`)** above for the full pipeline. Quick reference:
+
 ```bash
+python3 scripts/verification/analyze_dependency_feasibility.py input.json --all
 python3 scripts/verification/verify_flex.py input.json
+python3 scripts/verification/verify_unassigned.py output.json
 ```
 
-2. **Check Dependency Feasibility**
-```bash
-python3 scripts/analytics/analyze_dependency_feasibility.py input.json
-```
-
-3. **Verify CSV Mapping**
+**Verify CSV mapping** (analytics)
 ```bash
 python3 scripts/analytics/compare_csv_json.py source.csv input.json
 ```

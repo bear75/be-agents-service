@@ -5,9 +5,11 @@ Verify that EVERY visit in a Timefold FSR input JSON has flex (time or day).
 Rule: ALLA BESÖK HAR FLEX — antingen för en dag (tid-flex: minStartTime != maxStartTime)
 eller för flera dagar/veckor (dag-flex: flera time windows eller ett fönster som spänner flera dagar).
 
+Note: Exakt-tid / pinned besök (minStartTime == maxStartTime) fail this check by design.
+Those can still be feasible for the solver but are harder to place; use sparingly.
+
 Usage:
-  python3 verify_all_visits_have_flex.py export-field-service-routing-v1-4mars-2v-input.json
-  python3 verify_all_visits_have_flex.py path/to/any-input.json
+  python3 verify_flex.py path/to/input.json
 
 Exit code: 0 if all visits have flex, 1 if any violation (and list them).
 """
@@ -49,7 +51,7 @@ def verify(model_input: dict) -> tuple[bool, list[tuple[str, str]]]:
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("Usage: verify_all_visits_have_flex.py <input.json>", file=sys.stderr)
+        print("Usage: verify_flex.py <input.json>", file=sys.stderr)
         return 1
     path = Path(sys.argv[1])
     if not path.exists():

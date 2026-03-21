@@ -1,0 +1,41 @@
+============================================================
+Unassigned visits analysis
+============================================================
+Unassigned visits (unique): 363
+Unassigned time-window slots: 421
+
+--- Classification (per time-window slot) ---
+  Supply (no overlapping shift):     0  → add shifts for that day/period
+  Config (≥1 overlapping shift):    421  → tune solver (travel, movable distribution)
+
+--- Idle in window (overlapping shifts with gap for unassigned) ---
+  Unassigned slots with ≥1 overlapping shift that has idle/gap in window: 119 / 421
+  → Those shifts have capacity in the unassigned time window; solver did not assign (config/tuning).
+
+--- By date (demand bucket: day / evening / both) ---
+  2026-03-16: supply=0 config=34  day=14 evening=20 both=0
+  2026-03-17: supply=0 config=35  day=20 evening=15 both=0
+  2026-03-18: supply=0 config=28  day=14 evening=14 both=0
+  2026-03-19: supply=0 config=29  day=14 evening=15 both=0
+  2026-03-20: supply=0 config=43  day=24 evening=19 both=0
+  2026-03-21: supply=0 config=25  day=2 evening=23 both=0
+  2026-03-22: supply=0 config=22  day=4 evening=18 both=0
+  2026-03-23: supply=0 config=32  day=16 evening=16 both=0
+  2026-03-24: supply=0 config=36  day=18 evening=18 both=0
+  2026-03-25: supply=0 config=31  day=12 evening=19 both=0
+  2026-03-26: supply=0 config=33  day=14 evening=19 both=0
+  2026-03-27: supply=0 config=32  day=16 evening=16 both=0
+  2026-03-28: supply=0 config=21  day=2 evening=19 both=0
+  2026-03-29: supply=0 config=20  day=5 evening=11 both=4
+
+--- Visit:travel (assigned shifts only) ---
+  Visit time:   1651.62 h
+  Travel time:  750.98 h
+  Visit:travel ratio:  2.20
+  Field efficiency:   68.7%  (target >67.5%)
+
+Next steps:
+  - Tune Timefold config: reduce travel weight, prefer movable to day/evening for better routing.
+  - Aim for highest visit:travel ratio first, then add shifts only for required visit+travel.
+============================================================
+Wrote docs/analysis-runs/fsr-scripts-bundle-20260320/d708-sample/unassigned.csv

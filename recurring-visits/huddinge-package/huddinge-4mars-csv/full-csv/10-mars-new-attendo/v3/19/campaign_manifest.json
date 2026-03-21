@@ -1,0 +1,53 @@
+{
+  "campaign": "continuity-focused-v3-19",
+  "input_file": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/19/export-field-service-routing-v1-aaf9d57f-c03a-494b-afa1-f8d07a6de66e-input.json",
+  "submitted_at": "2026-03-19T22:50:50.999429",
+  "termination": "PT3H",
+  "variants": [
+    {
+      "variant_name": "baseline",
+      "status": "submitted",
+      "route_plan_id": "4bb72c31-10c7-4180-959d-61afd92fb84d",
+      "strategy": "baseline",
+      "algorithm": "baseline-no-continuity",
+      "hypothesis": "Baseline solve without continuity constraints for comparison",
+      "submitted_at": "2026-03-19T22:50:42.251255"
+    },
+    {
+      "variant_name": "pool5_high_continuity",
+      "status": "submitted",
+      "route_plan_id": "ce246ec9-a0dd-47df-a050-0aa89ffede71",
+      "strategy": "pool5-required-vehicles",
+      "algorithm": "continuity-pool5-high-weight",
+      "hypothesis": "Pool size 5 with requiredVehicles constraint (high continuity priority)",
+      "submitted_at": "2026-03-19T22:50:43.850345"
+    },
+    {
+      "variant_name": "pool7_balanced",
+      "status": "submitted",
+      "route_plan_id": "877c9802-307a-4158-9d99-81bd6da8a4ec",
+      "strategy": "pool7-required-vehicles",
+      "algorithm": "continuity-pool7-balanced",
+      "hypothesis": "Pool size 7 with requiredVehicles constraint (balanced continuity vs coverage)",
+      "submitted_at": "2026-03-19T22:50:45.706959"
+    },
+    {
+      "variant_name": "pool8_preferred",
+      "status": "submitted",
+      "route_plan_id": "907775ba-4962-49b6-9c11-264d7a6ecc61",
+      "strategy": "pool8-preferred-vehicles",
+      "algorithm": "continuity-pool8-preferred",
+      "hypothesis": "Pool size 8 with preferredVehicles soft constraint (flexible continuity)",
+      "submitted_at": "2026-03-19T22:50:47.288583"
+    },
+    {
+      "variant_name": "pool10_continuity_heavy",
+      "status": "submitted",
+      "route_plan_id": "6f716c8b-fb67-49a0-b311-aeb9b6b248c4",
+      "strategy": "pool10-required-vehicles",
+      "algorithm": "continuity-pool10-heavy",
+      "hypothesis": "Pool size 10 with requiredVehicles constraint (conservative continuity)",
+      "submitted_at": "2026-03-19T22:50:50.999335"
+    }
+  ]
+}

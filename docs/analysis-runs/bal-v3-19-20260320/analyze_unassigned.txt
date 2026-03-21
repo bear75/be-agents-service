@@ -1,0 +1,42 @@
+============================================================
+Unassigned visits analysis
+============================================================
+Unassigned visits (unique): 158
+Unassigned time-window slots: 245
+
+--- Classification (per time-window slot) ---
+  Supply (no overlapping shift):     14  → add shifts for that day/period
+  Config (≥1 overlapping shift):    231  → tune solver (travel, movable distribution)
+
+--- Idle in window (overlapping shifts with gap for unassigned) ---
+  Unassigned slots with ≥1 overlapping shift that has idle/gap in window: 118 / 245
+  → Those shifts have capacity in the unassigned time window; solver did not assign (config/tuning).
+
+--- By date (demand bucket: day / evening / both) ---
+  2026-03-02: supply=1 config=18  day=11 evening=8 both=0
+  2026-03-03: supply=1 config=25  day=18 evening=8 both=0
+  2026-03-04: supply=1 config=14  day=7 evening=8 both=0
+  2026-03-05: supply=1 config=20  day=12 evening=9 both=0
+  2026-03-06: supply=1 config=18  day=10 evening=9 both=0
+  2026-03-07: supply=1 config=10  day=3 evening=8 both=0
+  2026-03-08: supply=1 config=12  day=3 evening=10 both=0
+  2026-03-09: supply=1 config=22  day=14 evening=9 both=0
+  2026-03-10: supply=1 config=26  day=20 evening=7 both=0
+  2026-03-11: supply=1 config=12  day=7 evening=6 both=0
+  2026-03-12: supply=1 config=21  day=13 evening=9 both=0
+  2026-03-13: supply=1 config=17  day=11 evening=7 both=0
+  2026-03-14: supply=1 config=8  day=3 evening=6 both=0
+  2026-03-15: supply=1 config=8  day=3 evening=6 both=0
+
+--- Visit:travel (assigned shifts only) ---
+  Visit time:   1720.55 h
+  Travel time:  486.59 h
+  Visit:travel ratio:  3.54
+  Field efficiency:   78.0%  (target >67.5%)
+
+Next steps:
+  - Add placeholder shifts for dates/periods with supply issues (day or evening).
+  - Tune Timefold config: reduce travel weight, prefer movable to day/evening for better routing.
+  - Aim for highest visit:travel ratio first, then add shifts only for required visit+travel.
+============================================================
+Wrote docs/analysis-runs/bal-v3-19-20260320/unassigned.csv

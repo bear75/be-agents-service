@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """
-Verify Timefold solution 203cf1d6: continuity vs day analysis, no duplicate visits,
-and efficiency consistency. Run from repo root or scripts/ with paths to dataset dir.
+Verify Timefold solution: continuity vs day analysis, no duplicate visits.
+
+For the **0 unassigned** goal after a solve, use `verify_unassigned.py` on `output.json`
+(`modelOutput.unassignedVisits`).
+
+This script expects a dataset dir with input.json, output.json, continuity.csv.
 
 Usage:
   python3 verify_solution.py --dataset ../huddinge-package/huddinge-datasets/28-feb/203cf1d6 [--day 2026-02-16]
+  python3 verify_unassigned.py ../path/to/output.json
 """
 
 from __future__ import annotations

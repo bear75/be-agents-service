@@ -65,8 +65,15 @@ def compare_inputs(old_path, new_path):
     with open(new_path) as f:
         new_data = json.load(f)
 
-    old_visits = {v['id']: v for v in old_data['modelInput'].get('visits', [])}
-    new_visits = {v['id']: v for v in new_data['modelInput'].get('visits', [])}
+    def _all_visits(mi: dict) -> dict:
+        out = {v["id"]: v for v in mi.get("visits") or []}
+        for g in mi.get("visitGroups") or []:
+            for v in g.get("visits") or []:
+                out[v["id"]] = v
+        return out
+
+    old_visits = _all_visits(old_data.get("modelInput") or old_data)
+    new_visits = _all_visits(new_data.get("modelInput") or new_data)
 
     # Find interesting examples
     examples = []

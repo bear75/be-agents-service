@@ -1,0 +1,1 @@
+Report written to docs/analysis-runs/bal-v3-19-20260320/supply_demand.md

@@ -1,0 +1,9 @@
+# Continuity Campaign Route Plan IDs
+# Submitted: 2026-03-19T22:50:18.670402
+# Input: recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/19/export-field-service-routing-v1-aaf9d57f-c03a-494b-afa1-f8d07a6de66e-input.json
+
+5d47d15c-4524-48b2-bead-38f17ceda423  # pool5_continuity_heavy: Pool size 5 with high continuity weight
+dcb5b24e-4215-4e58-a95b-bea27db21aec  # pool7_balanced: Pool size 7 with balanced weights
+70cdf211-269d-44ad-b0b4-4ea00824e793  # pool8_preferred: Pool size 8 with preferred vehicles
+c1eecb12-cf60-4fda-9af3-efcddaa72be2  # pool10_continuity_heavy: Pool size 10 with continuity-heavy profile
+1cd4cbf2-6831-4b59-96cb-b85fe5084e63  # baseline_no_pools: Baseline with no pools for comparison

@@ -2,7 +2,11 @@
 """
 Analyze whether visitDependencies (precedingVisit + minDelay) are physically feasible
 given the two visits' time windows. Reports infeasible, tight, or OK per dependency.
-Focus: customers with many unassigned (H034, H053, H035, H026, H038).
+
+Pairing logic: for each dependent visit day, tries preceding visit end on the same day
+and up to 14 calendar days back (covers PT15H/PT27H/PT39H-style multi-day delays).
+
+Focus: customers with many unassigned (H034, H053, H035, H026, H038) — use --all for full audit.
 """
 
 import argparse
@@ -16,12 +20,16 @@ TIMEZONE = "+01:00"
 
 
 def _iso_duration_to_minutes(d: str) -> int:
+    """Parse ISO-8601 duration to whole minutes (seconds rounded)."""
     if not d:
         return 0
-    m = re.match(r"PT(?:(\d+)H)?(?:(\d+)M)?", d)
+    m = re.match(r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", d)
     if not m:
         return 0
-    return int(m.group(1) or 0) * 60 + int(m.group(2) or 0)
+    h = int(m.group(1) or 0)
+    mi = int(m.group(2) or 0)
+    s = int(m.group(3) or 0)
+    return int(round(h * 60 + mi + s / 60.0))
 
 
 def _parse_dt(s: str) -> Optional[datetime]:
@@ -99,34 +107,32 @@ def _check_feasibility(
             old_min, old_latest = dep_by_date[d]
             dep_by_date[d] = (min(min_s, old_min), max(latest_start, old_latest))
 
-    # Same-day: prev_end + delay <= dep_latest_start
-    # Cross-day (delay >= 18h): prev on D, dep on D+1: prev_end + delay <= dep_latest_start (dep next day)
+    # Pair dep window on dep_date with preceding visit ending on dep_date - offset for offset in 0..max_span.
+    # Covers same-day, next-day (15h "shift day"), and multi-day delays (e.g. PT39H ≈ 2 calendar days).
     feasible_any = False
     best_slack = -1.0
-    for dep_date, (dep_min_start, dep_latest_start) in dep_by_date.items():
-        # Same day
-        if dep_date in prev_by_date:
-            prev_max_end = prev_by_date[dep_date]
+    # How many calendar days back we must allow (cap planning horizon)
+    max_span = min(
+        14,
+        max(1, (delay_min // (24 * 60)) + 2),
+    )
+    for dep_date, (_dep_min_start, dep_latest_start) in dep_by_date.items():
+        try:
+            dep_day = datetime.strptime(dep_date[:10], "%Y-%m-%d")
+        except ValueError:
+            continue
+        for day_offset in range(0, max_span + 1):
+            prev_day = dep_day - timedelta(days=day_offset)
+            prev_date_str = prev_day.strftime("%Y-%m-%d")
+            if prev_date_str not in prev_by_date:
+                continue
+            prev_max_end = prev_by_date[prev_date_str]
             required = prev_max_end + timedelta(minutes=delay_min)
             if required <= dep_latest_start:
                 feasible_any = True
                 slack = (dep_latest_start - required).total_seconds() / 60
                 if slack > best_slack:
                     best_slack = slack
-        # Prev previous day (for 24h+ delay)
-        try:
-            prev_dt = datetime.fromisoformat(dep_date + "T00:00:00+01:00") - timedelta(days=1)
-            prev_date_str = prev_dt.strftime("%Y-%m-%d")
-            if prev_date_str in prev_by_date and delay_min >= 18 * 60:
-                prev_max_end = prev_by_date[prev_date_str]
-                required = prev_max_end + timedelta(minutes=delay_min)
-                if required <= dep_latest_start:
-                    feasible_any = True
-                    slack = (dep_latest_start - required).total_seconds() / 60
-                    if slack > best_slack:
-                        best_slack = slack
-        except Exception:
-            pass
 
     if not feasible_any:
         # Report why: e.g. for first dep window, required vs latest
@@ -138,7 +144,7 @@ def _check_feasibility(
             if prev_end:
                 req = prev_end + timedelta(minutes=delay_min)
                 return ("infeasible", f"required {req.strftime('%H:%M')} > dep latest start {dep_lt.strftime('%H:%M')} (date {d0})")
-        return ("infeasible", "no same-day or next-day window pair satisfies prev_end+delay <= dep_latest_start")
+        return ("infeasible", "no window pair (same day or up to 14 days back) satisfies prev_end+delay <= dep_latest_start")
 
     if best_slack < 15:
         return ("tight", f"slack {best_slack:.0f} min")
