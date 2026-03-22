@@ -1,0 +1,122 @@
+{
+  "submitted_at_utc": "2026-03-22T18:29:31.041013+00:00",
+  "campaign_dir": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322",
+  "configuration_id": "Caire_prod_pilot_20min",
+  "submission_mode": "dry_run",
+  "api_key_loaded": true,
+  "max_thread_count": 2,
+  "runs": [
+    {
+      "variant": "trimmed",
+      "profile": "efficiency-first",
+      "strategy": "v322-trimmed-efficiency-first",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-trimmed-efficiency-first.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "trimmed",
+      "profile": "balanced",
+      "strategy": "v322-trimmed-balanced",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-trimmed-balanced.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "trimmed",
+      "profile": "continuity-heavy",
+      "strategy": "v322-trimmed-continuity-heavy",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-trimmed-continuity-heavy.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "trimmed",
+      "profile": "combo",
+      "strategy": "v322-trimmed-combo",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-trimmed-combo.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool8",
+      "profile": "efficiency-first",
+      "strategy": "v322-pool8-efficiency-first",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool8-efficiency-first.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool8",
+      "profile": "balanced",
+      "strategy": "v322-pool8-balanced",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool8-balanced.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool8",
+      "profile": "continuity-heavy",
+      "strategy": "v322-pool8-continuity-heavy",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool8-continuity-heavy.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool8",
+      "profile": "combo",
+      "strategy": "v322-pool8-combo",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool8-combo.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool12",
+      "profile": "efficiency-first",
+      "strategy": "v322-pool12-efficiency-first",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool12-efficiency-first.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool12",
+      "profile": "balanced",
+      "strategy": "v322-pool12-balanced",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool12-balanced.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool12",
+      "profile": "continuity-heavy",
+      "strategy": "v322-pool12-continuity-heavy",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool12-continuity-heavy.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool12",
+      "profile": "combo",
+      "strategy": "v322-pool12-combo",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool12-combo.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool8_extra",
+      "profile": "efficiency-first",
+      "strategy": "v322-pool8_extra-efficiency-first",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool8_extra-efficiency-first.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool8_extra",
+      "profile": "balanced",
+      "strategy": "v322-pool8_extra-balanced",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool8_extra-balanced.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool8_extra",
+      "profile": "continuity-heavy",
+      "strategy": "v322-pool8_extra-continuity-heavy",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool8_extra-continuity-heavy.json",
+      "route_plan_id": null
+    },
+    {
+      "variant": "pool8_extra",
+      "profile": "combo",
+      "strategy": "v322-pool8_extra-combo",
+      "prepared_input": "/Users/bjornevers_MacPro/HomeCare/be-agent-service/recurring-visits/huddinge-package/huddinge-4mars-csv/full-csv/10-mars-new-attendo/v3/22/campaign_20260322/prepared/v322-pool8_extra-combo.json",
+      "route_plan_id": null
+    }
+  ]
+}

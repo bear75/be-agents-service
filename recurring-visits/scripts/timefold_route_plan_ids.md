@@ -125,3 +125,18 @@ TIMEFOLD_API_KEY=tf_p_... \
   --input ../huddinge-package/solve/input_20260224_202857.json \
   --metrics-dir ../huddinge-package/metrics/
 ```
+
+## Huddinge v3/22 campaign — prod “rest” batch (2026-03-22)
+
+Config: `09a98b7a-956c-456a-b478-00f89880b826`. Inputs: `huddinge-4mars-csv/.../v3/22/campaign_20260322/prepared/`.
+
+| ID | Prepared variant |
+| -- | ---------------- |
+| `0ba5d5c7-d308-4bfe-b5b5-2c1d9cf08edf` | pool12 continuity-heavy |
+| `85a24091-3866-4fcf-9f19-cd08d728507f` | pool12 combo |
+| `54de1372-6fd4-4af9-bf3e-e004a868294f` | pool8_extra efficiency-first |
+| `2fcded88-87d5-4125-8646-5b991d264d78` | pool8_extra balanced |
+| `8ecab57b-240d-4874-a86a-6aff215d228b` | pool8_extra continuity-heavy |
+| `1e96d8cb-2b37-410b-a82f-95d1cec253d4` | pool8_extra combo |
+
+Fetch from **be-agent-service** root with `scripts/timefold/fetch.py` (or symlinked `fetch_timefold_solution.py`).
